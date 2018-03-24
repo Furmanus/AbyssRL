@@ -4,7 +4,7 @@ import Utility from './../../utility.js';
 /**
  * @abstract
  */
-class Generator{
+export class Generator{
 
     /**
      * Method responsible for creating rectangle of specified cells on given level.
@@ -855,5 +855,3 @@ class Generator{
         }
     }
 }
-
-module.exports = Generator;

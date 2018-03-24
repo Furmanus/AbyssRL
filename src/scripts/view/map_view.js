@@ -1,7 +1,7 @@
 /**
  * Created by Docent Furman on 2017-04-24.
  */
-class Map{
+export class MinimapView{
 
     constructor(width, height){
 
@@ -28,5 +28,3 @@ class Map{
         return this.screen;
     }
 }
-
-module.exports = Map;

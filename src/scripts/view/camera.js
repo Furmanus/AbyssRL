@@ -23,7 +23,7 @@ class Camera{
      * @param {number} y - Value to move camera vertically.
      */
     moveCamera(x, y){
-        //we check if camera in desired move won't go off view
+        //we check if camera won't go off view
         if(this._x + x >= 0 && this._x + x + this._screenWidth <= game.options.LEVEL_WIDTH){
 
             this._x += x;

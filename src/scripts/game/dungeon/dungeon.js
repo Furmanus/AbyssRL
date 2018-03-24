@@ -2,12 +2,12 @@
  * Created by Docent Furman on 16.07.2017.
  */
 
-import Level from './level.js';
+import {Level} from './level.js';
 
 /**
- * Class representing single dungeon. TODO Fill later
+ * Class representing single dungeon.
  */
-class Dungeon{
+export class Dungeon{
 
     /**
      * Constructor method for dungeon.
@@ -16,7 +16,7 @@ class Dungeon{
      * @param {string} type - dungeon type (main dungeon or some branches).
      * @param {number} maxLevelNumber - how many levels this dungeon or branch contains.
      */
-    constructor(type, maxLevelNumber){
+    constructor(type = 'main', maxLevelNumber = 8){
 
         this.type = type; //string determining type of dungeon
         this.maxLevelNumber = maxLevelNumber; //number determining number of dungeon levels (how deep it is)
@@ -30,5 +30,3 @@ class Dungeon{
         this.levels[1] = new Level(this, 1);
     }
 }
-
-module.exports = Dungeon;

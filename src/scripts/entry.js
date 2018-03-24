@@ -11,6 +11,7 @@ import Controller from './controller/game_controller.js';
 import ArenaGenerator from './game/dungeon/generators/arena.js';
 import config from './global/config';
 import Utility from './game/utility.js';
+import {MainController} from './controller/main_controller';
 
 (function(){
 
@@ -18,10 +19,6 @@ import Utility from './game/utility.js';
     tileSet.setAttribute('src', 'assets/u5tiles.png');
 
     tileSet.addEventListener('load', function(){
-
-        let z = new Dungeon('main', 8);
-        let gen = new ArenaGenerator();
-        gen.generate(z.levels[1]);
         // z.levels[1].cells[10][10].changeCellType('wizard');
         // z.levels[1].cells[32][12].changeCellType('gray_wall');
         //gen.createCircleRoom(z.levels[1], 5, 5, 4, 'wooden_floor', 'gray_wall', true);
@@ -37,28 +34,6 @@ import Utility from './game/utility.js';
 
         //console.log(gen.connectRooms(z.levels[1], z.levels[1].rooms[0], z.levels[1].rooms[1], 'wooden_floor', 'gray_wall'));
 
-        const infoScreen = new InfoScreen(
-            config.SCREEN_WIDTH - config.TILE_SIZE * config.ROWS - 30,
-            config.TILE_SIZE * config.COLUMNS);
-        const mapScreen = new MapScreen(
-            config.SCREEN_WIDTH - config.TILE_SIZE * config.ROWS - 30,
-            config.SCREEN_HEIGHT - config.TILE_SIZE * config.COLUMNS - 40
-        );
-        const messagesScreen = new MessagesScreen(
-            config.TILE_SIZE * config.ROWS,
-            config.SCREEN_HEIGHT - config.TILE_SIZE * config.COLUMNS - 40);
-        const gameScreen = new GameScreen(
-            config.TILE_SIZE * config.ROWS,
-            config.TILE_SIZE * config.COLUMNS,
-            config.TILE_SIZE, tileSet,
-            z.levels[1]
-        );
-
-        gameScreen.drawScreen(z.levels[1]);
-
-        module.exports.infoScreen = infoScreen;
-        module.exports.mapScreen = mapScreen;
-        module.exports.messagesScreen = messagesScreen;
-        module.exports.gameScreen = gameScreen;
-    }, true);
+        new MainController(tileSet);
+    });
 })();

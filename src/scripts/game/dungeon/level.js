@@ -3,13 +3,13 @@
  */
 
 import Game from './../game.js';
-import Cell from './cells.js';
+import {Cell} from './cells.js';
 import Utility from './../utility.js';
 
 /**
  * Class representing single dungeon level. Contains level map which consist {@code Cell} objects.
  */
-class Level{
+export class Level{
 
     /**
      * Object representing single dungeon level.
@@ -93,5 +93,3 @@ class Level{
         return false;
     }
 }
-
-module.exports = Level;

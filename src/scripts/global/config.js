@@ -27,4 +27,4 @@ function getScreenProperties(){
 
 Object.assign(config, getScreenProperties());
 
-module.exports = config;
+export {config};

@@ -1,14 +1,13 @@
 import game from './../../game.js';
-import Generator from './generator.js';
+import {Generator} from './generator.js';
 
 /**
  * Class representing arena level type.
  * @extends {Generator}
  */
-class ArenaGenerator extends Generator{
+export class ArenaGenerator extends Generator{
 
     constructor(){
-
         super();
     }
 
@@ -30,5 +29,3 @@ class ArenaGenerator extends Generator{
         }
     }
 }
-
-module.exports = ArenaGenerator;

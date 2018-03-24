@@ -4,7 +4,7 @@ import game from './game.js';
  * Abstract class of utility functions.
  * @abstract
  */
-class Utility{
+export class Utility{
 
     /**
      * Calculates and returns distance between two points.
@@ -195,5 +195,3 @@ class Utility{
         return {x: directionX, y: directionY};
     }
 }
-
-module.exports = Utility;
