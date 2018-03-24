@@ -1,14 +1,12 @@
 /**
  * Created by Docent Furman on 16.07.2017.
  */
-
-import ROT from './../../../../libraries/rot.min.js';
 import cellTypes from './cell-data.js';
 
 /**
  * Class representing single map square(field).
  */
-class Cell{
+export class Cell{
 
     /**
      * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
@@ -49,5 +47,3 @@ class Cell{
         this.key = cellTypes[this.type].key;
     }
 }
-
-module.exports = Cell;

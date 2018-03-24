@@ -1,8 +1,11 @@
-const config = {};
+const config = {
+    LEVEL_WIDTH: 100,
+    LEVEL_HEIGHT: 100
+};
 
 /**
- * Function which returns initial view properties.
- * @returns {{SCREEN_WIDTH: Number, SCREEN_HEIGHT: Number, TILE_SIZE: number, ROWS: number (number of rows in game screen canvas), COLUMNS: number(number of columns in game screen canvas}}
+ * Function which calculates and returns object with screen properties.
+ * @returns {{SCREEN_WIDTH: number, SCREEN_HEIGHT: number, TILE_SIZE: number, ROWS: number, COLUMNS: number}}
  */
 function getScreenProperties(){
 
@@ -16,7 +19,6 @@ function getScreenProperties(){
     y = y - (y % tileSize);
 
     return {
-
         SCREEN_WIDTH: window.innerWidth,
         SCREEN_HEIGHT: window.innerHeight,
         TILE_SIZE: tileSize,
@@ -27,4 +29,4 @@ function getScreenProperties(){
 
 Object.assign(config, getScreenProperties());
 
-module.exports = config;
+export {config};

@@ -1,15 +1,12 @@
 /**
- * Created by Docent Furman on 2017-04-24.
+ * Created by Lukasz Lach on 2017-04-24.
  */
-
-import React from 'react';
-import ReactDOM from 'react-dom';
 
 /**
  * Class representing information section on game view. Section is split into two parts: first part is player information (hit points, stats, name), second part is about game
  * enviroment(visible monsters, objects).
  */
-class Info{
+export class InfoView{
 
     constructor(width, height){
 
@@ -34,5 +31,3 @@ class Info{
         return this.screen;
     }
 }
-
-module.exports = Info;

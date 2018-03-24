@@ -1,21 +1,20 @@
 /**
  * Created by Docent Furman on 2017-04-24.
  */
-class Messages{
+export class MessagesView{
 
     constructor(width, height){
 
         this.screen = document.getElementById('messages');
         this.screen.style.width = width + 'px';
         this.screen.style.height = height + 'px';
-        this.messagesList = []; //array of all logged messages 
+        this.messagesList = []; //array of all logged messages
     }
 
     /**
      * Function responsible for resizing messages window size.
-     * @param newWidth New messages window width in pixels.
-     * @param newHeight New messages window height in pixels.
-     * @return Returns nothing.
+     * @param {number}  newWidth    New messages window width in pixels.
+     * @param {number}  newHeight   New messages window height in pixels.
      */
     changeSize(newWidth, newHeight){
 
@@ -25,14 +24,15 @@ class Messages{
 
     /**
      * Method which puts {@code String} text message to message view. Message will be put in new line.
-     * @param text {@code String} text which is to be displayed.
-     * @param colour {@code String} Optional: colour for displayed message. Default value is 'silver'.
-     * @param font {@code String} Optional: font name of displayed text. Default value is 'Monospace'.
-     * @param weight {@code String} Optional: font weight of displayed text. Default value is 'normal'.
-     * @param style {@code String} Optional: font style of displayed text. Default value is 'normal'.
+     * @param {string}  text        Text which is to be displayed.
+     * @param {string}  colour      Optional: colour for displayed message. Default value is 'silver'.
+     * @param {string}  font        Optional: font name of displayed text. Default value is 'Monospace'.
+     * @param {string}  weight      Optional: font weight of displayed text. Default value is 'normal'.
+     * @param {string}  style       Optional: font style of displayed text. Default value is 'normal'. Other possible values are italic or oblique.
      */
-    addMessage(text, colour, font, weight, style){
-
+    addMessage(text, colour = 'silver', font = 'Courier new', weight = 'normal', style = 'normal'){
+        const messagesListElement = document.getElementById('messagesList');
+        let messageNode;
         /*
         * We check if message we want to add isn't exactly same as currently displayed last message. If it is, instead of placing same message again, we append ' x <number' String to
         * last message.
@@ -52,35 +52,31 @@ class Messages{
 
             if(sameMessageCount > 1){
 
-                document.getElementById('messagesList').lastChild.innerText = this.messagesList[this.messagesList.length - 1] + ' x ' + sameMessageCount;
+                messagesListElement.lastChild.innerText = this.messagesList[this.messagesList.length - 1] + ' x ' + sameMessageCount;
                 this.messagesList.push(text); //we store message in messageList array
 
                 return;
             }
         }
 
-        let messageNode = document.createElement('li');
-        let fontColour = colour ? colour : 'silver'; //sets font color
-        let fontName = font ? font : 'Courier new'; //sets font name
-        let fontWeight = weight ? weight : 'normal'; //sets font weight
-        let fontStyle = style ? style : 'normal'; //sets font style (italic or oblique)
+        messageNode = document.createElement('li');
 
-        messageNode.style.color = fontColour; // add styles to DOM node
-        messageNode.style.font = fontName;
-        messageNode.style.fontWeight = fontWeight;
-        messageNode.style.fontStyle = fontStyle;
+        messageNode.style.color = colour; // add styles to DOM node
+        messageNode.style.font = font;
+        messageNode.style.fontWeight = weight;
+        messageNode.style.fontStyle = style;
         messageNode.style.fontSize = '18px';
         messageNode.innerText = text;
-        document.getElementById('messagesList').appendChild(messageNode);
+        messagesListElement.appendChild(messageNode);
 
         this.messagesList.push(text); //we store message in messageList array
 
-        document.getElementById('messagesList').scrollTop = messageNode.offsetTop; //we make scrollbar scroll to the bottom of messages list
+        messagesListElement.scrollTop = messageNode.offsetTop; //we make scrollbar scroll to the bottom of messages list
     }
 
     /**
      * Method which appends given {@code String} text to last message.
-     * @param text {@code String} text message to append to last displayed message.
+     * @param {string}  text    Text message to append to last displayed message.
      */
     appendMessage(text){
 
@@ -98,5 +94,3 @@ class Messages{
         return this.screen;
     }
 }
-
-module.exports = Messages;

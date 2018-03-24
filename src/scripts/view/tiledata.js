@@ -270,7 +270,7 @@ module.exports = {
     "eating_man_north": {x: 24, y: 9, frames: 4},
     "mirror_image": {x: 28, y: 9, frames: 4},
 
-    //MONSTERS AND NPC
+    //MONSTERS AND NPC (MAPPED TO CONST WITH EXCEPTIONS)
 
     "wizard": {x: 0, y: 10, frames: 4},
     "rogue": {x: 4, y: 10, frames: 4},
@@ -301,10 +301,10 @@ module.exports = {
     "mimic": {x: 8, y: 13, frames: 4},
     "reaper": {x: 12, y: 13, frames: 4},
     "gazer": {x: 16, y: 13, frames: 4},
-    "shard": {x: 20, y: 13, frames: 1},
-    "magic_crown": {x: 21, y: 13, frames: 1},
-    "magic_sceptre": {x: 22, y: 13, frames: 1},
-    "magic_amulet": {x: 23, y: 13, frames: 1},
+    "shard": {x: 20, y: 13, frames: 1}, //NOT MAPPED TO CONST
+    "magic_crown": {x: 21, y: 13, frames: 1}, //NOT MAPPED TO CONST
+    "magic_sceptre": {x: 22, y: 13, frames: 1}, //NOT MAPPED TO CONST
+    "magic_amulet": {x: 23, y: 13, frames: 1}, //NOT MAPPED TO CONST
     "gargoyle": {x: 24, y: 13, frames: 4},
     "insects": {x: 28, y: 13, frames: 4},
     "orc": {x: 0, y: 14, frames: 4},
@@ -317,8 +317,8 @@ module.exports = {
     "dragon": {x: 28, y: 14, frames: 4},
     "sandtrap": {x: 0, y: 15, frames: 4},
     "troll": {x: 4, y: 15, frames: 4},
-    "barrier": {x: 8, y: 15, frames: 4},
-    "whirpool": {x: 12, y: 15, frames: 4},
+    "barrier": {x: 8, y: 15, frames: 4}, //NOT MAPPED TO CONST
+    "whirpool": {x: 12, y: 15, frames: 4}, //NOT MAPPED TO CONST
     "mongbat": {x: 16, y: 15, frames: 4},
     "corpser": {x: 20, y: 15, frames: 4},
     "worms": {x: 24, y: 15, frames: 4},
