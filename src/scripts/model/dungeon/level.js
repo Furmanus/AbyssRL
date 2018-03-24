@@ -2,9 +2,9 @@
  * Created by Docent Furman on 16.07.2017.
  */
 
-import Game from './../game.js';
-import {Cell} from './cells.js';
-import Utility from './../utility.js';
+import {Cell} from './cell_model.js';
+import Utility from '../../../helper/utility.js';
+import {config} from '../../global/config';
 
 /**
  * Class representing single dungeon level. Contains level map which consist {@code Cell} objects.
@@ -33,11 +33,11 @@ export class Level{
      */
     createCells(){
 
-        this.cells = new Array(Game.options.LEVEL_WIDTH);
+        this.cells = new Array(config.LEVEL_WIDTH);
 
         for(let i=0; i<this.cells.length; i++){
 
-            this.cells[i] = new Array(Game.options.LEVEL_HEIGHT);
+            this.cells[i] = new Array(config.LEVEL_HEIGHT);
 
             for(let j=0; j<this.cells[i].length; j++){
 

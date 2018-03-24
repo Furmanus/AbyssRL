@@ -1,9 +1,9 @@
-import game from './game.js';
-
 /**
  * Abstract class of utility functions.
  * @abstract
  */
+import {config} from '../scripts/global/config';
+
 export class Utility{
 
     /**
@@ -41,7 +41,7 @@ export class Utility{
 
             let e2 = 2*err;
 
-            if(!(x1 < 1 || y1 < 1 || x1 >= game.options.LEVEL_WIDTH - 1 || y1 >= game.options.LEVEL_HEIGHT - 1)){
+            if(!(x1 < 1 || y1 < 1 || x1 >= config.LEVEL_WIDTH - 1 || y1 >= config.LEVEL_HEIGHT - 1)){
 
                 callback(x1, y1);
             }
@@ -109,7 +109,7 @@ export class Utility{
         function flood(x, y){
 
             //if algorithm goes off level map, we stop current function
-            if(x < 1 || y < 1 || x > game.options.LEVEL_WIDTH - 1 || y > game.options.LEVEL_HEIGHT - 1){
+            if(x < 1 || y < 1 || x > config.LEVEL_WIDTH - 1 || y > config.LEVEL_HEIGHT - 1){
                 return;
             }
 

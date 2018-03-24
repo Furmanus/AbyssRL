@@ -2,10 +2,11 @@
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating game model and view in appriopiate way.
  */
 import {GameView} from '../view/game_view';
-import {Dungeon} from '../game/dungeon/dungeon';
-import {ArenaGenerator} from '../game/dungeon/generators/arena';
+import {Dungeon} from '../model/dungeon/dungeon_model';
+import {ArenaGenerator} from '../model/dungeon/generators/arena';
 import {config} from '../global/config';
 import {Observer} from '../core/observer';
+import {CANVAS_CELL_CLICK} from '../constants/actions';
 
 export class GameController extends Observer{
 
@@ -19,6 +20,7 @@ export class GameController extends Observer{
 
         this.dungeon = new Dungeon();
         this.levelGenerator = new ArenaGenerator();
+        this.currentLevel = null;
 
         this.view = new GameView(
             config.TILE_SIZE * config.ROWS,
@@ -28,13 +30,18 @@ export class GameController extends Observer{
         );
 
         this.initialize();
+        this.attachEvents();
     }
     /**
      * Method responsible for initialization of game controller.
      */
     initialize(){
         this.levelGenerator.generate(this.dungeon.levels[1]);
-        this.view.drawScreen(this.dungeon.levels[1]);
+        this.currentLevel = this.dungeon.levels[1];
+        this.view.drawScreen(this.currentLevel);
+    }
+    attachEvents(){
+        this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick.bind(this));
     }
     /**
      * Method responsible for moving camera in view.
@@ -43,7 +50,7 @@ export class GameController extends Observer{
      */
     moveCameraInView(deltaX, deltaY){
         this.view.camera.moveCamera(deltaX, deltaY);
-        this.view.refreshScreen();
+        this.view.refreshScreen(this.currentLevel);
     }
     /**
      * Changes size of canvas game display.
@@ -52,5 +59,11 @@ export class GameController extends Observer{
      */
     changeGameScreenInView(newWidth, newHeight){
         this.view.changeGameScreenSize(newWidth, newHeight);
+    }
+    /**
+     * Method triggered when user clicks on game screen.
+     */
+    onCanvasCellClick(){
+        this.view.refreshScreen(this.currentLevel);
     }
 }

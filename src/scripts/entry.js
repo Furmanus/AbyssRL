@@ -2,15 +2,6 @@
  * Created by Lukasz Lach on 2017-04-24.
  */
 
-import GameScreen from './view/game_view.js';
-import InfoScreen from './view/info_view.js';
-import MapScreen from './view/map_view.js';
-import MessagesScreen from './view/messages_view.js';
-import Dungeon from './game/dungeon/dungeon.js';
-import Controller from './controller/game_controller.js';
-import ArenaGenerator from './game/dungeon/generators/arena.js';
-import config from './global/config';
-import Utility from './game/utility.js';
 import {MainController} from './controller/main_controller';
 
 (function(){

@@ -1,5 +1,5 @@
-import game from './../../game.js';
-import Utility from './../../utility.js';
+import Utility from '../../../../helper/utility.js';
+import {config} from '../../../global/config';
 
 /**
  * @abstract
@@ -29,7 +29,7 @@ export class Generator{
             for(let j=0; j<height; j++){
 
                 //if current cell is beyond view, we stop function
-                if(x < 1 || y < 1 || x > game.options.LEVEL_WIDTH - 1 || y > game.options.LEVEL_HEIGHT - 1){
+                if(x < 1 || y < 1 || x > config.LEVEL_WIDTH - 1 || y > config.LEVEL_HEIGHT - 1){
 
                     return false;
                 }else if(level.isCellInRoom(x, y)){

@@ -2,10 +2,12 @@
  * Created by Lukasz Lach on 2017-04-24.
  */
 import tileset from './tiledata.js';
-import Camera from './camera.js';
-import game from './../game/game.js';
+import {Camera} from './camera.js';
+import {Observer} from '../core/observer';
+import {CANVAS_CELL_CLICK} from '../constants/actions';
+import {config} from '../global/config';
 
-export class GameView{
+export class GameView extends Observer{
 
     /**
      *
@@ -13,16 +15,15 @@ export class GameView{
      * @param {number} height - Height of view(in pixels).
      * @param {number} tileSize - Size of single tile image(in pixels). We assume tiles are always square.
      * @param {Object} tileSet - {@code <Img>} Html tag with source pointing at image with tileset.
-     * @param {Object} level - {@code Level} object which is about to be drawn.
      */
-    constructor(width, height, tileSize, tileSet, level){
+    constructor(width, height, tileSize, tileSet){
+        super();
 
         this.TILE_SIZE = tileSize;
         this.screen = document.getElementById('game');
         this.rows = width / this.TILE_SIZE;
         this.columns = height / this.TILE_SIZE;
         this.tileset = tileSet;
-        this.level = level;
         this.camera = new Camera(0,0, this.rows, this.columns);
         /*
         Object holding coordinates of current mouse position on canvas. Used to draw rectangle in mouseMoveEventListener
@@ -276,8 +277,10 @@ export class GameView{
 
         this.camera.centerOnCoordinates(convertedCoordinates.x, convertedCoordinates.y);
 
-        this.clearGameWindow();
-        this.drawScreen();
+        this.notify(CANVAS_CELL_CLICK, {
+            x: row,
+            y: column
+        });
         //TODO add context actions later on
         //TODO remove function
         // function getDistance(x1, y1, x2, y2){
@@ -403,25 +406,31 @@ export class GameView{
 
     /**
      * Draws currently visible part of {@code Level} object.
+     * @param {Level} level   Level model object which visible part is going to be drawn.
      */
-    drawScreen(){
+    drawScreen(level){
+        const levelRows = level.cells.length;
+        const cameraCoords = this.camera.getCoords();
+        const cameraX = cameraCoords.x;
+        const cameraY = cameraCoords.y;
+        let examinedRowColumnsLength;
 
-        let drawResult = null; //returned object from drawAnimatedImage method. Used to pass currently displayed animated image frame to Cell object
-
-        for(let i=0; i<this.level.cells.length; i++){
+        for(let i=0; i<levelRows; i++){
             //if cell column is greater than view height, we skip it
-            if(i >= this.rows || this.camera.getCoords().x + i >= game.options.LEVEL_WIDTH){
+            if(i >= this.rows || cameraX + i >= config.LEVEL_WIDTH){
                 continue;
             }
 
-            for(let j=0; j<this.level.cells[i].length; j++){
+            examinedRowColumnsLength = level.cells[i].length;
+
+            for(let j=0; j<examinedRowColumnsLength; j++){
                 //if cell row is greater than view width, we skip it
-                if(j >= this.columns || this.camera.getCoords().y + j >= game.options.LEVEL_HEIGHT){
+                if(j >= this.columns || cameraY + j >= config.LEVEL_HEIGHT){
                     continue;
                 }
 
-                this.drawAnimatedImage(i, j, this.level.cells[this.camera.getCoords().x + i][this.camera.getCoords().y + j], null);
-                this.drawnTiles[i + 'x' + j] = this.level.cells[this.camera.getCoords().x + i][this.camera.getCoords().y + j]; //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
+                this.drawAnimatedImage(i, j, level.cells[cameraX + i][cameraY + j], null);
+                this.drawnTiles[i + 'x' + j] = level.cells[cameraX + i][cameraY + j]; //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
             }
         }
     }
@@ -434,16 +443,17 @@ export class GameView{
      */
     checkIfScreenCellOutsideOfLevel(x, y){
 
-        return (x < 0 || y < 0 || x >= game.options.LEVEL_WIDTH || y >= game.options.LEVEL_HEIGHT);
+        return (x < 0 || y < 0 || x >= config.LEVEL_WIDTH || y >= config.LEVEL_HEIGHT);
     }
 
     /**
      * Redraws game view.
+     * @param {Level}   level   Level object which visible part is going to be redrawn.
      */
-    refreshScreen(){
+    refreshScreen(level){
 
         this.clearGameWindow();
-        this.drawScreen();
+        this.drawScreen(level);
     }
 
     getScreen(){

@@ -1,5 +1,5 @@
-import game from './../../game.js';
 import {Generator} from './generator.js';
+import {config} from '../../../global/config';
 
 /**
  * Class representing arena level type.
@@ -21,7 +21,7 @@ export class ArenaGenerator extends Generator{
 
             for(let j=0; j<level.cells[i].length; j++){
 
-                if(i !== 0 && j !== 0 && i !== game.options.LEVEL_WIDTH - 1 && j !== game.options.LEVEL_HEIGHT - 1){
+                if(i !== 0 && j !== 0 && i !== config.LEVEL_WIDTH - 1 && j !== config.LEVEL_HEIGHT - 1){
 
                     level.cells[i][j].changeCellType('grass');
                 }

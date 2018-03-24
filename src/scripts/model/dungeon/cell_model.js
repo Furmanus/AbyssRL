@@ -1,8 +1,6 @@
 /**
  * Created by Docent Furman on 16.07.2017.
  */
-
-import ROT from './../../../../libraries/rot.min.js';
 import cellTypes from './cell-data.js';
 
 /**

@@ -1,6 +1,6 @@
-import game from './../game/game.js';
+import {config} from '../global/config';
 
-class Camera{
+export class Camera{
 
     /**
      * Camera constructor.
@@ -24,7 +24,7 @@ class Camera{
      */
     moveCamera(x, y){
         //we check if camera won't go off view
-        if(this._x + x >= 0 && this._x + x + this._screenWidth <= game.options.LEVEL_WIDTH){
+        if(this._x + x >= 0 && this._x + x + this._screenWidth <= config.LEVEL_WIDTH){
 
             this._x += x;
         }else if(Math.abs(x) > 1){
@@ -33,13 +33,13 @@ class Camera{
             if(this._x + x < 0){
 
                 this._x = 0;
-            }else if(this._x + x + this._screenWidth > game.options.LEVEL_WIDTH){
+            }else if(this._x + x + this._screenWidth > config.LEVEL_WIDTH){
 
-                this._x = game.options.LEVEL_WIDTH - this._screenWidth;
+                this._x = config.LEVEL_WIDTH - this._screenWidth;
             }
         }
 
-        if(this._y + y >= 0 && this._y + y + this._screenHeight <= game.options.LEVEL_HEIGHT){
+        if(this._y + y >= 0 && this._y + y + this._screenHeight <= config.LEVEL_HEIGHT){
 
             this._y += y;
         }else if(Math.abs(y) > 1){
@@ -47,9 +47,9 @@ class Camera{
             if(this._y + y < 0){
 
                 this._y = 0;
-            }else if(this._y + y + this._screenHeight > game.options.LEVEL_HEIGHT){
+            }else if(this._y + y + this._screenHeight > config.LEVEL_HEIGHT){
 
-                this._y = game.options.LEVEL_HEIGHT - this._screenHeight;
+                this._y = config.LEVEL_HEIGHT - this._screenHeight;
             }
         }
     }
@@ -92,9 +92,9 @@ class Camera{
         if(x < this._screenWidth / 2){
 
             newCameraX = 0;
-        }else if(x > game.options.LEVEL_WIDTH - (this._screenWidth / 2)){
+        }else if(x > config.LEVEL_WIDTH - (this._screenWidth / 2)){
 
-            newCameraX = game.options.LEVEL_WIDTH - this._screenWidth;
+            newCameraX = config.LEVEL_WIDTH - this._screenWidth;
         }else{
 
             newCameraX = x - Math.floor(this._screenWidth / 2);
@@ -103,9 +103,9 @@ class Camera{
         if(y < this._screenHeight / 2){
 
             newCameraY = 0;
-        }else if(y > game.options.LEVEL_HEIGHT - (this._screenHeight / 2)){
+        }else if(y > config.LEVEL_HEIGHT - (this._screenHeight / 2)){
 
-            newCameraY = game.options.LEVEL_HEIGHT - this._screenHeight;
+            newCameraY = config.LEVEL_HEIGHT - this._screenHeight;
         }else{
 
             newCameraY = y - Math.floor(this._screenHeight / 2);
@@ -115,5 +115,3 @@ class Camera{
         this._y = newCameraY;
     }
 }
-
-module.exports = Camera;
