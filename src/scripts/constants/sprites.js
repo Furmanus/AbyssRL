@@ -44,3 +44,17 @@ export const entities = {
     WORMS: 'worms',
     SHADOWLORD: 'shadowlord'
 };
+
+export const terrain = {
+    RED_FLOOR: 'red_brick_floor',
+    WOODEN_FLOOR_1: 'wooden_floor1',
+    WOODEN_FLOOR_2: 'wooden_floor2',
+    WOODEN_DOORS: 'doors',
+    GRAY_WALL: 'gray_wall',
+    HIGH_PEAKS: 'high_peaks',
+    MOUNTAIN: 'mountains',
+    GRASS_1: 'grass1',
+    GRASS_2: 'grass2',
+    FOUNTAIN: 'fountain',
+    LAVA: 'lava'
+};

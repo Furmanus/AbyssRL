@@ -3,7 +3,7 @@
  */
 
 import {Cell} from './cell_model.js';
-import Utility from '../../../helper/utility.js';
+import Utility from '../../helper/utility.js';
 import {config} from '../../global/config';
 
 /**
@@ -43,15 +43,14 @@ export class Level{
 
                 if(i === 0 || j === 0 || i === this.cells.length - 1 || j === this.cells[i].length - 1){
 
-                    this.cells[i][j] = new Cell("high_peaks");
+                    this.cells[i][j] = new Cell(i, j, "high_peaks");
                 }else{
 
-                    this.cells[i][j] = new Cell("mountain");
+                    this.cells[i][j] = new Cell(i, j, "mountain");
                 }
             }
         }
     }
-
     /**
      * Method responsible for verification whether certain level cell is a part of a room(array property of {@code rooms} of {@code Level} object).
      * @param {number} x - row(horizontal) coordinate of cell.
@@ -91,5 +90,14 @@ export class Level{
         }
 
         return false;
+    }
+    /**
+     * Returns cell at given coordinates.
+     * @param {number}  x
+     * @param {number}  y
+     * @returns {Cell}
+     */
+    getCell(x, y){
+        return this.cells[x][y];
     }
 }

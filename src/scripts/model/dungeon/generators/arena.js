@@ -25,6 +25,10 @@ export class ArenaGenerator extends Generator{
 
                     level.cells[i][j].changeCellType('grass');
                 }
+
+                if(i === 12 && (j === 10 || j ===11)){
+                    level.cells[i][j].changeCellType('lava');
+                }
             }
         }
     }

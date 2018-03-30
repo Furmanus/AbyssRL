@@ -2,7 +2,7 @@
  * Abstract class of utility functions.
  * @abstract
  */
-import {config} from '../scripts/global/config';
+import {config} from '../global/config';
 
 export class Utility{
 
@@ -169,7 +169,6 @@ export class Utility{
 
         return false;
     }
-
     /**
      * Converts two given points in form {x: x, y: y} to direction in form {x: x, y: y} between them. For example for points {x: 1, y: 1} and {x: 2, y: 1} direction will be
      * {x: 1, y: 0}. This is just a direction, not a vector with length, so direction between points {x: 1, y: 1} and {x: 10, y: 1} still will be {x: 1, y: 0}.
@@ -193,5 +192,14 @@ export class Utility{
         }
 
         return {x: directionX, y: directionY};
+    }
+    /**
+     * Capitalizes first letter of given text.
+     * @param {string}  text    Text with first letter to capitalize.
+     * @returns {string}        Returns transformed text.
+     */
+    static capitalizeString(text){
+
+        return text.charAt(0).toUpperCase() + text.slice(1);
     }
 }

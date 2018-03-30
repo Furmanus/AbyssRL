@@ -1,4 +1,4 @@
-import Utility from '../../../../helper/utility.js';
+import Utility from '../../../helper/utility.js';
 import {config} from '../../../global/config';
 
 /**
