@@ -22,11 +22,25 @@ export class Dungeon{
         this.maxLevelNumber = maxLevelNumber; //number determining number of dungeon levels (how deep it is)
         this.levels = {}; //stores all Level objects (dungeon levels). Key is equal to level number.
 
-        this.init();
+        this.initialize();
     }
-
-    init(){
-
+    /**
+     * Initializes dungeon instance.
+     */
+    initialize(){
         this.levels[1] = new Level(this, 1);
+    }
+    /**
+     * Returns certain level object from dungeon.
+     * @param {number}  levelNumber
+     * @returns {Level}
+     */
+    getLevel(levelNumber){
+        try {
+            return this.levels[levelNumber];
+        }catch (e) {
+            console.error('Can\'t find dungeon level');
+            console.error(e.stack);
+        }
     }
 }

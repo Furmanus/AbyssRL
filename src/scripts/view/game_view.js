@@ -1,10 +1,10 @@
 /**
  * Created by Lukasz Lach on 2017-04-24.
  */
-import tileset from './tiledata.js';
+import tileset from '../global/tiledata.js';
 import {Camera} from './camera.js';
 import {Observer} from '../core/observer';
-import {CANVAS_CELL_CLICK} from '../constants/actions';
+import {CANVAS_CELL_CLICK} from '../constants/game_actions';
 import {config} from '../global/config';
 
 export class GameView extends Observer{
@@ -110,9 +110,19 @@ export class GameView extends Observer{
     drawAnimatedImage(x, y, cell, light){
 
         let tile = cell.display;
-        let i = tileset[tile].x;
-        let j = tileset[tile].y;
-        let framesNumber = tileset[tile].frames; //number of animation frames of selected tile
+        let i;
+        let j;
+        let framesNumber;
+
+        if(cell.entity){
+            tile = cell.entity.display;
+        }else if(cell.inventory.length){
+            tile = cell.inventory[0].display;
+        }
+
+        i = tileset[tile].x;
+        j = tileset[tile].y;
+        framesNumber = tileset[tile].frames; //number of animation frames of selected tile
 
         //if there is only one frame to animate, it is simply drawn
         if(framesNumber === 1){
@@ -186,8 +196,9 @@ export class GameView extends Observer{
      * Function responsible for changing size of canvas where game display is drawn. Along with canvas dimensions, game view object properties rows and columns are also changed.
      * @param {number}      newWidth    New canvas width.
      * @param {number}      newHeight   New canvas height.
+     * @param {Level}       level       Level model object to redraw.
      */
-    changeGameScreenSize(newWidth, newHeight){
+    changeGameScreenSize(newWidth, newHeight, level){
         newWidth = newWidth - (newWidth % this.TILE_SIZE);
         newHeight = newHeight - (newHeight % this.TILE_SIZE);
 
@@ -197,7 +208,7 @@ export class GameView extends Observer{
         this.rows = newWidth / this.TILE_SIZE;
         this.columns = newHeight / this.TILE_SIZE;
 
-        this.refreshScreen();
+        this.refreshScreen(level);
     }
     /**
      * Sets a border around certain tile.

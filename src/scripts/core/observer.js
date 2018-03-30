@@ -20,7 +20,6 @@ export class Observer{
          */
         this[observers] = new Set();
     }
-
     on(observer, event, callback){
 
         this.getObservers().add({
@@ -30,7 +29,6 @@ export class Observer{
             callback
         });
     }
-
     off(observer, event){
 
         const observers = this.getObservers();
@@ -44,7 +42,6 @@ export class Observer{
             }
         }
     }
-
     notify(event, data = {}){
 
         const observerEntries = this.getObservers().values();
@@ -57,7 +54,6 @@ export class Observer{
             }
         }
     }
-
     /**
      * Returns map holding observers (observers objects are keys in map)
      * @returns {Set}

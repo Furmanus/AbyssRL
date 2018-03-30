@@ -20,4 +20,11 @@ export class MessagesController extends Observer{
     changeMessageScreenSize(newWidth, newHeight){
         this.view.changeSize(newWidth, newHeight);
     }
+    /**
+     * Displays given message in view.
+     * @param {string}  message     Message to display.
+     */
+    showMessageInView(message){
+        this.view.addMessage(message);
+    }
 }
