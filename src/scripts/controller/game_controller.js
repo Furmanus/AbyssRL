@@ -2,7 +2,6 @@
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating game model and view in appriopiate way.
  */
 import {GameView} from '../view/game_view';
-import {Dungeon} from '../model/dungeon/dungeon_model';
 import {ArenaGenerator} from '../model/dungeon/generators/arena';
 import {config} from '../global/config';
 import {Observer} from '../core/observer';
@@ -11,9 +10,12 @@ import {entities} from '../constants/sprites';
 import {
     SHOW_MESSAGE_IN_VIEW,
     PLAYER_ACTION_MOVE_PLAYER,
-    PLAYER_WALK_CONFIRM_NEEDED
+    PLAYER_WALK_CONFIRM_NEEDED,
+    START_PLAYER_TURN,
+    END_PLAYER_TURN
 } from '../constants/player_actions';
 import {PlayerController} from './entity/player_controller';
+import {DungeonController} from './dungeon/dungeon_controller';
 
 export class GameController extends Observer{
 
@@ -25,7 +27,7 @@ export class GameController extends Observer{
     constructor(tileset){
         super();
 
-        this.dungeon = new Dungeon();
+        this.dungeonController = new DungeonController();
         this.levelGenerator = new ArenaGenerator();
         this.currentLevel = null;
         this.playerController = null;
@@ -34,22 +36,24 @@ export class GameController extends Observer{
             config.TILE_SIZE * config.ROWS,
             config.TILE_SIZE * config.COLUMNS,
             config.TILE_SIZE, tileset,
-            this.dungeon.levels[1]
+            this.dungeonController.levels[1]
         );
 
         this.initialize();
         this.attachEvents();
+        this.startGame();
     }
     /**
      * Method responsible for initialization of game controller.
      */
     initialize(){
-        this.levelGenerator.generate(this.dungeon.getLevel(1));
-        this.currentLevel = this.dungeon.getLevel(1);
+        //TODO ten model na końcu to tymczasowy, przerobić kod tak aby generatora poziomów tutaj nie było
+        this.levelGenerator.generate(this.dungeonController.getLevel(1).model);
+        this.currentLevel = this.dungeonController.getLevel(1);
 
         this.initializePlayer();
 
-        this.view.drawScreen(this.currentLevel);
+        this.view.drawScreen(this.currentLevel.getModel());
     }
     /**
      * Attaches events to view and models.
@@ -57,9 +61,11 @@ export class GameController extends Observer{
     attachEvents(){
         this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick.bind(this));
         this.playerController.on(this, PLAYER_WALK_CONFIRM_NEEDED, this.onPlayerMoveConfirmNeeded.bind(this));
+        this.playerController.on(this, START_PLAYER_TURN, this.onPlayerStartTurn.bind(this));
+        this.playerController.on(this, END_PLAYER_TURN, this.onPlayerEndTurn.bind(this));
     }
     /**
-     * Creates player character.
+     * Creates player character and adds it to proper level controller time engine.
      */
     initializePlayer(){
         //TODO wersja robocza, przerobic później
@@ -67,11 +73,25 @@ export class GameController extends Observer{
 
         this.playerController = new PlayerController({
             display: entities.AVATAR,
-            position: inititalPlayerCell
+            position: inititalPlayerCell,
+            speed: 100
         });
 
         inititalPlayerCell.entity = this.playerController.getModel();
+
+        this.currentLevel.addActorToScheduler(this.playerController);
     }
+    /**
+     * Starts game by starting time engine on current level.
+     */
+    startGame(){
+        this.currentLevel.startTimeEngine();
+    }
+    /**
+     * Method responsible for processing user input and taking proper actions(methods) depending on input.
+     * @param {string}  action  String describing type of action.
+     * @param {Object}  data    Object containing additional data.
+     */
     takePlayerAction(action, data){
         switch(action){
             case PLAYER_ACTION_MOVE_PLAYER:
@@ -116,7 +136,7 @@ export class GameController extends Observer{
      * Method responsible for refreshing game screen.
      */
     refreshGameScreen(){
-        this.view.refreshScreen(this.currentLevel);
+        this.view.refreshScreen(this.currentLevel.getModel());
     }
     /**
      * Changes size of canvas game display.
@@ -124,13 +144,13 @@ export class GameController extends Observer{
      * @param {number}  newHeight   New height of canvas.
      */
     changeGameScreenInView(newWidth, newHeight){
-        this.view.changeGameScreenSize(newWidth, newHeight, this.currentLevel);
+        this.view.changeGameScreenSize(newWidth, newHeight, this.currentLevel.getModel());
     }
     /**
      * Method triggered when user clicks on game screen.
      */
     onCanvasCellClick(){
-        this.view.refreshScreen(this.currentLevel);
+        this.view.refreshScreen(this.currentLevel.getModel());
     }
     /**
      * Method triggered after player model notifies about needed movement confirm from player.
@@ -138,5 +158,17 @@ export class GameController extends Observer{
      */
     onPlayerMoveConfirmNeeded(data){
         this.notify(PLAYER_WALK_CONFIRM_NEEDED, data);
+    }
+    /**
+     * Method triggered after player controller notifies about beginning of player turn.
+     */
+    onPlayerStartTurn(){
+        this.currentLevel.lockTimeEngine();
+    }
+    /**
+     * Method triggered after player controller notifies about end of player turn.
+     */
+    onPlayerEndTurn(){
+        this.currentLevel.unlockTimeEngine();
     }
 }

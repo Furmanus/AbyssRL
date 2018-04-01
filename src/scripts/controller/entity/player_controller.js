@@ -1,7 +1,11 @@
 import {EntityController} from './entity_controller';
 import {Utility} from "../../helper/utility";
 import {config} from "../../global/config";
-import {PLAYER_WALK_CONFIRM_NEEDED} from '../../constants/player_actions';
+import {
+    END_PLAYER_TURN,
+    PLAYER_WALK_CONFIRM_NEEDED,
+    START_PLAYER_TURN
+} from '../../constants/player_actions';
 import {PlayerModel} from '../../model/entity/player_model';
 
 export class PlayerController extends EntityController{
@@ -16,6 +20,12 @@ export class PlayerController extends EntityController{
         super(config);
         /**@type {PlayerModel}*/
         this.model = new PlayerModel(config);
+    }
+    /**
+     * Method triggered at beginning of each player turn.
+     */
+    act(){
+        this.notify(START_PLAYER_TURN);
     }
     /**
      * Method responsible for attempting to move player into target cell. A little bit magic happens here: function returns a promise. If movement is instantly possible or
@@ -46,11 +56,12 @@ export class PlayerController extends EntityController{
             if (newCell.blockMovement) {
                 resolve({
                     canMove: false,
-                    message: `${Utility.capitalizeString(newCell.description)} is blocking your way.`
+                    message: `${Utility.capitalizeString(newCell.description)} is blocking your way.`,
                 });
             } else if (newCell.confirmMovement) {
                 if(newCell.type === playerModel.position.type){
                     entityMoveFunction(newCell);
+                    playerController.notify(END_PLAYER_TURN); // player successfully moved, so we notify game controller to end turn
 
                     resolve({
                         canMove: true,
@@ -66,6 +77,7 @@ export class PlayerController extends EntityController{
                         message: `Do you really want to walk into ${newCell.description}? (y/n)`,
                         confirm: () => {
                             entityMoveFunction(newCell);
+                            playerController.notify(END_PLAYER_TURN);
 
                             resolve({
                                 canMove: true,
@@ -82,6 +94,7 @@ export class PlayerController extends EntityController{
                 }
             } else {
                 entityMoveFunction(newCell);
+                playerController.notify(END_PLAYER_TURN);
 
                 resolve({
                     canMove: true,

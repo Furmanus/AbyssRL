@@ -24,7 +24,6 @@ import {MainController} from './controller/main_controller';
         //console.log(gen.createRectangleRoom(z.levels[1], 12, 12, 5, 5, 'wooden_floor', 'gray_wall', true));
 
         //console.log(gen.connectRooms(z.levels[1], z.levels[1].rooms[0], z.levels[1].rooms[1], 'wooden_floor', 'gray_wall'));
-
         new MainController(tileSet);
     });
 })();

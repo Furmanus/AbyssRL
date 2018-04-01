@@ -16,7 +16,7 @@
     "babel-preset-react": "^6.24.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "rot-js": "^0.6.2",
+    "rot-js": "^0.6.5",
     "webpack": "^3.0.0"
   }
 }

@@ -9,13 +9,13 @@ import {config} from '../../global/config';
 /**
  * Class representing single dungeon level. Contains level map which consist {@code Cell} objects.
  */
-export class Level{
+export class LevelModel{
 
     /**
      * Object representing single dungeon level.
-     * @typedef Level
+     * @typedef LevelModel
      * @constructor
-     * @param {Dungeon} branch - object to which this level belongs.
+     * @param {DungeonModel} branch - object to which this level belongs.
      * @param {number} levelNumber - number of this dungeon level.
      */
     constructor(branch, levelNumber){
@@ -52,7 +52,7 @@ export class Level{
         }
     }
     /**
-     * Method responsible for verification whether certain level cell is a part of a room(array property of {@code rooms} of {@code Level} object).
+     * Method responsible for verification whether certain level cell is a part of a room(array property of {@code rooms} of {@code LevelModel} object).
      * @param {number} x - row(horizontal) coordinate of cell.
      * @param {number} y - column(vertical) coordinate of cell.
      * @return {boolean} Returns true if cell is a part of a room, returns false otherwise.

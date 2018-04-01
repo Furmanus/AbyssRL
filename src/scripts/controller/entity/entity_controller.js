@@ -22,6 +22,13 @@ export class EntityController extends Observer{
         this.model.position.setEntity(this.model); //in new cell model where monster is after movement, we store information about new entity occupying new cell.
     }
     /**
+     * Returns speed of entity (how fast it can take action in time engine).
+     * @returns {number}
+     */
+    getSpeed(){
+        return this.getModel().getSpeed();
+    }
+    /**
      *
      * @returns {EntityModel}
      */

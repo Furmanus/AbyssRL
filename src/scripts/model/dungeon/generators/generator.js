@@ -8,14 +8,14 @@ export class Generator{
 
     /**
      * Method responsible for creating rectangle of specified cells on given level.
-     * @param {Level} level - {@code Level} object in which we want to create rectangle
+     * @param {LevelModel} level - {@code LevelModel} object in which we want to create rectangle
      * @param {number} x - horizontal(row) coordinate of upper left corner of rectangle
      * @param {number} y - vertical(column) coordinate of upper left corner of rectangle
      * @param {number} width - width of rectangle
      * @param {number} height - height of rectangle
      * @param {string} cellType - name of cell type we want to fill rectangle with. Name should be equal to keys from cell-data module
      * @param {string} borderType - name of cell type we want to be a border of rectangle. Name should be equal to keys from cell-data module
-     * @param {boolean} isRoom - boolean indicating whether created rectangle should be stored in {@code Level} rooms array as room
+     * @param {boolean} isRoom - boolean indicating whether created rectangle should be stored in {@code LevelModel} rooms array as room
      * @return {boolean} - Returns true if creation of room was successful, returns false otherwise
      */
     createRectangleRoom(level, x, y, width, height, cellType, borderType, isRoom){
@@ -94,20 +94,20 @@ export class Generator{
 
     /**
      * Method responsible for creating circle shaped rooms of certain tiles and optional border(walls).
-     * @param {Level} level - {@code Level} object on which we want to create rectangle
+     * @param {LevelModel} level - {@code LevelModel} object on which we want to create rectangle
      * @param {number} x - horizontal(row) coordinate of center of circle.
      * @param {number} y - vertical(column) coordinate of center of circle.
      * @param {number} radius - radius of circle.
      * @param {string} cellType - name of cell type we want to fill circle with. Name should be equal to keys from cell-data module.
      * @param {string} borderType - name of cell type we want to be a border of circle. Name should be equal to keys from cell-data module.
-     * @param {boolean} isRoom - boolean indicating whether created rectangle should be stored in {@code Level} rooms array as room.
+     * @param {boolean} isRoom - boolean indicating whether created rectangle should be stored in {@code LevelModel} rooms array as room.
      * @return {boolean} - Returns true if creation of room was successful, returns false otherwise
      */
     createCircleRoom(level, x, y, radius, cellType, borderType, isRoom){
 
         let changedCells = []; //we store information about changed cells in array. In the end, if operation was successful, we change those cells by calling map function on this array
 
-        //information about coordinates of rooms border and interior, later stored in Level rooms array, if isRoom variable was passed equal to true
+        //information about coordinates of rooms border and interior, later stored in LevelModel rooms array, if isRoom variable was passed equal to true
         let roomInfo = {
 
             border: [],
@@ -159,7 +159,7 @@ export class Generator{
 
             }, level);
 
-            //if created circle was declared as room by user, we push information about this room to Level rooms array
+            //if created circle was declared as room by user, we push information about this room to LevelModel rooms array
             if(isRoom){
 
                 level.rooms.push({data: roomInfo, type: 'circle', x: x, y: y, radius: radius});
@@ -173,7 +173,7 @@ export class Generator{
      * Method responsible for creating rooms of irregular shape. Room is based on rectangle of upper left corner coordinates (x, y) certain width and height. In first step,
      * random points are chosen near every wall. Next those points are connected clock wise with bresenham line and that shape becomes border of room. Interior of room is created
      * by flood fill algorithm.
-     * @param {Level} level - {@code Level} object on which we want to create irregular shaped room
+     * @param {LevelModel} level - {@code LevelModel} object on which we want to create irregular shaped room
      * @param {number} x - starting horizontal(row) coordinate of upper left corner of room(final upper left coordinate will be different)
      * @param {number} y - starting vertical(column) coordinate of upper left corner of room(final upper left coordinate will be different)
      * @param {number} width - starting width of room(final width will be different)
@@ -181,7 +181,7 @@ export class Generator{
      * @param {number} deviation - highest possible distance difference between randomly chosen point and its corresponding wall
      * @param {string} cellType - name of cell type we want to fill room with. Name should be equal to keys from cell-data module.
      * @param {string} borderType - name of cell type we want to be a border of room. Name should be equal to keys from cell-data module.
-     * @param {boolean} isRoom - boolean indicating whether created room should be stored in {@code Level} rooms array as room.
+     * @param {boolean} isRoom - boolean indicating whether created room should be stored in {@code LevelModel} rooms array as room.
      * @return {boolean} - Returns true if creation of room was successful, returns false otherwise
      */
     createIrregularRoom(level, x, y, width, height, deviation, cellType, borderType, isRoom){
@@ -214,7 +214,7 @@ export class Generator{
         let placementSuccessful = true; //boolean variable indicating whether room can be placed successfully
         let changedCells = []; //array of cells coordinates to be changed at the end of algorithm. Used if variable placementSuccessful remains true at the end of function
 
-        //informations about this room that will be put into Level rooms property
+        //informations about this room that will be put into LevelModel rooms property
         let roomInfo = {
 
             interior: [],

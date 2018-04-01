@@ -13,7 +13,7 @@ export class ArenaGenerator extends Generator{
 
     /**
      *
-     * @param {Level} level - {@code Level} object
+     * @param {LevelModel} level - {@code LevelModel} object
      */
     generate(level){
 

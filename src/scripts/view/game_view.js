@@ -196,7 +196,7 @@ export class GameView extends Observer{
      * Function responsible for changing size of canvas where game display is drawn. Along with canvas dimensions, game view object properties rows and columns are also changed.
      * @param {number}      newWidth    New canvas width.
      * @param {number}      newHeight   New canvas height.
-     * @param {Level}       level       Level model object to redraw.
+     * @param {LevelModel}       level       LevelModel model object to redraw.
      */
     changeGameScreenSize(newWidth, newHeight, level){
         newWidth = newWidth - (newWidth % this.TILE_SIZE);
@@ -416,8 +416,8 @@ export class GameView extends Observer{
     }
 
     /**
-     * Draws currently visible part of {@code Level} object.
-     * @param {Level} level   Level model object which visible part is going to be drawn.
+     * Draws currently visible part of {@code LevelModel} object.
+     * @param {LevelModel} level   LevelModel model object which visible part is going to be drawn.
      */
     drawScreen(level){
         const levelRows = level.cells.length;
@@ -459,7 +459,7 @@ export class GameView extends Observer{
 
     /**
      * Redraws game view.
-     * @param {Level}   level   Level object which visible part is going to be redrawn.
+     * @param {LevelModel}   level   LevelModel object which visible part is going to be redrawn.
      */
     refreshScreen(level){
 
