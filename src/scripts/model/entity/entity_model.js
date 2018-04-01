@@ -21,6 +21,11 @@ export class EntityModel extends Observer{
          * @type {Cell}
          */
         this.lastVisitedCell = config.lastVisitedCell || undefined;
+        /**
+         * Speed statistic of entity.
+         * @type {number}
+         */
+        this.speed = config.speed;
     }
     /**
      *
@@ -28,5 +33,12 @@ export class EntityModel extends Observer{
      */
     changePosition(newCell){
         this.position = newCell;
+    }
+    /**
+     *
+     * @returns {number}
+     */
+    getSpeed(){
+        return this.speed;
     }
 }

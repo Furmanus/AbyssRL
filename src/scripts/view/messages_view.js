@@ -4,24 +4,20 @@
 export class MessagesView{
 
     constructor(width, height){
-
         this.screen = document.getElementById('messages');
         this.screen.style.width = width + 'px';
         this.screen.style.height = height + 'px';
         this.messagesList = []; //array of all logged messages
     }
-
     /**
      * Function responsible for resizing messages window size.
      * @param {number}  newWidth    New messages window width in pixels.
      * @param {number}  newHeight   New messages window height in pixels.
      */
     changeSize(newWidth, newHeight){
-
         this.screen.style.width = newWidth + 'px';
         this.screen.style.height = newHeight + 'px';
     }
-
     /**
      * Method which puts {@code String} text message to message view. Message will be put in new line.
      * @param {string}  text        Text which is to be displayed.
@@ -73,24 +69,20 @@ export class MessagesView{
 
         messagesListElement.scrollTop = messageNode.offsetTop; //we make scrollbar scroll to the bottom of messages list
     }
-
     /**
      * Method which appends given {@code String} text to last message.
      * @param {string}  text    Text message to append to last displayed message.
      */
     appendMessage(text){
-
         this.messagesList[this.messagesList.length - 1] += ' ' + text;
         document.getElementById('messagesList').lastChild.innerText += ' ' + text;
         document.getElementById('messagesList').scrollTop = document.getElementById('messagesList').lastChild.offsetTop; //we make scrollbar scroll to the bottom of messages list
     }
-
     /**
      * Returns DOM node element where messages are displayed.
      * @return {Element|*}
      */
     getScreen(){
-
         return this.screen;
     }
 }
