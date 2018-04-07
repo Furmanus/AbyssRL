@@ -76,11 +76,6 @@ export class Cell{
          * @type {Array}
          */
         this.inventory = [];
-        /**
-         * Sprite frame currently displayed in view.
-         * @type {number}
-         */
-        this.animationFrame = 1;
     }
 
     /**
