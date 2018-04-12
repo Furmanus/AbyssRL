@@ -1,18 +1,16 @@
 module.exports = {
-    entry: './src/scripts/entry.js',
+    entry: ['babel-polyfill', __dirname + '/src/scripts/entry.js'],
     devtool: "eval-source-map",
     output: {
         path: __dirname + '/dist',
         filename: 'bundle.js'
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015', 'react']
-                }
+                exclude: /node_modules/,
+                use: 'babel-loader',
             }
         ]
     }
