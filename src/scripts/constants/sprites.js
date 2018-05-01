@@ -56,5 +56,8 @@ export const terrain = {
     GRASS_1: 'grass1',
     GRASS_2: 'grass2',
     FOUNTAIN: 'fountain',
-    LAVA: 'lava'
+    LAVA: 'lava',
+    HILLS: 'hills',
+    LEFT_HILLS: 'left_hills',
+    RIGHT_HILLS: 'right_hills'
 };

@@ -2,7 +2,6 @@
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating game model and view in appriopiate way.
  */
 import {GameView} from '../view/game_view';
-import {ArenaGenerator} from '../model/dungeon/generators/arena';
 import {config} from '../global/config';
 import {Observer} from '../core/observer';
 import {CANVAS_CELL_CLICK} from '../constants/game_actions';
@@ -28,7 +27,6 @@ export class GameController extends Observer{
         super();
 
         this.dungeonController = new DungeonController();
-        this.levelGenerator = new ArenaGenerator();
         this.currentLevel = null;
         this.playerController = null;
 
@@ -47,8 +45,6 @@ export class GameController extends Observer{
      * Method responsible for initialization of game controller.
      */
     initialize(){
-        //TODO ten model na końcu to tymczasowy, przerobić kod tak aby generatora poziomów tutaj nie było
-        this.levelGenerator.generate(this.dungeonController.getLevel(1).model);
         this.currentLevel = this.dungeonController.getLevel(1);
 
         this.initializePlayer();
