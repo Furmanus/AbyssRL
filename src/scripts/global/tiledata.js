@@ -20,7 +20,7 @@ module.exports = {
     "mountains": {x: 12, y: 0, frames: 1},
     "high_peaks": {x: 13, y: 0, frames: 1},
     "left_hills": {x: 14, y: 0, frames: 1},
-    "right_peaks": {x: 15, y: 0, frames: 1},
+    "right_hills": {x: 15, y: 0, frames: 1},
     "hut": {x: 16, y: 0, frames: 1},
     "codex_hut": {x: 17, y: 0, frames: 1},
     "keep": {x: 18, y: 0, frames: 1},

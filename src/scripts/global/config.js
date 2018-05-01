@@ -9,7 +9,7 @@ const config = {
  */
 function getScreenProperties(){
 
-    let tileSize = 32;
+    const tileSize = 32;
     //we calculate game window size. Game window should be approximately 3/4 of view size
     let x = Math.floor(window.innerWidth * 2 / 3);
     let y = Math.floor(window.innerHeight * 3 / 4);

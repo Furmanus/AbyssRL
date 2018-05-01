@@ -1,4 +1,4 @@
-import {terrain} from '../../constants/sprites';
+import {terrain} from '../constants/sprites';
 
 export default {
 
@@ -107,6 +107,39 @@ export default {
         "confirmMovement": true,
         "blockLos": false,
         "description": "a lava",
+        "walkMessage": "",
+        "modifiers": null,
+        "walkEffect": null
+    },
+    "hills": {
+        "key": "hills",
+        "display": [terrain.HILLS],
+        "blockMovement": false,
+        "confirmMovement": false,
+        "blockLos": false,
+        "description": "hills",
+        "walkMessage": "",
+        "modifiers": null,
+        "walkEffect": null
+    },
+    "left_hills": {
+        "key": "hills",
+        "display": [terrain.LEFT_HILLS],
+        "blockMovement": false,
+        "confirmMovement": false,
+        "blockLos": false,
+        "description": "hills",
+        "walkMessage": "",
+        "modifiers": null,
+        "walkEffect": null
+    },
+    "right_hills": {
+        "key": "hills",
+        "display": [terrain.RIGHT_HILLS],
+        "blockMovement": false,
+        "confirmMovement": false,
+        "blockLos": false,
+        "description": "hills",
         "walkMessage": "",
         "modifiers": null,
         "walkEffect": null

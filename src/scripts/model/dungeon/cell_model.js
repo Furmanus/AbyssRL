@@ -1,7 +1,7 @@
 /**
  * Created by Docent Furman on 16.07.2017.
  */
-import cellTypes from './cell-data.js';
+import cellTypes from '../../global/cell-data.js';
 
 /**
  * Class representing single map square(field).
@@ -77,7 +77,6 @@ export class Cell{
          */
         this.inventory = [];
     }
-
     /**
      * Method responsible from changing one square field type to another.
      * @param {string} type - field name we to change this square to.

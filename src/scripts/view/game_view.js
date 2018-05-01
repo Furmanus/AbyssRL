@@ -403,28 +403,24 @@ export class GameView extends Observer{
      * @param {LevelModel} level   LevelModel model object which visible part is going to be drawn.
      */
     drawScreen(level){
-        const levelRows = level.cells.length;
         const cameraCoords = this.camera.getCoords();
         const cameraX = cameraCoords.x;
         const cameraY = cameraCoords.y;
-        let examinedRowColumnsLength;
 
-        for(let i=0; i<levelRows; i++){
+        for(let i=0; i<config.LEVEL_WIDTH; i++){
             //if cell column is greater than view height, we skip it
             if(i >= this.rows || cameraX + i >= config.LEVEL_WIDTH){
                 continue;
             }
 
-            examinedRowColumnsLength = level.cells[i].length;
-
-            for(let j=0; j<examinedRowColumnsLength; j++){
+            for(let j=0; j<config.LEVEL_HEIGHT; j++){
                 //if cell row is greater than view width, we skip it
                 if(j >= this.columns || cameraY + j >= config.LEVEL_HEIGHT){
                     continue;
                 }
 
-                this.drawAnimatedImage(i, j, level.cells[cameraX + i][cameraY + j], null);
-                this.drawnTiles[i + 'x' + j] = level.cells[cameraX + i][cameraY + j]; //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
+                this.drawAnimatedImage(i, j, level.getCell(cameraX + i, cameraY + j), null);
+                this.drawnTiles[i + 'x' + j] = level.getCell(cameraX + i, cameraY + j); //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
             }
         }
     }
