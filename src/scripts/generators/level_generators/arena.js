@@ -31,9 +31,9 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator{
 
         function generatorCallback(x, y, value){
             if(value === 1){
-                level.getCell(x, y).changeCellType(cellTypes.HIGH_PEAKS);
+                level.changeCellType(x, y, cellTypes.HIGH_PEAKS);
             }else{
-                level.getCell(x, y).changeCellType(cellTypes.GRASS);
+                level.changeCellType(x, y, cellTypes.GRASS);
             }
         }
     }

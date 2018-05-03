@@ -27,7 +27,7 @@ export class AbstractLevelGenerator{
      * Method responsible for "smoothing" certain level cells. For example, method iterates through level and if it
      * has high mountain cell in its surroundings. If yes, it changes grass cell to mountain cell.
      *
-     * @param {Map}             levelCells                  Map containing level cell models.
+     * @param {LevelModel}      level                Level model containing level cells.
      * @param {Object}          config                      Configuration object.
      * @param {Array.<string>}  config.cellsToSmooth        Cells which we are looking for in surrounding of examined
      *                                                      cell.
@@ -36,10 +36,11 @@ export class AbstractLevelGenerator{
      * @param {Array.<string>}  config.cellsAfterChange     Cells (randomly selected) which will appear in place of
      *                                                      changed cells.
      */
-    smoothLevel(levelCells, config = {}){
+    smoothLevel(level, config = {}){
         const cellsToSmooth = config.cellsToSmooth || [];
         const cellsToChange = config.cellsToChange || [];
         const cellsAfterChange = config.cellsAfterChange || [];
+        const levelCells = level.getCells();
         let examinedCellNeighbours;
 
         if(cellsToSmooth.length && cellsToChange.length && cellsAfterChange.length){
@@ -51,7 +52,7 @@ export class AbstractLevelGenerator{
                         cellsToSmooth
                     );
                     if (examinedCellNeighbours.directions.length) {
-                        examinedCell.changeCellType(cellsAfterChange.random());
+                        level.changeCellType(examinedCell.x, examinedCell.y, cellsAfterChange.random());
                     }
                 }
             });
@@ -62,9 +63,10 @@ export class AbstractLevelGenerator{
      * Then it examines cells to left and right - if any of those cells are hills, it changes grass cell to hill_left
      * or hills_right (or just to hills, if hills cells are on both sides).
      *
-     * @param {Map}     levelCells      Map containing level cell models.
+     * @param {LevelModel}     level      Level model containing level cells.
      */
-    smoothLevelHills(levelCells){
+    smoothLevelHills(level){
+        const levelCells = level.getCells();
         let examinedCellNeighbours;
         let isHillFromLeftSide;
         let isHillFromRightSide;
@@ -86,11 +88,11 @@ export class AbstractLevelGenerator{
                     });
 
                     if(isHillFromLeftSide && isHillFromRightSide){
-                        examinedCell.changeCellType(cellTypes.HILLS);
+                        level.changeCellType(examinedCell.x, examinedCell.y, cellTypes.HILLS);
                     }else if(isHillFromLeftSide && !isHillFromRightSide){
-                        examinedCell.changeCellType(cellTypes.RIGHT_HILLS);
+                        level.changeCellType(examinedCell.x, examinedCell.y, cellTypes.RIGHT_HILLS);
                     }else if(!isHillFromLeftSide && isHillFromRightSide){
-                        examinedCell.changeCellType(cellTypes.LEFT_HILLS);
+                        level.changeCellType(examinedCell.x, examinedCell.y, cellTypes.LEFT_HILLS);
                     }
                 }
             }
