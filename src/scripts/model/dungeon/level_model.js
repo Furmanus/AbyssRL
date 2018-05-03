@@ -2,10 +2,11 @@
  * Created by Docent Furman on 16.07.2017.
  */
 
-import {Cell} from './cell_model.js';
+import {Cell} from './cells/cell_model.js';
 import Utility from '../../helper/utility.js';
 import {config as globalConfig} from '../../global/config';
 import {cellTypes} from '../../constants/cell_types';
+import {CellModelFactory} from '../../factory/cell_model_factory';
 
 /**
  * Class representing single dungeon level. Contains level map which consist {@code Cell} objects.
@@ -34,9 +35,12 @@ export class LevelModel{
     createCells(){
         for(let i=0; i<globalConfig.LEVEL_WIDTH; i++){
             for(let j=0; j<globalConfig.LEVEL_HEIGHT; j++){
-                this.cells.set(`${i}x${j}`, new Cell(i, j, cellTypes.HIGH_PEAKS));
+                this.cells.set(`${i}x${j}`, CellModelFactory.getHighPeaksWallModel(i, j));
             }
         }
+    }
+    changeCellType(x, y, type){
+        this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
     }
     /**
      * Returns cell at given coordinates.

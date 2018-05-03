@@ -21,7 +21,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator{
     /**
      * Generates random dungeon (rooms connected with corridors) from given level cells.
      *
-     * @param {LevelModel}       level              Level cells in array.
+     * @param {LevelModel}       level              Level model containing level cells.
      * @param {Object}           config             Additional level config info.
      * @param {function}         debugCallback      Optional callback function serving as debug for map generation
      */
@@ -59,9 +59,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator{
 
         function generatorCallback(x, y, value){
             if (value === 1) {
-                level.getCell(x, y).changeCellType(cellTypes.GRAY_WALL);
+                level.changeCellType(x, y, cellTypes.GRAY_WALL);
             } else {
-                level.getCell(x, y).changeCellType(cellTypes.RED_FLOOR);
+                level.changeCellType(x, y, cellTypes.RED_FLOOR);
             }
         }
     }

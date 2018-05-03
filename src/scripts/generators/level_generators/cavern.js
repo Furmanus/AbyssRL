@@ -49,23 +49,26 @@ export class CavernLevelGenerator extends AbstractLevelGenerator{
 
         function generatorCallback(x, y, value){
             if (value === 1) {
-                level.getCell(x + 1, y + 1).changeCellType(cellTypes.MOUNTAIN);
+                level.changeCellType(x + 1, y + 1, cellTypes.MOUNTAIN);
             } else {
-                level.getCell(x + 1, y + 1).changeCellType(cellTypes.GRASS);
+                level.changeCellType(x + 1, y + 1, cellTypes.GRASS);
+            }
+            if(x === 1 && y === 1){
+                level.changeCellType(1, 1, cellTypes.WOODEN_SOLID_DOORS);
             }
         }
 
         generator.connect(function(x, y, value){
             if(value === 0){
-                level.getCell(x + 1, y + 1).changeCellType(cellTypes.GRASS);
+                level.changeCellType(x + 1, y + 1, cellTypes.GRASS);
             }
         });
-        this.smoothLevel(level.getCells(), {
+        this.smoothLevel(level, {
             cellsToSmooth: [cellTypes.HIGH_PEAKS, cellTypes.MOUNTAIN],
             cellsToChange: [cellTypes.GRASS],
             cellsAfterChange: [cellTypes.HILLS]
         });
-        this.smoothLevelHills(level.getCells());
+        this.smoothLevelHills(level);
     }
     /**
      * Returns only created instance of cavern level generator.
