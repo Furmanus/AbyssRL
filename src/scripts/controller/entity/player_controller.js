@@ -70,7 +70,7 @@ export class PlayerController extends EntityController{
                 }else {
                     /**
                      * Magic part: promise is not resolved here, instead game controller is notified about needed movement confirmation from player. Along with
-                     * notification object is passed with two functions. One function is called after player confirms movement, other when player rejects. Both
+                     * notification object two functions are passed. One function is called after player confirms movement, other when player rejects. Both
                      * function calls promise resolve.
                      */
                     playerController.notify(PLAYER_WALK_CONFIRM_NEEDED, {

@@ -40,6 +40,11 @@ export class Cell{
          * @type {Array}
          */
         this.inventory = [];
+        /**
+         * Boolean variable indicating whether cells display can be changed or not.
+         * @type {boolean}
+         */
+        this.preventDisplayChange = false;
     }
     /**
      * Resets value entity field of cell model instance (sets it to null).
@@ -53,6 +58,28 @@ export class Cell{
      */
     setEntity(entity){
         this.entity = entity;
+    }
+    /**
+     * Enables possibility to change cell display.
+     */
+    enableDisplayChange(){
+        this.preventDisplayChange = false;
+    }
+    /**
+     * Disables possibility to change cell display.
+     */
+    disableDisplayChange(){
+        this.preventDisplayChange = true;
+    }
+    /**
+     * Changes display of cell.
+     *
+     * @param {Array.<{string}>}     tiles   Array of new tiles names.
+     */
+    changeDisplay(tiles){
+        if(!this.preventDisplayChange) {
+            this.display = tiles;
+        }
     }
     /**
      * Effect from certain cell while entity walks over it. Default function is below empty function. Can be implemented

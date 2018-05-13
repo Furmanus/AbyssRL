@@ -10,5 +10,9 @@ export const cellsDescriptions = {
     [cellTypes.HILLS]: 'a hills',
     [cellTypes.WOODEN_SOLID_DOORS]: 'a solid wooden doors',
     [cellTypes.LAVA]: 'a lava pool',
-    [cellTypes.FOUNTAIN]: 'a fountain'
+    [cellTypes.FOUNTAIN]: 'a fountain',
+    [cellTypes.SHALLOW_WATER]: 'a shallow water',
+    [cellTypes.DEEP_WATER]: 'a deep water',
+    [cellTypes.BUSH]: 'a thick bush',
+    [cellTypes.TREE]: 'a tree'
 };
