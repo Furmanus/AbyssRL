@@ -10,5 +10,9 @@ export const cellTypes = {
     LEFT_HILLS: 'left_hills',
     RIGHT_HILLS: 'right_hills',
     LAVA: 'lava',
-    FOUNTAIN: 'fountain'
+    FOUNTAIN: 'fountain',
+    SHALLOW_WATER: 'shallow_water',
+    DEEP_WATER: 'deep_water',
+    BUSH: 'bush',
+    TREE: 'tree'
 };

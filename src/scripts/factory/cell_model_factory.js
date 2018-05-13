@@ -6,6 +6,10 @@ import {WallModel} from '../model/dungeon/cells/wall_model';
 import {WoodenSolidDoorModel} from '../model/dungeon/cells/doors/wooden_solid_door';
 import {LavaCellModel} from '../model/dungeon/cells/lava_model';
 import {FountainModel} from '../model/dungeon/cells/fountain_model';
+import {ShallowWater} from '../model/dungeon/cells/shallow_water';
+import {DeepWater} from '../model/dungeon/cells/deep_water';
+import {BushModel} from '../model/dungeon/cells/floors/bush_model';
+import {TreeModel} from '../model/dungeon/cells/tree_model';
 
 export class CellModelFactory{
     static getCellModel(x, y, type){
@@ -34,6 +38,14 @@ export class CellModelFactory{
                 return CellModelFactory.getLavaFloorModel(x, y);
             case cellTypes.FOUNTAIN:
                 return CellModelFactory.getFountainModel(x, y);
+            case cellTypes.SHALLOW_WATER:
+                return CellModelFactory.getShallowWater(x, y);
+            case cellTypes.DEEP_WATER:
+                return CellModelFactory.getDeepWater(x, y);
+            case cellTypes.BUSH:
+                return CellModelFactory.getBush(x, y);
+            case cellTypes.TREE:
+                return CellModelFactory.getTree(x, y);
             default:
                 throw new Error('Unknown cell type in cell model factory.');
         }
@@ -145,5 +157,17 @@ export class CellModelFactory{
     }
     static getFountainModel(x, y){
         return new FountainModel(x, y);
+    }
+    static getShallowWater(x, y){
+        return new ShallowWater(x, y);
+    }
+    static getDeepWater(x, y){
+        return new DeepWater(x, y);
+    }
+    static getBush(x, y){
+        return new BushModel(x, y);
+    }
+    static getTree(x, y){
+        return new TreeModel(x, y);
     }
 }

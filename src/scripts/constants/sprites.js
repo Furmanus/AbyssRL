@@ -59,5 +59,18 @@ export const terrain = {
     LAVA: 'lava',
     HILLS: 'hills',
     LEFT_HILLS: 'left_hills',
-    RIGHT_HILLS: 'right_hills'
+    RIGHT_HILLS: 'right_hills',
+    SHALLOW_WATER: 'shallow_water',
+    DEEP_WATER_1: 'deep_water',
+    DEEP_WATER_2: 'deep_water2',
+    NORTH_COASTLINE: 'north_coastline',
+    EAST_COASTLINE: 'east_coastline',
+    WEST_COASTLINE: 'west_coastline',
+    SOUTH_COASTLINE: 'south_coastline',
+    NORTHEAST_COASTLINE: 'north_east_coastline',
+    NORTHWEST_COASTLINE: 'north_west_coastline',
+    SOUTHEAST_COASTLINE: 'south_east_coastline',
+    SOUTHWEST_COASTLINE: 'south_west_coastline',
+    THICK_BUSH: 'thick_bush',
+    TREE: 'tree'
 };

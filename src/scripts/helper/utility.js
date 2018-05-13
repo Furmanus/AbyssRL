@@ -202,4 +202,49 @@ export class Utility{
 
         return text.charAt(0).toUpperCase() + text.slice(1);
     }
+    /**
+     * Method responsible for checking if two arrays are equal to each other (other array is given in form of arguments)
+     *
+     * @param {Array}   array
+     * @param {Array}   args
+     * @returns {boolean}
+     */
+    static isArrayEqualToArguments(array, ...args){
+        let result = true;
+
+        if(array.length !== args.length){
+            return false;
+        }
+
+        array.forEach(function(item){
+            if(!args.includes(item)){
+                result = false;
+            }
+        });
+        args.forEach(function(item){
+            if(!array.includes(item)){
+                result = false;
+            }
+        });
+
+        return result;
+    }
+    /**
+     * Method responsible for cheching if certain array contains all of given arguments.
+     *
+     * @param {Array}   array
+     * @param {Array}   args
+     * @returns {boolean}
+     */
+    static doesArrayContainsArguments(array, ...args){
+        let result = true;
+
+        args.forEach(function(item){
+            if(!array.includes(item)){
+                result = false;
+            }
+        });
+
+        return result;
+    }
 }

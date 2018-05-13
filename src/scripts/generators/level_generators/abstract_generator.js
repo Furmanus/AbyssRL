@@ -1,5 +1,21 @@
 import {cellTypes} from '../../constants/cell_types';
 import {config as globalConfig} from '../../global/config';
+import {Rng} from "../../helper/rng";
+import {Utility} from "../../helper/utility";
+import {DIRECTIONS, DIRECTIONS_SHORT} from '../../constants/keyboard_directions';
+import {terrain} from '../../constants/sprites';
+import {getCircleFromLevelCells} from '../../helper/level_cells_helper';
+
+const {
+    NE,
+    N,
+    NW,
+    W,
+    SW,
+    S,
+    SE,
+    E
+} = DIRECTIONS_SHORT;
 
 /**
  * @class
@@ -46,7 +62,7 @@ export class AbstractLevelGenerator{
         if(cellsToSmooth.length && cellsToChange.length && cellsAfterChange.length){
             levelCells.forEach(function(examinedCell){
                 if(cellsToChange.includes(examinedCell.type)) {
-                    examinedCellNeighbours = AbstractLevelGenerator.isCertainCellInCellSurroundings(
+                    examinedCellNeighbours = this.isCertainCellInCellSurroundings(
                         levelCells,
                         examinedCell,
                         cellsToSmooth
@@ -55,7 +71,7 @@ export class AbstractLevelGenerator{
                         level.changeCellType(examinedCell.x, examinedCell.y, cellsAfterChange.random());
                     }
                 }
-            });
+            }.bind(this));
         }
     }
     /**
@@ -73,7 +89,7 @@ export class AbstractLevelGenerator{
 
         levelCells.forEach(function(examinedCell){
             if(examinedCell.type === cellTypes.GRASS){
-                examinedCellNeighbours = AbstractLevelGenerator.isCertainCellInCellSurroundings(
+                examinedCellNeighbours = this.isCertainCellInCellSurroundings(
                     levelCells,
                     examinedCell,
                     [cellTypes.HILLS]
@@ -96,7 +112,7 @@ export class AbstractLevelGenerator{
                     }
                 }
             }
-        });
+        }.bind(this));
     }
     /**
      * Method responsible for checking if one of given searched cell types is in certain cell surroundings.
@@ -106,7 +122,7 @@ export class AbstractLevelGenerator{
      * @param {Array.<string>}  searchedCells   Array of string which are types of searched cells.
      * @returns {Object}
      */
-    static isCertainCellInCellSurroundings(levelCells, cell, searchedCells = []){
+    isCertainCellInCellSurroundings(levelCells, cell, searchedCells = []){
         const x = cell.x;
         const y = cell.y;
         const result = {
@@ -127,5 +143,211 @@ export class AbstractLevelGenerator{
         }
 
         return result;
+    }
+    /**
+     * Method responsible for generating number of random points such that no two points distance is below given range.
+     *
+     * @param {number}     pointsQuantity   How many points we want to generate.
+     * @param {number}     range            Minimum distance between each two points.
+     * @returns {Array}
+     */
+    generateRandomPoints(pointsQuantity, range){
+        const generatedPoints = [];
+        let randomPoint;
+        let isGeneratedPointValid;
+        let generationAttempt = 0;
+
+        while(generatedPoints.length < pointsQuantity && generationAttempt < 1000){
+            randomPoint = {
+                x: Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+                y: Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
+            };
+
+            isGeneratedPointValid = generatedPoints.every(function(item){
+                return Utility.getDistance(randomPoint.x, randomPoint.y, item.x, item.y) > range;
+            });
+
+            if(isGeneratedPointValid){
+                generatedPoints.push(randomPoint);
+            }
+
+            generationAttempt++;
+        }
+
+        return generatedPoints;
+    }
+    /**
+     * Method responsible for smoothing (ie. changing cells display to grass with coastline) grass cells which are
+     * adjacent to water cells.
+     *
+     * @param {LevelModel}  level   Level model.
+     */
+    smoothShallowWaterCoastline(level){
+        const abstractLevelGenerator = this;
+        const levelCells = level.getCells();
+        let examinedCellWaterNeighbours;
+
+        levelCells.forEach(levelCellsSmoothCallback);
+
+        function levelCellsSmoothCallback(cell){
+            /**
+             * We smooth only grass tiles, because only grass sprites are suitable for smoothing water.
+             */
+            if(cell.type === cellTypes.GRASS){
+                examinedCellWaterNeighbours = abstractLevelGenerator.isCertainCellInCellSurroundings(
+                    levelCells,
+                    cell,
+                    [cellTypes.SHALLOW_WATER]
+                ).directions;
+                examinedCellWaterNeighbours = examinedCellWaterNeighbours.map((item) => {
+                    return DIRECTIONS[`${item.x}x${item.y}`];
+                });
+
+                if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, N, NW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, N) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, N, NW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, N)
+                ){
+                    cell.changeDisplay([terrain.NORTH_COASTLINE]);
+                    cell.disableDisplayChange();
+                }else if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, W, SW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, W) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, SW, W) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, W)
+                ){
+                    cell.changeDisplay([terrain.WEST_COASTLINE]);
+                    cell.disableDisplayChange();
+                }else if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, E, SE) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, E) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, E, SE) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, E)
+                ){
+                    cell.changeDisplay([terrain.EAST_COASTLINE]);
+                    cell.disableDisplayChange();
+                }else if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, SE, S, SW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, SE, S) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, S, SW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, S)
+                ){
+                    cell.changeDisplay([terrain.SOUTH_COASTLINE]);
+                    cell.disableDisplayChange();
+                }else if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, SE, E, S) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, SE, E, S, SW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, E, S, SE) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, E, S, SE, SW)
+                ){
+                    cell.changeDisplay([terrain.NORTHWEST_COASTLINE]);
+                    cell.disableDisplayChange();
+                }else if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, W, S, SW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, SE, W, S, SW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, W, SW, S) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, W, SW, S, SE)
+                ){
+                    cell.changeDisplay([terrain.NORTHEAST_COASTLINE]);
+                    cell.disableDisplayChange();
+                } else if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, E, N) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, E, N, NW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, E, N, SE) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, NE, E, N, SE)
+                ){
+                    cell.changeDisplay([terrain.SOUTHWEST_COASTLINE]);
+                    cell.disableDisplayChange();
+                } else if(
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, N, W) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, N, W, NE) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NW, N, W, SW) ||
+                    Utility.isArrayEqualToArguments(examinedCellWaterNeighbours, NE, NW, N, W, SW)
+                ){
+                    cell.changeDisplay([terrain.SOUTHEAST_COASTLINE]);
+                    cell.disableDisplayChange();
+                }else if(
+                    Utility.doesArrayContainsArguments(examinedCellWaterNeighbours, W, N, E) ||
+                    Utility.doesArrayContainsArguments(examinedCellWaterNeighbours, N, E, S) ||
+                    Utility.doesArrayContainsArguments(examinedCellWaterNeighbours, E, S, W) ||
+                    Utility.doesArrayContainsArguments(examinedCellWaterNeighbours, S, W, N)
+                ){
+                    /**
+                     * Cell is single grass cell surrounded from three sides by water. We can't smooth such cell (lack
+                     * of proper grass sprite), so we change it to water.
+                     */
+                    level.changeCellType(cell.x, cell.y, cellTypes.SHALLOW_WATER);
+                    /**
+                     * We changed grass cell to shallow water cell, most likely one of its neighbours in straight line
+                     * has already been examined, and will not be smooth, that's why we recursively call smooth callback
+                     * function on all in straight line neighbours of changed cell.
+                     */
+                    levelCellsSmoothCallback(level.getCell(cell.x - 1, cell.y));
+                    levelCellsSmoothCallback(level.getCell(cell.x + 1, cell.y));
+                    levelCellsSmoothCallback(level.getCell(cell.x, cell.y - 1));
+                    levelCellsSmoothCallback(level.getCell(cell.x, cell.y + 1));
+                }
+            }
+        }
+    }
+    /**
+     * Function responsible for generating deep water cells from shallow water. It uses following rule: if shallow water
+     * cell within radius of two cells, has only water surrounding cells, change it to deep water.
+     *
+     * @param {LevelModel}  level   LevelModel
+     */
+    generateDeepWater(level){
+        const levelCells = level.getCells();
+        let examinedCellSurrounding;
+        let isCellSurroundedByWaterOnly;
+
+        levelCells.forEach(function(cell){
+            if(cell.type === cellTypes.SHALLOW_WATER){
+                examinedCellSurrounding = getCircleFromLevelCells(cell.x, cell.y, 2);
+
+                isCellSurroundedByWaterOnly = examinedCellSurrounding.every(function(neighbour){
+                    const neighbourCellType = level.getCell(neighbour.x, neighbour.y).type;
+
+                    return (neighbourCellType === cellTypes.SHALLOW_WATER || neighbourCellType === cellTypes.DEEP_WATER);
+                });
+
+                if(isCellSurroundedByWaterOnly){
+                    level.changeCellType(cell.x, cell.y,cellTypes.DEEP_WATER);
+                }
+            }
+        });
+    }
+    /**
+     * Function responsible examining every cell in level and changing selected cell types (with given probability)
+     * into other cell type randomly selected from target cell types given in array.
+     *
+     * @param {LevelModel}          level                   Level model.
+     * @param {Object}              config                  Configuration object.
+     * @param {Array.<string>}      config.cellsToChange    Array of cell types to change.
+     * @param {Array.<string>}      config.cellsAfterChange Array of target cell types used as replacement.
+     * @param {number}              config.probability      Probability of changing any cell.
+     */
+    changeEveryCellInLevel(level, config = {}){
+        const levelCells = level.getCells();
+        const {
+            cellsToChange,
+            cellsAfterChange,
+            probability
+        } = config;
+        let shouldChangeCell;
+
+        levelCells.forEach(function(cell){
+            if(!cell.preventDisplayChange && Rng.getPercentage() <= probability){
+                shouldChangeCell = cellsToChange.some(function(item){
+                    return cell.type === item;
+                });
+
+                if(shouldChangeCell){
+                    //TODO poprawić na opcjonalne wagi dla poszczególnych opcji i nierówne prawdopodobieństwa
+                    level.changeCellType(cell.x, cell.y, cellsAfterChange.random());
+                }
+            }
+        });
     }
 }

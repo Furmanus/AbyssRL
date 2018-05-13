@@ -17,9 +17,6 @@ export class LevelController extends Observer{
 
         this.generator = ArenaLevelGenerator.getInstance();
         this.generator.generateLevel(this.model);
-        this.model.changeCellType(10, 10, cellTypes.LAVA);
-        this.model.changeCellType(6, 7, 'wooden_solid_doors');
-        this.model.changeCellType(3, 3, 'fountain');
     }
     /**
      * Returns cell at given coordinates.
