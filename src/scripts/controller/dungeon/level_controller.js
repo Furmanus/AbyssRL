@@ -1,10 +1,6 @@
 import {Observer} from '../../core/observer';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {EngineController} from '../time_engine/engine_controller';
-import {ArenaLevelGenerator} from '../../generators/level_generators/arena';
-import {CavernLevelGenerator} from '../../generators/level_generators/cavern';
-import {DungeonLevelGenerator} from '../../generators/level_generators/dungeon';
-import {cellTypes} from '../../constants/cell_types';
 
 export class LevelController extends Observer{
 
@@ -14,9 +10,6 @@ export class LevelController extends Observer{
         this.model = new LevelModel(config.branch, config.levelNumber);
         /**@type {EngineController}*/
         this.engine = new EngineController();
-
-        this.generator = ArenaLevelGenerator.getInstance();
-        this.generator.generateLevel(this.model);
     }
     /**
      * Returns cell at given coordinates.

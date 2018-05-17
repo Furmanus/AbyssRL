@@ -46,7 +46,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator{
         this.generateDeepWater(level);
         this.changeEveryCellInLevel(level, {
             cellsToChange: [cellTypes.GRASS],
-            cellsAfterChange: [cellTypes.BUSH, cellTypes.BUSH, cellTypes.BUSH, cellTypes.TREE], //TODO poprawić to poprzez sensowne nadawanie wag opcjom!
+            cellsAfterChange: [cellTypes.BUSH, cellTypes.BUSH, cellTypes.BUSH, cellTypes.TREE],
             probability: 70
         });
     }

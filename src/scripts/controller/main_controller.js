@@ -63,8 +63,8 @@ export class MainController extends Observer{
      */
     attachEvents(){
 
-        window.addEventListener('keydown', this.registerKeyPressed);  //register key pressed
-        window.addEventListener('keyup', this.registerKeyReleased); //register key released
+        window.addEventListener('keydown', this.registerKeyPressed);
+        window.addEventListener('keyup', this.registerKeyReleased);
 
         if(!this.controllerInitialized) {
             window.addEventListener('resize', this.onResizeWindow);
@@ -77,8 +77,8 @@ export class MainController extends Observer{
      * Method responsible for removing keyboard events from window and listening to object notifying.
      */
     detachEvents(){
-        window.removeEventListener('keydown', this.registerKeyPressed);  //register key pressed
-        window.removeEventListener('keyup', this.registerKeyReleased); //register key released
+        window.removeEventListener('keydown', this.registerKeyPressed);
+        window.removeEventListener('keyup', this.registerKeyReleased);
 
         this.gameController.off(this, SHOW_MESSAGE_IN_VIEW);
         this.gameController.off(this, PLAYER_WALK_CONFIRM_NEEDED);
@@ -127,9 +127,7 @@ export class MainController extends Observer{
     takeAction(keycode){
 
         if(this.shiftPressed){
-
             if(KEYBOARD_DIRECTIONS[keycode]){
-
                 this.moveCamera(keycode); //shift + numpad direction, move camera around
             }
         }else if(this.controlPressed){

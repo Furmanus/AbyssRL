@@ -1,11 +1,18 @@
 import {DungeonModel} from '../../model/dungeon/dungeon_model';
 import {Observer} from '../../core/observer';
 import {LevelController} from './level_controller';
+import {MAIN_DUNGEON} from '../../constants/dungeon_types';
+import {getDungeonStrategyInstance} from "../../factory/strategy_factory";
 
 export class DungeonController extends Observer{
 
-    constructor(type = 'main', maxLevelNumber = 8){
+    constructor(type = MAIN_DUNGEON, maxLevelNumber = 8){
         super();
+        /**
+         * Type of dungeon.
+         * @type {string}
+         */
+        this.type = type;
         /**
          * Model of dungeon.
          * @type {DungeonModel}
@@ -16,16 +23,29 @@ export class DungeonController extends Observer{
          * @type {Object}
          */
         this.levels = {};
+        /**@type {Object}*/
+        this.strategy = getDungeonStrategyInstance(this.type);
 
         this.initialize();
     }
+    /**
+     * Initialization of dungeon controller instance.
+     */
     initialize(){
-        const thisDungeonController = this;
+        this.generateNewLevel();
+    }
+    generateNewLevel(){
+        const maxLevelNumber = this.getDungeonModel().maxLevelNumber;
 
-        this.levels[1] = new LevelController({
-            branch: thisDungeonController,
-            levelNumber: 1
-        });
+        for(let counter = 1; counter <= maxLevelNumber; counter++){
+            if(!this.levels[counter]){
+                this.levels[counter] = new LevelController({
+                    branch: this.type,
+                    levelNumber: counter
+                });
+                this.strategy.generateRandomLevel(this.levels[counter].getModel());
+            }
+        }
     }
     /**
      * Returns certain level object from dungeon.
@@ -39,5 +59,12 @@ export class DungeonController extends Observer{
             console.error('Can\'t find dungeon level');
             console.error(e.stack);
         }
+    }
+    /**
+     * Returns model of dungeon.
+     * @returns {DungeonModel}
+     */
+    getDungeonModel(){
+        return this.model;
     }
 }
