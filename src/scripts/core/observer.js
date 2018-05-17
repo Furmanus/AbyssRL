@@ -23,7 +23,6 @@ export class Observer{
     on(observer, event, callback){
 
         this.getObservers().add({
-
             observer,
             event,
             callback
@@ -35,21 +34,16 @@ export class Observer{
         const observerEntries = this.getObservers().values();
 
         for(let entry of observerEntries){
-
             if(entry.observer === observer && entry.event === event){
-
                 observers.delete(entry);
             }
         }
     }
     notify(event, data = {}){
-
         const observerEntries = this.getObservers().values();
 
         for(let entry of observerEntries){
-
             if(entry.event === event){
-
                 entry.callback.call(entry.observer, data);
             }
         }
@@ -59,7 +53,6 @@ export class Observer{
      * @returns {Set}
      */
     getObservers(){
-
         return this[observers];
     }
 }
