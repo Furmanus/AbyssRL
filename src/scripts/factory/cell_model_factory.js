@@ -10,6 +10,8 @@ import {ShallowWater} from '../model/dungeon/cells/shallow_water';
 import {DeepWater} from '../model/dungeon/cells/deep_water';
 import {BushModel} from '../model/dungeon/cells/floors/bush_model';
 import {TreeModel} from '../model/dungeon/cells/tree_model';
+import {StairsModel} from '../model/dungeon/cells/floors/stairs';
+import {DOWN, UP} from '../constants/stairs_directions';
 
 export class CellModelFactory{
     static getCellModel(x, y, type){
@@ -46,6 +48,10 @@ export class CellModelFactory{
                 return CellModelFactory.getBush(x, y);
             case cellTypes.TREE:
                 return CellModelFactory.getTree(x, y);
+            case cellTypes.STAIRS_DOWN:
+                return CellModelFactory.getStairsDown(x, y);
+            case cellTypes.STAIRS_UP:
+                return CellModelFactory.getStairsUp(x, y);
             default:
                 throw new Error('Unknown cell type in cell model factory.');
         }
@@ -169,5 +175,11 @@ export class CellModelFactory{
     }
     static getTree(x, y){
         return new TreeModel(x, y);
+    }
+    static getStairsUp(x, y, config){
+        return new StairsModel(x, y, {direction: UP});
+    }
+    static getStairsDown(x, y, config){
+        return new StairsModel(x, y, {direction: DOWN});
     }
 }

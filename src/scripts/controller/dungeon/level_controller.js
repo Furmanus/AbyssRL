@@ -46,6 +46,24 @@ export class LevelController extends Observer{
         this.engine.unlockEngine();
     }
     /**
+     * Returns cell model with stairs down.
+     * @returns {Cell}
+     */
+    getStairsDownCell(){
+        const stairsDownLocation = this.model.getStairsDownLocation();
+
+        return this.getCell(stairsDownLocation.x, stairsDownLocation.y);
+    }
+    /**
+     * Returns cell model with stairs up.
+     * @returns {Cell}
+     */
+    getStairsUpCell(){
+        const stairsUpLocation = this.model.getStairsUpLocation();
+
+        return this.getCell(stairsUpLocation.x, stairsUpLocation.y);
+    }
+    /**
      * Returns level model instance.
      * @returns {LevelModel}
      */

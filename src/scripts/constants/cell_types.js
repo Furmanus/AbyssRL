@@ -14,5 +14,7 @@ export const cellTypes = {
     SHALLOW_WATER: 'shallow_water',
     DEEP_WATER: 'deep_water',
     BUSH: 'bush',
-    TREE: 'tree'
+    TREE: 'tree',
+    STAIRS_UP: 'stairs_up',
+    STAIRS_DOWN: 'stairs_down'
 };

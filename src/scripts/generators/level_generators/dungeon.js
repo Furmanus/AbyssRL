@@ -57,6 +57,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator{
             });
         });
 
+        this.generateRandomStairsUp(level);
+        this.generateRandomStairsDown(level);
+
         function generatorCallback(x, y, value){
             if (value === 1) {
                 level.changeCellType(x, y, cellTypes.GRAY_WALL);

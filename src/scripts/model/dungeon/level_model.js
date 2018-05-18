@@ -43,6 +43,36 @@ export class LevelModel{
         this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
     }
     /**
+     * Method responsible for setting stairsUp field of level model.
+     * @param {number}  x   Row
+     * @param {number}  y   Column
+     */
+    setStairsUp(x, y){
+        this.stairsUp = {x, y};
+    }
+    /**
+     * Returns stairs up location.
+     * @returns {{x: number, y: number}|*}
+     */
+    getStairsUpLocation(){
+        return this.stairsUp;
+    }
+    /**
+     * Sets stairs down field location in level model.
+     * @param {number}  x   Row
+     * @param {number}  y   Column
+     */
+    setStairsDown(x, y){
+        this.stairsDown = {x, y};
+    }
+    /**
+     * Returns location of stairs down.
+     * @returns {{x: number, y: number}|*}
+     */
+    getStairsDownLocation(){
+        return this.stairsDown;
+    }
+    /**
      * Returns cell at given coordinates.
      * @param {number}  x
      * @param {number}  y

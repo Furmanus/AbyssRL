@@ -72,5 +72,7 @@ export const terrain = {
     SOUTHEAST_COASTLINE: 'south_east_coastline',
     SOUTHWEST_COASTLINE: 'south_west_coastline',
     THICK_BUSH: 'thick_bush',
-    TREE: 'tree'
+    TREE: 'tree',
+    STAIRS_UP: 'stairs_up',
+    STAIRS_DOWN: 'stairs_down'
 };
