@@ -14,5 +14,7 @@ export const cellsDescriptions = {
     [cellTypes.SHALLOW_WATER]: 'a shallow water',
     [cellTypes.DEEP_WATER]: 'a deep water',
     [cellTypes.BUSH]: 'a thick bush',
-    [cellTypes.TREE]: 'a tree'
+    [cellTypes.TREE]: 'a tree',
+    [cellTypes.STAIRS_DOWN]: 'a stairs down',
+    [cellTypes.STAIRS_UP]: 'a stairs up'
 };

@@ -64,8 +64,7 @@ export class GameController extends Observer{
      * Creates player character and adds it to proper level controller time engine.
      */
     initializePlayer(){
-        //TODO wersja robocza, przerobic później
-        const inititalPlayerCell = this.currentLevel.getCell(5, 10);
+        const inititalPlayerCell = this.currentLevel.getStairsUpCell();
 
         this.playerController = new PlayerController({
             display: entities.AVATAR,
@@ -76,6 +75,7 @@ export class GameController extends Observer{
         inititalPlayerCell.entity = this.playerController.getModel();
 
         this.currentLevel.addActorToScheduler(this.playerController);
+        this.view.camera.centerOnCoordinates(inititalPlayerCell.x, inititalPlayerCell.y);
     }
     /**
      * Starts game by starting time engine on current level.

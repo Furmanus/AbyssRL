@@ -49,6 +49,8 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator{
             cellsAfterChange: [cellTypes.BUSH, cellTypes.BUSH, cellTypes.BUSH, cellTypes.TREE],
             probability: 70
         });
+        this.generateRandomStairsUp(level);
+        this.generateRandomStairsDown(level);
     }
 
     /**

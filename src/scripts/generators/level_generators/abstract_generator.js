@@ -16,6 +16,14 @@ const {
     SE,
     E
 } = DIRECTIONS_SHORT;
+/**
+ * Which cell types can be replaced to stairs during level generation.
+ */
+const stairsReplaceCells = {
+    [cellTypes.GRASS]: true,
+    [cellTypes.RED_FLOOR]: true,
+    [cellTypes.BUSH]: true
+};
 
 /**
  * @class
@@ -349,5 +357,55 @@ export class AbstractLevelGenerator{
                 }
             }
         });
+    }
+    /**
+     * Function responsible for generating in random placement staircase up.
+     * @param {LevelModel} levelModel
+     */
+    generateRandomStairsUp(levelModel){
+        let randomCell = levelModel.getCell(
+            Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+            Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
+        );
+        let attemptNumber = 0;
+
+        while(!stairsReplaceCells[randomCell.type]){
+            randomCell = levelModel.getCell(
+                Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+                Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
+            );
+
+            attemptNumber++;
+            if(attemptNumber > 10000){
+                throw new Error('Failed to generate stairs up, too many failed attempts.');
+            }
+        }
+
+        levelModel.changeCellType(randomCell.x, randomCell.y, cellTypes.STAIRS_UP);
+        levelModel.setStairsUp(randomCell.x, randomCell.y);
+    }
+    generateRandomStairsDown(levelModel){
+        let randomCell = levelModel.getCell(
+            Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+            Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
+        );
+        let attemptNumber = 0;
+        const stairsUp = levelModel.getStairsUpLocation() || {x: Infinity, y: Infinity};
+        let distanceFromStairsUp = Utility.getDistance(stairsUp.x, stairsUp.y, randomCell.x, randomCell.y);
+
+        while(!stairsReplaceCells[randomCell.type] && distanceFromStairsUp < 40){
+            randomCell = levelModel.getCell(
+                Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+                Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
+            );
+            distanceFromStairsUp = Utility.getDistance(stairsUp.x, stairsUp.y, randomCell.x, randomCell.y);
+            attemptNumber++;
+            if(attemptNumber > 10000){
+                throw new Error('Failed to generate stairs down, too many failed attempts.');
+            }
+        }
+
+        levelModel.changeCellType(randomCell.x, randomCell.y, cellTypes.STAIRS_DOWN);
+        levelModel.setStairsDown(randomCell.x, randomCell.y);
     }
 }
