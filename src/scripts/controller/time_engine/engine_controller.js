@@ -2,6 +2,7 @@
  * Controller of time engine of game. Doesn't have explicit, separate model, models are scheduler and engine fields, provided by rot.js library.
  */
 import {Observer} from '../../core/observer';
+import ROT from 'rot-js';
 
 export class EngineController extends Observer{
     /**
