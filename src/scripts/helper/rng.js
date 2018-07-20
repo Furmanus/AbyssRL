@@ -1,3 +1,5 @@
+import ROT from 'rot-js';
+
 export class Rng{
     /**
      * Method responsible for returning random numer in given range.

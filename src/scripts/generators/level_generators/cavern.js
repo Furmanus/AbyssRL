@@ -1,6 +1,7 @@
 import {config as globalConfig} from '../../global/config';
 import {AbstractLevelGenerator} from './abstract_generator';
 import {cellTypes} from '../../constants/cell_types';
+import ROT from 'rot-js';
 
 const singletonToken = Symbol('Cavern level generator singleton token');
 let instance;

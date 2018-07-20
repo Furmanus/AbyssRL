@@ -5,6 +5,7 @@ import {Utility} from "../../helper/utility";
 import {DIRECTIONS, DIRECTIONS_SHORT} from '../../constants/keyboard_directions';
 import {terrain} from '../../constants/sprites';
 import {getCircleFromLevelCells} from '../../helper/level_cells_helper';
+import ROT from 'rot-js';
 
 const {
     NE,
