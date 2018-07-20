@@ -1,9 +1,8 @@
 /**
  * Created by Docent Furman on 2017-04-24.
  */
-export class MessagesView{
-
-    constructor(width, height){
+export class MessagesView {
+    constructor (width, height) {
         this.screen = document.getElementById('messages');
         this.screen.style.width = width + 'px';
         this.screen.style.height = height + 'px';
@@ -14,7 +13,7 @@ export class MessagesView{
      * @param {number}  newWidth    New messages window width in pixels.
      * @param {number}  newHeight   New messages window height in pixels.
      */
-    changeSize(newWidth, newHeight){
+    changeSize (newWidth, newHeight) {
         this.screen.style.width = newWidth + 'px';
         this.screen.style.height = newHeight + 'px';
     }
@@ -26,7 +25,7 @@ export class MessagesView{
      * @param {string}  weight      Optional: font weight of displayed text. Default value is 'normal'.
      * @param {string}  style       Optional: font style of displayed text. Default value is 'normal'. Other possible values are italic or oblique.
      */
-    addMessage(text, colour = 'silver', font = 'Courier new', weight = 'normal', style = 'normal'){
+    addMessage (text, colour = 'silver', font = 'Courier new', weight = 'normal', style = 'normal') {
         const messagesListElement = document.getElementById('messagesList');
         let messageNode;
         /*
@@ -73,7 +72,7 @@ export class MessagesView{
      * Method which appends given {@code String} text to last message.
      * @param {string}  text    Text message to append to last displayed message.
      */
-    appendMessage(text){
+    appendMessage (text) {
         this.messagesList[this.messagesList.length - 1] += ' ' + text;
         document.getElementById('messagesList').lastChild.innerText += ' ' + text;
         document.getElementById('messagesList').scrollTop = document.getElementById('messagesList').lastChild.offsetTop; //we make scrollbar scroll to the bottom of messages list
@@ -82,7 +81,7 @@ export class MessagesView{
      * Returns DOM node element where messages are displayed.
      * @return {Element|*}
      */
-    getScreen(){
+    getScreen () {
         return this.screen;
     }
 }

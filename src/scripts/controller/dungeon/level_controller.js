@@ -3,7 +3,6 @@ import {LevelModel} from '../../model/dungeon/level_model';
 import {EngineController} from '../time_engine/engine_controller';
 
 export class LevelController extends Observer{
-
     constructor(config){
         super();
         /**@type {LevelModel}*/

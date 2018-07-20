@@ -5,7 +5,6 @@ import {MAIN_DUNGEON} from '../../constants/dungeon_types';
 import {getDungeonStrategyInstance} from "../../factory/strategy_factory";
 
 export class DungeonController extends Observer{
-
     constructor(type = MAIN_DUNGEON, maxLevelNumber = 8){
         super();
         /**

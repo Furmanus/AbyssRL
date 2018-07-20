@@ -2,9 +2,7 @@
  * Contains information about position and number of frames of certain tiles/animated sprites from tilesheet.
  * Created by Docent Furman on 2017-04-28.
  */
-
 module.exports = {
-
     "explosion": {x: 0, y: 0, frames: 1},
     "deep_water": {x: 1, y: 0, frames: 1},
     "deep_water2": {x: 2, y: 0, frames: 1},
@@ -37,9 +35,7 @@ module.exports = {
     "moat": {x: 29, y: 0, frames: 1},
     "left_desert": {x: 30, y: 0, frames: 1},
     "right_desert": {x: 31, y: 0, frames: 1},
-
     /*              ROW 1                    */
-
     "north_south_road": {x: 0, y: 1, frames: 1},
     "east_west_road": {x: 1, y: 1, frames: 1},
     "north_east_road": {x: 2, y: 1, frames: 1},
@@ -72,9 +68,7 @@ module.exports = {
     "bottom_left_castle": {x: 29, y: 1, frames: 1},
     "bottom_middle_castle": {x: 30, y: 1, frames: 1},
     "bottom_right_castle": {x: 31, y: 1, frames: 1},
-
     /*                ROW 2                       */
-
     "horizontal_boards": {x: 0, y: 2, frames: 1},
     "book": {x: 1, y: 2, frames: 1},
     "ship_mast": {x: 2, y: 2, frames: 1},
@@ -269,9 +263,7 @@ module.exports = {
     "eating_man_south": {x: 20, y: 9, frames: 4},
     "eating_man_north": {x: 24, y: 9, frames: 4},
     "mirror_image": {x: 28, y: 9, frames: 4},
-
     //MONSTERS AND NPC (MAPPED TO CONST WITH EXCEPTIONS)
-
     "wizard": {x: 0, y: 10, frames: 4},
     "rogue": {x: 4, y: 10, frames: 4},
     "fighter": {x: 8, y: 10, frames: 4},

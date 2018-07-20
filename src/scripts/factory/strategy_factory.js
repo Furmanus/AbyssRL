@@ -5,6 +5,6 @@ const dungeonTypeToStrategy = {
     [MAIN_DUNGEON]: MainDungeonLevelGenerationStrategy
 };
 
-export function getDungeonStrategyInstance(dungeonType){
+export function getDungeonStrategyInstance (dungeonType) {
     return new dungeonTypeToStrategy[dungeonType];
 }

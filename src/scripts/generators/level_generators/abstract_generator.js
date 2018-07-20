@@ -31,15 +31,14 @@ const stairsReplaceCells = {
  * @abstract
  * @typedef {AbstractLevelGenerator}
  */
-export class AbstractLevelGenerator{
-
-    constructor(){
+export class AbstractLevelGenerator {
+    constructor () {
         if(new.target){
             throw new Error(`Can't make instance of abstract generator class.`);
         }
     }
     //TODO nie działa
-    generateTestLevel(levelCells, config){
+    generateTestLevel (levelCells, config) {
         const debugDisplay = new ROT.Display({
             width: globalConfig.LEVEL_WIDTH,
             height: globalConfig.LEVEL_HEIGHT,
@@ -61,7 +60,7 @@ export class AbstractLevelGenerator{
      * @param {Array.<string>}  config.cellsAfterChange     Cells (randomly selected) which will appear in place of
      *                                                      changed cells.
      */
-    smoothLevel(level, config = {}){
+    smoothLevel (level, config = {}) {
         const cellsToSmooth = config.cellsToSmooth || [];
         const cellsToChange = config.cellsToChange || [];
         const cellsAfterChange = config.cellsAfterChange || [];
@@ -90,7 +89,7 @@ export class AbstractLevelGenerator{
      *
      * @param {LevelModel}     level      Level model containing level cells.
      */
-    smoothLevelHills(level){
+    smoothLevelHills (level) {
         const levelCells = level.getCells();
         let examinedCellNeighbours;
         let isHillFromLeftSide;
@@ -131,7 +130,7 @@ export class AbstractLevelGenerator{
      * @param {Array.<string>}  searchedCells   Array of string which are types of searched cells.
      * @returns {Object}
      */
-    isCertainCellInCellSurroundings(levelCells, cell, searchedCells = []){
+    isCertainCellInCellSurroundings (levelCells, cell, searchedCells = []) {
         const x = cell.x;
         const y = cell.y;
         const result = {
@@ -160,7 +159,7 @@ export class AbstractLevelGenerator{
      * @param {number}     range            Minimum distance between each two points.
      * @returns {Array}
      */
-    generateRandomPoints(pointsQuantity, range){
+    generateRandomPoints (pointsQuantity, range) {
         const generatedPoints = [];
         let randomPoint;
         let isGeneratedPointValid;
@@ -191,7 +190,7 @@ export class AbstractLevelGenerator{
      *
      * @param {LevelModel}  level   Level model.
      */
-    smoothShallowWaterCoastline(level){
+    smoothShallowWaterCoastline (level) {
         const abstractLevelGenerator = this;
         const levelCells = level.getCells();
         let examinedCellWaterNeighbours;
@@ -306,7 +305,7 @@ export class AbstractLevelGenerator{
      *
      * @param {LevelModel}  level   LevelModel
      */
-    generateDeepWater(level){
+    generateDeepWater (level) {
         const levelCells = level.getCells();
         let examinedCellSurrounding;
         let isCellSurroundedByWaterOnly;
@@ -337,7 +336,7 @@ export class AbstractLevelGenerator{
      * @param {Array.<string>}      config.cellsAfterChange Array of target cell types used as replacement.
      * @param {number}              config.probability      Probability of changing any cell.
      */
-    changeEveryCellInLevel(level, config = {}){
+    changeEveryCellInLevel (level, config = {}) {
         const levelCells = level.getCells();
         const {
             cellsToChange,
@@ -363,7 +362,7 @@ export class AbstractLevelGenerator{
      * Function responsible for generating in random placement staircase up.
      * @param {LevelModel} levelModel
      */
-    generateRandomStairsUp(levelModel){
+    generateRandomStairsUp (levelModel) {
         let randomCell = levelModel.getCell(
             Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
             Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
@@ -385,7 +384,7 @@ export class AbstractLevelGenerator{
         levelModel.changeCellType(randomCell.x, randomCell.y, cellTypes.STAIRS_UP);
         levelModel.setStairsUp(randomCell.x, randomCell.y);
     }
-    generateRandomStairsDown(levelModel){
+    generateRandomStairsDown (levelModel) {
         let randomCell = levelModel.getCell(
             Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
             Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)

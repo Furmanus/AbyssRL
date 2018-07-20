@@ -3,14 +3,14 @@ import {cellTypes} from '../../../constants/cell_types';
 import {cellsDescriptions} from '../../../helper/cells_description';
 import {terrain} from '../../../constants/sprites';
 
-export class FountainModel extends Cell{
+export class FountainModel extends Cell {
     /**
      * @constructor
      * @typedef FountainModel
      * @param {number}  x
      * @param {number}  y
      */
-    constructor(x, y){
+    constructor (x, y) {
         super(x, y);
 
         this.blockMovement = true;

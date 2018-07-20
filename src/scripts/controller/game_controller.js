@@ -17,7 +17,6 @@ import {PlayerController} from './entity/player_controller';
 import {DungeonController} from './dungeon/dungeon_controller';
 
 export class GameController extends Observer{
-
     /**
      * GameController class constructor.
      * @param {HTMLImageElement}  tileset  HTML Img element with tiles to draw.

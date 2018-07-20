@@ -11,7 +11,7 @@ export class WallModel extends Cell{
      * @param {string}          config.description  Description of cell (visible for example while looking at it).
      * @param {Array.<string>}  config.display      Array with cell types name. They must be equal to keys global tiledata.
      */
-    constructor(x, y, config){
+    constructor (x, y, config) {
         super(x, y);
 
         this.blockMovement = true;

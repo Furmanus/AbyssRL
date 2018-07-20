@@ -13,9 +13,9 @@ import {TreeModel} from '../model/dungeon/cells/tree_model';
 import {StairsModel} from '../model/dungeon/cells/floors/stairs';
 import {DOWN, UP} from '../constants/stairs_directions';
 
-export class CellModelFactory{
-    static getCellModel(x, y, type){
-        switch(type) {
+export class CellModelFactory {
+    static getCellModel (x, y, type) {
+        switch (type) {
             case cellTypes.RED_FLOOR:
                 return CellModelFactory.getRedFloorCell(x, y);
             case cellTypes.WOODEN_FLOOR:
@@ -56,7 +56,7 @@ export class CellModelFactory{
                 throw new Error('Unknown cell type in cell model factory.');
         }
     }
-    static getRedFloorCell(x, y){
+    static getRedFloorCell (x, y) {
         return new FloorModel(
             x,
             y,
@@ -67,7 +67,7 @@ export class CellModelFactory{
             }
         );
     }
-    static getWoodenFloor(x, y){
+    static getWoodenFloor (x, y) {
         return new FloorModel(
             x,
             y,
@@ -78,7 +78,7 @@ export class CellModelFactory{
             }
         );
     }
-    static getGrassFloor(x, y){
+    static getGrassFloor (x, y) {
         return new FloorModel(
             x,
             y,
@@ -89,7 +89,7 @@ export class CellModelFactory{
             }
         );
     }
-    static getGrayWallModel(x, y){
+    static getGrayWallModel (x, y) {
         return new WallModel(
             x,
             y,
@@ -100,7 +100,7 @@ export class CellModelFactory{
             }
         );
     }
-    static getHighPeaksWallModel(x, y){
+    static getHighPeaksWallModel (x, y) {
         return new WallModel(
             x,
             y,
@@ -111,7 +111,7 @@ export class CellModelFactory{
             }
         );
     }
-    static getMountainWallModel(x, y){
+    static getMountainWallModel (x, y) {
         return new WallModel(
             x,
             y,
@@ -122,7 +122,7 @@ export class CellModelFactory{
             }
         );
     }
-    static getHillsFloorModel(x, y){
+    static getHillsFloorModel (x, y) {
         return new FloorModel(
             x,
             y,
@@ -133,7 +133,7 @@ export class CellModelFactory{
             }
         );
     }
-    static getRightHillsFloorModel(x, y){
+    static getRightHillsFloorModel (x, y) {
         return new FloorModel(
             x,
             y,
@@ -144,7 +144,7 @@ export class CellModelFactory{
             }
         )
     }
-    static getLefttHillsFloorModel(x, y){
+    static getLefttHillsFloorModel (x, y) {
         return new FloorModel(
             x,
             y,
@@ -155,31 +155,31 @@ export class CellModelFactory{
             }
         )
     }
-    static getWoodenSolidDoors(x, y){
+    static getWoodenSolidDoors (x, y) {
         return new WoodenSolidDoorModel(x, y);
     }
-    static getLavaFloorModel(x, y){
+    static getLavaFloorModel (x, y) {
         return new LavaCellModel(x, y);
     }
-    static getFountainModel(x, y){
+    static getFountainModel (x, y) {
         return new FountainModel(x, y);
     }
-    static getShallowWater(x, y){
+    static getShallowWater (x, y) {
         return new ShallowWater(x, y);
     }
-    static getDeepWater(x, y){
+    static getDeepWater (x, y) {
         return new DeepWater(x, y);
     }
-    static getBush(x, y){
+    static getBush (x, y) {
         return new BushModel(x, y);
     }
-    static getTree(x, y){
+    static getTree (x, y) {
         return new TreeModel(x, y);
     }
-    static getStairsUp(x, y, config){
+    static getStairsUp (x, y) {
         return new StairsModel(x, y, {direction: UP});
     }
-    static getStairsDown(x, y, config){
+    static getStairsDown (x, y) {
         return new StairsModel(x, y, {direction: DOWN});
     }
 }
