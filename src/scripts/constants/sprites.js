@@ -44,7 +44,6 @@ export const entities = {
     WORMS: 'worms',
     SHADOWLORD: 'shadowlord'
 };
-
 export const terrain = {
     RED_FLOOR: 'red_brick_floor',
     WOODEN_FLOOR_1: 'wooden_floor1',

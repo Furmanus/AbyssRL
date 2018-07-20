@@ -3,14 +3,14 @@ import {cellsDescriptions} from "../../../helper/cells_description";
 import {terrain} from "../../../constants/sprites";
 import {cellTypes} from "../../../constants/cell_types";
 
-export class DeepWater extends Cell{
+export class DeepWater extends Cell {
     /**
      * @typedef DeepWater
      * @constructor
      * @param {number}  x
      * @param {number}  y
      */
-    constructor(x, y){
+    constructor (x, y) {
         super(x, y);
 
         this.blockMovement = false;

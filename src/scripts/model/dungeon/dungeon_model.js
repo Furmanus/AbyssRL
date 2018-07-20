@@ -7,7 +7,7 @@ import {LevelModel} from './level_model.js';
 /**
  * Class representing single dungeon.
  */
-export class DungeonModel{
+export class DungeonModel {
 
     /**
      * Constructor method for dungeon.
@@ -16,7 +16,7 @@ export class DungeonModel{
      * @param {string} type             DungeonModel type (main dungeon or some branches).
      * @param {number} maxLevelNumber   How many levels this dungeon or branch contains.
      */
-    constructor(type, maxLevelNumber){
+    constructor (type, maxLevelNumber) {
 
         this.type = type; //string determining type of dungeon
         this.maxLevelNumber = maxLevelNumber; //number determining number of dungeon levels (how deep it is)

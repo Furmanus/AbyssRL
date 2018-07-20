@@ -16,12 +16,11 @@ import {
 } from '../constants/player_actions';
 
 export class MainController extends Observer{
-
     /**
      * Constructor of main application controller.
      * @param {HTMLImageElement}  tileset  HTML Img element with tiles to draw.
      */
-    constructor(tileset){
+    constructor (tileset) {
         super();
 
         this.gameController = new GameController(tileset);
@@ -40,7 +39,7 @@ export class MainController extends Observer{
     /**
      * Method responsible for initialization of main controller.
      */
-    initialize(){
+    initialize () {
         this.bindMethods();
         this.attachEvents();
 
@@ -50,7 +49,7 @@ export class MainController extends Observer{
      * Method responsible for binding methods to main controller object. Methods has to be bound here, because in certain circumstances event listeners to which those
      * function are callbacks are removed from appriopiate objects.
      */
-    bindMethods(){
+    bindMethods () {
         this.registerKeyPressed = this.registerKeyPressed.bind(this);
         this.registerKeyReleased = this.registerKeyReleased.bind(this);
         this.onResizeWindow = this.onResizeWindow.bind(this);
@@ -61,12 +60,11 @@ export class MainController extends Observer{
     /**
      * Method responsible for attaching keyboard events to window.
      */
-    attachEvents(){
-
+    attachEvents () {
         window.addEventListener('keydown', this.registerKeyPressed);
         window.addEventListener('keyup', this.registerKeyReleased);
 
-        if(!this.controllerInitialized) {
+        if (!this.controllerInitialized) {
             window.addEventListener('resize', this.onResizeWindow);
         }
 
@@ -76,7 +74,7 @@ export class MainController extends Observer{
     /**
      * Method responsible for removing keyboard events from window and listening to object notifying.
      */
-    detachEvents(){
+    detachEvents () {
         window.removeEventListener('keydown', this.registerKeyPressed);
         window.removeEventListener('keyup', this.registerKeyReleased);
 
@@ -89,8 +87,7 @@ export class MainController extends Observer{
      * @param {KeyboardEvent} e - event which triggered this method.
      * @private
      */
-    registerKeyPressed(e){
-
+    registerKeyPressed (e) {
         e.preventDefault();
 
         if(e.which === 16){
@@ -108,8 +105,7 @@ export class MainController extends Observer{
      * @param {KeyboardEvent} e - event which triggered this method.
      * @private
      */
-    registerKeyReleased(e){
-
+    registerKeyReleased (e) {
         e.preventDefault();
 
         if(e.which === 16){
@@ -124,8 +120,7 @@ export class MainController extends Observer{
      * Method responsible for triggering appriopiate method in response for user input.
      * @param {Number} keycode - Pressed by user key keycode. Keycode comes from {@code KeyboardEvent.which} field.
      */
-    takeAction(keycode){
-
+    takeAction (keycode) {
         if(this.shiftPressed){
             if(KEYBOARD_DIRECTIONS[keycode]){
                 this.moveCamera(keycode); //shift + numpad direction, move camera around
@@ -145,7 +140,7 @@ export class MainController extends Observer{
      * Method responsible for moving camera in view.
      * @param {KeyboardEvent} keycode - keycode of key pressed by user. Method accepts only arror keys or numpad keys (with exception of '5').
      */
-    moveCamera(keycode){
+    moveCamera (keycode) {
         const deltaX = KEYBOARD_DIRECTIONS[keycode].x * 4;
         const deltaY = KEYBOARD_DIRECTIONS[keycode].y * 4;
 
@@ -155,7 +150,7 @@ export class MainController extends Observer{
      * Function responsible for resizing game window size and all other canvas/divs(messages, info and map) whenever browser window is resized.
      * Game window should be always about 2/3 and 3/4 of window width/height.
      */
-    onResizeWindow(){
+    onResizeWindow () {
         const windowInnerWidth = window.innerWidth;
         const windowInnerHeight = window.innerHeight;
         //we calculate new game window size. Game window should be approximately 3/4 of view size
@@ -175,7 +170,7 @@ export class MainController extends Observer{
      * Method triggered after game controller notifies that message has to be shown in messages view.
      * @param {string}  message     Message to display.
      */
-    onShowMessageInView(message){
+    onShowMessageInView (message) {
         this.messagesController.showMessageInView(message);
     }
     /**
@@ -185,7 +180,7 @@ export class MainController extends Observer{
      * @param {function}    data.confirm    Function triggered after player confirms move.
      * @param {function}    data.decline    Function triggered after player declines move.
      */
-    onPlayerConfirmNeeded(data){
+    onPlayerConfirmNeeded (data) {
         const attachEventsFunction = this.attachEvents.bind(this);
 
         this.detachEvents();

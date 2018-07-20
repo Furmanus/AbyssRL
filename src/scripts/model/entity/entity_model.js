@@ -1,11 +1,10 @@
 import {entities} from '../../constants/sprites';
 import {Observer} from '../../core/observer';
 
-export class EntityModel extends Observer{
+export class EntityModel extends Observer {
 
-    constructor(config){
+    constructor (config) {
         super();
-
         /**
          * Visible sprite of entity. Member of file constants/sprites.js.
          * @type {string}
@@ -31,14 +30,14 @@ export class EntityModel extends Observer{
      *
      * @param {Cell}    newCell     New cell which entity will occupy.
      */
-    changePosition(newCell){
+    changePosition (newCell) {
         this.position = newCell;
     }
     /**
      *
      * @returns {number}
      */
-    getSpeed(){
+    getSpeed () {
         return this.speed;
     }
 }

@@ -7,15 +7,15 @@ const arenaLevelGenerator = ArenaLevelGenerator.getInstance();
 const cavernLevelGenerator = CavernLevelGenerator.getInstance();
 const dungeonLevelGenerator = DungeonLevelGenerator.getInstance();
 
-export class MainDungeonLevelGenerationStrategy{
+export class MainDungeonLevelGenerationStrategy {
     /**
      * @constructor
      * @typedef {MainDungeonLevelGenerationStrategy}
      */
-    constructor(){
+    constructor () {
 
     }
-    generateRandomLevel(levelModel){
+    generateRandomLevel (levelModel) {
         const {levelNumber} = levelModel;
 
         switch(levelNumber){
