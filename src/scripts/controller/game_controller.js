@@ -121,12 +121,12 @@ export class GameController extends Observer{
          */
         const movementResult = await this.playerController.move(newPlayerCellPosition);
 
-        if(!movementResult.canMove){
+        if (movementResult.canMove) {
+            this.view.camera.centerOnCoordinates(newPlayerCellPosition.x, newPlayerCellPosition.y);
+            this.refreshGameScreen();
+        } else {
             this.notify(SHOW_MESSAGE_IN_VIEW, movementResult.message);
         }
-
-        this.view.camera.centerOnCoordinates(newPlayerCellPosition.x, newPlayerCellPosition.y);
-        this.refreshGameScreen();
     }
     /**
      * Method responsible for refreshing game screen.
