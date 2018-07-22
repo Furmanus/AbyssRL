@@ -1,6 +1,6 @@
 import {EntityController} from './entity_controller';
-import {Utility} from "../../helper/utility";
-import {config} from "../../global/config";
+import {Utility} from '../../helper/utility';
+import {config} from '../../global/config';
 import {
     END_PLAYER_TURN,
     PLAYER_WALK_CONFIRM_NEEDED,
@@ -8,7 +8,7 @@ import {
 } from '../../constants/player_actions';
 import {PlayerModel} from '../../model/entity/player_model';
 
-export class PlayerController extends EntityController{
+export class PlayerController extends EntityController {
     /**
      * Constructor for player controller.
      * @param {Object}  config              Object with data for creating model and controller.
@@ -16,7 +16,7 @@ export class PlayerController extends EntityController{
      * @param {Cell}    config.position     Starting player position.
      * @constructor
      */
-    constructor(config){
+    constructor (config) {
         super(config);
         /**@type {PlayerModel}*/
         this.model = new PlayerModel(config);
@@ -24,7 +24,7 @@ export class PlayerController extends EntityController{
     /**
      * Method triggered at beginning of each player turn.
      */
-    act(){
+    act () {
         this.notify(START_PLAYER_TURN);
     }
     /**
@@ -35,7 +35,7 @@ export class PlayerController extends EntityController{
      * @param {Cell}    newCell     New target cell object.
      * @returns {Promise<Object>}   Returns promise. Resolved promise returns object with data with information whether move is allowed and movement message.
      */
-    move(newCell){
+    move (newCell) {
         const {
             x,
             y

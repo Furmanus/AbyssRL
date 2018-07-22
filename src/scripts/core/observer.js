@@ -8,12 +8,10 @@ const observers = Symbol();
 export class Observer{
 
     constructor(){
-
         if(new.target === Observer){
 
             throw new Error('Cannot create new Observer object. Observer is supposed to be inherited only.');
         }
-
         /**
          * @private
          * @type {Set}
@@ -21,7 +19,6 @@ export class Observer{
         this[observers] = new Set();
     }
     on(observer, event, callback){
-
         this.getObservers().add({
             observer,
             event,
@@ -29,7 +26,6 @@ export class Observer{
         });
     }
     off(observer, event){
-
         const observers = this.getObservers();
         const observerEntries = this.getObservers().values();
 
