@@ -34,15 +34,20 @@ export class GameView extends Observer{
             isCursorBeyondLevel: true //boolean variable determining whether mouse cursor is beyond level cells coordinates but still inside canvas
         };
         /*
-        * Object literal which contains currently drawn animated sprites on view. Data is stored as JSON where keys are map coordinates where object is stored (for example '3x5'). Values
-        * are intervals returned by drawAnimatedImage.
+        * Object literal which contains currently drawn animated sprites on view. Data is stored as JSON where keys are
+        * map coordinates where object is stored (for example '3x5'). Values are intervals returned by drawAnimatedImage
         */
         this.sprites = {};
         /*
-        * Object which contains all currently drawn not animated sprites on view. Keys are equal to map coordinates (for example '3x5'). Values are equal to names tile information
-        * from tiledata.js module
+        * Object which contains all currently drawn not animated sprites on view. Keys are equal to map coordinates
+        * (for example '3x5'). Values are equal to names tile information from tiledata.js module
         */
         this.drawnTiles = {};
+        /**
+         * Object with currently drawn, not animated sprites which are not currently visible by player, but were
+         * discovered previously
+         */
+        this.foggedTiles = {};
         /*
         Object literal containing string values used for setting canvas globalCompositeOperation.
          */
@@ -123,6 +128,7 @@ export class GameView extends Observer{
         let j;
         let framesNumber;
         let interval;
+        let isCellNotVisible = !!this.foggedTiles[`${x}x${y}`];
 
         if (cell.entity) {
             tile = cell.entity.display;
@@ -133,7 +139,7 @@ export class GameView extends Observer{
         i = tileset[tile].x;
         j = tileset[tile].y;
         framesNumber = tileset[tile].frames; //number of animation frames of selected tile
-
+        light = isCellNotVisible ? 'DARKEN' : light;
         //if there is only one frame to animate, it is simply drawn
         if (framesNumber === 1) {
             this.drawImage(x, y, i, j); //if image isn't animated, we just draw it and end function
@@ -141,7 +147,6 @@ export class GameView extends Observer{
             if(light && this.globalCompositeOperation[light]){
                 this.changeCellBackground(x, y, 50, 50, 50, this.globalCompositeOperation[light]); // if optional parameter "light" was passed, cell background color is changed
             }
-
             return null;
         } else {
             this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j); //we draw frame of animation
@@ -149,7 +154,7 @@ export class GameView extends Observer{
             interval = setInterval(() => {
                 this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j);
 
-                if(light){
+                if (light) {
                     this.changeCellBackground(x, y, 50, 50, 50, this.globalCompositeOperation[light]); // if optional parameter "light" was passed, cell background color is changed
                 }
             }, 250);
@@ -164,22 +169,22 @@ export class GameView extends Observer{
      */
     clearGameWindow () {
         //we stop all animations currently being displayed on view
-        for(let n in this.sprites){
-
-            if(this.sprites.hasOwnProperty(n)) {
+        for (let n in this.sprites) {
+            if (this.sprites.hasOwnProperty(n)) {
                 clearInterval(this.sprites[n]);
             }
         }
         //we reset this.sprites and this.tiles objects
         this.sprites = {};
         this.drawnTiles = {};
+        this.foggedTiles = {};
 
         this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
     }
     /**
      * Function responsible for changing size of canvas where game display is drawn. Along with canvas dimensions, game view object properties rows and columns are also changed.
-     * @param {number}      newWidth    New canvas width.
-     * @param {number}      newHeight   New canvas height.
+     * @param {number}           newWidth    New canvas width.
+     * @param {number}           newHeight   New canvas height.
      * @param {LevelModel}       level       LevelModel model object to redraw.
      */
     changeGameScreenSize (newWidth, newHeight, level) {
@@ -204,7 +209,8 @@ export class GameView extends Observer{
     setBorder (x, y, color) {
         this.context.fillStyle = color;
         /*
-        * Unusual method to draw border of rectangle in canvas. We draw every part of border as separate filled rectangle, so we can later clear it in separate method.
+        * Unusual method to draw border of rectangle in canvas. We draw every part of border as separate filled
+        * rectangle, so we can later clear it in separate method.
         */
         this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, this.TILE_SIZE, 2);
         this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, this.TILE_SIZE);
@@ -219,7 +225,8 @@ export class GameView extends Observer{
      */
     clearBorder (x, y) {
         /*
-         * Unusual method to remove border of rectangle in canvas. We remove every part of border as separate filled rectangle.
+         * Unusual method to remove border of rectangle in canvas. We remove every part of border as separate
+         * filled rectangle.
          */
         this.context.clearRect(x * this.TILE_SIZE, y * this.TILE_SIZE, this.TILE_SIZE, 2);
         this.context.clearRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, this.TILE_SIZE);
@@ -284,7 +291,6 @@ export class GameView extends Observer{
         let convertedCoordinates = this.camera.getConvertedCoordinates(row, column); // object containing converted view coordinates to level cell coordinates
         //when mouse cursor is exactly on border of canvas, we terminate this function (otherwise row/column would have value of -1)
         if (e.offsetX < 0 || e.offsetY < 0 || e.offsetX >= this.rows * this.TILE_SIZE || e.offsetY >= this.columns * this.TILE_SIZE) {
-
             return;
         }
         //when converted view coordinates are beyond level, but still inside canvas, we terminate function, and clear border animation
@@ -305,7 +311,7 @@ export class GameView extends Observer{
         }
         //when mouse first time enters canvas, we have to set initial values of currentMousePosition object
         if (this.currentMousePosition.x === null || this.currentMousePosition.y === null) {
-            if(!this.checkIfScreenCellOutsideOfLevel(convertedCoordinates.x, convertedCoordinates.y)){
+            if (!this.checkIfScreenCellOutsideOfLevel(convertedCoordinates.x, convertedCoordinates.y)) {
 
                 this.currentMousePosition.x = row;
                 this.currentMousePosition.y = column;
@@ -315,7 +321,6 @@ export class GameView extends Observer{
         }
         //if currently examined tile where mouse cursor is, is different from last known tile where mouse cursor was
         if (!this.currentMousePosition.isCursorBeyondLevel && (row !== this.currentMousePosition.x || column !== this.currentMousePosition.y)) {
-
             clearInterval(this.currentMousePosition.intervalId); // we stop animation in last cell
             this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y); // we clear border in last cell
             this.setBorder(row, column, 'silver'); // we set border in new cell
@@ -328,6 +333,10 @@ export class GameView extends Observer{
             this.currentMousePosition.intervalId = setInterval(animateBorder.bind(this), 120); // we start animation, and we store interval id inside currentMousePosition object
         }
         function animateBorder () {
+            const spriteAnimationId = this.sprites[`${row}x${column}`];
+            const drawnTile = this.drawnTiles[`${row}x${column}`];
+            const foggedTile = this.foggedTiles[`${row}x${column}`];
+
             if (!isBorderDrawn) {
                 this.setBorder(row, column, 'silver');
                 isBorderDrawn = true;
@@ -335,8 +344,12 @@ export class GameView extends Observer{
                 this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y);
                 isBorderDrawn = false;
                 //if sprite wasn't animated we redraw it (because otherwise it would have empty borders)
-                if(!this.sprites[row + 'x' + column]){
-                    this.drawAnimatedImage(row, column, this.drawnTiles[row + 'x' + column]);
+                if (!spriteAnimationId) {
+                    if (drawnTile) {
+                        this.drawAnimatedImage(row, column, drawnTile);
+                    } else if (foggedTile) {
+                        this.drawAnimatedImage(row, column, foggedTile);
+                    }
                 }
             }
         }
@@ -369,9 +382,10 @@ export class GameView extends Observer{
         const {x, y} = this.currentMousePosition;
         const spriteAnimationId = this.sprites[`${x}x${y}`];
         const currentCell = this.drawnTiles[`${x}x${y}`];
+        const currentFoggedCell = this.foggedTiles[`${x}x${y}`];
 
         if (!spriteAnimationId) {
-            this.drawAnimatedImage(x, y, currentCell);
+            this.drawAnimatedImage(x, y, currentCell || currentFoggedCell);
         }
     }
     /**
@@ -398,15 +412,18 @@ export class GameView extends Observer{
                 examinedCell = level.getCell(cameraX + i, cameraY + j);
                 if (playerFov.includes(examinedCell) || config.debugMode) {
                     this.drawAnimatedImage(i, j, examinedCell, null);
-                    this.drawnTiles[i + 'x' + j] = examinedCell; //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
+                    this.drawnTiles[`${i}x${j}`] = examinedCell; //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
                 } else if (examinedCell.wasDiscoveredByPlayer) {
                     this.drawDarkenedImage(i, j, examinedCell.display);
+                    this.foggedTiles[`${i}x${j}`] = examinedCell;
                 }
             }
         }
     }
     /**
-     * Method which checks whether given view x and y position are outside level(ie. if x or y is greater than levels width and height)
+     * Method which checks whether given view x and y position are outside level(ie. if x or y is greater than levels
+     * width and height).
+     *
      * @param {number} x  Row coordinate to check.
      * @param {number} y  Column coordinate to check.
      * @returns {boolean} Returns true if given coords are outside of level, returns false otherwise.
