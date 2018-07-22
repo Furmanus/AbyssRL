@@ -5,7 +5,6 @@
 import {MainController} from './controller/main_controller';
 
 (function(){
-
     const tileSet = document.createElement('img');
     tileSet.setAttribute('src', 'assets/u5tiles.png');
 

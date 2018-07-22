@@ -271,11 +271,6 @@ export class GameView extends Observer{
             y: column
         });
         //TODO add context actions later on
-        //TODO remove function
-        // function getDistance(x1, y1, x2, y2){
-        //
-        //     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-        // }
     }
     /**
      * Event listener for moving mouse over game view canvas.
@@ -288,21 +283,18 @@ export class GameView extends Observer{
         let isBorderDrawn = true; // boolean variable indicating whether border is currently drawn around examined tile or not
         let convertedCoordinates = this.camera.getConvertedCoordinates(row, column); // object containing converted view coordinates to level cell coordinates
         //when mouse cursor is exactly on border of canvas, we terminate this function (otherwise row/column would have value of -1)
-        if(e.offsetX < 0 || e.offsetY < 0 || e.offsetX >= this.rows * this.TILE_SIZE || e.offsetY >= this.columns * this.TILE_SIZE){
+        if (e.offsetX < 0 || e.offsetY < 0 || e.offsetX >= this.rows * this.TILE_SIZE || e.offsetY >= this.columns * this.TILE_SIZE) {
 
             return;
         }
         //when converted view coordinates are beyond level, but still inside canvas, we terminate function, and clear border animation
-        if(!this.currentMousePosition.isCursorBeyondLevel && this.checkIfScreenCellOutsideOfLevel(convertedCoordinates.x, convertedCoordinates.y)){
+        if (!this.currentMousePosition.isCursorBeyondLevel && this.checkIfScreenCellOutsideOfLevel(convertedCoordinates.x, convertedCoordinates.y)) {
 
             clearInterval(this.currentMousePosition.intervalId); //we stop animation in last known mouse position
             this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y); //remove currently drawn tile border
 
             //if sprite wasn't animated we redraw it (because otherwise it would have empty borders)
-            if(!this.sprites[this.currentMousePosition.x + 'x' + this.currentMousePosition.y]){
-
-                this.drawAnimatedImage(this.currentMousePosition.x, this.currentMousePosition.y, this.drawnTiles[this.currentMousePosition.x + 'x' + this.currentMousePosition.y]);
-            }
+            this.redrawCurrentStaticSprite();
 
             this.currentMousePosition.x = null; //reset current mouse position
             this.currentMousePosition.y = null;
@@ -312,7 +304,7 @@ export class GameView extends Observer{
             return;
         }
         //when mouse first time enters canvas, we have to set initial values of currentMousePosition object
-        if(this.currentMousePosition.x === null || this.currentMousePosition.y === null){
+        if (this.currentMousePosition.x === null || this.currentMousePosition.y === null) {
             if(!this.checkIfScreenCellOutsideOfLevel(convertedCoordinates.x, convertedCoordinates.y)){
 
                 this.currentMousePosition.x = row;
@@ -322,35 +314,28 @@ export class GameView extends Observer{
             }
         }
         //if currently examined tile where mouse cursor is, is different from last known tile where mouse cursor was
-        if(!this.currentMousePosition.isCursorBeyondLevel && (row !== this.currentMousePosition.x || column !== this.currentMousePosition.y)) {
+        if (!this.currentMousePosition.isCursorBeyondLevel && (row !== this.currentMousePosition.x || column !== this.currentMousePosition.y)) {
 
             clearInterval(this.currentMousePosition.intervalId); // we stop animation in last cell
             this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y); // we clear border in last cell
             this.setBorder(row, column, 'silver'); // we set border in new cell
 
             //if sprite wasn't animated we redraw it (because otherwise it would have empty borders)
-            if(!this.sprites[this.currentMousePosition.x + 'x' + this.currentMousePosition.y]) {
-
-                this.drawAnimatedImage(this.currentMousePosition.x, this.currentMousePosition.y, this.drawnTiles[this.currentMousePosition.x + 'x' + this.currentMousePosition.y]);
-            }
+            this.redrawCurrentStaticSprite();
 
             this.currentMousePosition.x = row; // update current mouse position coordinates
             this.currentMousePosition.y = column;
             this.currentMousePosition.intervalId = setInterval(animateBorder.bind(this), 120); // we start animation, and we store interval id inside currentMousePosition object
         }
-        function animateBorder(){
-            if(!isBorderDrawn){
-
+        function animateBorder () {
+            if (!isBorderDrawn) {
                 this.setBorder(row, column, 'silver');
                 isBorderDrawn = true;
-            }else{
-
+            } else {
                 this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y);
                 isBorderDrawn = false;
-
                 //if sprite wasn't animated we redraw it (because otherwise it would have empty borders)
                 if(!this.sprites[row + 'x' + column]){
-
                     this.drawAnimatedImage(row, column, this.drawnTiles[row + 'x' + column]);
                 }
             }
@@ -362,8 +347,7 @@ export class GameView extends Observer{
      */
     mouseLeaveEventListener () {
         //if current mouse position haven't been set (ie. it is null) we terminate function. This happens very rarely, when pointer is exactly on border of canvas, and then leaves canvas
-        if(this.currentMousePosition.isCursorBeyondLevel && (!this.currentMousePosition.x || !this.currentMousePosition.y)){
-
+        if (this.currentMousePosition.isCursorBeyondLevel && (!this.currentMousePosition.x || !this.currentMousePosition.y)) {
             return;
         }
 
@@ -371,15 +355,24 @@ export class GameView extends Observer{
         this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y); //remove currently drawn tile border
 
         //if sprite wasn't animated we redraw it (because otherwise it would have empty borders)
-        if(!this.sprites[this.currentMousePosition.x + 'x' + this.currentMousePosition.y]){
-
-            this.drawAnimatedImage(this.currentMousePosition.x, this.currentMousePosition.y, this.drawnTiles[this.currentMousePosition.x + 'x' + this.currentMousePosition.y]);
-        }
+        this.redrawCurrentStaticSprite();
 
         this.currentMousePosition.x = null; //reset current mouse position
         this.currentMousePosition.y = null;
         this.currentMousePosition.intervalId = null;
         this.currentMousePosition.isCursorBeyondLevel = true;
+    }
+    /**
+     * Redraws static (not animated) sprite in current mouse position.
+     */
+    redrawCurrentStaticSprite () {
+        const {x, y} = this.currentMousePosition;
+        const spriteAnimationId = this.sprites[`${x}x${y}`];
+        const currentCell = this.drawnTiles[`${x}x${y}`];
+
+        if (!spriteAnimationId) {
+            this.drawAnimatedImage(x, y, currentCell);
+        }
     }
     /**
      * Draws currently visible part of {@code LevelModel} object.
@@ -392,12 +385,12 @@ export class GameView extends Observer{
         const cameraY = cameraCoords.y;
         let examinedCell;
 
-        for(let i=0; i<config.LEVEL_WIDTH; i++){
+        for (let i=0; i<config.LEVEL_WIDTH; i++) {
             //if cell column is greater than view height, we skip it
-            if(i >= this.rows || cameraX + i >= config.LEVEL_WIDTH){
+            if (i >= this.rows || cameraX + i >= config.LEVEL_WIDTH) {
                 continue;
             }
-            for(let j=0; j<config.LEVEL_HEIGHT; j++){
+            for (let j=0; j<config.LEVEL_HEIGHT; j++) {
                 //if cell row is greater than view width, we skip it
                 if(j >= this.columns || cameraY + j >= config.LEVEL_HEIGHT){
                     continue;
