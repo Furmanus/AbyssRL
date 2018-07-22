@@ -43,6 +43,12 @@ export class Cell {
          * @type {boolean}
          */
         this.preventDisplayChange = false;
+        /**
+         * Variable indicating if cell was discovered by player (used for purpose of drawing visited but not currently
+         * visible cells)
+         * @type {boolean}
+         */
+        this.wasDiscoveredByPlayer = false;
     }
     /**
      * Resets value entity field of cell model instance (sets it to null).

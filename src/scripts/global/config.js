@@ -1,6 +1,7 @@
 const config = {
     LEVEL_WIDTH: 100,
-    LEVEL_HEIGHT: 100
+    LEVEL_HEIGHT: 100,
+    debugMode: false
 };
 /**
  * Function which calculates and returns object with screen properties.

@@ -5,8 +5,9 @@
 //private variables declaration
 const observers = Symbol();
 
-export class Observer {
-    constructor () {
+export class Observer{
+
+    constructor(){
         if(new.target === Observer){
 
             throw new Error('Cannot create new Observer object. Observer is supposed to be inherited only.');
@@ -17,14 +18,14 @@ export class Observer {
          */
         this[observers] = new Set();
     }
-    on (observer, event, callback) {
+    on(observer, event, callback){
         this.getObservers().add({
             observer,
             event,
             callback
         });
     }
-    off (observer, event) {
+    off(observer, event){
         const observers = this.getObservers();
         const observerEntries = this.getObservers().values();
 
@@ -34,7 +35,7 @@ export class Observer {
             }
         }
     }
-    notify (event, data = {}) {
+    notify(event, data = {}){
         const observerEntries = this.getObservers().values();
 
         for(let entry of observerEntries){
@@ -47,7 +48,7 @@ export class Observer {
      * Returns map holding observers (observers objects are keys in map)
      * @returns {Set}
      */
-    getObservers () {
+    getObservers(){
         return this[observers];
     }
 }

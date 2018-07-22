@@ -7,7 +7,7 @@ import {Observer} from '../core/observer';
 import {CANVAS_CELL_CLICK} from '../constants/game_actions';
 import {config} from '../global/config';
 
-export class GameView extends Observer {
+export class GameView extends Observer{
     /**
      *
      * @param {number} width - Width of view(in pixels).
@@ -65,7 +65,6 @@ export class GameView extends Observer {
 
         this.initialize();
     }
-
     initialize () {
         this.attachEvents();
 
@@ -77,7 +76,6 @@ export class GameView extends Observer {
             }
         }, 250);
     }
-
     attachEvents () {
         this.screen.addEventListener('click', this.mouseClickEventListener.bind(this));
         this.screen.addEventListener('mousemove', this.mouseMoveEventListener.bind(this));
@@ -117,15 +115,18 @@ export class GameView extends Observer {
      * @returns {number}         Returns object containing interval returned by {@code setInterval} method which is responsible for animating sprite and current animation frame.
      */
     drawAnimatedImage (x, y, cell, light) {
+        if (!cell) {
+            return;
+        }
         let tile = cell.display;
         let i;
         let j;
         let framesNumber;
         let interval;
 
-        if(cell.entity){
+        if (cell.entity) {
             tile = cell.entity.display;
-        }else if(cell.inventory.length){
+        } else if (cell.inventory.length){
             tile = cell.inventory[0].display;
         }
 
@@ -134,18 +135,15 @@ export class GameView extends Observer {
         framesNumber = tileset[tile].frames; //number of animation frames of selected tile
 
         //if there is only one frame to animate, it is simply drawn
-        if(framesNumber === 1){
-
+        if (framesNumber === 1) {
             this.drawImage(x, y, i, j); //if image isn't animated, we just draw it and end function
 
             if(light && this.globalCompositeOperation[light]){
-
                 this.changeCellBackground(x, y, 50, 50, 50, this.globalCompositeOperation[light]); // if optional parameter "light" was passed, cell background color is changed
             }
 
             return null;
-        }else {
-
+        } else {
             this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j); //we draw frame of animation
 
             interval = setInterval(() => {
@@ -273,6 +271,11 @@ export class GameView extends Observer {
             y: column
         });
         //TODO add context actions later on
+        //TODO remove function
+        // function getDistance(x1, y1, x2, y2){
+        //
+        //     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        // }
     }
     /**
      * Event listener for moving mouse over game view canvas.
@@ -310,7 +313,6 @@ export class GameView extends Observer {
         }
         //when mouse first time enters canvas, we have to set initial values of currentMousePosition object
         if(this.currentMousePosition.x === null || this.currentMousePosition.y === null){
-
             if(!this.checkIfScreenCellOutsideOfLevel(convertedCoordinates.x, convertedCoordinates.y)){
 
                 this.currentMousePosition.x = row;
@@ -336,9 +338,7 @@ export class GameView extends Observer {
             this.currentMousePosition.y = column;
             this.currentMousePosition.intervalId = setInterval(animateBorder.bind(this), 120); // we start animation, and we store interval id inside currentMousePosition object
         }
-
-        function animateBorder () {
-
+        function animateBorder(){
             if(!isBorderDrawn){
 
                 this.setBorder(row, column, 'silver');
@@ -383,27 +383,32 @@ export class GameView extends Observer {
     }
     /**
      * Draws currently visible part of {@code LevelModel} object.
-     * @param {LevelModel} level   LevelModel model object which visible part is going to be drawn.
+     * @param {LevelModel}      level       LevelModel model object which visible part is going to be drawn.
+     * @param {Array.<Cell>}    playerFov   Array of visible cells.
      */
-    drawScreen (level) {
+    drawScreen (level, playerFov = []) {
         const cameraCoords = this.camera.getCoords();
         const cameraX = cameraCoords.x;
         const cameraY = cameraCoords.y;
+        let examinedCell;
 
         for(let i=0; i<config.LEVEL_WIDTH; i++){
             //if cell column is greater than view height, we skip it
             if(i >= this.rows || cameraX + i >= config.LEVEL_WIDTH){
                 continue;
             }
-
             for(let j=0; j<config.LEVEL_HEIGHT; j++){
                 //if cell row is greater than view width, we skip it
                 if(j >= this.columns || cameraY + j >= config.LEVEL_HEIGHT){
                     continue;
                 }
-
-                this.drawAnimatedImage(i, j, level.getCell(cameraX + i, cameraY + j), null);
-                this.drawnTiles[i + 'x' + j] = level.getCell(cameraX + i, cameraY + j); //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
+                examinedCell = level.getCell(cameraX + i, cameraY + j);
+                if (playerFov.includes(examinedCell) || config.debugMode) {
+                    this.drawAnimatedImage(i, j, examinedCell, null);
+                    this.drawnTiles[i + 'x' + j] = examinedCell; //we store information about Cell object of certain square in additional object, so we can later redraw it in same place
+                } else if (examinedCell.wasDiscoveredByPlayer) {
+                    this.drawDarkenedImage(i, j, examinedCell.display);
+                }
             }
         }
     }
@@ -418,11 +423,12 @@ export class GameView extends Observer {
     }
     /**
      * Redraws game view.
-     * @param {LevelModel}   level   LevelModel object which visible part is going to be redrawn.
+     * @param {LevelModel}      level       LevelModel object which visible part is going to be redrawn.
+     * @param {Array.<Cell>}    playerFov   Array of visible cells
      */
-    refreshScreen (level) {
+    refreshScreen (level, playerFov) {
         this.clearGameWindow();
-        this.drawScreen(level);
+        this.drawScreen(level, playerFov);
     }
     getScreen () {
         return this.screen;

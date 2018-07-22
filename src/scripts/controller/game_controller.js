@@ -48,7 +48,7 @@ export class GameController extends Observer{
 
         this.initializePlayer();
 
-        this.view.drawScreen(this.currentLevel.getModel());
+        this.view.drawScreen(this.currentLevel.getModel(), this.playerController.model.fov);
     }
     /**
      * Attaches events to view and models.
@@ -64,15 +64,18 @@ export class GameController extends Observer{
      */
     initializePlayer(){
         const inititalPlayerCell = this.currentLevel.getStairsUpCell();
+        const playerLevel = this.currentLevel;
 
         this.playerController = new PlayerController({
+            level: playerLevel,
             display: entities.AVATAR,
             position: inititalPlayerCell,
-            speed: 100
+            speed: 100,
+            perception: 6
         });
 
         inititalPlayerCell.entity = this.playerController.getModel();
-
+        this.playerController.calculateFov();
         this.currentLevel.addActorToScheduler(this.playerController);
         this.view.camera.centerOnCoordinates(inititalPlayerCell.x, inititalPlayerCell.y);
     }
@@ -114,6 +117,7 @@ export class GameController extends Observer{
         const newCellCoordinateX = playerModel.position.x;
         const newCellCoordinateY = playerModel.position.y;
         const newPlayerCellPosition = this.currentLevel.getCell(newCellCoordinateX + direction.x, newCellCoordinateY + direction.y);
+        const playerFov = playerModel.fov;
         /**
          * Await for movement object. It happens immediately except for situation when player tries to move into dangerous terrain and he needs to confirm move.
          * @type {Object}
@@ -131,7 +135,10 @@ export class GameController extends Observer{
      * Method responsible for refreshing game screen.
      */
     refreshGameScreen(){
-        this.view.refreshScreen(this.currentLevel.getModel());
+        const levelModel = this.currentLevel.getModel();
+        const playerFov = this.playerController.model.fov;
+
+        this.view.refreshScreen(levelModel, playerFov);
     }
     /**
      * Changes size of canvas game display.
