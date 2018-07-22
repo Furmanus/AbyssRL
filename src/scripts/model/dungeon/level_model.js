@@ -27,7 +27,6 @@ export class LevelModel {
 
         this.createCells();
     }
-
     /**
      * Method responsible for initializing level with {@code Cell} objects. Initially creates level filled with walls.
      */

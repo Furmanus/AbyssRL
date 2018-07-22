@@ -16,7 +16,6 @@ export const KEYBOARD_DIRECTIONS = {
     35: {x: -1, y: 1},
     37: {x: -1, y: 0},
 };
-
 export const DIRECTIONS = {
     '-1x-1': 'north_west',
     '1x-1': 'north_east',
@@ -27,7 +26,6 @@ export const DIRECTIONS = {
     '1x1': 'south_east',
     '0x1': 'south'
 };
-
 export const DIRECTIONS_SHORT = {
     NW: 'north_west',
     NE: 'north_east',

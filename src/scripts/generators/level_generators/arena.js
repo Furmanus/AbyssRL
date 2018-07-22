@@ -7,13 +7,13 @@ import ROT from 'rot-js';
 const singletonToken = Symbol('ArenaLevelGenerator singleton token');
 let instance;
 
-export class ArenaLevelGenerator extends AbstractLevelGenerator{
+export class ArenaLevelGenerator extends AbstractLevelGenerator {
     /**
      * @constructor
      * @typedef {ArenaLevelGenerator}
      * @param {Symbol}  token   Unique symbol token used to create only instance.
      */
-    constructor(token){
+    constructor (token) {
         super();
 
         if(token !== singletonToken){
@@ -26,7 +26,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator{
      * @param {Object}           config             Additional level config info.
      * @param {function}         debugCallback      Optional callback function serving as debug for map generation
      */
-    generateLevel(level, config = {}, debugCallback){
+    generateLevel (level, config = {}, debugCallback) {
         const generator = new ROT.Map.Arena(globalConfig.LEVEL_WIDTH, globalConfig.LEVEL_HEIGHT);
 
         generator.create(debugCallback || generatorCallback);
@@ -53,7 +53,6 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator{
         this.generateRandomStairsUp(level);
         this.generateRandomStairsDown(level);
     }
-
     /**
      * Method responsible for creating voronoi diagrams with given cell types on level map.
 
@@ -62,7 +61,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator{
      * @param {string}      config.targetCellType         Array of cell types which will replace changed cells
      * @param {string}      config.cellAllowedToChange    Array of cell types which can be changed.
      */
-    fillLevelWithVoronoiPoints(level, config){
+    fillLevelWithVoronoiPoints (level, config) {
         const {
             targetCellType,
             cellAllowedToChange
@@ -146,7 +145,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator{
      * Returns only created instance of arena level generator.
      * @returns {ArenaLevelGenerator}
      */
-    static getInstance(){
+    static getInstance () {
         if(!instance) {
             instance = new ArenaLevelGenerator(singletonToken);
         }

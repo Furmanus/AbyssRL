@@ -1,7 +1,7 @@
 import {config as globalConfig} from '../global/config';
 import {Utility} from "./utility";
 
-export function getRectangleFromLevelCells(levelCells, x, y, width, height){
+export function getRectangleFromLevelCells (levelCells, x, y, width, height) {
 
 }
 /**
@@ -11,7 +11,7 @@ export function getRectangleFromLevelCells(levelCells, x, y, width, height){
  * @param {number}  radius  Radius.
  * @returns {Array}
  */
-export function getCircleFromLevelCells(x, y, radius){
+export function getCircleFromLevelCells (x, y, radius) {
     const circle = [];
     let examinedX;
     let examinedY;
@@ -36,6 +36,5 @@ export function getCircleFromLevelCells(x, y, radius){
             }
         }
     }
-
     return circle;
 }

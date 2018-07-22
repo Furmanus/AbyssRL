@@ -6,13 +6,13 @@ import ROT from 'rot-js';
 const singletonToken = Symbol('Cavern level generator singleton token');
 let instance;
 
-export class CavernLevelGenerator extends AbstractLevelGenerator{
+export class CavernLevelGenerator extends AbstractLevelGenerator {
     /**
      * @constructor
      * @typedef {CavernLevelGenerator}
      * @param {Symbol}  token   Unique symbol used to generate only instance of class.
      */
-    constructor(token){
+    constructor (token) {
         super();
 
         if(token !== singletonToken){
@@ -26,7 +26,7 @@ export class CavernLevelGenerator extends AbstractLevelGenerator{
      * @param {Object}      config          Object with configuration parameters.
      * @param {function}    debugCallback   Optional: callback for rot.js generator for debugging purpose.
      */
-    generateLevel(level, config = {}, debugCallback){
+    generateLevel (level, config = {}, debugCallback) {
         const solidCellProbability = config.solidCellProbability || 0.5;
         const born = config.born || [5, 6, 7, 8];
         const survive = config.survive || [4, 5, 6, 7, 8];
@@ -77,7 +77,7 @@ export class CavernLevelGenerator extends AbstractLevelGenerator{
      * Returns only created instance of cavern level generator.
      * @returns {CavernLevelGenerator}
      */
-    static getInstance(){
+    static getInstance () {
         if(!instance) {
             instance = new CavernLevelGenerator(singletonToken);
         }

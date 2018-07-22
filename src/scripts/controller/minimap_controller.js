@@ -2,9 +2,8 @@ import {MinimapView} from '../view/map_view';
 import {config} from '../global/config';
 import {Observer} from '../core/observer';
 
-export class MiniMapController extends Observer{
-
-    constructor(){
+export class MiniMapController extends Observer {
+    constructor () {
         super();
 
         this.view = new MinimapView(
@@ -17,7 +16,7 @@ export class MiniMapController extends Observer{
      * @param {number}  newWidth        New width of info screen.
      * @param {number}  newHeight       New height of info screen.
      */
-    changeMinimapSize(newWidth, newHeight){
+    changeMinimapSize (newWidth, newHeight) {
         this.view.changeSize(newWidth, newHeight);
     }
 }

@@ -3,8 +3,7 @@ import {config} from '../global/config';
 import {Observer} from '../core/observer';
 
 export class MessagesController extends Observer{
-
-    constructor(){
+    constructor () {
         super();
 
         this.view = new MessagesView(
@@ -17,14 +16,14 @@ export class MessagesController extends Observer{
      * @param {number}  newWidth        New width of info screen.
      * @param {number}  newHeight       New height of info screen.
      */
-    changeMessageScreenSize(newWidth, newHeight){
+    changeMessageScreenSize (newWidth, newHeight) {
         this.view.changeSize(newWidth, newHeight);
     }
     /**
      * Displays given message in view.
      * @param {string}  message     Message to display.
      */
-    showMessageInView(message){
+    showMessageInView (message) {
         this.view.addMessage(message);
     }
 }

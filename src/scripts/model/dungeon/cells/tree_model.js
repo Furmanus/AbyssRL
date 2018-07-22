@@ -10,7 +10,7 @@ export class TreeModel extends Cell{
      * @param {number}          x                   Horizontal position on level grid.
      * @param {number}          y                   Vertical position on level grid.
      */
-    constructor(x, y){
+    constructor (x, y) {
         super(x, y);
 
         this.blockMovement = true;

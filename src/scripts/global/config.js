@@ -3,13 +3,11 @@ const config = {
     LEVEL_HEIGHT: 100,
     debugMode: false
 };
-
 /**
  * Function which calculates and returns object with screen properties.
  * @returns {{SCREEN_WIDTH: number, SCREEN_HEIGHT: number, TILE_SIZE: number, ROWS: number, COLUMNS: number}}
  */
-function getScreenProperties(){
-
+function getScreenProperties () {
     const tileSize = 32;
     //we calculate game window size. Game window should be approximately 3/4 of view size
     let x = Math.floor(window.innerWidth * 2 / 3);

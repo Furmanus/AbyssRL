@@ -6,13 +6,13 @@ import ROT from 'rot-js';
 const singletonToken = Symbol('Dungeon level generator singleton token');
 let instance;
 
-export class DungeonLevelGenerator extends AbstractLevelGenerator{
+export class DungeonLevelGenerator extends AbstractLevelGenerator {
     /**
      * @constructor
      * @typedef {DungeonLevelGenerator}
      * @param {Symbol}  token   Unique token used to generate only instance.
      */
-    constructor(token){
+    constructor (token) {
         super();
 
         if(token !== singletonToken){
@@ -26,7 +26,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator{
      * @param {Object}           config             Additional level config info.
      * @param {function}         debugCallback      Optional callback function serving as debug for map generation
      */
-    generateLevel(level, config = {}, debugCallback){
+    generateLevel (level, config = {}, debugCallback) {
         const roomDugPercentage = config.roomDugPercentage || 0.2;
         const roomWidth = config.roomWidth || [4, 15];
         const roomHeight = config.roomHeight || [4, 15];
@@ -73,7 +73,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator{
      * Returns only created instance of cavern level generator.
      * @returns {DungeonLevelGenerator}
      */
-    static getInstance(){
+    static getInstance () {
         if(!instance) {
             instance = new DungeonLevelGenerator(singletonToken);
         }

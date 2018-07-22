@@ -4,7 +4,7 @@ import {cellsDescriptions} from '../../../../helper/cells_description';
 import {terrain} from '../../../../constants/sprites';
 import {UP} from '../../../../constants/stairs_directions';
 
-export class StairsModel extends Cell{
+export class StairsModel extends Cell {
     /**
      * @typedef StairsModel
      * @constructor
@@ -13,7 +13,7 @@ export class StairsModel extends Cell{
      * @param {Object}          config              Configuration object.
      * @param {string}          config.direction    Direction of stairs - either up or down.
      */
-    constructor(x, y, config){
+    constructor (x, y, config) {
         super(x, y);
 
         this.blockMovement = false;
