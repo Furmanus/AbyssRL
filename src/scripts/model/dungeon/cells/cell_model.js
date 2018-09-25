@@ -14,7 +14,7 @@ export class Cell {
      * @param {number}  x       Horizontal position on level grid.
      * @param {number}  y       Vertical position on level grid.
      */
-    constructor (x, y) {
+    constructor(x, y) {
         if(new.target){
             throw new Error('Can\'t create instance of abstract Cell class');
         }
@@ -53,26 +53,26 @@ export class Cell {
     /**
      * Resets value entity field of cell model instance (sets it to null).
      */
-    clearEntity () {
+    clearEntity() {
         this.entity = null;
     }
     /**
      * Sets value of entity field of cell model instance.
      * @param {EntityModel}  entity      Any entity model instance.
      */
-    setEntity (entity) {
+    setEntity(entity) {
         this.entity = entity;
     }
     /**
      * Enables possibility to change cell display.
      */
-    enableDisplayChange () {
+    enableDisplayChange() {
         this.preventDisplayChange = false;
     }
     /**
      * Disables possibility to change cell display.
      */
-    disableDisplayChange () {
+    disableDisplayChange() {
         this.preventDisplayChange = true;
     }
     /**
@@ -80,7 +80,7 @@ export class Cell {
      *
      * @param {Array.<{string}>}     tiles   Array of new tiles names.
      */
-    changeDisplay (tiles) {
+    changeDisplay(tiles) {
         if(!this.preventDisplayChange) {
             this.display = tiles;
         }
@@ -89,16 +89,34 @@ export class Cell {
      * Effect from certain cell while entity walks over it. Default function is below empty function. Can be implemented
      * in child classes.
      *
-     * @param {EntityModel}     entity      Model of entity which walks over cell.
+     * @param {EntityModel}     entity      Model of entity which walks over cell
      */
-    walkEffect (entity) {
+    walkEffect(entity) {
     }
     /**
      * Method triggered when certain entity (usually player) tries to walk on cell. Default function is below empty
      * function. Can be implemented in child classes.
      *
-     * @param {EntityModel}     entity      Model of entity which attempts to walk over cell.
+     * @param {EntityModel}     entity      Model of entity which attempts to walk over cell
      */
-    walkAttempt (entity) {
+    walkAttempt(entity) {
+    }
+    /**
+     * Method triggered when certain entity (player included) uses cell. Default function, can be overriden in child
+     * classes.
+     *
+     * @param {EntityModel}     entity      Model of entity which uses cell
+     */
+    useEffect(entity) {
+
+    }
+    /**
+     * Method triggered when certain entity (usually player) tries to use cell. Default function, can be overriden in
+     * child classes.
+     *
+     * @param {EntityModel}     entity      Model of entity which attempts to use cell
+     */
+    useAttempt(entity) {
+
     }
 }
