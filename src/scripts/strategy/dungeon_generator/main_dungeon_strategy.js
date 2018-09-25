@@ -2,10 +2,17 @@ import {ArenaLevelGenerator} from '../../generators/level_generators/arena';
 import {CavernLevelGenerator} from '../../generators/level_generators/cavern';
 import {DungeonLevelGenerator} from '../../generators/level_generators/dungeon';
 import {Rng} from '../../helper/rng';
+import {config} from '../../global/config';
 
 const arenaLevelGenerator = ArenaLevelGenerator.getInstance();
 const cavernLevelGenerator = CavernLevelGenerator.getInstance();
 const dungeonLevelGenerator = DungeonLevelGenerator.getInstance();
+
+const typeToGenerator = {
+    dungeon: dungeonLevelGenerator,
+    arena: arenaLevelGenerator,
+    cavern: cavernLevelGenerator
+};
 
 export class MainDungeonLevelGenerationStrategy {
     /**
@@ -17,6 +24,15 @@ export class MainDungeonLevelGenerationStrategy {
     }
     generateRandomLevel (levelModel) {
         const {levelNumber} = levelModel;
+
+        if (config.defaultLevelType) {
+            try {
+                typeToGenerator[config.defaultLevelType].generateLevel(levelModel);
+                return;
+            } catch (e) {
+
+            }
+        }
 
         switch(levelNumber){
             default:
