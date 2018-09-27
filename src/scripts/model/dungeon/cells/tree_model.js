@@ -13,13 +13,14 @@ export class TreeModel extends Cell{
     constructor (x, y) {
         super(x, y);
 
-        this.blockMovement = true;
         this.confirmMovement = false;
-        this.blockLos = false;
         this.type = cellTypes.TREE;
         this.description = cellsDescriptions[cellTypes.TREE];
-        this.display = [terrain.TREE];
-        this.walkMessage = '';
-        this.modifiers = null;
+    }
+    get blockMovement() {
+        return true;
+    }
+    get display() {
+        return [terrain.TREE];
     }
 }

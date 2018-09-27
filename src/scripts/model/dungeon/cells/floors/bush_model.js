@@ -13,13 +13,11 @@ export class BushModel extends Cell {
     constructor (x, y) {
         super(x, y);
 
-        this.blockMovement = false;
-        this.confirmMovement = false;
-        this.blockLos = false;
         this.type = cellTypes.BUSH;
         this.description = cellsDescriptions[cellTypes.BUSH];
-        this.display = [terrain.THICK_BUSH];
         this.walkMessage = 'a thick bush is growing here';
-        this.modifiers = null;
+    }
+    get display() {
+        return [terrain.THICK_BUSH];
     }
 }

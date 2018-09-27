@@ -13,9 +13,13 @@ export class FountainModel extends Cell {
     constructor (x, y) {
         super(x, y);
 
-        this.blockMovement = true;
         this.type = cellTypes.FOUNTAIN;
         this.description = cellsDescriptions[cellTypes.FOUNTAIN];
-        this.display = [terrain.FOUNTAIN];
+    }
+    get blockMovement() {
+        return true;
+    }
+    get display() {
+        return [terrain.FOUNTAIN];
     }
 }

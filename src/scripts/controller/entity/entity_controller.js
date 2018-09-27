@@ -9,21 +9,21 @@ export class EntityController extends Observer {
      * @param {Cell}    config.position     Starting player position.
      * @constructor
      */
-    constructor (config) {
+    constructor(config) {
         super();
     }
     /**
      * Moves entity into new cell.
      * @param {Cell}    newCell     New target cell which entity will occupy.
      */
-    move (newCell) {
+    move(newCell) {
         this.model.lastVisitedCell = this.model.position; //remember on what cell entity was in previous turn
         this.model.position.clearEntity(); //we clear entity field of cell which entity is right now at
         this.model.position = newCell; //we move entity to new position
         this.model.position.setEntity(this.model); //in new cell model where monster is after movement, we store information about new entity occupying new cell.
         this.calculateFov();
     }
-    calculateFov () {
+    calculateFov() {
         const newFov = calculateFov(this.model);
 
         this.model.setFov(newFov);
@@ -32,14 +32,14 @@ export class EntityController extends Observer {
      * Returns speed of entity (how fast it can take action in time engine).
      * @returns {number}
      */
-    getSpeed () {
+    getSpeed() {
         return this.getModel().getSpeed();
     }
     /**
      *
      * @returns {EntityModel}
      */
-    getModel () {
+    getModel() {
         return this.model;
     }
 }

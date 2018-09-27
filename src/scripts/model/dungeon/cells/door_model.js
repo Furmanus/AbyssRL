@@ -14,10 +14,15 @@ export class DoorModel extends Cell {
     constructor (x, y, config) {
         super(x, y);
 
-        this.blockMovement = true;
-        this.confirmMovement = false;
-        this.blockLos = true;
-        this.walkMessage = '';
-        this.modifiers = null;
+        this.areOpen = false;
+    }
+    get display() {
+        return this.areOpen ? this.openDisplay : this.closedDisplay;
+    }
+    get blockMovement() {
+        return this.areOpen;
+    }
+    get blockLos() {
+        return !this.areOpen;
     }
 }
