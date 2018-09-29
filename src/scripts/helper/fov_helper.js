@@ -21,6 +21,9 @@ export function calculateFov (entity) {
         if (x < 0 || y < 0 || x >= levelWidth || y >= levelHeight) {
             return false;
         }
+        if (position.x === x && position.y === y) {
+            return true;
+        }
 
         return !level.getCell(x, y).blockLos;
     });

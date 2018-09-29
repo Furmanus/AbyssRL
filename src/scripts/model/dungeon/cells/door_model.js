@@ -1,4 +1,6 @@
 import {Cell} from './cell_model';
+import {dungeonEvents} from '../../../constants/dungeon_events';
+import {WalkAttemptResult} from './walk_attempt_result';
 
 export class DoorModel extends Cell {
     /**
@@ -20,9 +22,49 @@ export class DoorModel extends Cell {
         return this.areOpen ? this.openDisplay : this.closedDisplay;
     }
     get blockMovement() {
-        return this.areOpen;
+        return !this.areOpen;
     }
     get blockLos() {
         return !this.areOpen;
+    }
+    /**
+     * Method triggered when entity attempts to walk on doors.
+     *
+     * @param {EntityController}    entityController
+     */
+    walkAttempt(entityController) {
+        if (!this.areOpen) {
+            this.open();
+
+            return new WalkAttemptResult(false, `${entityController} opens doors.`);
+        } else {
+            this.walkEffect(entityController);
+
+            return new WalkAttemptResult(true);
+        }
+    }
+    /**
+     * Method responsible for opening doors. Triggers custom event.
+     */
+    open() {
+        if (!this.areOpen) {
+            this.areOpen = true;
+            this.notify(dungeonEvents.DOORS_OPEN, {
+                x: this.x,
+                y: this.y
+            });
+        }
+    }
+    /**
+     * Method responsible for closing doors. Triggers custom event.
+     */
+    close() {
+        if (this.areOpen) {
+            this.areOpen = false;
+            this.notify(dungeonEvents.DOORS_CLOSED, {
+                x: this.x,
+                y: this.y
+            });
+        }
     }
 }

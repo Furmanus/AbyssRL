@@ -60,13 +60,7 @@ export class PlayerController extends EntityController {
                 });
             } else if (newCell.confirmMovement) {
                 if(newCell.type === playerModel.position.type){
-                    entityMoveFunction(newCell);
-                    playerController.notify(END_PLAYER_TURN); // player successfully moved, so we notify game controller to end turn
-
-                    resolve({
-                        canMove: true,
-                        message: ''
-                    });
+                    playerController.moveAttemptSuccess(newCell, resolve);
                 }else {
                     /**
                      * Magic part: promise is not resolved here, instead game controller is notified about needed movement confirmation from player. Along with
@@ -76,13 +70,7 @@ export class PlayerController extends EntityController {
                     playerController.notify(PLAYER_WALK_CONFIRM_NEEDED, {
                         message: `Do you really want to walk into ${newCell.description}? (y/n)`,
                         confirm: () => {
-                            entityMoveFunction(newCell);
-                            playerController.notify(END_PLAYER_TURN);
-
-                            resolve({
-                                canMove: true,
-                                message: ''
-                            });
+                            playerController.moveAttemptSuccess(newCell, resolve);
                         },
                         decline: () => {
                             resolve({
@@ -93,14 +81,25 @@ export class PlayerController extends EntityController {
                     });
                 }
             } else {
-                entityMoveFunction(newCell);
-                playerController.notify(END_PLAYER_TURN);
-
-                resolve({
-                    canMove: true,
-                    message: ``
-                });
+                playerController.moveAttemptSuccess(newCell, resolve);
             }
+        });
+    }
+    /**
+     * Function called when move attempt by player was successful. Called inside of move function.
+     *
+     * @param {Cell}        cellModel                   Cell model where player moves
+     * @param {function}    promiseResolveFunction      Resolve function from promise returned by move method
+     */
+    moveAttemptSuccess(cellModel, promiseResolveFunction) {
+        const entityMoveFunction = super.move.bind(this);
+
+        entityMoveFunction(cellModel);
+        this.notify(END_PLAYER_TURN); // player successfully moved, so we notify game controller to end turn
+
+        promiseResolveFunction({
+            canMove: true,
+            message: ''
         });
     }
 }
