@@ -13,13 +13,14 @@ export class DeepWater extends Cell {
     constructor (x, y) {
         super(x, y);
 
-        this.blockMovement = false;
         this.confirmMovement = true;
-        this.blockLos = false;
         this.type = cellTypes.DEEP_WATER;
         this.description = cellsDescriptions[cellTypes.DEEP_WATER];
-        this.display = [terrain.DEEP_WATER_1];
-        this.walkMessage = 'You walk through knee deep water.';
-        this.modifiers = null;
+    }
+    get display() {
+        return [terrain.DEEP_WATER_1];
+    }
+    get walkMessage() {
+        return 'You walk through knee deep water.';
     }
 }

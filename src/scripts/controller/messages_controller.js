@@ -2,6 +2,8 @@ import {MessagesView} from '../view/messages_view';
 import {config} from '../global/config';
 import {Observer} from '../core/observer';
 
+let instance;
+
 export class MessagesController extends Observer{
     constructor () {
         super();
@@ -10,6 +12,8 @@ export class MessagesController extends Observer{
             config.TILE_SIZE * config.ROWS,
             config.SCREEN_HEIGHT - config.TILE_SIZE * config.COLUMNS - 40
         );
+
+        instance = this;
     }
     /**
      * Method responsible for changing size of info screen.
@@ -24,6 +28,14 @@ export class MessagesController extends Observer{
      * @param {string}  message     Message to display.
      */
     showMessageInView (message) {
-        this.view.addMessage(message);
+        if (message) {
+            this.view.addMessage(message);
+        }
+    }
+    static getInstance() {
+        if (instance) {
+            return instance;
+        }
+        return new MessagesController();
     }
 }

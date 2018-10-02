@@ -14,13 +14,11 @@ export class FloorModel extends Cell {
     constructor (x, y, config) {
         super(x, y);
 
-        this.blockMovement = false;
-        this.confirmMovement = false;
-        this.blockLos = false;
         this.type = config.type;
         this.description = config.description;
-        this.display = config.display.random();
-        this.walkMessage = '';
-        this.modifiers = null;
+        this.displaySet = config.display.random();
+    }
+    get display() {
+        return this.displaySet;
     }
 }

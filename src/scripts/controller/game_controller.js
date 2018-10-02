@@ -11,7 +11,7 @@ import {
     PLAYER_ACTION_MOVE_PLAYER,
     PLAYER_WALK_CONFIRM_NEEDED,
     START_PLAYER_TURN,
-    END_PLAYER_TURN
+    END_PLAYER_TURN, PLAYER_ACTION_ACTIVATE_OBJECT
 } from '../constants/player_actions';
 import {PlayerController} from './entity/player_controller';
 import {DungeonController} from './dungeon/dungeon_controller';
@@ -22,7 +22,7 @@ export class GameController extends Observer{
      * @param {HTMLImageElement}  tileset  HTML Img element with tiles to draw.
      * @constructor
      */
-    constructor (tileset) {
+    constructor(tileset) {
         super();
 
         this.dungeonController = new DungeonController();
@@ -43,7 +43,7 @@ export class GameController extends Observer{
     /**
      * Method responsible for initialization of game controller.
      */
-    initialize () {
+    initialize() {
         this.currentLevel = this.dungeonController.getLevel(1);
 
         this.initializePlayer();
@@ -53,7 +53,7 @@ export class GameController extends Observer{
     /**
      * Attaches events to view and models.
      */
-    attachEvents () {
+    attachEvents() {
         this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick.bind(this));
         this.playerController.on(this, PLAYER_WALK_CONFIRM_NEEDED, this.onPlayerMoveConfirmNeeded.bind(this));
         this.playerController.on(this, START_PLAYER_TURN, this.onPlayerStartTurn.bind(this));
@@ -62,7 +62,7 @@ export class GameController extends Observer{
     /**
      * Creates player character and adds it to proper level controller time engine.
      */
-    initializePlayer () {
+    initializePlayer() {
         const inititalPlayerCell = this.currentLevel.getStairsUpCell();
         const playerLevel = this.currentLevel;
 
@@ -82,7 +82,7 @@ export class GameController extends Observer{
     /**
      * Starts game by starting time engine on current level.
      */
-    startGame () {
+    startGame() {
         this.currentLevel.startTimeEngine();
     }
     /**
@@ -90,10 +90,13 @@ export class GameController extends Observer{
      * @param {string}  action  String describing type of action.
      * @param {Object}  data    Object containing additional data.
      */
-    takePlayerAction (action, data) {
+    takePlayerAction(action, data) {
         switch(action){
             case PLAYER_ACTION_MOVE_PLAYER:
                 this.movePlayer(data);
+                break;
+            case PLAYER_ACTION_ACTIVATE_OBJECT:
+                this.activateObject(data);
                 break;
         }
     }
@@ -102,7 +105,7 @@ export class GameController extends Observer{
      * @param {number}  deltaX  Value by which camera should be moved horizontally.
      * @param {number}  deltaY  Value by which camera should be moved vertically.
      */
-    moveCameraInView (deltaX, deltaY) {
+    moveCameraInView(deltaX, deltaY) {
         this.view.camera.moveCamera(deltaX, deltaY);
         this.refreshGameScreen();
     }
@@ -112,7 +115,7 @@ export class GameController extends Observer{
      * @param {number}  direction.x     Horizontal direction where player will move.
      * @param {number}  direction.y     Vertical direction where player will move.
      */
-    async movePlayer (direction) {
+    async movePlayer(direction) {
         const playerModel = this.playerController.getModel();
         const newCellCoordinateX = playerModel.position.x;
         const newCellCoordinateY = playerModel.position.y;
@@ -126,15 +129,29 @@ export class GameController extends Observer{
 
         if (movementResult.canMove) {
             this.view.camera.centerOnCoordinates(newPlayerCellPosition.x, newPlayerCellPosition.y);
-            this.refreshGameScreen();
-        } else {
+        }
+        if (movementResult.message) {
             this.notify(SHOW_MESSAGE_IN_VIEW, movementResult.message);
         }
+
+        this.refreshGameScreen();
+    }
+    activateObject(direction) {
+        const {
+            x,
+            y
+        } = direction,
+            playerModel = this.playerController.getModel(),
+            playerXPosition = playerModel.position.x,
+            playerYPosition = playerModel.position.y,
+            activatedObjectCell = this.currentLevel.getCell(playerXPosition + x, playerYPosition + y);
+
+        this.playerController.activate(activatedObjectCell);
     }
     /**
      * Method responsible for refreshing game screen.
      */
-    refreshGameScreen () {
+    refreshGameScreen() {
         const levelModel = this.currentLevel.getModel();
         const playerFov = this.playerController.model.fov;
 
@@ -145,32 +162,35 @@ export class GameController extends Observer{
      * @param {number}  newWidth    New width of canvas.
      * @param {number}  newHeight   New height of canvas.
      */
-    changeGameScreenInView (newWidth, newHeight) {
+    changeGameScreenInView(newWidth, newHeight) {
         this.view.changeGameScreenSize(newWidth, newHeight, this.currentLevel.getModel());
     }
     /**
      * Method triggered when user clicks on game screen.
      */
-    onCanvasCellClick () {
+    onCanvasCellClick() {
         this.refreshGameScreen(this.currentLevel.getModel());
     }
     /**
      * Method triggered after player model notifies about needed movement confirm from player.
      * @param {Object}  data    Object with additional data about confirmation.
      */
-    onPlayerMoveConfirmNeeded (data) {
+    onPlayerMoveConfirmNeeded(data) {
         this.notify(PLAYER_WALK_CONFIRM_NEEDED, data);
     }
     /**
      * Method triggered after player controller notifies about beginning of player turn.
      */
-    onPlayerStartTurn () {
+    onPlayerStartTurn() {
         this.currentLevel.lockTimeEngine();
+        this.playerController.calculateFov();
+        this.refreshGameScreen();
     }
     /**
      * Method triggered after player controller notifies about end of player turn.
      */
-    onPlayerEndTurn () {
+    onPlayerEndTurn() {
+        console.log('Player turn ended');
         this.currentLevel.unlockTimeEngine();
     }
 }

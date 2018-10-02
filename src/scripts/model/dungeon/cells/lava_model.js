@@ -13,10 +13,12 @@ export class LavaCellModel extends FloorModel {
     constructor (x, y) {
         super(x, y, {
             type: cellTypes.LAVA,
-            description: cellsDescriptions[cellTypes.LAVA],
-            display: [terrain.LAVA]
+            description: cellsDescriptions[cellTypes.LAVA]
         });
 
         this.confirmMovement = true;
+    }
+    get display() {
+        return [terrain.LAVA];
     }
 }

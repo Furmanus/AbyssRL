@@ -14,13 +14,17 @@ export class WallModel extends Cell{
     constructor (x, y, config) {
         super(x, y);
 
-        this.blockMovement = true;
-        this.confirmMovement = false;
-        this.blockLos = true;
         this.type = config.type;
         this.description = config.description;
-        this.display = config.display.random();
-        this.walkMessage = '';
-        this.modifiers = null;
+        this.displaySet = config.display.random();
+    }
+    get blockMovement() {
+        return true;
+    }
+    get blockLos() {
+        return true;
+    }
+    get display() {
+        return this.displaySet;
     }
 }
