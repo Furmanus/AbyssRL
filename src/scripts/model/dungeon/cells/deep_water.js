@@ -16,9 +16,11 @@ export class DeepWater extends Cell {
         this.confirmMovement = true;
         this.type = cellTypes.DEEP_WATER;
         this.description = cellsDescriptions[cellTypes.DEEP_WATER];
-        this.walkMessage = 'You walk through knee deep water.';
     }
     get display() {
         return [terrain.DEEP_WATER_1];
+    }
+    get walkMessage() {
+        return 'You walk through knee deep water.';
     }
 }

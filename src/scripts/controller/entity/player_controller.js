@@ -7,6 +7,7 @@ import {
     START_PLAYER_TURN
 } from '../../constants/player_actions';
 import {PlayerModel} from '../../model/entity/player_model';
+import {globalMessagesController} from '../../global/messages';
 
 export class PlayerController extends EntityController {
     /**
@@ -54,13 +55,10 @@ export class PlayerController extends EntityController {
 
         return new Promise(function(resolve) {
             if (newCell.blockMovement) {
-                resolve({
-                    canMove: false,
-                    message: `${Utility.capitalizeString(newCell.description)} is blocking your way.`,
-                });
+                playerController.moveAttempt(newCell, resolve);
             } else if (newCell.confirmMovement) {
                 if(newCell.type === playerModel.position.type){
-                    playerController.moveAttemptSuccess(newCell, resolve);
+                    playerController.moveAttempt(newCell, resolve);
                 }else {
                     /**
                      * Magic part: promise is not resolved here, instead game controller is notified about needed movement confirmation from player. Along with
@@ -70,7 +68,7 @@ export class PlayerController extends EntityController {
                     playerController.notify(PLAYER_WALK_CONFIRM_NEEDED, {
                         message: `Do you really want to walk into ${newCell.description}? (y/n)`,
                         confirm: () => {
-                            playerController.moveAttemptSuccess(newCell, resolve);
+                            playerController.moveAttempt(newCell, resolve);
                         },
                         decline: () => {
                             resolve({
@@ -81,9 +79,42 @@ export class PlayerController extends EntityController {
                     });
                 }
             } else {
-                playerController.moveAttemptSuccess(newCell, resolve);
+                playerController.moveAttempt(newCell, resolve);
             }
         });
+    }
+    /**
+     * Method responsible for attempt to activate certain cell.
+     *
+     * @param {Cell}    cell    Cell model which player is trying to activate
+     */
+    activate(cell) {
+        /**
+         * In first step, attempt to use cell is made. Method returns useAttemptResult object, which describes
+         * effect and result of attempt (is attempt was successful, message to display and if attempt should end
+         * player turn.
+         * @type {UseAttemptResult}
+         */
+        const useAttemptResult = cell.useAttempt(this);
+        let useEffect;
+
+        globalMessagesController.showMessageInView(useAttemptResult.message);
+        if (useAttemptResult.canUse) {
+            /**
+             * If attempt was successful, player entity uses target cell.
+             * @type {UseEffectResult}
+             */
+            useEffect = cell.useEffect(this);
+
+            globalMessagesController.showMessageInView(useEffect.message);
+            if (useEffect.endTurn) {
+                this.notify(END_PLAYER_TURN);
+            }
+        } else {
+            if (useAttemptResult.endTurn) {
+                this.notify(END_PLAYER_TURN);
+            }
+        }
     }
     /**
      * Function called when move attempt by player was successful. Called inside of move function.
@@ -91,15 +122,33 @@ export class PlayerController extends EntityController {
      * @param {Cell}        cellModel                   Cell model where player moves
      * @param {function}    promiseResolveFunction      Resolve function from promise returned by move method
      */
-    moveAttemptSuccess(cellModel, promiseResolveFunction) {
-        const entityMoveFunction = super.move.bind(this);
+    moveAttempt(cellModel, promiseResolveFunction) {
+        const entityMoveFunction = super.move.bind(this),
+            walkAttemptCellResult = cellModel.walkAttempt(this),
+            canPlayerMove = walkAttemptCellResult.canMove,
+            newCellBlocksMovement = cellModel.blockMovement;
+        let moveAttemptMessage = walkAttemptCellResult.message;
 
-        entityMoveFunction(cellModel);
+        if (newCellBlocksMovement) {
+            promiseResolveFunction({
+                canMove: false,
+                message: `${Utility.capitalizeString(cellModel.description)} is blocking your way.`
+            });
+            return;
+        }
+
+        if (canPlayerMove) {
+            entityMoveFunction(cellModel);
+
+            if (cellModel.walkMessage) {
+                moveAttemptMessage = cellModel.walkMessage;
+            }
+        }
+
         this.notify(END_PLAYER_TURN); // player successfully moved, so we notify game controller to end turn
-
         promiseResolveFunction({
-            canMove: true,
-            message: ''
+            canMove: canPlayerMove,
+            message: moveAttemptMessage
         });
     }
 }

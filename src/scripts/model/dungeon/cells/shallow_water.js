@@ -15,9 +15,11 @@ export class ShallowWater extends Cell {
 
         this.type = cellTypes.SHALLOW_WATER;
         this.description = cellsDescriptions[cellTypes.SHALLOW_WATER];
-        this.walkMessage = 'You walk through knee deep water.';
     }
     get display() {
         return [terrain.SHALLOW_WATER];
+    }
+    get walkMessage() {
+        return 'You walk through knee deep water.';
     }
 }

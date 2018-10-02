@@ -21,7 +21,16 @@ export class EntityController extends Observer {
         this.model.position.clearEntity(); //we clear entity field of cell which entity is right now at
         this.model.position = newCell; //we move entity to new position
         this.model.position.setEntity(this.model); //in new cell model where monster is after movement, we store information about new entity occupying new cell.
+        newCell.walkEffect(this);
         this.calculateFov();
+    }
+    activate(cell) {
+        const useAttemptResult = cell.useAttempt(this);
+        let useEffect;
+
+        if (useAttemptResult.canUse) {
+            useEffect = cell.useEffect(this);
+        }
     }
     calculateFov() {
         const newFov = calculateFov(this.model);
@@ -41,5 +50,16 @@ export class EntityController extends Observer {
      */
     getModel() {
         return this.model;
+    }
+    /**
+     * Return property value from model.
+     * @param {string}  propertyName    Name of property
+     * @returns {*}
+     */
+    getProperty(propertyName) {
+        if (!this.model[propertyName]) {
+            throw new TypeError(`Uknown property ${propertyName}`);
+        }
+        return this.model[propertyName];
     }
 }

@@ -40,6 +40,11 @@ export class EntityModel extends Observer {
          * @type {Array.<Cell>}
          */
         this.fov = [];
+        /**
+         * Description (usually text to display) of entity.
+         * @type {string}
+         */
+        this.description = 'unknown entity';
     }
     /**
      *

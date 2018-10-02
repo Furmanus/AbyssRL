@@ -15,9 +15,11 @@ export class BushModel extends Cell {
 
         this.type = cellTypes.BUSH;
         this.description = cellsDescriptions[cellTypes.BUSH];
-        this.walkMessage = 'a thick bush is growing here';
     }
     get display() {
         return [terrain.THICK_BUSH];
+    }
+    get walkMessage() {
+        return 'a thick bush is growing here';
     }
 }

@@ -10,6 +10,7 @@ import {Observer} from '../core/observer';
 import {KEYBOARD_DIRECTIONS} from '../constants/keyboard_directions';
 import {config} from '../global/config';
 import {
+    PLAYER_ACTION_ACTIVATE_OBJECT,
     PLAYER_ACTION_MOVE_PLAYER,
     PLAYER_WALK_CONFIRM_NEEDED,
     SHOW_MESSAGE_IN_VIEW
@@ -20,13 +21,13 @@ export class MainController extends Observer{
      * Constructor of main application controller.
      * @param {HTMLImageElement}  tileset  HTML Img element with tiles to draw.
      */
-    constructor (tileset) {
+    constructor(tileset) {
         super();
 
         this.gameController = new GameController(tileset);
         this.infoController = new InfoController();
         this.miniMapController = new MiniMapController();
-        this.messagesController = new MessagesController();
+        this.messagesController = MessagesController.getInstance();
 
         this.shiftPressed = false;
         this.controlPressed = false;
@@ -39,17 +40,17 @@ export class MainController extends Observer{
     /**
      * Method responsible for initialization of main controller.
      */
-    initialize () {
+    initialize() {
         this.bindMethods();
         this.attachEvents();
 
         this.controllerInitialized = true;
     }
     /**
-     * Method responsible for binding methods to main controller object. Methods has to be bound here, because in certain circumstances event listeners to which those
-     * function are callbacks are removed from appriopiate objects.
+     * Method responsible for binding methods to main controller object. Methods has to be bound here, because in
+     * certain circumstances event listeners to which those function are callbacks are removed from appriopiate objects.
      */
-    bindMethods () {
+    bindMethods() {
         this.registerKeyPressed = this.registerKeyPressed.bind(this);
         this.registerKeyReleased = this.registerKeyReleased.bind(this);
         this.onResizeWindow = this.onResizeWindow.bind(this);
@@ -60,7 +61,7 @@ export class MainController extends Observer{
     /**
      * Method responsible for attaching keyboard events to window.
      */
-    attachEvents () {
+    attachEvents() {
         window.addEventListener('keydown', this.registerKeyPressed);
         window.addEventListener('keyup', this.registerKeyReleased);
 
@@ -74,7 +75,7 @@ export class MainController extends Observer{
     /**
      * Method responsible for removing keyboard events from window and listening to object notifying.
      */
-    detachEvents () {
+    detachEvents() {
         window.removeEventListener('keydown', this.registerKeyPressed);
         window.removeEventListener('keyup', this.registerKeyReleased);
 
@@ -82,12 +83,13 @@ export class MainController extends Observer{
         this.gameController.off(this, PLAYER_WALK_CONFIRM_NEEDED);
     }
     /**
-     * Method responsible for registering user keyboard input and triggering {@code takeAction} method. Method checks whether key pressed is either shift, alt or control. If it is, it
-     * modify appriopiate flag. Otherwise it takes key keycode and passes it to {@code takeAction} method.
+     * Method responsible for registering user keyboard input and triggering {@code takeAction} method. Method checks
+     * whether key pressed is either shift, alt or control. If it is, it modify appriopiate flag. Otherwise it takes
+     * key keycode and passes it to {@code takeAction} method.
      * @param {KeyboardEvent} e - event which triggered this method.
      * @private
      */
-    registerKeyPressed (e) {
+    registerKeyPressed(e) {
         e.preventDefault();
 
         if(e.which === 16){
@@ -101,11 +103,12 @@ export class MainController extends Observer{
         }
     }
     /**
-     * Method responsible for registering user releasing key pressed. Changes boolean flag if key pressed was either shift, alt or control.
+     * Method responsible for registering user releasing key pressed. Changes boolean flag if key pressed was either
+     * shift, alt or control.
      * @param {KeyboardEvent} e - event which triggered this method.
      * @private
      */
-    registerKeyReleased (e) {
+    registerKeyReleased(e) {
         e.preventDefault();
 
         if(e.which === 16){
@@ -120,7 +123,9 @@ export class MainController extends Observer{
      * Method responsible for triggering appriopiate method in response for user input.
      * @param {Number} keycode - Pressed by user key keycode. Keycode comes from {@code KeyboardEvent.which} field.
      */
-    takeAction (keycode) {
+    async takeAction(keycode) {
+        let choosenDirection;
+
         if(this.shiftPressed){
             if(KEYBOARD_DIRECTIONS[keycode]){
                 this.moveCamera(keycode); //shift + numpad direction, move camera around
@@ -133,24 +138,35 @@ export class MainController extends Observer{
 
             if(KEYBOARD_DIRECTIONS[keycode]){
                 this.gameController.takePlayerAction(PLAYER_ACTION_MOVE_PLAYER, KEYBOARD_DIRECTIONS[keycode]);
+            } else if (65 === keycode) {
+                this.messagesController.showMessageInView('Activate object in which direction [1234567890]:');
+
+                choosenDirection = await this.getPlayerConfirmationDirection();
+
+                if (choosenDirection) {
+                    this.gameController.takePlayerAction(PLAYER_ACTION_ACTIVATE_OBJECT, choosenDirection);
+                } else {
+                    this.messagesController.showMessageInView('You abort your attempt.');
+                }
             }
         }
     }
     /**
      * Method responsible for moving camera in view.
-     * @param {KeyboardEvent} keycode - keycode of key pressed by user. Method accepts only arror keys or numpad keys (with exception of '5').
+     * @param {KeyboardEvent} keycode - keycode of key pressed by user. Method accepts only arror keys or numpad keys
+     * (with exception of '5').
      */
-    moveCamera (keycode) {
+    moveCamera(keycode) {
         const deltaX = KEYBOARD_DIRECTIONS[keycode].x * 4;
         const deltaY = KEYBOARD_DIRECTIONS[keycode].y * 4;
 
         this.gameController.moveCameraInView(deltaX, deltaY)
     }
     /**
-     * Function responsible for resizing game window size and all other canvas/divs(messages, info and map) whenever browser window is resized.
-     * Game window should be always about 2/3 and 3/4 of window width/height.
+     * Function responsible for resizing game window size and all other canvas/divs(messages, info and map) whenever
+     * browser window is resized. Game window should be always about 2/3 and 3/4 of window width/height.
      */
-    onResizeWindow () {
+    onResizeWindow() {
         const windowInnerWidth = window.innerWidth;
         const windowInnerHeight = window.innerHeight;
         //we calculate new game window size. Game window should be approximately 3/4 of view size
@@ -170,7 +186,7 @@ export class MainController extends Observer{
      * Method triggered after game controller notifies that message has to be shown in messages view.
      * @param {string}  message     Message to display.
      */
-    onShowMessageInView (message) {
+    onShowMessageInView(message) {
         this.messagesController.showMessageInView(message);
     }
     /**
@@ -180,7 +196,7 @@ export class MainController extends Observer{
      * @param {function}    data.confirm    Function triggered after player confirms move.
      * @param {function}    data.decline    Function triggered after player declines move.
      */
-    onPlayerConfirmNeeded (data) {
+    onPlayerConfirmNeeded(data) {
         const attachEventsFunction = this.attachEvents.bind(this);
 
         this.detachEvents();
@@ -203,5 +219,37 @@ export class MainController extends Observer{
                 attachEventsFunction();
             }
         }
+    }
+    /**
+     * Function responsible for obtaining from player direction of next action.
+     *
+     * @returns {Promise<Object|boolean>}
+     */
+    getPlayerConfirmationDirection() {
+        const extendedKeyboardDirection = Object.assign({}, KEYBOARD_DIRECTIONS, {
+            101: {x: 0, y: 0}
+        }),
+            that = this;
+
+        this.detachEvents();
+
+        return new Promise(resolve => {
+            window.addEventListener('keydown', userActionConfirmDirectionEventListener);
+
+            function userActionConfirmDirectionEventListener(e) {
+                const keycode = e.which,
+                    directionObject = extendedKeyboardDirection[keycode];
+
+                if (directionObject) {
+                    resolve(directionObject);
+                    window.removeEventListener('keydown', userActionConfirmDirectionEventListener);
+                    that.attachEvents();
+                } else if (27 === keycode || 32 === keycode) {
+                    resolve(false);
+                    window.removeEventListener('keydown', userActionConfirmDirectionEventListener);
+                    that.attachEvents();
+                }
+            }
+        });
     }
 }

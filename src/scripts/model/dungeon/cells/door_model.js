@@ -1,6 +1,7 @@
 import {Cell} from './cell_model';
 import {dungeonEvents} from '../../../constants/dungeon_events';
 import {WalkAttemptResult} from './walk_attempt_result';
+import {UseEffectResult} from './use_effect_result';
 
 export class DoorModel extends Cell {
     /**
@@ -27,6 +28,18 @@ export class DoorModel extends Cell {
     get blockLos() {
         return !this.areOpen;
     }
+    get walkMessage() {
+        return this.areOpen ? 'You walk through open doorway.' : '';
+    }
+    useEffect(entityController) {
+        if (this.areOpen) {
+            this.close();
+            return new UseEffectResult(true, `${entityController.getProperty('description')} closes doors`, true);
+        }
+
+        this.open();
+        return new UseEffectResult(true, `${entityController.getProperty('description')} opens doors`, true);
+    }
     /**
      * Method triggered when entity attempts to walk on doors.
      *
@@ -36,10 +49,8 @@ export class DoorModel extends Cell {
         if (!this.areOpen) {
             this.open();
 
-            return new WalkAttemptResult(false, `${entityController} opens doors.`);
+            return new WalkAttemptResult(false, `${entityController.getProperty('description')} opens doors.`);
         } else {
-            this.walkEffect(entityController);
-
             return new WalkAttemptResult(true);
         }
     }

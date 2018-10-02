@@ -2,10 +2,15 @@
  * Created by Docent Furman on 16.07.2017.
  */
 
+import {WalkAttemptResult} from './walk_attempt_result';
+import {Observer} from '../../../core/observer';
+import {UseAttemptResult} from './use_attempt_result';
+import {UseEffectResult} from './use_effect_result';
+
 /**
  * Class representing single map square(field).
  */
-export class Cell {
+export class Cell extends Observer{
     /**
      * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
      * @constructor
@@ -16,6 +21,8 @@ export class Cell {
      * @param {Object}  config  Object with additional configuration data.
      */
     constructor(x, y, config = {}) {
+        super(...arguments);
+
         if(new.target){
             throw new Error('Can\'t create instance of abstract Cell class');
         }
@@ -50,22 +57,11 @@ export class Cell {
          * @type {boolean}
          */
         this.wasDiscoveredByPlayer = false;
-
         /**
          * Whether confirmation from player is needed before entering cell.
          * @type {boolean}
          */
         this.confirmMovement = false;
-        /**
-         * Object with properties which are modified in entities who enters this cell.
-         * @type {Object|null}
-         */
-        this.modifiers = null;
-        /**
-         * Message displayed when player walks over cell.
-         * @type {string}
-         */
-        this.walkMessage = '';
     }
     /**
      * Whether cell blocks entity movement.
@@ -86,6 +82,20 @@ export class Cell {
      */
     get display() {
         throw new Error('Lack of implementation of display property');
+    }
+    /**
+     * Message displayed when player walks over cell.
+     * @type {string}
+     */
+    get walkMessage() {
+        return '';
+    }
+    /**
+     * Object with properties which are modified in entities who enters this cell.
+     * @type {Object|null}
+     */
+    get modifiers() {
+        return null;
     }
     /**
      * Resets value entity field of cell model instance (sets it to null).
@@ -135,25 +145,29 @@ export class Cell {
      * function. Can be implemented in child classes.
      *
      * @param {EntityController}     entity      Model of entity which attempts to walk over cell
+     * @returns {WalkAttemptResult}
      */
     walkAttempt(entity) {
-        this.walkEffect(entity);
+        return new WalkAttemptResult();
     }
     /**
      * Method triggered when certain entity (player included) uses cell. Default function, can be overriden in child
      * classes.
      *
      * @param {EntityController}     entity      Model of entity which uses cell
+     * @returns {UseEffectResult}
      */
     useEffect(entity) {
+        return new UseEffectResult(false, 'You can\'t activate that.');
     }
     /**
      * Method triggered when certain entity (usually player) tries to use cell. Default function, can be overriden in
      * child classes.
      *
      * @param {EntityController}     entity      Model of entity which attempts to use cell
+     * @returns {UseAttemptResult}
      */
-    async useAttempt(entity) {
-        this.useEffect(entity);
+    useAttempt(entity) {
+        return new UseAttemptResult();
     }
 }
