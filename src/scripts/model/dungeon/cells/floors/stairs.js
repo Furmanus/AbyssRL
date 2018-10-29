@@ -25,7 +25,7 @@ export class StairsModel extends Cell {
         this[areStairsUp] = config.direction;
     }
     get display() {
-        return this[areStairsUp] ? [terrain.STAIRS_UP] : [terrain.STAIRS_DOWN];
+        return this[areStairsUp] === UP ? [terrain.STAIRS_UP] : [terrain.STAIRS_DOWN];
     }
     get walkMessage() {
         return Utility.capitalizeString(`${this.description} is here.`);

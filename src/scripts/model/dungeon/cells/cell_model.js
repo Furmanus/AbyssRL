@@ -62,6 +62,11 @@ export class Cell extends Observer{
          * @type {boolean}
          */
         this.confirmMovement = false;
+        /**
+         *
+         * @type {string}
+         */
+        this.displaySet = null;
     }
     /**
      * Whether cell blocks entity movement.

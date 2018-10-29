@@ -3,6 +3,7 @@
  * @abstract
  */
 import {config} from '../global/config';
+import {Position} from '../model/position/position';
 
 export class Utility{
     /**
@@ -15,6 +16,9 @@ export class Utility{
      */
     static getDistance(x1, y1, x2, y2){
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+    static getDistanceBetweenPoints(pointA, pointB) {
+        return Utility.getDistance(pointA.x, pointA.y, pointB.x, pointB.y);
     }
     /**
      * Method which executes provided callback function on every point of bresenham line between points (x1, y1) and (x2, y2).
@@ -229,5 +233,18 @@ export class Utility{
         });
 
         return result;
+    }
+    static getRandomNumberFromRange(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    static getPositionFromString(string, separator) {
+        const coordsArray = string.split(separator),
+            x = Number(coordsArray[0]),
+            y = Number(coordsArray[1]);
+
+        if (!isNaN(x) && !isNaN(y)) {
+            return new Position(x, y);
+        }
+        throw new Error('Invalid position coordinates in getPositionFromString method');
     }
 }
