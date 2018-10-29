@@ -4,6 +4,12 @@
 
 import {MainController} from './controller/main_controller';
 
+window.Set.prototype.random = function() {
+    const valArray = Array.from(this);
+
+    return valArray.random();
+};
+
 (function(){
     const tileSet = document.createElement('img');
     tileSet.setAttribute('src', 'assets/u5tiles.png');

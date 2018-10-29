@@ -27,4 +27,7 @@ export class WallModel extends Cell{
     get display() {
         return this.displaySet;
     }
+    set display(tiles) {
+        this.displaySet = tiles.random();
+    }
 }

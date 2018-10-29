@@ -42,6 +42,8 @@ export class CavernLevelGenerator extends AbstractLevelGenerator {
             }
         );
 
+        level.initialize();
+
         generator.randomize(solidCellProbability);
         for(let i=0; i<4; i++) {
             generator.create();

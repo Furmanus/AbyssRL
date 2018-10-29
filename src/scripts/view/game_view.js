@@ -15,7 +15,7 @@ export class GameView extends Observer{
      * @param {number} tileSize - Size of single tile image(in pixels). We assume tiles are always square.
      * @param {Object} tileSet - {@code <Img>} Html tag with source pointing at image with tileset.
      */
-    constructor (width, height, tileSize, tileSet) {
+    constructor(width, height, tileSize, tileSet) {
         super();
 
         this.TILE_SIZE = tileSize;
@@ -70,7 +70,7 @@ export class GameView extends Observer{
 
         this.initialize();
     }
-    initialize () {
+    initialize() {
         this.attachEvents();
 
         window.setInterval(() => {
@@ -81,7 +81,7 @@ export class GameView extends Observer{
             }
         }, 250);
     }
-    attachEvents () {
+    attachEvents() {
         this.screen.addEventListener('click', this.mouseClickEventListener.bind(this));
         this.screen.addEventListener('mousemove', this.mouseMoveEventListener.bind(this));
         this.screen.addEventListener('mouseleave', this.mouseLeaveEventListener.bind(this));
@@ -93,7 +93,7 @@ export class GameView extends Observer{
      * @param {number} i  Row position from tileset where from tile will be choosen to draw
      * @param {number} j  Column position from tileset where from tile will be choosen to draw
      */
-    drawImage (x, y, i, j) {
+    drawImage(x, y, i, j) {
         this.context.drawImage(this.tileset, i*this.TILE_SIZE, j*this.TILE_SIZE, 32, 32, x*this.TILE_SIZE, y*this.TILE_SIZE, 32, 32);
     }
     /**
@@ -103,7 +103,7 @@ export class GameView extends Observer{
      * @param {number} y        Column position where tile on game view will be drawn
      * @param {string} tile     String parameter equal to String key object in tiledata.js file which contains information about drawn sprite.
      */
-    drawDarkenedImage (x, y, tile) {
+    drawDarkenedImage(x, y, tile) {
         let i = tileset[tile].x;
         let j = tileset[tile].y;
 
@@ -119,7 +119,7 @@ export class GameView extends Observer{
      * @param {string}  light    Optional: parameter indicating whether cell will be lightened or darkened. Accepts only two values: "LIGHTEN" or "DARKEN".
      * @returns {number}         Returns object containing interval returned by {@code setInterval} method which is responsible for animating sprite and current animation frame.
      */
-    drawAnimatedImage (x, y, cell, light) {
+    drawAnimatedImage(x, y, cell, light) {
         if (!cell) {
             return;
         }
@@ -167,7 +167,7 @@ export class GameView extends Observer{
     /**
      * Clears game window canvas. First all animations are stopped (intervals returned by drawAnimatedImage function) and then whole canvas context is cleared.
      */
-    clearGameWindow () {
+    clearGameWindow() {
         //we stop all animations currently being displayed on view
         for (let n in this.sprites) {
             if (this.sprites.hasOwnProperty(n)) {
@@ -187,7 +187,7 @@ export class GameView extends Observer{
      * @param {number}           newHeight   New canvas height.
      * @param {LevelModel}       level       LevelModel model object to redraw.
      */
-    changeGameScreenSize (newWidth, newHeight, level) {
+    changeGameScreenSize(newWidth, newHeight, level) {
         newWidth = newWidth - (newWidth % this.TILE_SIZE);
         newHeight = newHeight - (newHeight % this.TILE_SIZE);
 
@@ -206,7 +206,7 @@ export class GameView extends Observer{
      * @param {string} color     Colour of border.
      * @private
      */
-    setBorder (x, y, color) {
+    setBorder(x, y, color) {
         this.context.fillStyle = color;
         /*
         * Unusual method to draw border of rectangle in canvas. We draw every part of border as separate filled
@@ -223,7 +223,7 @@ export class GameView extends Observer{
      * @param {number} y  Column coordinate of tile.
      * @private
      */
-    clearBorder (x, y) {
+    clearBorder(x, y) {
         /*
          * Unusual method to remove border of rectangle in canvas. We remove every part of border as separate
          * filled rectangle.
@@ -240,7 +240,7 @@ export class GameView extends Observer{
      * @returns {{x: number, y: number}}    Returns object literal of converted coordinates.
      * @private
      */
-    coordinatesToCell (x, y) {
+    coordinatesToCell(x, y) {
         const convertedX = Math.floor(x / this.TILE_SIZE);
         const convertedY = Math.floor(y / this.TILE_SIZE);
 
@@ -255,7 +255,7 @@ export class GameView extends Observer{
      * @param {number} b     Value of blue color added.
      * @param {string} type  Value determining whether cell has to be lightened ("lighter" value) or darkened ("darken" value). Value is taken from {globalCompositeOperation} object.
      */
-    changeCellBackground (x, y, r, g, b, type) {
+    changeCellBackground(x, y, r, g, b, type) {
         this.context.fillStyle = "rgb(" + Math.floor(r) + ","  + Math.floor(g) + "," + Math.floor(b) + ")";
         this.context.globalCompositeOperation = type; // adds the fill color to existing pixels
         this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, this.TILE_SIZE, this.TILE_SIZE);
@@ -266,7 +266,7 @@ export class GameView extends Observer{
      * @param {MouseEvent} e  Event(mouse click) which triggered this function.
      * @private
      */
-    mouseClickEventListener (e) {
+    mouseClickEventListener(e) {
         let row = Math.floor(e.offsetX / this.TILE_SIZE);
         let column = Math.floor(e.offsetY / this.TILE_SIZE);
         let convertedCoordinates = this.camera.getConvertedCoordinates(row, column);
@@ -284,7 +284,7 @@ export class GameView extends Observer{
      * @param {MouseEvent} e  Event object(mouse moving over game view canvas) which triggered this function.
      * @private
      */
-    mouseMoveEventListener (e) {
+    mouseMoveEventListener(e) {
         let row = Math.floor(e.offsetX / this.TILE_SIZE); // row coordinate where border will be animated
         let column = Math.floor(e.offsetY / this.TILE_SIZE); // column coordinate where border will be animated
         let isBorderDrawn = true; // boolean variable indicating whether border is currently drawn around examined tile or not
@@ -358,7 +358,7 @@ export class GameView extends Observer{
      * Event listener function triggered when mouse leaves game view canvas.
      * @private
      */
-    mouseLeaveEventListener () {
+    mouseLeaveEventListener() {
         //if current mouse position haven't been set (ie. it is null) we terminate function. This happens very rarely, when pointer is exactly on border of canvas, and then leaves canvas
         if (this.currentMousePosition.isCursorBeyondLevel && (!this.currentMousePosition.x || !this.currentMousePosition.y)) {
             return;
@@ -378,7 +378,7 @@ export class GameView extends Observer{
     /**
      * Redraws static (not animated) sprite in current mouse position.
      */
-    redrawCurrentStaticSprite () {
+    redrawCurrentStaticSprite() {
         const {x, y} = this.currentMousePosition;
         const spriteAnimationId = this.sprites[`${x}x${y}`];
         const currentCell = this.drawnTiles[`${x}x${y}`];
@@ -393,7 +393,7 @@ export class GameView extends Observer{
      * @param {LevelModel}      level       LevelModel model object which visible part is going to be drawn.
      * @param {Array.<Cell>}    playerFov   Array of visible cells.
      */
-    drawScreen (level, playerFov = []) {
+    drawScreen(level, playerFov = []) {
         const cameraCoords = this.camera.getCoords();
         const cameraX = cameraCoords.x;
         const cameraY = cameraCoords.y;
@@ -428,7 +428,7 @@ export class GameView extends Observer{
      * @param {number} y  Column coordinate to check.
      * @returns {boolean} Returns true if given coords are outside of level, returns false otherwise.
      */
-    checkIfScreenCellOutsideOfLevel (x, y) {
+    checkIfScreenCellOutsideOfLevel(x, y) {
         return (x < 0 || y < 0 || x >= config.LEVEL_WIDTH || y >= config.LEVEL_HEIGHT);
     }
     /**
@@ -436,11 +436,11 @@ export class GameView extends Observer{
      * @param {LevelModel}      level       LevelModel object which visible part is going to be redrawn.
      * @param {Array.<Cell>}    playerFov   Array of visible cells
      */
-    refreshScreen (level, playerFov) {
+    refreshScreen(level, playerFov) {
         this.clearGameWindow();
         this.drawScreen(level, playerFov);
     }
-    getScreen () {
+    getScreen() {
         return this.screen;
     }
 }

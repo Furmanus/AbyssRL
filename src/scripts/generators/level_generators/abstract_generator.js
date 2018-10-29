@@ -6,6 +6,8 @@ import {DIRECTIONS, DIRECTIONS_SHORT} from '../../constants/keyboard_directions'
 import {terrain} from '../../constants/sprites';
 import {getCircleFromLevelCells} from '../../helper/level_cells_helper';
 import ROT from 'rot-js';
+import {DIRECTION_HORIZONTAL} from '../../constants/directions';
+import {Position} from '../../model/position/position';
 
 const {
     NE,
@@ -32,13 +34,13 @@ const stairsReplaceCells = {
  * @typedef {AbstractLevelGenerator}
  */
 export class AbstractLevelGenerator {
-    constructor () {
+    constructor() {
         if(new.target){
             throw new Error(`Can't make instance of abstract generator class.`);
         }
     }
     //TODO nie działa
-    generateTestLevel (levelCells, config) {
+    generateTestLevel(levelCells, config) {
         const debugDisplay = new ROT.Display({
             width: globalConfig.LEVEL_WIDTH,
             height: globalConfig.LEVEL_HEIGHT,
@@ -60,7 +62,7 @@ export class AbstractLevelGenerator {
      * @param {Array.<string>}  config.cellsAfterChange     Cells (randomly selected) which will appear in place of
      *                                                      changed cells.
      */
-    smoothLevel (level, config = {}) {
+    smoothLevel(level, config = {}) {
         const cellsToSmooth = config.cellsToSmooth || [];
         const cellsToChange = config.cellsToChange || [];
         const cellsAfterChange = config.cellsAfterChange || [];
@@ -89,7 +91,7 @@ export class AbstractLevelGenerator {
      *
      * @param {LevelModel}     level      Level model containing level cells.
      */
-    smoothLevelHills (level) {
+    smoothLevelHills(level) {
         const levelCells = level.getCells();
         let examinedCellNeighbours;
         let isHillFromLeftSide;
@@ -130,7 +132,7 @@ export class AbstractLevelGenerator {
      * @param {Array.<string>}  searchedCells   Array of string which are types of searched cells.
      * @returns {Object}
      */
-    isCertainCellInCellSurroundings (levelCells, cell, searchedCells = []) {
+    isCertainCellInCellSurroundings(levelCells, cell, searchedCells = []) {
         const x = cell.x;
         const y = cell.y;
         const result = {
@@ -159,7 +161,7 @@ export class AbstractLevelGenerator {
      * @param {number}     range            Minimum distance between each two points.
      * @returns {Array}
      */
-    generateRandomPoints (pointsQuantity, range) {
+    generateRandomPoints(pointsQuantity, range) {
         const generatedPoints = [];
         let randomPoint;
         let isGeneratedPointValid;
@@ -190,7 +192,7 @@ export class AbstractLevelGenerator {
      *
      * @param {LevelModel}  level   Level model.
      */
-    smoothShallowWaterCoastline (level) {
+    smoothShallowWaterCoastline(level) {
         const abstractLevelGenerator = this;
         const levelCells = level.getCells();
         let examinedCellWaterNeighbours;
@@ -305,7 +307,7 @@ export class AbstractLevelGenerator {
      *
      * @param {LevelModel}  level   LevelModel
      */
-    generateDeepWater (level) {
+    generateDeepWater(level) {
         const levelCells = level.getCells();
         let examinedCellSurrounding;
         let isCellSurroundedByWaterOnly;
@@ -336,7 +338,7 @@ export class AbstractLevelGenerator {
      * @param {Array.<string>}      config.cellsAfterChange Array of target cell types used as replacement.
      * @param {number}              config.probability      Probability of changing any cell.
      */
-    changeEveryCellInLevel (level, config = {}) {
+    changeEveryCellInLevel(level, config = {}) {
         const levelCells = level.getCells();
         const {
             cellsToChange,
@@ -362,7 +364,7 @@ export class AbstractLevelGenerator {
      * Function responsible for generating in random placement staircase up.
      * @param {LevelModel} levelModel
      */
-    generateRandomStairsUp (levelModel) {
+    generateRandomStairsUp(levelModel) {
         let randomCell = levelModel.getCell(
             Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
             Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
@@ -384,7 +386,7 @@ export class AbstractLevelGenerator {
         levelModel.changeCellType(randomCell.x, randomCell.y, cellTypes.STAIRS_UP);
         levelModel.setStairsUp(randomCell.x, randomCell.y);
     }
-    generateRandomStairsDown (levelModel) {
+    generateRandomStairsDown(levelModel) {
         let randomCell = levelModel.getCell(
             Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
             Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1)
@@ -407,5 +409,141 @@ export class AbstractLevelGenerator {
 
         levelModel.changeCellType(randomCell.x, randomCell.y, cellTypes.STAIRS_DOWN);
         levelModel.setStairsDown(randomCell.x, randomCell.y);
+    }
+    /**
+     * Creates and returns connection between any two points on map.
+     * @param {LevelModel}      levelModel      Model of level on which we want to create connection
+     * @param {string}          direction       Prefered direction in which connection can be made, either horizontal
+     *                                          or vertical
+     * @param {Position}        point1          Starting point
+     * @param {Position}        point2          Target point
+     * @param {Array.<string>}  newCells        Array of string cell types of cells after change.
+     * @param {Array.<string>}  forbiddenCells  Array of string cell types which are forbidden to change/encounter.
+     *                                          If algorithm encounters such cell on its path, it stops and returns
+     *                                          false, meaning that connection was not successful
+     * @returns {boolean}                       If creation was successful
+     */
+    createConnectionBetweenTwoPoints(levelModel, direction, point1, point2, newCells, forbiddenCells = []) {
+        const firstCell = levelModel.getCellFromPosition(point1),
+            secondCell = levelModel.getCellFromPosition(point2),
+            horizontalDirection = Math.sign(point2.x - point1.x),
+            verticalDirection = Math.sign(point2.y - point1.y),
+            cellsToChangeArray = [];
+        let firstMiddlePoint,
+            secondMiddlePoint,
+            examinedX,
+            examinedY,
+            examinedCell,
+            middlePointValue,
+            distance,
+            createdCorridor = [],
+            isCreationSuccessful = true;
+
+        cellsToChangeArray.push(firstCell);
+
+        if (DIRECTION_HORIZONTAL === direction) {
+            distance = Math.abs(point2.x - point1.x);
+            middlePointValue = Math.floor((point1.x + point2.x) / 2);
+            firstMiddlePoint = new Position(middlePointValue, point1.y);
+            secondMiddlePoint = new Position(middlePointValue, point2.y);
+            examinedX = point1.x;
+            examinedY = point1.y;
+
+            if (horizontalDirection) {
+                examinedX += horizontalDirection;
+                while (examinedX !== firstMiddlePoint.x) {
+                    examinedCell = levelModel.getCell(examinedX, examinedY);
+                    if (!forbiddenCells.includes(examinedCell.type)) {
+                        cellsToChangeArray.push(examinedCell);
+                    } else {
+                        isCreationSuccessful = false;
+                        break;
+                    }
+                    examinedX += horizontalDirection;
+                }
+            }
+            if (verticalDirection) {
+                while (examinedY !== secondMiddlePoint.y) {
+                    examinedCell = levelModel.getCell(examinedX, examinedY);
+                    if (!forbiddenCells.includes(examinedCell.type)) {
+                        cellsToChangeArray.push(examinedCell);
+                    } else {
+                        isCreationSuccessful = false;
+                        break;
+                    }
+                    examinedY += verticalDirection;
+                }
+            }
+            if (horizontalDirection) {
+                while (examinedX !== point2.x) {
+                    examinedCell = levelModel.getCell(examinedX, examinedY);
+                    if (!forbiddenCells.includes(examinedCell.type)) {
+                        cellsToChangeArray.push(examinedCell);
+                    } else {
+                        isCreationSuccessful = false;
+                        break;
+                    }
+                    examinedX += horizontalDirection;
+                }
+            }
+        } else {
+            distance = Math.abs(point2.y - point1.y);
+            middlePointValue = Math.floor((point1.y + point2.y) / 2);
+            firstMiddlePoint = new Position(point1.x, middlePointValue);
+            secondMiddlePoint = new Position(point2.x, middlePointValue);
+
+            examinedX = point1.x;
+            examinedY = point1.y;
+
+            if (verticalDirection) {
+                examinedY += verticalDirection;
+                while (examinedY !== firstMiddlePoint.y) {
+                    examinedCell = levelModel.getCell(examinedX, examinedY);
+                    if (!forbiddenCells.includes(examinedCell.type)) {
+                        cellsToChangeArray.push(examinedCell);
+                    } else {
+                        isCreationSuccessful = false;
+                        break;
+                    }
+                    examinedY += verticalDirection;
+                }
+            }
+            if (horizontalDirection) {
+                while (examinedX !== secondMiddlePoint.x) {
+                    examinedCell = levelModel.getCell(examinedX, examinedY);
+                    if (!forbiddenCells.includes(examinedCell.type)) {
+                        cellsToChangeArray.push(examinedCell);
+                    } else {
+                        isCreationSuccessful = false;
+                        break;
+                    }
+                    examinedX += horizontalDirection;
+                }
+            }
+            if (verticalDirection) {
+                while (examinedY !== point2.y) {
+                    examinedCell = levelModel.getCell(examinedX, examinedY);
+                    if (!forbiddenCells.includes(examinedCell.type)) {
+                        cellsToChangeArray.push(examinedCell);
+                    } else {
+                        isCreationSuccessful = false;
+                        break;
+                    }
+                    examinedY += verticalDirection;
+                }
+            }
+        }
+        cellsToChangeArray.push(secondCell);
+
+        if (isCreationSuccessful) {
+            cellsToChangeArray.forEach(room => {
+                createdCorridor.push(new Position(room.x, room.y));
+                levelModel.changeCellType(room.x, room.y, newCells.random());
+            });
+
+            return createdCorridor;
+        }
+
+        return isCreationSuccessful;
     }
 }

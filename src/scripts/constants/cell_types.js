@@ -16,5 +16,7 @@ export const cellTypes = {
     BUSH: 'bush',
     TREE: 'tree',
     STAIRS_UP: 'stairs_up',
-    STAIRS_DOWN: 'stairs_down'
+    STAIRS_DOWN: 'stairs_down',
+    LADDER_DOWN: 'ladder_down',
+    LADDER_UP: 'ladder_up'
 };

@@ -29,15 +29,8 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
     generateLevel (level, config = {}, debugCallback) {
         const generator = new ROT.Map.Arena(globalConfig.LEVEL_WIDTH, globalConfig.LEVEL_HEIGHT);
 
+        level.initialize();
         generator.create(debugCallback || generatorCallback);
-
-        function generatorCallback(x, y, value){
-            if(value === 1){
-                level.changeCellType(x, y, cellTypes.HIGH_PEAKS);
-            }else{
-                level.changeCellType(x, y, cellTypes.GRASS);
-            }
-        }
 
         this.fillLevelWithVoronoiPoints(level, {
             targetCellType: cellTypes.SHALLOW_WATER,
@@ -52,6 +45,14 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
         });
         this.generateRandomStairsUp(level);
         this.generateRandomStairsDown(level);
+
+        function generatorCallback(x, y, value){
+            if(value === 1){
+                level.changeCellType(x, y, cellTypes.HIGH_PEAKS);
+            }else{
+                level.changeCellType(x, y, cellTypes.GRASS);
+            }
+        }
     }
     /**
      * Method responsible for creating voronoi diagrams with given cell types on level map.

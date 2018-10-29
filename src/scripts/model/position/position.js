@@ -26,4 +26,7 @@ export class Position {
             return (Math.abs(this.x - x.x) <= 1 && Math.abs(this.y - x.y) <= 1);
         }
     }
+    getDistanceFromPosition(position) {
+        return Math.sqrt(Math.pow(position.x - this.x, 2) + Math.pow(position.y - this.y, 2));
+    }
 }
