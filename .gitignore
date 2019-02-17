@@ -1,8 +1,6 @@
 assets
 dist
-libraries
 node_modules
 .idea
 documentation
-package-lock-json
 index.html
