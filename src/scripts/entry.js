@@ -3,6 +3,7 @@
  */
 
 import {MainController} from './controller/main_controller';
+import '../styles/app.less';
 
 window.Set.prototype.random = function() {
     const valArray = Array.from(this);

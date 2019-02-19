@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Abyss Roguelike</title>
-    <link rel="stylesheet" type="text/css" href="src/styles/styles.css">
-    <link rel="stylesheet" type="text/css" href="src/styles/scrollbar.css">
-    <link rel="stylesheet" type="text/css" href="src/styles/info.css">
 </head>
 <body>
-    <div id="row1">
-        <canvas id="game"/>
-        <div class="display" id="info">
-            <div id="player_info"></div>
-            <div id="game_info">
-                <div id="monster_info"></div>
-                <div id="object_info"></div>
+    <div class="main-container-row">
+        <div>
+            <canvas id="game"></canvas>
+        </div>
+        <div class="info-container" id="info">
+            <div class="info-player" id="player_info"></div>
+            <div class="info-game" id="game_info">
+                <div class="info-game-monster" id="monster_info"></div>
+                <div class="info-game-object" id="object_info"></div>
             </div>
         </div>
-    </div>
-    <div id="row2">
+    </div>4466
+    <div class="main-container-row">
         <div class="display" id="messages">
             <ul id="messagesList"/>
         </div>
-        <canvas id="map"/>
+        <div>
+            <canvas id="map"></canvas>
+        </div>
     </div>
     <div class="loading-screen">
     </div>

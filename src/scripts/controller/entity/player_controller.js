@@ -1,5 +1,5 @@
 import {EntityController} from './entity_controller';
-import {Utility} from '../../helper/utility';
+import * as Utility from '../../helper/utility';
 import {config} from '../../global/config';
 import {
     END_PLAYER_TURN,
@@ -29,12 +29,15 @@ export class PlayerController extends EntityController {
         this.notify(START_PLAYER_TURN);
     }
     /**
-     * Method responsible for attempting to move player into target cell. A little bit magic happens here: function returns a promise. If movement is instantly possible or
-     * not possible, promise is resolved immediately. If confirmation from player is needed, game controller is notified about that. Along with notification, two
-     * functions are passed. First is callback function triggered when player confirms movement, second is triggered when player rejects movement attempt. Both those
-     * functions inside calls promise resolve function.
+     * Method responsible for attempting to move player into target cell. A little bit magic happens here: function
+     * returns a promise. If movement is instantly possible or not possible, promise is resolved immediately. If
+     * confirmation from player is needed, game controller is notified about that. Along with notification, two
+     * functions are passed. First is callback function triggered when player confirms movement, second is triggered
+     * when player rejects movement attempt. Both those functions inside calls promise resolve function.
+     *
      * @param {Cell}    newCell     New target cell object.
-     * @returns {Promise<Object>}   Returns promise. Resolved promise returns object with data with information whether move is allowed and movement message.
+     * @returns {Promise<Object>}   Returns promise. Resolved promise returns object with data with information whether
+     *                              move is allowed and movement message.
      */
     move(newCell) {
         const {
@@ -61,9 +64,10 @@ export class PlayerController extends EntityController {
                     playerController.moveAttempt(newCell, resolve);
                 }else {
                     /**
-                     * Magic part: promise is not resolved here, instead game controller is notified about needed movement confirmation from player. Along with
-                     * notification object two functions are passed. One function is called after player confirms movement, other when player rejects. Both
-                     * function calls promise resolve.
+                     * Magic part: promise is not resolved here, instead game controller is notified about needed
+                     * movement confirmation from player. Along with notification object two functions are passed. One
+                     * function is called after player confirms movement, other when player rejects. Both function
+                     * calls promise resolve.
                      */
                     playerController.notify(PLAYER_WALK_CONFIRM_NEEDED, {
                         message: `Do you really want to walk into ${newCell.description}? (y/n)`,

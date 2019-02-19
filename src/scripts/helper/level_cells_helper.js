@@ -1,5 +1,5 @@
 import {config as globalConfig} from '../global/config';
-import {Utility} from "./utility";
+import * as Utility from "./utility";
 
 export function getRectangleFromLevelCells (levelCells, x, y, width, height) {
 

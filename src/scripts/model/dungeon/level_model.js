@@ -3,7 +3,7 @@
  */
 
 import {Cell} from './cells/cell_model.js';
-import Utility from '../../helper/utility.js';
+import * as Utility from '../../helper/utility.js';
 import {config as globalConfig} from '../../global/config';
 import {cellTypes} from '../../constants/cell_types';
 import {CellModelFactory} from '../../factory/cell_model_factory';

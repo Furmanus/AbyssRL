@@ -1,5 +1,5 @@
 import {Position} from './position';
-import {Utility} from '../../helper/utility';
+import * as Utility from '../../helper/utility';
 
 export class Rectangle {
     /**

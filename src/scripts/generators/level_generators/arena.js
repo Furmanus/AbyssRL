@@ -1,7 +1,7 @@
 import {AbstractLevelGenerator} from './abstract_generator';
 import {config as globalConfig} from '../../global/config';
 import {cellTypes} from '../../constants/cell_types';
-import {Utility} from '../../helper/utility';
+import * as Utility from '../../helper/utility';
 import ROT from 'rot-js';
 
 const singletonToken = Symbol('ArenaLevelGenerator singleton token');

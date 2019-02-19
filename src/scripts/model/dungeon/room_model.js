@@ -1,6 +1,6 @@
 import {Observer} from '../../core/observer';
 import {Rectangle} from '../position/rectangle';
-import {Utility} from '../../helper/utility';
+import * as Utility from '../../helper/utility';
 import {Position} from '../position/position';
 import {config} from '../../global/config';
 import {Rng} from '../../helper/rng';

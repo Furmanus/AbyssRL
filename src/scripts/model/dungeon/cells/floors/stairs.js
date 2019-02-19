@@ -3,7 +3,7 @@ import {cellTypes} from '../../../../constants/cell_types';
 import {cellsDescriptions} from '../../../../helper/cells_description';
 import {terrain} from '../../../../constants/sprites';
 import {UP} from '../../../../constants/stairs_directions';
-import {Utility} from '../../../../helper/utility';
+import * as Utility from '../../../../helper/utility';
 
 let areStairsUp = Symbol('areStairsUp');
 

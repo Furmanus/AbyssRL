@@ -1,5 +1,5 @@
 import {Rectangle} from '../position/rectangle';
-import {Utility} from '../../helper/utility';
+import * as Utility from '../../helper/utility';
 import {Position} from '../position/position';
 import {uid as generateUid} from '../../helper/uid_helper';
 

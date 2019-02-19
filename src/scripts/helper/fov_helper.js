@@ -1,6 +1,6 @@
 import ROT from 'rot-js';
 import {config} from '../global/config';
-import {Utility} from './utility';
+import * as Utility from './utility';
 /**
  * Calculates field of view for given entity.
  * @param {EntityModel}     entity      Model of entify
