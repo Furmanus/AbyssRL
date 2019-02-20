@@ -23,7 +23,7 @@ export class Cell extends Observer{
     constructor(x, y, config = {}) {
         super(...arguments);
 
-        if(new.target){
+        if(new.target === Cell){
             throw new Error('Can\'t create instance of abstract Cell class');
         }
         /**

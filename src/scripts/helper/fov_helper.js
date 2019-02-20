@@ -1,4 +1,4 @@
-import ROT from 'rot-js';
+import * as ROT from 'rot-js';
 import {config} from '../global/config';
 import * as Utility from './utility';
 /**

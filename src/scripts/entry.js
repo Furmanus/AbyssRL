@@ -5,7 +5,13 @@
 import {MainController} from './controller/main_controller';
 import '../styles/app.less';
 
-window.Set.prototype.random = function() {
+Array.prototype.random = function() {
+    const arr = Array.from(this);
+    const length = arr.length;
+
+    return arr[Math.floor(Math.random() * length)];
+};
+Set.prototype.random = function() {
     const valArray = Array.from(this);
 
     return valArray.random();

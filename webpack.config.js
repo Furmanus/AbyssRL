@@ -23,7 +23,7 @@ const plugins = [
 module.exports = {
     mode: env,
     entry: {
-        app: ['babel-polyfill', path.join(__dirname, '/src/scripts/entry.js')],
+        app: ['@babel/polyfill', path.join(__dirname, '/src/scripts/entry.js')],
         vendors: ['rot-js', 'react', 'react-dom']
     },
     devtool: 'eval-source-map',

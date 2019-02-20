@@ -5,7 +5,7 @@ import * as Utility from "../../helper/utility";
 import {DIRECTIONS, DIRECTIONS_SHORT} from '../../constants/keyboard_directions';
 import {terrain} from '../../constants/sprites';
 import {getCircleFromLevelCells} from '../../helper/level_cells_helper';
-import ROT from 'rot-js';
+import * as ROT from 'rot-js';
 import {DIRECTION_HORIZONTAL} from '../../constants/directions';
 import {Position} from '../../model/position/position';
 
@@ -28,14 +28,9 @@ const stairsReplaceCells = {
     [cellTypes.BUSH]: true
 };
 
-/**
- * @class
- * @abstract
- * @typedef {AbstractLevelGenerator}
- */
 export class AbstractLevelGenerator {
     constructor() {
-        if(new.target){
+        if(new.target === AbstractLevelGenerator){
             throw new Error(`Can't make instance of abstract generator class.`);
         }
     }
