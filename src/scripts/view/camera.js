@@ -1,4 +1,5 @@
 import {config} from '../global/config';
+import {Position} from '../model/position/position';
 
 export class Camera {
     /**
@@ -9,7 +10,6 @@ export class Camera {
      * @param {number} screenHeight - Height(measured in squares) of game view.
      */
     constructor (x, y, screenWidth, screenHeight) {
-
         this._x = x;
         this._y = y;
         this._screenWidth = screenWidth;
@@ -49,19 +49,19 @@ export class Camera {
     }
     /**
      * Method responsible for returning current camera coordinates of its upper left point.
-     * @returns {{x: {number}, y: {number}}} Returns object literal with current camera's upper left point coordinates.
+     * @returns {Position} Returns object literal with current camera's upper left point coordinates.
      */
     getCoords () {
-        return {x: this._x, y: this._y};
+        return new Position(this._x, this._y);
     }
     /**
      * Method responsible for converting view coordinates(row x and column y) converted to current level of x and y.
      * @param {number} x - Row coordinate of point we want to convert.
      * @param {number} y - Column coordinate of point we want to convert.
-     * @returns {{x: {number}, y: {number}}} Returns object with converted {@code x} and {@code y} coordinates.
+     * @returns {Position}} Returns object with converted x and y coordinates.
      */
     getConvertedCoordinates (x, y) {
-        return {x: this._x + x, y: this._y + y};
+        return new Position(this._x + x, this._y + y);
     }
     /**
      * Method responsible for centering camera on certain coordinates.
@@ -72,29 +72,25 @@ export class Camera {
         let newCameraX = null; //new camera x coordinate of upper left point.
         let newCameraY = null; //new camera y coordinate of upper left point.
         /**
-         * Basic idea behind algorithm: we check three conditions. First we check if object position is close to top or left side of view. If it is, we don't scroll camera further, instead
-         * we set camera upper left coords same as upper left coords of view. Next we check if object position is close to bottom or right edge of game map. If it is, we scroll right or
-         * bottom side of camera to respectively right or bottom side of map. If none of previous conditions happens, we just centre camera on object position.
+         * Basic idea behind algorithm: we check three conditions. First we check if object position is close to top or
+         * left side of view. If it is, we don't scroll camera further, instead we set camera upper left coords same as
+         * upper left coords of view. Next we check if object position is close to bottom or right edge of game map. If
+         * it is, we scroll right or bottom side of camera to respectively right or bottom side of map. If none of
+         * previous conditions happens, we just center camera on object position.
          */
         if(x < this._screenWidth / 2){
-
             newCameraX = 0;
         }else if(x > config.LEVEL_WIDTH - (this._screenWidth / 2)){
-
             newCameraX = config.LEVEL_WIDTH - this._screenWidth;
         }else{
-
             newCameraX = x - Math.floor(this._screenWidth / 2);
         }
 
         if(y < this._screenHeight / 2){
-
             newCameraY = 0;
         }else if(y > config.LEVEL_HEIGHT - (this._screenHeight / 2)){
-
             newCameraY = config.LEVEL_HEIGHT - this._screenHeight;
         }else{
-
             newCameraY = y - Math.floor(this._screenHeight / 2);
         }
 

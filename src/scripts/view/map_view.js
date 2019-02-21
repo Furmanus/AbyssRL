@@ -3,9 +3,9 @@
  */
 export class MinimapView {
     constructor (width, height) {
-        this.screen = document.getElementById('map');
+        this.screenElement = document.getElementById('map');
 
-        this.context = this.screen.getContext('2d');
+        this.context = this.screenElement.getContext('2d');
         this.context.canvas.width = width;
         this.context.canvas.height = height;
     }
@@ -19,6 +19,6 @@ export class MinimapView {
         this.context.canvas.height = newHeight;
     }
     getScreen () {
-        return this.screen;
+        return this.screenElement;
     }
 }

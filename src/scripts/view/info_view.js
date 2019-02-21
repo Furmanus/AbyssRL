@@ -8,9 +8,9 @@
  */
 export class InfoView {
     constructor (width, height) {
-        this.screen = document.getElementById("info");
-        this.screen.style.width = width + 'px';
-        this.screen.style.height = height + 'px';
+        this.screenElement = document.getElementById("info");
+        this.screenElement.style.width = width + 'px';
+        this.screenElement.style.height = height + 'px';
     }
     /**
      * Function responsible for resizing info window size.
@@ -18,10 +18,10 @@ export class InfoView {
      * @param {number} newHeight New info window height in pixels.
      */
     changeSize (newWidth, newHeight) {
-        this.screen.style.width = newWidth + 'px';
-        this.screen.style.height = newHeight + 'px';
+        this.screenElement.style.width = newWidth + 'px';
+        this.screenElement.style.height = newHeight + 'px';
     }
     getScreen () {
-        return this.screen;
+        return this.screenElement;
     }
 }

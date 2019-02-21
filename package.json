@@ -3,22 +3,20 @@
   "version": "0.0.1",
   "description": "Ultima 5 inspired roguelike game.",
   "main": "src/index.html",
-  "jest": {
-    "verbose": true
-  },
   "scripts": {
     "start": "NODE_ENV=development webpack --config webpack.config.js --watch",
     "build:prod": "NODE_ENV=production webpack --config webpack.config.js",
     "build:dev": "NODE_ENV=development webpack --config webpack.config.js",
-    "run:lint": "eslint src/scripts"
+    "lint:js": "eslint --max-warnings 0 src/scripts",
+    "test": "jest"
   },
   "author": "Łukasz Lach",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.3.3",
-    "@babel/polyfill": "^7.2.5",
+    "@babel/core": "7.3.3",
+    "@babel/polyfill": "7.2.5",
     "@babel/preset-env": "7.3.1",
-    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-react": "7.0.0",
     "babel-loader": "8.0.5",
     "clean-webpack-plugin": "0.1.19",
     "css-loader": "2.1.0",
@@ -34,7 +32,9 @@
     "webpack-cli": "3.1.2"
   },
   "devDependencies": {
+    "eslint": "5.14.1",
     "jest": "24.1.0",
-    "jest-cli": "24.1.0"
+    "jest-cli": "24.1.0",
+    "eslint-plugin-jest": "22.3.0"
   }
 }

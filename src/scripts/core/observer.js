@@ -6,7 +6,6 @@
 const observers = Symbol();
 
 export class Observer{
-
     constructor(){
         if(new.target === Observer){
 
