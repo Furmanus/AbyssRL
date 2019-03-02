@@ -47,7 +47,6 @@ export class GameController extends Observer{
         this.currentLevel = this.dungeonController.getLevel(1);
 
         this.initializePlayer();
-
         this.view.drawScreen(this.currentLevel.getModel(), this.playerController.model.fov);
     }
     /**
@@ -120,7 +119,6 @@ export class GameController extends Observer{
         const newCellCoordinateX = playerModel.position.x;
         const newCellCoordinateY = playerModel.position.y;
         const newPlayerCellPosition = this.currentLevel.getCell(newCellCoordinateX + direction.x, newCellCoordinateY + direction.y);
-        const playerFov = playerModel.fov;
         /**
          * Await for movement object. It happens immediately except for situation when player tries to move into dangerous terrain and he needs to confirm move.
          * @type {Object}
@@ -163,7 +161,9 @@ export class GameController extends Observer{
      * @param {number}  newHeight   New height of canvas.
      */
     changeGameScreenInView(newWidth, newHeight) {
-        this.view.changeGameScreenSize(newWidth, newHeight, this.currentLevel.getModel());
+        const playerFov = this.playerController.getPlayerFov();
+
+        this.view.changeGameScreenSize(newWidth, newHeight, this.currentLevel.getModel(), playerFov);
     }
     /**
      * Method triggered when user clicks on game screen.
@@ -190,7 +190,6 @@ export class GameController extends Observer{
      * Method triggered after player controller notifies about end of player turn.
      */
     onPlayerEndTurn() {
-        console.log('Player turn ended');
         this.currentLevel.unlockTimeEngine();
     }
 }

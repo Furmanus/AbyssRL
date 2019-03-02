@@ -1,3 +1,4 @@
+/* eslint-disable */
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -26,10 +27,12 @@ module.exports = {
         app: ['@babel/polyfill', path.join(__dirname, '/src/scripts/entry.js')],
         vendors: ['rot-js', 'react', 'react-dom']
     },
-    devtool: 'eval-source-map',
     output: {
         path: path.join(__dirname, '/dist'),
         filename: '[name].[chunkhash].bundle.js'
+    },
+    resolve: {
+        extensions: ['.ts', '.tsx', '.js', '.json']
     },
     module: {
         rules: [
@@ -37,6 +40,10 @@ module.exports = {
                 test: /\.js|jsx/,
                 exclude: /node_modules/,
                 use: 'babel-loader',
+            },
+            {
+                test: /\.ts|tsx/,
+                loader: 'awesome-typescript-loader'
             },
             {
                 test: /\.less$/,
@@ -65,5 +72,6 @@ module.exports = {
             }
         ]
     },
+    devtool: 'eval-source-map',
     plugins
 };

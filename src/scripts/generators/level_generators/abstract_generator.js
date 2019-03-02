@@ -1,6 +1,6 @@
 import {cellTypes} from '../../constants/cell_types';
 import {config as globalConfig} from '../../global/config';
-import {Rng} from "../../helper/rng";
+import * as Rng from '../../helper/rng';
 import * as Utility from "../../helper/utility";
 import {DIRECTIONS, DIRECTIONS_SHORT} from '../../constants/keyboard_directions';
 import {terrain} from '../../constants/sprites';

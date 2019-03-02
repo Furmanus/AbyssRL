@@ -8,7 +8,7 @@ import {
     DIRECTION_HORIZONTAL,
     DIRECTION_VERTICAL
 } from '../../constants/directions';
-import {Rng} from '../../helper/rng';
+import * as Rng from '../../helper/rng';
 import {DungeonAreaModel} from '../../model/dungeon/dungeon_area_model';
 import {RoomConnectionModel} from '../../model/dungeon/room_connection_model';
 
