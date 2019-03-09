@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "noEmitOnError": true,
+    "downlevelIteration": true,
+    "lib": [
+      "dom",
+      "esnext",
+      "DOM.Iterable",
+      "es2015.collection",
+      "es2015.promise"
+    ]
+  },
+  "include": [
+    "./src/scripts/**/*"
+  ]
+}

@@ -1,1 +1,0 @@
-export const CANVAS_CELL_CLICK = 'CANVAS_CELL_CLICK';
