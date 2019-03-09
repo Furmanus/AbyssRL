@@ -1,5 +1,5 @@
 /**
- * Created by Lukasz Lach on 2017-04-24.
+ * View of game mini map. Contains HTML elements of mini maps and methods to display data.
  */
 export class MinimapView {
     private screenElement: HTMLCanvasElement = document.getElementById('map') as HTMLCanvasElement;

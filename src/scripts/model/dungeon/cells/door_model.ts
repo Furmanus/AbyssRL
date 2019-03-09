@@ -18,7 +18,7 @@ export class DoorModel extends Cell implements ICellModel {
     get blockMovement(): boolean {
         return !this.areOpen;
     }
-    get blockLos(): boolean {
+    get blocksLos(): boolean {
         return !this.areOpen;
     }
     get walkMessage(): string {
@@ -35,8 +35,6 @@ export class DoorModel extends Cell implements ICellModel {
     }
     /**
      * Method triggered when entity attempts to walk on doors.
-     *
-     * @param {EntityController}    entityController
      */
     public walkAttempt(entityController: EntityController): WalkAttemptResult {
         if (!this.areOpen) {

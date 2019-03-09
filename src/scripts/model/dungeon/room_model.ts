@@ -29,7 +29,7 @@ export class RoomModel extends BaseModel {
         /**
          * Set of door positions in room.
          */
-        this.doorSpots = new Set();
+        this.doorSpots = new Set<Position>();
         /**
          * If room contain stairs up.
          */

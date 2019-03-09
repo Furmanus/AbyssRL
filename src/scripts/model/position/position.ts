@@ -1,3 +1,6 @@
+/**
+ * Class which instances represents position on two dimensional grid.
+ */
 export class Position {
     public x: number;
     public y: number;

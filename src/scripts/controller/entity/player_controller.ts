@@ -13,16 +13,16 @@ import {Cell} from '../../model/dungeon/cells/cell_model';
 import {UseAttemptResult} from '../../model/dungeon/cells/effects/use_attempt_result';
 import {UseEffectResult} from '../../model/dungeon/cells/effects/use_effect_result';
 
-interface IMoveResolve {
+export interface IMoveResolve {
     canMove: boolean;
     message: string;
 }
 
 export class PlayerController extends EntityController<PlayerModel> {
-    constructor(config: IAnyObject) {
-        super(config);
+    constructor(constructorConfig: IAnyObject) {
+        super(constructorConfig);
 
-        this.model = new PlayerModel(config);
+        this.model = new PlayerModel(constructorConfig);
     }
     /**
      * Method triggered at beginning of each player turn.
@@ -63,7 +63,7 @@ export class PlayerController extends EntityController<PlayerModel> {
             } else if (newCell.confirmMovement) {
                 if (newCell.type === playerModel.position.type) {
                     playerController.moveAttempt(newCell, resolve);
-                }else {
+                } else {
                     /**
                      * Magic part: promise is not resolved here, instead game controller is notified about needed
                      * movement confirmation from player. Along with notification object two functions are passed. One

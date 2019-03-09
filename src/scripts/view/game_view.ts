@@ -534,7 +534,7 @@ export class GameView extends Observer {
      * @param   level       LevelModel object which visible part is going to be redrawn.
      * @param   playerFov   Array of visible cells
      */
-    private refreshScreen(level: LevelModel, playerFov: Cell[]): void {
+    public refreshScreen(level: LevelModel, playerFov: Cell[]): void {
         this.clearGameWindow();
         this.drawScreen(level, playerFov);
     }

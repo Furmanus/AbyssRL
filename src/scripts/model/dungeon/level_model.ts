@@ -6,7 +6,6 @@ import {config as globalConfig} from '../../global/config';
 import {cellTypes} from '../../constants/cell_types';
 import {CellModelFactory} from '../../factory/cell_model_factory';
 import {BaseModel} from '../../core/base_model';
-import {DungeonModel} from './dungeon_model';
 import {Position} from '../position/position';
 import {Cell} from './cells/cell_model';
 import {DungeonAreaModel} from './dungeon_area_model';
@@ -17,8 +16,8 @@ import {RoomConnectionModel} from './room_connection_model';
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
 export class LevelModel extends BaseModel {
-    private branch: DungeonModel;
-    private levelNumber: number;
+    private branch: string;
+    public levelNumber: number;
     private defaultWallType: string = null;
     private rooms: RoomModel[] = [];
     private roomConnections: Set<RoomConnectionModel> = new Set();
@@ -27,7 +26,7 @@ export class LevelModel extends BaseModel {
      * @param   branch             Object to which this level belongs
      * @param   levelNumber         Number of this dungeon level
      */
-    constructor(branch: DungeonModel, levelNumber: number) {
+    constructor(branch: string, levelNumber: number) {
         super();
 
         this.branch = branch;
@@ -38,7 +37,7 @@ export class LevelModel extends BaseModel {
      *
      * @param   defaultWallType     Type of default wall of level
      */
-    protected initialize(defaultWallType: string = cellTypes.HIGH_PEAKS): void {
+    public initialize(defaultWallType: string = cellTypes.HIGH_PEAKS): void {
         // TODO remove setting default wall type from here and move it to constructor
         this.defaultWallType = defaultWallType;
 

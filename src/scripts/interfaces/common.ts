@@ -1,7 +1,5 @@
-export interface IAnyFunction {
-    /* tslint:disable-next-line:no-any*/
-    (...args: any[]): any;
-}
+/* tslint:disable-next-line:no-any*/
+export type IAnyFunction = (...args: any[]) => any;
 export interface IAnyObject {
     /* tslint:disable-next-line:no-any*/
     [propName: string]: any;
@@ -21,3 +19,14 @@ export interface IDirection {
     y: directionType;
 }
 export type directionType = -1 | 0 | 1;
+export interface IDirections {
+    [prop: number]: IDirection;
+}
+export interface IMessageData {
+    message: string;
+}
+export interface IPlayerConfirmationObject {
+    message: string;
+    confirm: IAnyFunction;
+    decline: IAnyFunction;
+}

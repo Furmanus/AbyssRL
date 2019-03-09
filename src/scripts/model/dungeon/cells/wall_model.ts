@@ -1,6 +1,5 @@
 import {Cell} from './cell_model';
 import {IAnyObject} from '../../../interfaces/common';
-import {getArrayRandomElement} from '../../../helper/utility';
 import {ICellModel} from '../../../interfaces/cell';
 
 export class WallModel extends Cell implements ICellModel {
@@ -17,7 +16,7 @@ export class WallModel extends Cell implements ICellModel {
 
         this.type = config.type;
         this.description = config.description;
-        this.displaySet = getArrayRandomElement<string>(config.display);
+        this.displaySet = config.display.random();
     }
     get blockMovement(): boolean {
         return true;

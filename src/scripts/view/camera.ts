@@ -4,8 +4,8 @@ import {Position} from '../model/position/position';
 export class Camera {
     private x: number;
     private y: number;
-    private screenWidth: number;
-    private screenHeight: number;
+    private readonly screenWidth: number;
+    private readonly screenHeight: number;
     /**
      * Camera constructor.
      * @param    x               Row coordinate of upper left side of camera.
@@ -37,7 +37,7 @@ export class Camera {
             if (this.x + deltaX < 0) {
 
                 this.x = 0;
-            }else if (this.x + deltaX + this.screenWidth > config.LEVEL_WIDTH) {
+            } else if (this.x + deltaX + this.screenWidth > config.LEVEL_WIDTH) {
 
                 this.x = config.LEVEL_WIDTH - this.screenWidth;
             }
@@ -63,7 +63,7 @@ export class Camera {
      * Method responsible for converting view coordinates(row x and column y) converted to current level of x and y.
      * @param   x - Row coordinate of point we want to convert.
      * @param   y - Column coordinate of point we want to convert.
-     * @returns {Position}} Returns object with converted x and y coordinates.
+     * @returns     Returns object with converted x and y coordinates.
      */
     public getConvertedCoordinates(x: number, y: number): Position {
         // TODO change argument to one argument with Position type

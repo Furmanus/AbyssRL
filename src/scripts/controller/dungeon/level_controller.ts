@@ -1,72 +1,90 @@
 import {Observer} from '../../core/observer';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {EngineController} from '../time_engine/engine_controller';
+import {DungeonModel} from '../../model/dungeon/dungeon_model';
+import {Cell} from '../../model/dungeon/cells/cell_model';
+import {EntityController} from '../entity/entity_controller';
 
-export class LevelController extends Observer{
-    constructor(config){
+interface ILevelControllerConstructorConfig {
+    readonly branch: string;
+    readonly levelNumber: number;
+}
+
+/**
+ * Controller of single dungeon level.
+ */
+export class LevelController extends Observer {
+    public model: LevelModel;
+    public engine: EngineController;
+
+    constructor(config: ILevelControllerConstructorConfig) {
         super();
-        /**@type {LevelModel}*/
+
         this.model = new LevelModel(config.branch, config.levelNumber);
-        /**@type {EngineController}*/
         this.engine = new EngineController();
     }
     /**
      * Returns cell at given coordinates.
-     * @param {number}  x   Cell horizontal coordinate.
-     * @param {number}  y   Cell vertical coordinate.
-     * @returns {Cell}
+     *
+     * @param   x   Cell horizontal coordinate.
+     * @param   y   Cell vertical coordinate.
+     * @returns     Cell at position.
      */
-    getCell(x, y){
+    public getCell(x: number, y: number): Cell {
         return this.model.getCell(x, y);
     }
     /**
      * Adds actor to time engine.
-     * @param {EntityController}    actor   Actor added to time engine.
+     *
+     * @param   actor   Actor added to time engine.
      */
-    addActorToScheduler(actor){
+    public addActorToScheduler(actor: EntityController): void {
         this.engine.addActor(actor);
     }
     /**
      * Starts time engine on level.
      */
-    startTimeEngine(){
+    public startTimeEngine(): void {
         this.engine.startEngine();
     }
     /**
      * Locks(pauses) time engine on level.
      */
-    lockTimeEngine(){
+    public lockTimeEngine(): void {
         this.engine.lockEngine();
     }
     /**
      * Unlocks(resumes) time engine on level.
      */
-    unlockTimeEngine(){
+    public unlockTimeEngine(): void {
         this.engine.unlockEngine();
     }
     /**
      * Returns cell model with stairs down.
-     * @returns {Cell}
+     *
+     * @returns   Returns cell model with stairs down.
      */
-    getStairsDownCell(){
+    public getStairsDownCell(): Cell {
         const stairsDownLocation = this.model.getStairsDownLocation();
 
         return this.getCell(stairsDownLocation.x, stairsDownLocation.y);
     }
     /**
      * Returns cell model with stairs up.
-     * @returns {Cell}
+     *
+     * @returns Returns cell model with stairs up.
      */
-    getStairsUpCell(){
+    public getStairsUpCell(): Cell {
         const stairsUpLocation = this.model.getStairsUpLocation();
 
         return this.getCell(stairsUpLocation.x, stairsUpLocation.y);
     }
     /**
      * Returns level model instance.
-     * @returns {LevelModel}
+     *
+     * @returns Returns model of instance of level controller.
      */
-    getModel(){
+    public getModel(): LevelModel {
         return this.model;
     }
 }

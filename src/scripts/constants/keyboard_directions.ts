@@ -1,4 +1,6 @@
-export const KEYBOARD_DIRECTIONS = {
+import {IDirections, IStringDictionary} from '../interfaces/common';
+
+export const KEYBOARD_DIRECTIONS: IDirections = {
     103: {x: -1, y: -1},
     104: {x: 0, y: -1},
     105: {x: 1, y: -1},
@@ -16,7 +18,7 @@ export const KEYBOARD_DIRECTIONS = {
     35: {x: -1, y: 1},
     37: {x: -1, y: 0},
 };
-export const DIRECTIONS = {
+export const DIRECTIONS: IStringDictionary = {
     '-1x-1': 'north_west',
     '1x-1': 'north_east',
     '0x-1': 'north',

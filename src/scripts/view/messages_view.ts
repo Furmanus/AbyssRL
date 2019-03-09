@@ -22,12 +22,12 @@ export class MessagesView {
     /**
      * Method which puts text message to message view. Message will be put in new line.
      *
-     * @param {string}  text        Text which is to be displayed.
-     * @param {string}  colour      Optional: colour for displayed message. Default value is 'silver'.
-     * @param {string}  font        Optional: font name of displayed text. Default value is 'Monospace'.
-     * @param {string}  weight      Optional: font weight of displayed text. Default value is 'normal'.
-     * @param {string}  style       Optional: font style of displayed text. Default value is 'normal'. Other possible
-     *                              values are italic or oblique.
+     * @param   text        Text which is to be displayed.
+     * @param   colour      Optional: colour for displayed message. Default value is 'silver'.
+     * @param   font        Optional: font name of displayed text. Default value is 'Monospace'.
+     * @param   weight      Optional: font weight of displayed text. Default value is 'normal'.
+     * @param   style       Optional: font style of displayed text. Default value is 'normal'. Other possible
+     *                      values are italic or oblique.
      */
     public addMessage(
         text: string,
@@ -83,12 +83,11 @@ export class MessagesView {
      */
     public appendMessage(text: string): void {
         this.messagesList[this.messagesList.length - 1] += ' ' + text;
-        (<HTMLLIElement> this.messagesListElement.lastChild).innerText += ` ${text}`;
-        this.messagesListElement.scrollTop = (<HTMLLIElement> this.messagesListElement.lastChild).offsetTop;
+        (this.messagesListElement.lastChild as HTMLElement).innerText += ` ${text}`;
+        this.messagesListElement.scrollTop = ( this.messagesListElement.lastChild as HTMLElement).offsetTop;
     }
     /**
      * Returns DOM node element where messages are displayed.
-     * @return {Element|*}
      */
     public getScreen(): HTMLDivElement {
         return this.screenElement;

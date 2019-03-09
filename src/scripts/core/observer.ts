@@ -31,7 +31,7 @@ export class Observer {
         const observers = this.observers;
         const observerEntries = observers.values();
 
-        for (const entry of observerEntries){
+        for (const entry of observerEntries) {
             if (entry.observer === observer && entry.event === event) {
                 observers.delete(entry);
             }
@@ -40,7 +40,7 @@ export class Observer {
     public notify(event: string, data: IAnyObject = {}): void {
         const observerEntries = this.observers.values();
 
-        for (const entry of observerEntries){
+        for (const entry of observerEntries) {
             if (entry.event === event) {
                 entry.callback.call(entry.observer, data);
             }

@@ -149,18 +149,18 @@ export function capitalizeString(text: string): string {
 /**
  * Method responsible for checking if two arrays are equal to each other (other array is given in form of arguments)
  */
-export function isArrayEqualToArguments(array: IAnyObject[], ...args: IAnyObject[]): boolean {
+export function isArrayEqualToArguments<M = IAnyObject>(array: M[], ...args: M[]): boolean {
     let result = true;
 
     if (array.length !== args.length) {
         return false;
     }
-    array.forEach((item: IAnyObject) => {
+    array.forEach((item: M) => {
         if (!args.includes(item)) {
             result = false;
         }
     });
-    args.forEach((item: IAnyObject) => {
+    args.forEach((item: M) => {
         if (!array.includes(item)) {
             result = false;
         }
@@ -171,10 +171,10 @@ export function isArrayEqualToArguments(array: IAnyObject[], ...args: IAnyObject
 /**
  * Method responsible for cheching if certain array contains all of given arguments.
  */
-export function doesArrayContainsArguments(array: IAnyObject[], ...args: IAnyObject[]): boolean {
+export function doesArrayContainsArguments<M = IAnyObject>(array: M[], ...args: M[]): boolean {
     let result = true;
 
-    args.forEach((item: IAnyObject) => {
+    args.forEach((item: M) => {
         if (!array.includes(item)) {
             result = false;
         }

@@ -2,6 +2,7 @@ import {Rectangle} from '../position/rectangle';
 import * as Utility from '../../helper/utility';
 import {Position} from '../position/position';
 import {uid as generateUid} from '../../helper/uid_helper';
+import {RoomModel} from './room_model';
 
 export class DungeonAreaModel extends Rectangle {
     /**
@@ -21,6 +22,10 @@ export class DungeonAreaModel extends Rectangle {
      * Describes on which side region is connected with adjacent region.
      */
     public adjacentRegionDirection: string;
+    /**
+     * Room model associated with dungeon area.
+     */
+    public roomModel?: RoomModel;
 
     constructor(leftTopCorner: Position, width: number, height: number, uid: string, iteration: number) {
         super(leftTopCorner, width, height);
@@ -45,7 +50,7 @@ export class DungeonAreaModel extends Rectangle {
     /**
      * Splits rectangle vertically into two separate rectangles.
      */
-    public splitHorizontal(iteration: number): Rectangle[] {
+    public splitHorizontal(iteration: number): DungeonAreaModel[] {
         const {
             x,
             y,
@@ -76,7 +81,7 @@ export class DungeonAreaModel extends Rectangle {
     /**
      * Splits rectangle horizontally into two separate rectangles.
      */
-    public splitVertical(iteration: number): Rectangle[] {
+    public splitVertical(iteration: number): DungeonAreaModel[] {
         const {
             x,
             y,

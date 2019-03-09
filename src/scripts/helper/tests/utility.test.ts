@@ -1,6 +1,6 @@
 import {
     getDistance,
-    capitalizeString
+    capitalizeString,
 } from '../utility';
 
 describe('Test getDistance method', () => {

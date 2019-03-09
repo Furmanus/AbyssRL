@@ -14,8 +14,8 @@ import {StairsModel} from '../model/dungeon/cells/floors/stairs';
 import {DOWN, UP} from '../constants/stairs_directions';
 import {Cell} from '../model/dungeon/cells/cell_model';
 
-export class CellModelFactory {
-    public static getCellModel(x: number, y: number, type: string): Cell {
+export const CellModelFactory = {
+    getCellModel(x: number, y: number, type: string): Cell {
         switch (type) {
             case cellTypes.RED_FLOOR:
                 return CellModelFactory.getRedFloorCell(x, y);
@@ -56,8 +56,8 @@ export class CellModelFactory {
             default:
                 throw new Error('Unknown cell type in cell model factory.');
         }
-    }
-    public static getRedFloorCell(x: number, y: number): FloorModel {
+    },
+    getRedFloorCell(x: number, y: number): FloorModel {
         return new FloorModel(
             x,
             y,
@@ -67,8 +67,8 @@ export class CellModelFactory {
                 display: [terrain.RED_FLOOR],
             },
         );
-    }
-    public static getWoodenFloor(x: number, y: number): FloorModel {
+    },
+    getWoodenFloor(x: number, y: number): FloorModel {
         return new FloorModel(
             x,
             y,
@@ -78,8 +78,8 @@ export class CellModelFactory {
                 display: [terrain.WOODEN_FLOOR_1, terrain.WOODEN_FLOOR_2],
             },
         );
-    }
-    public static getGrassFloor(x: number, y: number): FloorModel {
+    },
+    getGrassFloor(x: number, y: number): FloorModel {
         return new FloorModel(
             x,
             y,
@@ -89,8 +89,8 @@ export class CellModelFactory {
                 display: [terrain.GRASS_2],
             },
         );
-    }
-    public static getGrayWallModel(x: number, y: number): WallModel {
+    },
+    getGrayWallModel(x: number, y: number): WallModel {
         return new WallModel(
             x,
             y,
@@ -100,8 +100,8 @@ export class CellModelFactory {
                 display: [terrain.GRAY_WALL],
             },
         );
-    }
-    public static getHighPeaksWallModel(x: number, y: number): WallModel {
+    },
+    getHighPeaksWallModel(x: number, y: number): WallModel {
         return new WallModel(
             x,
             y,
@@ -111,8 +111,8 @@ export class CellModelFactory {
                 display: [terrain.HIGH_PEAKS],
             },
         );
-    }
-    public static getMountainWallModel(x: number, y: number): WallModel {
+    },
+    getMountainWallModel(x: number, y: number): WallModel {
         return new WallModel(
             x,
             y,
@@ -122,8 +122,8 @@ export class CellModelFactory {
                 display: [terrain.MOUNTAIN],
             },
         );
-    }
-    public static getHillsFloorModel(x: number, y: number): FloorModel {
+    },
+    getHillsFloorModel(x: number, y: number): FloorModel {
         return new FloorModel(
             x,
             y,
@@ -133,8 +133,8 @@ export class CellModelFactory {
                 display: [terrain.HILLS],
             },
         );
-    }
-    public static getRightHillsFloorModel(x: number, y: number): FloorModel {
+    },
+    getRightHillsFloorModel(x: number, y: number): FloorModel {
         return new FloorModel(
             x,
             y,
@@ -144,8 +144,8 @@ export class CellModelFactory {
                 display: [terrain.RIGHT_HILLS],
             },
         );
-    }
-    public static getLefttHillsFloorModel(x: number, y: number): FloorModel {
+    },
+    getLefttHillsFloorModel(x: number, y: number): FloorModel {
         return new FloorModel(
             x,
             y,
@@ -155,32 +155,32 @@ export class CellModelFactory {
                 display: [terrain.LEFT_HILLS],
             },
         );
-    }
-    public static getWoodenSolidDoors(x: number, y: number): WoodenSolidDoorModel {
+    },
+    getWoodenSolidDoors(x: number, y: number): WoodenSolidDoorModel {
         return new WoodenSolidDoorModel(x, y);
-    }
-    public static getLavaFloorModel(x: number, y: number): LavaCellModel {
+    },
+    getLavaFloorModel(x: number, y: number): LavaCellModel {
         return new LavaCellModel(x, y);
-    }
-    public static getFountainModel(x: number, y: number): FountainModel {
+    },
+    getFountainModel(x: number, y: number): FountainModel {
         return new FountainModel(x, y);
-    }
-    public static getShallowWater(x: number, y: number): ShallowWater {
+    },
+    getShallowWater(x: number, y: number): ShallowWater {
         return new ShallowWater(x, y);
-    }
-    public static getDeepWater(x: number, y: number): DeepWater {
+    },
+    getDeepWater(x: number, y: number): DeepWater {
         return new DeepWater(x, y);
-    }
-    public static getBush(x: number, y: number): BushModel {
+    },
+    getBush(x: number, y: number): BushModel {
         return new BushModel(x, y);
-    }
-    public static getTree(x: number, y: number): TreeModel {
+    },
+    getTree(x: number, y: number): TreeModel {
         return new TreeModel(x, y);
-    }
-    public static getStairsUp(x: number, y: number): StairsModel {
+    },
+    getStairsUp(x: number, y: number): StairsModel {
         return new StairsModel(x, y, {direction: UP});
-    }
-    public static getStairsDown(x: number, y: number): StairsModel {
+    },
+    getStairsDown(x: number, y: number): StairsModel {
         return new StairsModel(x, y, {direction: DOWN});
-    }
-}
+    },
+};

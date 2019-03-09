@@ -8,10 +8,9 @@ export class EntityController<M extends EntityModel = EntityModel> extends Obser
     protected model: M;
     /**
      * Constructor for entity controller.
-     * @param {Object}  config              Object with data for creating model and controller.
-     * @param {string}  config.display      Name of sprite visible on game screen.
-     * @param {Cell}    config.position     Starting player position.
-     * @constructor
+     * @param   config              Object with data for creating model and controller.
+     * @param   config.display      Name of sprite visible on game screen.
+     * @param   config.position     Starting player position.
      */
     constructor(config: IAnyObject) {
         super();
@@ -54,6 +53,12 @@ export class EntityController<M extends EntityModel = EntityModel> extends Obser
      */
     public getModel(): EntityModel {
         return this.model;
+    }
+    /**
+     * Returns entity field of vision.
+     */
+    public getFov(): Cell[] {
+        return this.model.fov;
     }
     /**
      * Return property value from model.

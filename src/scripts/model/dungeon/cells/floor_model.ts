@@ -1,12 +1,9 @@
 import {Cell} from './cell_model';
 import {IAnyObject} from '../../../interfaces/common';
-import {getArrayRandomElement} from '../../../helper/utility';
 import {ICellModel} from '../../../interfaces/cell';
 
 export class FloorModel extends Cell implements ICellModel {
     /**
-     * @typedef FloorModel
-     * @constructor
      * @param   x                   Horizontal position on level grid.
      * @param   y                   Vertical position on level grid.
      * @param   config              Configuration object with additional data.

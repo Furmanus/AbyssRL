@@ -49,7 +49,7 @@ export class EntityModel extends BaseModel {
     }
     /**
      *
-     * @param {Cell}    newCell     New cell which entity will occupy.
+     * @param   newCell     New cell which entity will occupy.
      */
     public changePosition(newCell: Cell): void {
         this.position = newCell;

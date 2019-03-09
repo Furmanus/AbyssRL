@@ -58,8 +58,8 @@ export class Rectangle {
      * Returns horizontal distance from given rectangle;
      */
     public getHorizontalDistanceFromRect(rect: Rectangle): number {
-        const firstRect = rect.left < this.left ? rect : this;
-        const secondRect = firstRect === this ? rect : this;
+        const firstRect: Rectangle = rect.left < this.left ? rect : this;
+        const secondRect: Rectangle = firstRect === this ? rect : this;
 
         return Math.max(secondRect.left - firstRect.right, 0);
     }

@@ -11,7 +11,6 @@ import {EntityModel} from '../../entity/entity_model';
 import {EntityController} from '../../../controller/entity/entity_controller';
 import {PlayerController} from '../../../controller/entity/player_controller';
 import {ICellModel} from '../../../interfaces/cell';
-import {getArrayRandomElement} from '../../../helper/utility';
 
 /**
  * Class representing single map square(field).
@@ -52,9 +51,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
     public displaySet: string = null;
     /**
      * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
-     * @constructor
-     * @typedef Cell
-     * @abstract
+     *
      * @param   x       Horizontal position on level grid.
      * @param   y       Vertical position on level grid.
      * @param   config  Object with additional configuration data.
@@ -70,7 +67,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
      */
     get blockMovement(): boolean {
         return false;
-    };
+    }
     /**
      * Whether cell blocks entities line of sight.
      */
@@ -125,11 +122,11 @@ export abstract class Cell extends BaseModel implements ICellModel {
     /**
      * Changes display of cell.
      *
-     * @param {Array.<{string}>}     tiles   Array of new tiles names.
+     * @param   tiles   Array of new tiles names.
      */
     public changeDisplay(tiles: string[]): void {
         if (!this.preventDisplayChange) {
-            this.displaySet = getArrayRandomElement<string>(tiles);
+            this.displaySet = tiles.random();
         }
     }
     /**

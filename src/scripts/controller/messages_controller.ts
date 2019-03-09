@@ -26,7 +26,7 @@ export class MessagesController extends Observer {
     }
     /**
      * Displays given message in view.
-     * @param {string}  message     Message to display.
+     * @param    message     Message to display.
      */
     public showMessageInView(message: string): void {
         if (message) {

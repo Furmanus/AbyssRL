@@ -5,7 +5,7 @@ import {EntityModel} from '../model/entity/entity_model';
 import {Cell} from '../model/dungeon/cells/cell_model';
 /**
  * Calculates field of view for given entity.
- * @param {EntityModel}     entity      Model of entity
+ * @param   entity      Model of entity
  */
 export function calculateFov(entity: EntityModel): Cell[] {
     const {
