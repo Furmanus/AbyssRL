@@ -1,11 +1,11 @@
 import {InfoView} from '../view/info_view';
 import {config} from '../global/config';
-import {Constructor} from '../core/constructor';
+import {Controller} from './controller';
 
 /**
  * Controller of info data visible to player (player character info like HP, stats...).
  */
-export class InfoController extends Constructor {
+export class InfoController extends Controller {
     private view: InfoView;
 
     constructor() {

@@ -1,9 +1,9 @@
 import {Observer} from '../../core/observer';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {EngineController} from '../time_engine/engine_controller';
-import {DungeonModel} from '../../model/dungeon/dungeon_model';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {EntityController} from '../entity/entity_controller';
+import {Controller} from '../controller';
 
 interface ILevelControllerConstructorConfig {
     readonly branch: string;
@@ -13,7 +13,7 @@ interface ILevelControllerConstructorConfig {
 /**
  * Controller of single dungeon level.
  */
-export class LevelController extends Observer {
+export class LevelController extends Controller {
     public model: LevelModel;
     public engine: EngineController;
 

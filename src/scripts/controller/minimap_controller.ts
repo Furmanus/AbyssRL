@@ -1,11 +1,11 @@
 import {MinimapView} from '../view/map_view';
 import {config} from '../global/config';
-import {Observer} from '../core/observer';
+import {Controller} from './controller';
 
 /**
  * Controller of game mini map.
  */
-export class MiniMapController extends Observer {
+export class MiniMapController extends Controller {
     private view: MinimapView;
     constructor() {
         super();

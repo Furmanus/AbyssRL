@@ -2,8 +2,8 @@ import {DungeonModel} from '../../model/dungeon/dungeon_model';
 import {LevelController} from './level_controller';
 import {MAIN_DUNGEON} from '../../constants/dungeon_types';
 import {getDungeonStrategyInstance} from '../../factory/strategy_factory';
-import {Constructor} from '../../core/constructor';
 import {MainDungeonLevelGenerationStrategy} from '../../strategy/dungeon_generator/main_dungeon_strategy';
+import {Controller} from '../controller';
 
 export interface ILevelControllersMap {
     [prop: string]: LevelController;
@@ -12,7 +12,7 @@ export interface ILevelControllersMap {
 /**
  * Controller of single dungeon.
  */
-export class DungeonController extends Constructor {
+export class DungeonController extends Controller {
     /**
      * Type of dungeon.
      */

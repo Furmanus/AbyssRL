@@ -14,10 +14,10 @@ import {
     PLAYER_WALK_CONFIRM_NEEDED,
     SHOW_MESSAGE_IN_VIEW,
 } from '../constants/player_actions';
-import {Constructor} from '../core/constructor';
-import {IAnyObject, IDirection, IMessageData, IPlayerConfirmationObject} from '../interfaces/common';
+import {IDirection, IMessageData, IPlayerConfirmationObject} from '../interfaces/common';
+import {Controller} from './controller';
 
-export class MainController extends Constructor {
+export class MainController extends Controller {
     private readonly gameController: GameController;
     private readonly infoController: InfoController;
     private readonly miniMapController: MiniMapController;

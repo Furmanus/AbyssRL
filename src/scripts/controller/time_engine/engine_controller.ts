@@ -1,14 +1,14 @@
 import * as ROT from 'rot-js';
-import {Constructor} from '../../core/constructor';
 import {EntityController} from '../entity/entity_controller';
 import scheduler from 'rot-js/lib/scheduler/scheduler';
 import engine from 'rot-js/lib/engine';
+import {Controller} from '../controller';
 
 /**
  * Controller of time engine of game. Doesn't have explicit, separate model, models are scheduler and engine
  * fields, provided by rot.js library.
  */
-export class EngineController extends Constructor {
+export class EngineController extends Controller {
     private scheduler: scheduler = new ROT.Scheduler.Speed();
     private engine: engine = new ROT.Engine(this.scheduler);
 

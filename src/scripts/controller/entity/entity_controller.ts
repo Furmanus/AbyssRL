@@ -1,10 +1,10 @@
-import {Observer} from '../../core/observer';
 import {calculateFov} from '../../helper/fov_helper';
 import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {EntityModel} from '../../model/entity/entity_model';
+import {Controller} from '../controller';
 
-export class EntityController<M extends EntityModel = EntityModel> extends Observer {
+export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
     /**
      * Constructor for entity controller.

@@ -12,16 +12,16 @@ import {
 } from '../constants/player_actions';
 import {PlayerController} from './entity/player_controller';
 import {DungeonController} from './dungeon/dungeon_controller';
-import {Constructor} from '../core/constructor';
 import {Cell} from '../model/dungeon/cells/cell_model';
 import {IAnyObject, IDirection} from '../interfaces/common';
 import {LevelController} from './dungeon/level_controller';
+import {Controller} from './controller';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
  * game model and view in appriopiate way.
  */
-export class GameController extends Constructor {
+export class GameController extends Controller {
     private dungeonController: DungeonController;
     private currentLevel: LevelController;
     private playerController: PlayerController;
