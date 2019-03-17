@@ -13,6 +13,7 @@ import {DungeonAreaModel} from '../../model/dungeon/dungeon_area_model';
 import {RoomConnectionModel} from '../../model/dungeon/room_connection_model';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {IAnyFunction, IAnyObject} from '../../interfaces/common';
+import {IDungeonStrategyGenerateLevelConfig} from '../../interfaces/generators';
 
 interface IBspSplitRegions {
     roomsToReturn: Rectangle[];
@@ -50,7 +51,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
      * @param   config             Additional level config info.
      * @param   debugCallback      Optional callback function serving as debug for map generation
      */
-    public generateLevel(level: LevelModel, config?: IAnyObject, debugCallback?: IAnyFunction): void {
+    public generateLevel(level: LevelModel, config?: IDungeonStrategyGenerateLevelConfig, debugCallback?: IAnyFunction): void {
         const roomsArray: RoomModel[] = [];
         // @ts-ignore
         const bspRegions: IBspSplitRegions = this.createBspSplitRegions();
@@ -76,7 +77,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
         this.generateDoors(level);
         this.generateRandomStairsUp(level);
-        this.generateRandomStairsDown(level);
+        if (config && config.generateStairsDown) {
+            this.generateRandomStairsDown(level);
+        }
 
         function generatorCallback(x: number, y: number, value: number): void {
             if (value === 1) {
@@ -421,7 +424,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
         randomCellPosition = randomRoom.getRandomRoomCellPosition();
 
         level.changeCellType(randomCellPosition.x, randomCellPosition.y, cellTypes.STAIRS_DOWN);
-        level.setStairsUp(randomCellPosition.x, randomCellPosition.y);
+        level.setStairsDown(randomCellPosition.x, randomCellPosition.y);
     }
     /**
      * Returns only created instance of cavern level generator.

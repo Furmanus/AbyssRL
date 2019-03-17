@@ -12,6 +12,8 @@ import {IAnyFunction, IAnyObject} from '../../interfaces/common';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {UseAttemptResult} from '../../model/dungeon/cells/effects/use_attempt_result';
 import {UseEffectResult} from '../../model/dungeon/cells/effects/use_effect_result';
+import {LevelModel} from '../../model/dungeon/level_model';
+import {DungeonEvents} from '../../constants/dungeon_events';
 
 export interface IMoveResolve {
     canMove: boolean;
@@ -23,7 +25,20 @@ export class PlayerController extends EntityController<PlayerModel> {
         super(constructorConfig);
 
         this.model = new PlayerModel(constructorConfig);
+        this.attachEvents();
     }
+
+    protected attachEvents(): void {
+        super.attachEvents();
+
+        this.model.on(this, 'property:level:change', (newLevelModel: LevelModel) => {
+            this.notify(DungeonEvents.CHANGE_CURRENT_LEVEL, {
+                branch: newLevelModel.branch,
+                levelNumber: newLevelModel.levelNumber,
+            });
+        });
+    }
+
     /**
      * Method triggered at beginning of each player turn.
      */
@@ -154,7 +169,16 @@ export class PlayerController extends EntityController<PlayerModel> {
             message: moveAttemptMessage,
         });
     }
+    /**
+     * Returns player field of view.
+     */
     public getPlayerFov(): Cell[] {
         return this.model.fov;
+    }
+    /**
+     * Returns player name.
+     */
+    public getName(): string {
+        return this.model.description;
     }
 }

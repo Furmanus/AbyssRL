@@ -16,8 +16,8 @@ export class Camera {
     constructor(x: number, y: number, screenWidth: number, screenHeight: number) {
         this.x = x;
         this.y = y;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+        this.screenWidth = Math.min(screenWidth, config.LEVEL_WIDTH);
+        this.screenHeight = Math.min(screenHeight, config.LEVEL_HEIGHT);
     }
     /**
      * Method responsible for moving camera by certain values.
@@ -35,10 +35,8 @@ export class Camera {
              * level width - view width
              */
             if (this.x + deltaX < 0) {
-
                 this.x = 0;
             } else if (this.x + deltaX + this.screenWidth > config.LEVEL_WIDTH) {
-
                 this.x = config.LEVEL_WIDTH - this.screenWidth;
             }
         }

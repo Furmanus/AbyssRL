@@ -4,6 +4,7 @@ import {DungeonLevelGenerator} from '../../generators/level_generators/dungeon';
 import * as Rng from '../../helper/rng';
 import {config} from '../../global/config';
 import {LevelModel} from '../../model/dungeon/level_model';
+import {IDungeonStrategyGenerateLevelConfig} from '../../interfaces/generators';
 
 type AllGeneratorsTypes = ArenaLevelGenerator | CavernLevelGenerator | DungeonLevelGenerator;
 
@@ -22,14 +23,14 @@ const typeToGenerator: ITypeToGenerator = {
 };
 
 export class MainDungeonLevelGenerationStrategy {
-    public generateRandomLevel(levelModel: LevelModel): void {
+    public generateRandomLevel(levelModel: LevelModel, generateConfig: IDungeonStrategyGenerateLevelConfig): void {
         const {
             levelNumber,
         } = levelModel;
         const defaultLevelTypeGenerator = config.defaultLevelType && typeToGenerator[config.defaultLevelType];
 
         if (config.defaultLevelType && defaultLevelTypeGenerator) {
-            defaultLevelTypeGenerator.generateLevel(levelModel);
+            defaultLevelTypeGenerator.generateLevel(levelModel, generateConfig);
         }
 
         switch (levelNumber) {
@@ -37,11 +38,11 @@ export class MainDungeonLevelGenerationStrategy {
                 const percentDieRoll: number = Rng.getPercentage();
 
                 if (percentDieRoll < 33) {
-                    arenaLevelGenerator.generateLevel(levelModel);
+                    arenaLevelGenerator.generateLevel(levelModel, generateConfig);
                 } else if (percentDieRoll < 66) {
-                    cavernLevelGenerator.generateLevel(levelModel);
+                    cavernLevelGenerator.generateLevel(levelModel, generateConfig);
                 } else {
-                    dungeonLevelGenerator.generateLevel(levelModel);
+                    dungeonLevelGenerator.generateLevel(levelModel, generateConfig);
                 }
         }
     }

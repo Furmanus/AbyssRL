@@ -15,6 +15,6 @@ export class BushModel extends Cell implements ICellModel {
         return terrain.THICK_BUSH;
     }
     get walkMessage(): string {
-        return 'a thick bush is growing here';
+        return 'A thick bush is growing here';
     }
 }

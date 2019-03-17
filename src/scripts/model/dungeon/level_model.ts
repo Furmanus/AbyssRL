@@ -16,7 +16,7 @@ import {RoomConnectionModel} from './room_connection_model';
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
 export class LevelModel extends BaseModel {
-    private branch: string;
+    public branch: string;
     public levelNumber: number;
     private defaultWallType: string = null;
     private rooms: RoomModel[] = [];

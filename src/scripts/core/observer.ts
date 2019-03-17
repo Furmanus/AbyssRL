@@ -58,7 +58,8 @@ export class Observer {
      * @param event     Name of event
      * @param data      Additional data passed along with notification
      */
-    public notify(event: string, data: IAnyObject = {}): void {
+    // tslint:disable-next-line:no-any
+    public notify(event: string, data?: any): void {
         const observerEntries = this.observers.values();
 
         for (const entry of observerEntries) {

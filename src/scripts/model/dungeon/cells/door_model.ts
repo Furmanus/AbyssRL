@@ -1,5 +1,5 @@
 import {Cell} from './cell_model';
-import {dungeonEvents} from '../../../constants/dungeon_events';
+import {DungeonEvents} from '../../../constants/dungeon_events';
 import {WalkAttemptResult} from './effects/walk_attempt_result';
 import {UseEffectResult} from './effects/use_effect_result';
 import {IAnyObject} from '../../../interfaces/common';
@@ -51,7 +51,7 @@ export class DoorModel extends Cell implements ICellModel {
     public open(): void {
         if (!this.areOpen) {
             this.areOpen = true;
-            this.notify(dungeonEvents.DOORS_OPEN, {
+            this.notify(DungeonEvents.DOORS_OPEN, {
                 x: this.x,
                 y: this.y,
             });
@@ -63,7 +63,7 @@ export class DoorModel extends Cell implements ICellModel {
     public close(): void {
         if (this.areOpen) {
             this.areOpen = false;
-            this.notify(dungeonEvents.DOORS_CLOSED, {
+            this.notify(DungeonEvents.DOORS_CLOSED, {
                 x: this.x,
                 y: this.y,
             });

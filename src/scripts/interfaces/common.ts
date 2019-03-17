@@ -30,3 +30,7 @@ export interface IPlayerConfirmationObject {
     confirm: IAnyFunction;
     decline: IAnyFunction;
 }
+export interface IActionAttempt {
+    result: boolean;
+    message?: string;
+}

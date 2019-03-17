@@ -541,4 +541,12 @@ export class GameView extends Observer {
     public getScreen(): HTMLCanvasElement {
         return this.screen;
     }
+    /**
+     * Centers camera on given coordinates.
+     *
+     * @param position  New camera coordinates
+     */
+    public centerCameraOnCoordinates(position: ICoordinates): void {
+        this.camera.centerOnCoordinates(position.x, position.y);
+    }
 }

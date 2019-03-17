@@ -11,6 +11,7 @@ import {Controller} from '../controller';
 export class EngineController extends Controller {
     private scheduler: scheduler = new ROT.Scheduler.Speed();
     private engine: engine = new ROT.Engine(this.scheduler);
+    private wasEngineStarted: boolean = false;
 
     /**
      * Adds actor to engine scheduler.
@@ -46,6 +47,7 @@ export class EngineController extends Controller {
      */
     public startEngine(): void {
         this.engine.start();
+        this.wasEngineStarted = true;
     }
     /**
      * Locks time engine.
@@ -58,5 +60,11 @@ export class EngineController extends Controller {
      */
     public unlockEngine(): void {
         this.engine.unlock();
+    }
+    /**
+     * Boolean variable indicating whether engine was started at some point or not.
+     */
+    public hasEngineBeenStarted(): boolean {
+        return this.wasEngineStarted;
     }
 }
