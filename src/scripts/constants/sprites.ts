@@ -75,3 +75,9 @@ export const terrain = {
     STAIRS_UP: 'stairs_up',
     STAIRS_DOWN: 'stairs_down',
 };
+export enum dungeonFeaturesEnum {
+    BED_HEAD = 'left_bed',
+    BED_FOOT = 'right_bed',
+    BARREL = 'barrel',
+    CHEST_OF_DRAWERS = 'chest_drawers',
+}

@@ -18,8 +18,8 @@ interface IExtendedConfig {
 }
 
 const config: IConfig = {
-    LEVEL_WIDTH: 100,
-    LEVEL_HEIGHT: 100,
+    LEVEL_WIDTH: 50,
+    LEVEL_HEIGHT: 50,
     debugMode: false,
     defaultLevelType: null,
     SCREEN_WIDTH: undefined,

@@ -13,6 +13,10 @@ import {TreeModel} from '../model/dungeon/cells/tree_model';
 import {StairsModel} from '../model/dungeon/cells/floors/stairs';
 import {DOWN, UP} from '../constants/stairs_directions';
 import {Cell} from '../model/dungeon/cells/cell_model';
+import {BedHead} from '../model/dungeon/cells/special/bed_head';
+import {BedFoot} from '../model/dungeon/cells/special/bed_foot';
+import {BarrelModel} from '../model/dungeon/cells/special/barrel';
+import {ChestOfDrawersModel} from '../model/dungeon/cells/special/chest_of_drawers_model';
 
 export const CellModelFactory = {
     getCellModel(x: number, y: number, type: string): Cell {
@@ -53,6 +57,14 @@ export const CellModelFactory = {
                 return CellModelFactory.getStairsDown(x, y);
             case cellTypes.STAIRS_UP:
                 return CellModelFactory.getStairsUp(x, y);
+            case cellTypes.BED_HEAD:
+                return CellModelFactory.getBedHead(x, y);
+            case cellTypes.BED_FOOT:
+                return CellModelFactory.getBedFoot(x, y);
+            case cellTypes.BARREL:
+                return CellModelFactory.getBarrelModel(x, y);
+            case cellTypes.CHEST_OF_DRAWERS:
+                return CellModelFactory.getChestOfDrawersModel(x, y);
             default:
                 throw new Error('Unknown cell type in cell model factory.');
         }
@@ -182,5 +194,17 @@ export const CellModelFactory = {
     },
     getStairsDown(x: number, y: number): StairsModel {
         return new StairsModel(x, y, {direction: DOWN});
+    },
+    getBedHead(x: number, y: number): BedHead {
+        return new BedHead(x, y);
+    },
+    getBedFoot(x: number, y: number): BedFoot {
+        return new BedFoot(x, y);
+    },
+    getBarrelModel(x: number, y: number): BarrelModel {
+        return new BarrelModel(x, y);
+    },
+    getChestOfDrawersModel(x: number, y: number): ChestOfDrawersModel {
+        return new ChestOfDrawersModel(x, y);
     },
 };

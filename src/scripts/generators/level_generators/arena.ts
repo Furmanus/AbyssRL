@@ -4,7 +4,7 @@ import {cellTypes} from '../../constants/cell_types';
 import * as Utility from '../../helper/utility';
 import * as ROT from 'rot-js';
 import {LevelModel} from '../../model/dungeon/level_model';
-import {IAnyFunction, IAnyObject} from '../../interfaces/common';
+import {IAnyFunction} from '../../interfaces/common';
 import Arena from 'rot-js/lib/map/arena';
 import {
     IDungeonStrategyGenerateLevelConfig,

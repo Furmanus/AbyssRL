@@ -19,4 +19,8 @@ export const cellTypes = {
     STAIRS_DOWN: 'stairs_down',
     LADDER_DOWN: 'ladder_down',
     LADDER_UP: 'ladder_up',
+    BED_HEAD: 'left_bed',
+    BED_FOOT: 'right_bed',
+    BARREL: 'barrel',
+    CHEST_OF_DRAWERS: 'chest_drawers',
 };

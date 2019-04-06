@@ -17,4 +17,8 @@ export const cellsDescriptions = {
     [cellTypes.TREE]: 'a tree',
     [cellTypes.STAIRS_DOWN]: 'a stairs down',
     [cellTypes.STAIRS_UP]: 'a stairs up',
+    [cellTypes.BED_HEAD]: 'a bed',
+    [cellTypes.BED_FOOT]: 'a bed',
+    [cellTypes.BARREL]: 'a wooden barrel',
+    [cellTypes.CHEST_OF_DRAWERS]: 'a chest of drawers',
 };
