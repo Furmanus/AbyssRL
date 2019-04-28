@@ -12,6 +12,7 @@ import {DungeonAreaModel} from './dungeon_area_model';
 import {RoomModel} from './room_model';
 import {RoomConnectionModel} from './room_connection_model';
 import {DungeonModelEvents} from '../../constants/dungeon_events';
+import {MapWithObserver} from '../../core/map_with_observer';
 
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
@@ -22,7 +23,7 @@ export class LevelModel extends BaseModel {
     private defaultWallType: string = null;
     private rooms: RoomModel[] = [];
     private roomConnections: Set<RoomConnectionModel> = new Set();
-    private cells: Map<string, Cell> = new Map();
+    private cells: MapWithObserver<string, Cell> = new MapWithObserver();
     /**
      * @param   branch             Object to which this level belongs
      * @param   levelNumber         Number of this dungeon level
@@ -104,7 +105,7 @@ export class LevelModel extends BaseModel {
     /**
      * Returns map object containing level cells.
      */
-    public getCells(): Map<string, Cell> {
+    public getCells(): MapWithObserver<string, Cell> {
         return this.cells;
     }
     /**
