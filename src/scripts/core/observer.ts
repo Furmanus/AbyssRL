@@ -3,12 +3,11 @@
  */
 import {
     IAnyFunction,
-    IAnyObject,
 } from '../interfaces/common';
 
 interface IObserverEntry {
     observer: Observer;
-    event: string;
+    event?: string;
     callback: IAnyFunction;
 }
 
@@ -41,12 +40,12 @@ export class Observer {
      * @param observer  Observer instance listening on specified event
      * @param event     Event name
      */
-    public off(observer: Observer, event: string): void {
+    public off(observer: Observer, event?: string): void {
         const observers = this.observers;
         const observerEntries = observers.values();
 
         for (const entry of observerEntries) {
-            if (entry.observer === observer && entry.event === event) {
+            if (entry.observer === observer && (!event || entry.event === event)) {
                 observers.delete(entry);
             }
         }
