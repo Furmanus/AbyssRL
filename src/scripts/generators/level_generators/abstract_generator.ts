@@ -16,6 +16,7 @@ import {
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Direction} from '../../model/position/direction';
 import {directionType} from '../../interfaces/common';
+import {MapWithObserver} from '../../core/map_with_observer';
 
 const {
     NE,
@@ -57,7 +58,7 @@ export abstract class AbstractLevelGenerator {
             cellsToChange,
             cellsAfterChange,
         } = config;
-        const levelCells: Map<string, Cell> = level.getCells();
+        const levelCells: MapWithObserver<string, Cell> = level.getCells();
         let examinedCellNeighbours;
 
         if (cellsToSmooth.length && cellsToChange.length && cellsAfterChange.length) {
@@ -83,7 +84,7 @@ export abstract class AbstractLevelGenerator {
      * @param   level      Level model containing level cells.
      */
     protected smoothLevelHills(level: LevelModel): void {
-        const levelCells: Map<string, Cell> = level.getCells();
+        const levelCells: MapWithObserver<string, Cell> = level.getCells();
         let examinedCellNeighbours: ISearchCellSurroundingResult;
         let isHillFromLeftSide: boolean;
         let isHillFromRightSide: boolean;
@@ -124,7 +125,7 @@ export abstract class AbstractLevelGenerator {
      * @returns                 Returns object with information about direction of searched cells in cell surrounding.
      */
     protected isCertainCellInCellSurroundings(
-        levelCells: Map<string, Cell>,
+        levelCells: MapWithObserver<string, Cell>,
         cell: Cell,
         searchedCells: string[] = [],
     ): ISearchCellSurroundingResult {
@@ -302,7 +303,7 @@ export abstract class AbstractLevelGenerator {
      * @param     level   LevelModel
      */
     protected generateDeepWater(level: LevelModel): void {
-        const levelCells: Map<string, Cell> = level.getCells();
+        const levelCells: MapWithObserver<string, Cell> = level.getCells();
         let examinedCellSurrounding: Position[];
         let isCellSurroundedByWaterOnly: boolean;
 

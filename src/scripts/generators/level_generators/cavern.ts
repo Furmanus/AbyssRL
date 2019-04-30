@@ -79,7 +79,9 @@ export class CavernLevelGenerator extends AbstractLevelGenerator {
         });
         this.smoothLevelHills(level);
         this.generateRandomStairsUp(level);
-        this.generateRandomStairsDown(level);
+        if (config && config.generateStairsDown) {
+            this.generateRandomStairsDown(level);
+        }
     }
     /**
      * Returns only created instance of cavern level generator.

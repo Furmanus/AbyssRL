@@ -11,17 +11,19 @@ import {Cell} from './cells/cell_model';
 import {DungeonAreaModel} from './dungeon_area_model';
 import {RoomModel} from './room_model';
 import {RoomConnectionModel} from './room_connection_model';
+import {DungeonModelEvents} from '../../constants/dungeon_events';
+import {MapWithObserver} from '../../core/map_with_observer';
 
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
 export class LevelModel extends BaseModel {
-    private branch: string;
+    public branch: string;
     public levelNumber: number;
     private defaultWallType: string = null;
     private rooms: RoomModel[] = [];
     private roomConnections: Set<RoomConnectionModel> = new Set();
-    private cells: Map<string, Cell> = new Map();
+    private cells: MapWithObserver<string, Cell> = new MapWithObserver();
     /**
      * @param   branch             Object to which this level belongs
      * @param   levelNumber         Number of this dungeon level
@@ -57,6 +59,8 @@ export class LevelModel extends BaseModel {
     }
     public changeCellType(x: number, y: number, type: string): void {
         this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
+
+        this.notify(DungeonModelEvents.CELL_TYPE_CHANGED, {x, y});
     }
     /**
      * Method responsible for setting stairsUp field of level model.
@@ -101,7 +105,7 @@ export class LevelModel extends BaseModel {
     /**
      * Returns map object containing level cells.
      */
-    public getCells(): Map<string, Cell> {
+    public getCells(): MapWithObserver<string, Cell> {
         return this.cells;
     }
     /**
@@ -159,5 +163,35 @@ export class LevelModel extends BaseModel {
         }
 
         return choosenRoom;
+    }
+    public getCellNeighbours(cell: Cell): Cell[] {
+        const result: Cell[] = [];
+
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                const examinedCell: Cell = this.getCell(cell.x + i, cell.y + j);
+
+                if (examinedCell && examinedCell !== cell) {
+                    result.push(examinedCell);
+                }
+            }
+        }
+
+        return result;
+    }
+    public isCellAdjacentToCell(cell: Cell, callback: (cellCandidate: Cell) => boolean): boolean {
+        let result: boolean = false;
+        const neighbours = this.getCellNeighbours(cell);
+
+        neighbours.forEach((examinedCell: Cell) => {
+            if (result) {
+                return;
+            }
+            if (callback(examinedCell)) {
+                result = true;
+            }
+        });
+
+        return result;
     }
 }

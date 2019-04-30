@@ -1,41 +1,35 @@
 import {Rectangle} from '../position/rectangle';
 import * as Utility from '../../helper/utility';
 import {Position} from '../position/position';
-import {config} from '../../global/config';
 import * as Rng from '../../helper/rng';
 import {BaseModel} from '../../core/base_model';
-import {IAnyFunction} from '../../interfaces/common';
+import {IAnyFunction, ICoordinates} from '../../interfaces/common';
+import {LevelModel} from './level_model';
+import {Cell} from './cells/cell_model';
 
-type rectOrLeft = IExtendedRectangle | number;
-interface IExtendedRectangle extends Rectangle {
+export interface IRoomConfig {
     iteration?: number;
+    levelModel: LevelModel;
 }
 
 export class RoomModel extends BaseModel {
-    constructor(rectangleOrLeft: rectOrLeft, top?: number, width?: number, height?: number) {
+    public rectangle: Rectangle;
+    public iteration: number;
+    public doorSpots: Set<Position>;
+    public cells: Position[];
+    private levelModel: LevelModel;
+
+    constructor(rectangle: Rectangle, roomConfig: IRoomConfig) {
         super();
 
-        if (rectangleOrLeft instanceof Rectangle) {
-            this.rectangle = rectangleOrLeft.copy();
-
-            if (rectangleOrLeft.iteration) {
-                this.iteration = rectangleOrLeft.iteration;
-            }
-        } else {
-            this.rectangle = new Rectangle(new Position(rectangleOrLeft, top), width, height);
-        }
-
-        this.cells = {};
+        this.rectangle = rectangle;
+        this.iteration = roomConfig.iteration;
+        this.levelModel = roomConfig.levelModel;
+        this.cells = this.createCells();
         /**
          * Set of door positions in room.
          */
         this.doorSpots = new Set<Position>();
-        /**
-         * If room contain stairs up.
-         */
-        this.hasStairsUp = false;
-
-        this.initialize();
     }
     get left(): number {
         return this.rectangle.leftTop.x;
@@ -55,44 +49,114 @@ export class RoomModel extends BaseModel {
     get height(): number {
         return this.rectangle.height;
     }
-    protected initialize(): void {
+    get hasStairsUp(): boolean {
+        return !!this.getCells().find((cell: Cell) => cell.type.includes('stairs_up'));
+    }
+    get hasStairsDown(): boolean {
+        return !!this.getCells().find((cell: Cell) => cell.type.includes('stairs_down'));
+    }
+
+    public createCells(): Position[] {
         const {
             left,
             top,
             right,
             bottom,
         } = this;
+        const cells: Position[] = [];
 
-        for (let i = left; i <= right; i++) {
-            for (let j = top; j <= bottom; j++) {
-                if (
-                    i === left ||
-                    i === right ||
-                    j === top ||
-                    j === bottom ||
-                    i === config.LEVEL_WIDTH - 1 ||
-                    j === config.LEVEL_HEIGHT - 1
-                ) {
-                    this.cells[`${i},${j}`] = 1;
-                } else {
-                    this.cells[`${i},${j}`] = 0;
-                }
+        for (let i = left; i < right; i++) {
+            for (let j = top; j < bottom; j++) {
+                cells.push(new Position(i, j));
             }
         }
+
+        return cells;
+    }
+    /**
+     * Returns randomly chosen cell which passes boolean test provided by callback function given as argument.
+     *
+     * @param callback  Callback function which returns boolean value indicating whether chosen cell should be returned
+     */
+    public getRandomCallbackCell(callback: (cell: Cell) => boolean): Cell {
+        let cell: Cell;
+        let attemptNumber: number = 0;
+
+        while (!cell) {
+            if (attemptNumber > 200) {
+                break;
+            } else {
+                const cellCandidate: Cell = this.getCells().random();
+
+                if (callback(cellCandidate)) {
+                    cell = cellCandidate;
+                }
+
+                attemptNumber += 1;
+            }
+        }
+
+        return cell;
+    }
+    /**
+     * Returns randomly chosen floor type of cell from room.
+     */
+    public getRandomInteriorCell(): Cell {
+        let cell: Cell;
+
+        while (!cell) {
+            const cellCandidate: Cell = this.getCells().random();
+
+            if (!cellCandidate.blockMovement) {
+                cell = cellCandidate;
+            }
+        }
+
+        return cell;
+    }
+    /**
+     * Returns randomly chosen wall type of cell from room.
+     */
+    public getRandomWallCell(): Cell {
+        let cell: Cell;
+
+        while (!cell) {
+            const cellCandidate: Cell = this.getCells().random();
+
+            if (cellCandidate.blockMovement) {
+                cell = cellCandidate;
+            }
+        }
+
+        return cell;
     }
     public recalculateCells(): void {
-        this.cells = {};
-        this.initialize();
+        this.cells = this.createCells();
+    }
+    public getCell(x: number, y: number): Cell {
+        return this.levelModel.getCell(x, y);
+    }
+    public getCells(): Cell[] {
+        const cells: Cell[] = [];
+
+        this.cells.forEach((pos: Position) => {
+            cells.push(this.getCell(pos.x, pos.y));
+        });
+
+        return cells;
+    }
+    public changeCellType(x: number, y: number, type: string): void {
+        const cell: Cell = this.levelModel.getCell(x, y);
+
+        if (cell) {
+            this.levelModel.changeCellType(x, y, type);
+        }
     }
     public transform(callback: IAnyFunction): this {
-        const {
-            cells,
-        } = this;
+        this.cells.forEach((pos: Position) => {
+            const isWall: boolean = pos.y === this.top || pos.y === this.bottom || pos.x === this.right || pos.x === this.left;
 
-        Object.keys(cells).forEach((item) => {
-            const cellPosition = Utility.getPositionFromString(item, ',');
-
-            callback(cellPosition.x, cellPosition.y, cells[item]);
+            callback(pos.x, pos.y, isWall ? 1 : 0);
         });
 
         return this;
@@ -140,5 +204,11 @@ export class RoomModel extends BaseModel {
             Rng.getRandomNumber(this.left + 1, this.right - 1),
             Rng.getRandomNumber(this.top + 1, this.bottom - 1),
         );
+    }
+    /**
+     * Returns model of level which contains this room.
+     */
+    public getLevelModel(): LevelModel {
+        return this.levelModel;
     }
 }

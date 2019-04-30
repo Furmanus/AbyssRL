@@ -2,7 +2,6 @@ import {config as globalConfig} from '../../global/config';
 import {AbstractLevelGenerator} from './abstract_generator';
 import {cellTypes} from '../../constants/cell_types';
 import {Position} from '../../model/position/position';
-import {Rectangle} from '../../model/position/rectangle';
 import {RoomModel} from '../../model/dungeon/room_model';
 import {
     DIRECTION_HORIZONTAL,
@@ -12,10 +11,12 @@ import * as Rng from '../../helper/rng';
 import {DungeonAreaModel} from '../../model/dungeon/dungeon_area_model';
 import {RoomConnectionModel} from '../../model/dungeon/room_connection_model';
 import {LevelModel} from '../../model/dungeon/level_model';
-import {IAnyFunction, IAnyObject} from '../../interfaces/common';
+import {IAnyFunction} from '../../interfaces/common';
+import {IDungeonStrategyGenerateLevelConfig} from '../../interfaces/generators';
+import {DungeonVaultsGenerator} from './vaults_generators/dungeon_vaults.js';
 
 interface IBspSplitRegions {
-    roomsToReturn: Rectangle[];
+    roomsToReturn: DungeonAreaModel[];
     createdAreas: DungeonAreaModel[];
 }
 interface IPreparedLevelAreas {
@@ -50,16 +51,16 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
      * @param   config             Additional level config info.
      * @param   debugCallback      Optional callback function serving as debug for map generation
      */
-    public generateLevel(level: LevelModel, config?: IAnyObject, debugCallback?: IAnyFunction): void {
+    public generateLevel(level: LevelModel, config?: IDungeonStrategyGenerateLevelConfig, debugCallback?: IAnyFunction): void {
         const roomsArray: RoomModel[] = [];
-        // @ts-ignore
-        const bspRegions: IBspSplitRegions = this.createBspSplitRegions();
-        const createdRooms: Rectangle[] = bspRegions.roomsToReturn;
+        const bspRegions: IBspSplitRegions = this.createBspSplitRegions(undefined, {
+            level,
+        });
+        const createdRooms: DungeonAreaModel[] = bspRegions.roomsToReturn;
         const createdAreas: DungeonAreaModel[] = bspRegions.createdAreas;
-        const rooms: RoomModel[] = this.createRoomsFromRegions(createdRooms as DungeonAreaModel[]);
+        const rooms: RoomModel[] = this.createRoomsFromRegions(createdRooms);
 
         level.initialize(cellTypes.GRAY_WALL);
-
         /**
          * Transform rectangles into rooms on level model.
          */
@@ -76,7 +77,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
         this.generateDoors(level);
         this.generateRandomStairsUp(level);
-        this.generateRandomStairsDown(level);
+        if (config && config.generateStairsDown) {
+            this.generateRandomStairsDown(level);
+        }
 
         function generatorCallback(x: number, y: number, value: number): void {
             if (value === 1) {
@@ -85,6 +88,10 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
                 level.changeCellType(x, y, cellTypes.RED_FLOOR);
             }
         }
+
+        rooms.forEach((room: RoomModel) => {
+            DungeonVaultsGenerator.generateRandomRoom(room);
+        });
     }
     /**
      * Method responsible for generating doors in level model.
@@ -118,13 +125,17 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
      */
     private createBspSplitRegions(
         iteration: {value: number} = {value: 0},
-        config: {minRoomLength?: number, maxRoomLength?: number} = {},
-        roomsToAnalyze: DungeonAreaModel[],
-        roomsToReturn: Rectangle[] = [],
-        createdAreas: DungeonAreaModel[] = [],
+        config: {level: LevelModel, minRoomLength?: number, maxRoomLength?: number},
+        roomsToAnalyze?: DungeonAreaModel[],
+        roomsToReturn?: DungeonAreaModel[],
+        createdAreas?: DungeonAreaModel[],
     ): IBspSplitRegions {
         const minRoomLength = config.minRoomLength || 8;
         const maxRoomLength = config.maxRoomLength || 15;
+
+        roomsToReturn = roomsToReturn || [];
+        createdAreas = createdAreas || [];
+
         /**
          * Array of rooms to analyze in next iteration
          */
@@ -141,6 +152,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
             globalConfig.LEVEL_HEIGHT,
             null,
             0,
+            config.level,
         )];
         /**
          * We analyze each rectangle in array with rectangles to analyze
@@ -297,7 +309,10 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
     private createRoomsFromRegions(regionArray: DungeonAreaModel[]): RoomModel[] {
         return regionArray.map((item: DungeonAreaModel) => {
             if (item.area >= 16) {
-                const roomModel = new RoomModel(item);
+                const roomModel = new RoomModel(item.rectangle, {
+                    iteration: item.iteration,
+                    levelModel: item.levelModel,
+                });
                 item.roomModel = roomModel;
                 return roomModel;
             }
@@ -421,7 +436,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
         randomCellPosition = randomRoom.getRandomRoomCellPosition();
 
         level.changeCellType(randomCellPosition.x, randomCellPosition.y, cellTypes.STAIRS_DOWN);
-        level.setStairsUp(randomCellPosition.x, randomCellPosition.y);
+        level.setStairsDown(randomCellPosition.x, randomCellPosition.y);
     }
     /**
      * Returns only created instance of cavern level generator.

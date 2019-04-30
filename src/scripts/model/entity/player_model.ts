@@ -5,6 +5,6 @@ export class PlayerModel extends EntityModel {
     constructor(config: IAnyObject = {}) {
         super(config);
 
-        this.description = config.name || 'Player';
+        this.description = config.name || 'Anonymous brave hero';
     }
 }

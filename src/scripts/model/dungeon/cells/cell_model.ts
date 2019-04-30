@@ -50,6 +50,10 @@ export abstract class Cell extends BaseModel implements ICellModel {
      */
     public displaySet: string = null;
     /**
+     * Type of cell.
+     */
+    public type: string = '';
+    /**
      * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
      *
      * @param   x       Horizontal position on level grid.

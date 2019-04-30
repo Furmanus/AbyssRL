@@ -21,8 +21,11 @@ export interface IExaminedCellsClosestVoronoiPointType {
     distance: number;
     type: string;
 }
-export interface ICavernGenerateLevelConfig {
+export interface ICavernGenerateLevelConfig extends IDungeonStrategyGenerateLevelConfig {
     solidCellProbability?: number;
     born?: number[];
     survive?: number[];
+}
+export interface IDungeonStrategyGenerateLevelConfig {
+    generateStairsDown?: boolean;
 }

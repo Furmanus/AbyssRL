@@ -2,6 +2,7 @@ import {BaseModel} from '../../core/base_model';
 import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
+import {EntityEvents} from '../../constants/entity_events';
 
 export class EntityModel extends BaseModel {
     /**
@@ -48,17 +49,42 @@ export class EntityModel extends BaseModel {
         this.perception = config.perception;
     }
     /**
+     * Changes position property of entity.
      *
      * @param   newCell     New cell which entity will occupy.
      */
     public changePosition(newCell: Cell): void {
-        this.position = newCell;
+        this.setProperty('position', newCell);
+    }
+    /**
+     * Changes level property and position property of entity.
+     *
+     * @param level         New entity level
+     */
+    public changeLevel(level: LevelModel): void {
+        this.setProperty('level', level);
     }
     /**
      * Sets new fov array of entity.
      */
     public setFov(fovArray: Cell[]): void {
         this.setProperty('fov', fovArray);
+    }
+    /**
+     * Changes position and lastVisitedCell properties of entity. Also changes properties of appriopiate cells (clears
+     * entity property on old cell, and sets entity property on new cell).
+     *
+     * @param newCell   New cell where entity currently is
+     */
+    public move(newCell: Cell): void {
+        this.lastVisitedCell = this.position; // remember on what cell entity was in previous turn
+        this.position.clearEntity(); // we clear entity field of cell which entity is right now at
+        this.position = newCell; // we move entity to new position
+        /**
+         * in new cell model where monster is after movement, we store information about new entity occupying new cell.
+         */
+        this.position.setEntity(this);
+        this.notify(EntityEvents.ENTITY_MOVE, newCell);
     }
     /**
      * Returns speed of entity.

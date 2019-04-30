@@ -28,6 +28,7 @@
     "@types/jest": "^24.0.9",
     "@types/jsdom": "12.2.2",
     "@types/rot-js": "0.6.5",
+    "autobind-decorator": "2.4.0",
     "awesome-typescript-loader": "5.2.1",
     "babel-loader": "8.0.5",
     "clean-webpack-plugin": "0.1.19",

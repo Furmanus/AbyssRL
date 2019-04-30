@@ -4,11 +4,16 @@ import {cellTypes} from '../../constants/cell_types';
 import * as Utility from '../../helper/utility';
 import * as ROT from 'rot-js';
 import {LevelModel} from '../../model/dungeon/level_model';
-import {IAnyFunction, IAnyObject} from '../../interfaces/common';
+import {IAnyFunction} from '../../interfaces/common';
 import Arena from 'rot-js/lib/map/arena';
-import {IExaminedCellsClosestVoronoiPointType, IFillLevelWithVoronoiPointConfig} from '../../interfaces/generators';
+import {
+    IDungeonStrategyGenerateLevelConfig,
+    IExaminedCellsClosestVoronoiPointType,
+    IFillLevelWithVoronoiPointConfig,
+} from '../../interfaces/generators';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Position} from '../../model/position/position';
+import {MapWithObserver} from '../../core/map_with_observer';
 
 const singletonToken: symbol = Symbol('ArenaLevelGenerator singleton token');
 let instance: ArenaLevelGenerator;
@@ -36,7 +41,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
      * @param   config             Additional level config info.
      * @param   debugCallback      Optional callback function serving as debug for map generation
      */
-    public generateLevel(level: LevelModel, config?: IAnyObject, debugCallback?: IAnyFunction): void {
+    public generateLevel(level: LevelModel, config?: IDungeonStrategyGenerateLevelConfig, debugCallback?: IAnyFunction): void {
         const generator: Arena = new ROT.Map.Arena(globalConfig.LEVEL_WIDTH, globalConfig.LEVEL_HEIGHT);
 
         level.initialize();
@@ -54,7 +59,9 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
             probability: 70,
         });
         this.generateRandomStairsUp(level);
-        this.generateRandomStairsDown(level);
+        if (config && config.generateStairsDown) {
+            this.generateRandomStairsDown(level);
+        }
 
         function generatorCallback(x: number, y: number, value: number): void {
             if (value === 1) {
@@ -77,7 +84,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
             targetCellType,
             cellAllowedToChange,
         } = config;
-        const levelCells: Map<string, Cell> = level.getCells();
+        const levelCells: MapWithObserver<string, Cell> = level.getCells();
         let examinedCellsClosestVoronoiPointType: IExaminedCellsClosestVoronoiPointType;
         let examinedVoronoiPointDistance: number;
         /**

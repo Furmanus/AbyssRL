@@ -1,10 +1,13 @@
-import {Observer} from '../../core/observer';
 import {calculateFov} from '../../helper/fov_helper';
 import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {EntityModel} from '../../model/entity/entity_model';
+import {Controller} from '../controller';
+import {LevelModel} from '../../model/dungeon/level_model';
+import {EntityEvents} from '../../constants/entity_events';
+import {boundMethod} from 'autobind-decorator';
 
-export class EntityController<M extends EntityModel = EntityModel> extends Observer {
+export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
     /**
      * Constructor for entity controller.
@@ -15,17 +18,22 @@ export class EntityController<M extends EntityModel = EntityModel> extends Obser
     constructor(config: IAnyObject) {
         super();
     }
+    protected attachEvents(): void {
+        this.model.on(this, EntityEvents.ENTITY_MOVE, this.onEntityPositionChange);
+    }
     /**
      * Moves entity into new cell.
      */
     public move(newCell: Cell): void {
-        this.model.lastVisitedCell = this.model.position; // remember on what cell entity was in previous turn
-        this.model.position.clearEntity(); // we clear entity field of cell which entity is right now at
-        this.model.position = newCell; // we move entity to new position
-        /**
-         * in new cell model where monster is after movement, we store information about new entity occupying new cell.
-         */
-        this.model.position.setEntity(this.model);
+        this.model.move(newCell);
+    }
+    /**
+     * Method triggered after position property has been changed in model.
+     *
+     * @param newCell   New entity position (cell)
+     */
+    @boundMethod
+    public onEntityPositionChange(newCell: Cell): void {
         newCell.walkEffect(this);
         this.calculateFov();
     }
@@ -59,6 +67,22 @@ export class EntityController<M extends EntityModel = EntityModel> extends Obser
      */
     public getFov(): Cell[] {
         return this.model.fov;
+    }
+    /**
+     * Returns entity current position (Cell model).
+     */
+    public getEntityPosition(): Cell {
+        return this.model.position;
+    }
+    /**
+     * Changes model information about level and position (cell) where player currently is.
+     *
+     * @param level         New level where player currently is
+     * @param position      New player position (cell)
+     */
+    public changeLevel(level: LevelModel, position: Cell): void {
+        this.model.changeLevel(level);
+        this.move(position);
     }
     /**
      * Return property value from model.

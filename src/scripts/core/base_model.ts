@@ -22,6 +22,9 @@ export class BaseModel extends Constructor implements IAnyObject {
             if (!silent) {
                 this.notify(`property:${key}:change`, value);
             }
+        } else {
+            // tslint:disable-next-line:no-console
+            console.warn(`Attempt to set unknown property ${key}`);
         }
     }
 }

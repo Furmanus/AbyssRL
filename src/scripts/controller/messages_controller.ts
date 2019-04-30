@@ -1,10 +1,10 @@
 import {MessagesView} from '../view/messages_view';
 import {config} from '../global/config';
-import {Observer} from '../core/observer';
+import {Controller} from './controller';
 
 let instance: MessagesController;
 
-export class MessagesController extends Observer {
+export class MessagesController extends Controller {
     private view: MessagesView;
     constructor() {
         super();

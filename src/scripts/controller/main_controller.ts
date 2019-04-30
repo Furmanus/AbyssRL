@@ -9,15 +9,20 @@ import {MessagesController} from './messages_controller';
 import {KEYBOARD_DIRECTIONS} from '../constants/keyboard_directions';
 import {config} from '../global/config';
 import {
+    PLAYER_ACTION_GO_DOWN,
+    PLAYER_ACTION_GO_UP,
     PLAYER_ACTION_ACTIVATE_OBJECT,
     PLAYER_ACTION_MOVE_PLAYER,
     PLAYER_WALK_CONFIRM_NEEDED,
     SHOW_MESSAGE_IN_VIEW,
 } from '../constants/player_actions';
-import {Constructor} from '../core/constructor';
 import {IAnyObject, IDirection, IMessageData, IPlayerConfirmationObject} from '../interfaces/common';
+import {Controller} from './controller';
+import {DungeonEvents} from '../constants/dungeon_events';
+import {boundMethod} from 'autobind-decorator';
+import {ILevelInfo} from '../interfaces/level';
 
-export class MainController extends Constructor {
+export class MainController extends Controller {
     private readonly gameController: GameController;
     private readonly infoController: InfoController;
     private readonly miniMapController: MiniMapController;
@@ -53,6 +58,8 @@ export class MainController extends Constructor {
         this.bindMethods();
         this.attachEvents();
 
+        this.infoController.changePlayerNameMessageInView(this.gameController.getPlayerName());
+
         this.controllerInitialized = true;
     }
     /**
@@ -80,6 +87,7 @@ export class MainController extends Constructor {
 
         this.gameController.on(this, SHOW_MESSAGE_IN_VIEW, this.onShowMessageInView);
         this.gameController.on(this, PLAYER_WALK_CONFIRM_NEEDED, this.onPlayerConfirmNeeded);
+        this.gameController.on(this, DungeonEvents.CHANGE_CURRENT_LEVEL, this.onChangeDungeonLevel);
     }
     /**
      * Method responsible for removing keyboard events from window and listening to object notifying.
@@ -139,6 +147,10 @@ export class MainController extends Constructor {
         if (this.shiftPressed) {
             if (KEYBOARD_DIRECTIONS[keycode]) {
                 this.moveCamera(keycode); // shift + numpad direction, move camera around
+            } else if (keycode === 188) {
+                this.gameController.takePlayerAction(PLAYER_ACTION_GO_UP);
+            } else if (keycode === 190) {
+                this.gameController.takePlayerAction(PLAYER_ACTION_GO_DOWN);
             }
         } else if (this.controlPressed) {
             // placeholder
@@ -171,6 +183,15 @@ export class MainController extends Constructor {
         const deltaY = KEYBOARD_DIRECTIONS[keycode].y * 4;
 
         this.gameController.moveCameraInView(deltaX, deltaY);
+    }
+    /**
+     * Method triggered after game controller emits event about level change by player.
+     *
+     * @param data  Data object passed along with event
+     */
+    @boundMethod
+    private onChangeDungeonLevel(data: ILevelInfo): void {
+        this.infoController.changeLevelInfoMessage(data);
     }
     /**
      * Function responsible for resizing game window size and all other canvas/divs(messages, info and map) whenever

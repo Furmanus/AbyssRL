@@ -1,16 +1,17 @@
 import * as ROT from 'rot-js';
-import {Constructor} from '../../core/constructor';
 import {EntityController} from '../entity/entity_controller';
 import scheduler from 'rot-js/lib/scheduler/scheduler';
 import engine from 'rot-js/lib/engine';
+import {Controller} from '../controller';
 
 /**
  * Controller of time engine of game. Doesn't have explicit, separate model, models are scheduler and engine
  * fields, provided by rot.js library.
  */
-export class EngineController extends Constructor {
+export class EngineController extends Controller {
     private scheduler: scheduler = new ROT.Scheduler.Speed();
     private engine: engine = new ROT.Engine(this.scheduler);
+    private wasEngineStarted: boolean = false;
 
     /**
      * Adds actor to engine scheduler.
@@ -46,6 +47,7 @@ export class EngineController extends Constructor {
      */
     public startEngine(): void {
         this.engine.start();
+        this.wasEngineStarted = true;
     }
     /**
      * Locks time engine.
@@ -58,5 +60,11 @@ export class EngineController extends Constructor {
      */
     public unlockEngine(): void {
         this.engine.unlock();
+    }
+    /**
+     * Boolean variable indicating whether engine was started at some point or not.
+     */
+    public hasEngineBeenStarted(): boolean {
+        return this.wasEngineStarted;
     }
 }

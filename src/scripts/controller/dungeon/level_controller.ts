@@ -1,9 +1,8 @@
-import {Observer} from '../../core/observer';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {EngineController} from '../time_engine/engine_controller';
-import {DungeonModel} from '../../model/dungeon/dungeon_model';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {EntityController} from '../entity/entity_controller';
+import {Controller} from '../controller';
 
 interface ILevelControllerConstructorConfig {
     readonly branch: string;
@@ -13,7 +12,7 @@ interface ILevelControllerConstructorConfig {
 /**
  * Controller of single dungeon level.
  */
-export class LevelController extends Observer {
+export class LevelController extends Controller {
     public model: LevelModel;
     public engine: EngineController;
 
@@ -34,14 +33,6 @@ export class LevelController extends Observer {
         return this.model.getCell(x, y);
     }
     /**
-     * Adds actor to time engine.
-     *
-     * @param   actor   Actor added to time engine.
-     */
-    public addActorToScheduler(actor: EntityController): void {
-        this.engine.addActor(actor);
-    }
-    /**
      * Starts time engine on level.
      */
     public startTimeEngine(): void {
@@ -58,6 +49,29 @@ export class LevelController extends Observer {
      */
     public unlockTimeEngine(): void {
         this.engine.unlockEngine();
+    }
+    /**
+     * Adds actor to engine scheduler.
+     *
+     * @param   actor   Actor, instance of entity class (or subclass).
+     * @param   repeat  Boolean variable indicating whether actor should act more than once.
+     */
+    public addActorToTimeEngine(actor: EntityController, repeat: boolean = true): void {
+        this.engine.addActor(actor, repeat);
+    }
+    /**
+     * Removes actor from engine scheduler.
+     *
+     * @param  actor   Actor, instance of entity controller (or subclass).
+     */
+    public removeActorFromTimeEngine(actor: EntityController): void {
+        this.engine.removeActor(actor);
+    }
+    /**
+     * Returns boolean variable indicating whether time engine of level has been started at some point or not.
+     */
+    public wasTimeEngineStarted(): boolean {
+        return this.engine.hasEngineBeenStarted();
     }
     /**
      * Returns cell model with stairs down.

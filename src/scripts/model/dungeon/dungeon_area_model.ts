@@ -3,6 +3,7 @@ import * as Utility from '../../helper/utility';
 import {Position} from '../position/position';
 import {uid as generateUid} from '../../helper/uid_helper';
 import {RoomModel} from './room_model';
+import {LevelModel} from './level_model';
 
 export class DungeonAreaModel extends Rectangle {
     /**
@@ -23,17 +24,22 @@ export class DungeonAreaModel extends Rectangle {
      */
     public adjacentRegionDirection: string;
     /**
+     * Level model in which dungeon area exists.
+     */
+    public levelModel: LevelModel;
+    /**
      * Room model associated with dungeon area.
      */
     public roomModel?: RoomModel;
 
-    constructor(leftTopCorner: Position, width: number, height: number, uid: string, iteration: number) {
+    constructor(leftTopCorner: Position, width: number, height: number, uid: string, iteration: number, level: LevelModel) {
         super(leftTopCorner, width, height);
 
         this.uid = uid;
         this.isConnected = false;
         this.iteration = iteration;
         this.adjacentRegionDirection = '';
+        this.levelModel = level;
     }
     get left(): number {
         return this.leftTop.x;
@@ -46,6 +52,9 @@ export class DungeonAreaModel extends Rectangle {
     }
     get bottom(): number {
         return this.rightBottom.y;
+    }
+    get rectangle(): Rectangle {
+        return new Rectangle(new Position(this.left, this.top), this.right - this.left, this.bottom - this.top);
     }
     /**
      * Splits rectangle vertically into two separate rectangles.
@@ -61,13 +70,21 @@ export class DungeonAreaModel extends Rectangle {
             Math.floor(this.width / 4),
         ));
         const uid = generateUid();
-        const firstRegion = new DungeonAreaModel(new Position(x, y), splitPoint - x, this.height, uid, iteration);
+        const firstRegion = new DungeonAreaModel(
+            new Position(x, y),
+            splitPoint - x,
+            this.height,
+            uid,
+            iteration,
+            this.levelModel,
+        );
         const secondRegion = new DungeonAreaModel(
             new Position(splitPoint + 1, y),
             (x + this.width - splitPoint - 1),
             this.height,
             uid,
             iteration,
+            this.levelModel,
         );
 
         firstRegion.adjacentRegionDirection = 'right';
@@ -92,13 +109,21 @@ export class DungeonAreaModel extends Rectangle {
             Math.floor(this.height / 4),
         ));
         const uid = generateUid();
-        const firstRegion = new DungeonAreaModel(new Position(x, y), this.width, splitPoint - y, uid, iteration);
+        const firstRegion = new DungeonAreaModel(
+            new Position(x, y),
+            this.width,
+            splitPoint - y,
+            uid,
+            iteration,
+            this.levelModel,
+        );
         const secondRegion = new DungeonAreaModel(
             new Position(x, splitPoint + 1),
             this.width,
             (y + this.height - splitPoint - 1),
             uid,
             iteration,
+            this.levelModel,
         );
 
         firstRegion.adjacentRegionDirection = 'bottom';
