@@ -14,6 +14,8 @@ import {RoomConnectionModel} from './room_connection_model';
 import {DungeonModelEvents} from '../../constants/dungeon_events';
 import {MapWithObserver} from '../../core/map_with_observer';
 
+export type randomCellTest = (cellCandidate: Cell) => boolean;
+
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
@@ -179,7 +181,7 @@ export class LevelModel extends BaseModel {
 
         return result;
     }
-    public isCellAdjacentToCell(cell: Cell, callback: (cellCandidate: Cell) => boolean): boolean {
+    public isCellAdjacentToCell(cell: Cell, callback: randomCellTest): boolean {
         let result: boolean = false;
         const neighbours = this.getCellNeighbours(cell);
 
@@ -191,6 +193,37 @@ export class LevelModel extends BaseModel {
                 result = true;
             }
         });
+
+        return result;
+    }
+    public getRandomUnoccupiedCell(): Cell {
+        let cell: Cell = Array.from(this.cells.values()).random();
+        let attempt: number = 0;
+
+        while (cell.blockMovement || cell.entity) {
+            if (attempt > 100) {
+                cell = undefined;
+                break;
+            }
+            cell = Array.from(this.cells.values()).random();
+            attempt += 1;
+        }
+
+        return cell;
+    }
+    public getRandomNeighbourCallback(cell: Cell, callback: randomCellTest): Cell {
+        const neighbours: Cell[] = this.getCellNeighbours(cell);
+        let result: Cell = neighbours.random();
+        let attempt: number = 0;
+
+        while (!callback(result)) {
+            result = neighbours.random();
+            attempt += 1;
+
+            if (attempt > 15) {
+                return null;
+            }
+        }
 
         return result;
     }

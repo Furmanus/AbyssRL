@@ -9,6 +9,7 @@ export const KEYBOARD_DIRECTIONS: IDirections = {
     98: {x: 0, y: 1},
     97: {x: -1, y: 1},
     100: {x: -1, y: 0},
+    101: {x: 0, y: 0},
     36: {x: -1, y: -1},
     38: {x: 0, y: -1},
     33: {x: 1, y: -1},
@@ -17,6 +18,7 @@ export const KEYBOARD_DIRECTIONS: IDirections = {
     40: {x: 0, y: 1},
     35: {x: -1, y: 1},
     37: {x: -1, y: 0},
+    190: {x: 0, y: 0},
 };
 export const DIRECTIONS: IStringDictionary = {
     '-1x-1': 'north_west',

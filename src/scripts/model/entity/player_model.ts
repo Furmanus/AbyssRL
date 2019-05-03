@@ -6,5 +6,6 @@ export class PlayerModel extends EntityModel {
         super(config);
 
         this.description = config.name || 'Anonymous brave hero';
+        this.type = 'player';
     }
 }

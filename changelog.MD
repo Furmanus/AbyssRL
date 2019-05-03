@@ -1,4 +1,6 @@
-###0.0.2 (work in progress)
+###0.0.3 (work in progress)
+* (Feature) Basic implementation of monsters (giant rat right now)
+###0.0.2 (01.05.2019)
 * (Feature) Added mechanism to generate random dungeon room decorators (a.k.a vaults), added
 one basic random room (empty room with bed and chest of drawers)
 * (Feature) Player character can use stairs

@@ -154,6 +154,13 @@ export class PlayerController extends EntityController<PlayerModel> {
             });
             return;
         }
+        if (cellModel.entity && cellModel.entity.type !== 'player') {
+            promiseResolveFunction({
+                canMove: false,
+                message: `${Utility.capitalizeString(cellModel.entity.description)} is in your way.`,
+            });
+            return;
+        }
 
         if (canPlayerMove) {
             entityMoveFunction(cellModel);

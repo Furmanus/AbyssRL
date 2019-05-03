@@ -3,8 +3,9 @@ import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
+import {IEntity} from '../../interfaces/entity_interfaces';
 
-export class EntityModel extends BaseModel {
+export class EntityModel extends BaseModel implements IEntity {
     /**
      * Visible sprite of entity. Member of file constants/sprites.js.
      */
@@ -21,13 +22,14 @@ export class EntityModel extends BaseModel {
      * Cell model where entity was in last turn.
      */
     public lastVisitedCell: Cell = null;
+    public strength: number;
+    public dexterity: number;
+    public toughness: number;
+    public intelligence: number;
     /**
-     * Speed statistic of entity.
+     * Speed statistic of entity. Important stat, used by time engine to calculate how often entity should act.
      */
     public speed: number;
-    /**
-     * Perception statistics of entity.
-     */
     public perception: number;
     /**
      * Array of cell model which are in entity field of view
@@ -37,6 +39,16 @@ export class EntityModel extends BaseModel {
      * Description (usually text to display) of entity.
      */
     public description: string = 'unknown entity';
+    /**
+     * Type of entity.
+     */
+    public type: string = 'unknown_entity';
+    /**
+     * Is entity hostile to player.
+     */
+    public isHostile: boolean = false;
+    public hitPoints: number;
+    public maxHitPoints: number;
 
     constructor(config: IAnyObject) {
         super();
@@ -47,6 +59,7 @@ export class EntityModel extends BaseModel {
         this.lastVisitedCell = config.lastVisitedCell || null;
         this.speed = config.speed;
         this.perception = config.perception;
+        this.type = config.type;
     }
     /**
      * Changes position property of entity.

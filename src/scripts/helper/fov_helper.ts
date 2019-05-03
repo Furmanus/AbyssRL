@@ -36,7 +36,9 @@ export function calculateFov(entity: EntityModel): Cell[] {
 
         if (cell && getDistance(position.x, position.y, x, y) < entity.perception) {
             calculatedFov.push(cell);
-            cell.wasDiscoveredByPlayer = true;
+            if (entity.type === 'player') {
+                cell.wasDiscoveredByPlayer = true;
+            }
         }
     });
 

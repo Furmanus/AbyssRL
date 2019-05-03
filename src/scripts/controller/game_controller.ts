@@ -8,7 +8,9 @@ import {
     PLAYER_WALK_CONFIRM_NEEDED,
     START_PLAYER_TURN,
     END_PLAYER_TURN,
-    PLAYER_ACTION_ACTIVATE_OBJECT, PLAYER_ACTION_GO_UP, PLAYER_ACTION_GO_DOWN,
+    PLAYER_ACTION_ACTIVATE_OBJECT,
+    PLAYER_ACTION_GO_UP,
+    PLAYER_ACTION_GO_DOWN,
 } from '../constants/player_actions';
 import {PlayerController} from './entity/player_controller';
 import {DungeonController} from './dungeon/dungeon_controller';
@@ -94,7 +96,7 @@ export class GameController extends Controller {
             level: playerLevel,
             display: entities.AVATAR,
             position: inititalPlayerCell,
-            speed: 100,
+            speed: 15,
             perception: 6,
         });
 
@@ -231,7 +233,7 @@ export class GameController extends Controller {
         if (movementResult.canMove) {
             this.view.camera.centerOnCoordinates(newPlayerCellPosition.x, newPlayerCellPosition.y);
         }
-        if (movementResult.message) {
+        if (movementResult.message && !(direction.x === 0 && direction.y === 0)) {
             this.notify(SHOW_MESSAGE_IN_VIEW, {
                 message: movementResult.message,
             });

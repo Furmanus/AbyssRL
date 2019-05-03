@@ -25,7 +25,9 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      * Moves entity into new cell.
      */
     public move(newCell: Cell): void {
-        this.model.move(newCell);
+        if (!newCell.entity) {
+            this.model.move(newCell);
+        }
     }
     /**
      * Method triggered after position property has been changed in model.
@@ -33,7 +35,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      * @param newCell   New entity position (cell)
      */
     @boundMethod
-    public onEntityPositionChange(newCell: Cell): void {
+    private onEntityPositionChange(newCell: Cell): void {
         newCell.walkEffect(this);
         this.calculateFov();
     }
@@ -61,6 +63,12 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      */
     public getModel(): EntityModel {
         return this.model;
+    }
+    /**
+     * Returns level model in which entity currently is present.
+     */
+    public getLevelModel(): LevelModel {
+        return this.model.level;
     }
     /**
      * Returns entity field of vision.

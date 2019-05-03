@@ -37,6 +37,9 @@ export class MapWithObserver<K, V extends Observer> extends Observer {
 
         return this;
     }
+    public values(): Iterable<V> {
+        return this.map.values();
+    }
     /**
      * Deletes all entries from map.
      */

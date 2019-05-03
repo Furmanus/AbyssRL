@@ -3,6 +3,9 @@ import {EngineController} from '../time_engine/engine_controller';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {EntityController} from '../entity/entity_controller';
 import {Controller} from '../controller';
+import {MonsterController} from '../entity/monster_controller';
+import {DungeonEvents} from '../../constants/dungeon_events';
+import {IAnyObject} from '../../interfaces/common';
 
 interface ILevelControllerConstructorConfig {
     readonly branch: string;
@@ -21,6 +24,25 @@ export class LevelController extends Controller {
 
         this.model = new LevelModel(config.branch, config.levelNumber);
         this.engine = new EngineController();
+
+        this.initialize();
+    }
+    /**
+     * Initializes level controller.
+     *
+     * @param config    Optional configuration object
+     */
+    protected initialize(config?: IAnyObject): void {
+        super.initialize(config);
+
+        this.attachEvents();
+    }
+
+    /**
+     * Enables listening on various events.
+     */
+    protected attachEvents(): void {
+        this.model.on(this, DungeonEvents.NEW_CREATURE_SPAWNED, this.onNewMonsterSpawned.bind(this));
     }
     /**
      * Returns cell at given coordinates.
@@ -100,5 +122,13 @@ export class LevelController extends Controller {
      */
     public getModel(): LevelModel {
         return this.model;
+    }
+    /**
+     * Method triggered after level model notifies that new monster has been spawned.
+     *
+     * @param monster   Newly spawned monster controller
+     */
+    private onNewMonsterSpawned(monster: MonsterController): void {
+        this.addActorToTimeEngine(monster);
     }
 }
