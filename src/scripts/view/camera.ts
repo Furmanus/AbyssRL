@@ -68,6 +68,18 @@ export class Camera {
         return new Position(this.x + x, this.x + y);
     }
     /**
+     * Converts given map coordinates to camera coordinates. Returns null if coords are beyond camera.
+     *
+     * @param   x   Row coordinate of point we want to convert.
+     * @param   y   Column coordinate of point we want to convert.
+     */
+    public convertMapCoordinatesToCameraCoords(x: number, y: number): Position {
+        if (x < this.x || x >= this.x + this.screenWidth || y < this.y || y >= this.y + this.screenHeight) {
+            return null;
+        }
+        return new Position(x - this.x, y - this.y);
+    }
+    /**
      * Method responsible for centering camera on certain coordinates.
      * @param   x   Row view coordinate
      * @param   y   Column view coordinate

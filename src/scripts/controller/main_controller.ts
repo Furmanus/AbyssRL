@@ -14,13 +14,15 @@ import {
     PLAYER_ACTION_ACTIVATE_OBJECT,
     PLAYER_ACTION_MOVE_PLAYER,
     PLAYER_WALK_CONFIRM_NEEDED,
-    SHOW_MESSAGE_IN_VIEW,
+    SHOW_MESSAGE_IN_VIEW, START_PLAYER_TURN,
 } from '../constants/player_actions';
-import {IAnyObject, IDirection, IMessageData, IPlayerConfirmationObject} from '../interfaces/common';
+import {IAnyFunction, IAnyObject, IDirection, IMessageData, IPlayerConfirmationObject} from '../interfaces/common';
 import {Controller} from './controller';
 import {DungeonEvents} from '../constants/dungeon_events';
 import {boundMethod} from 'autobind-decorator';
 import {ILevelInfo} from '../interfaces/level';
+import {EXAMINE_CELL, STOP_EXAMINE_CELL} from '../constants/game_actions';
+import {Cell} from '../model/dungeon/cells/cell_model';
 
 export class MainController extends Controller {
     private readonly gameController: GameController;
@@ -32,6 +34,10 @@ export class MainController extends Controller {
     private altPressed: boolean;
     private controllerInitialized: boolean;
     /**
+     * Game screen is in examine mode: player can only look around and examine cells.
+     */
+    private examineMode: boolean;
+    /**
      * Constructor of main application controller.
      * @param  tileset  HTML Img element with tiles to draw.
      */
@@ -39,7 +45,7 @@ export class MainController extends Controller {
         super();
 
         this.gameController = new GameController(tileset);
-        this.infoController = new InfoController();
+        this.infoController = new InfoController(tileset);
         this.miniMapController = new MiniMapController();
         this.messagesController = MessagesController.getInstance();
 
@@ -57,8 +63,15 @@ export class MainController extends Controller {
     protected initialize(): void {
         this.bindMethods();
         this.attachEvents();
+        /**
+         * This two events are attached in initialize, because they has to be active when other events are detached during
+         * examine mode.
+         */
+        this.gameController.on(this, EXAMINE_CELL, this.onExamineCell);
+        this.gameController.on(this, STOP_EXAMINE_CELL, this.onStopExamineCell);
 
         this.infoController.changePlayerNameMessageInView(this.gameController.getPlayerName());
+        this.infoController.setPlayerStatsInView(this.gameController.getPlayerStats());
 
         this.controllerInitialized = true;
     }
@@ -88,6 +101,7 @@ export class MainController extends Controller {
         this.gameController.on(this, SHOW_MESSAGE_IN_VIEW, this.onShowMessageInView);
         this.gameController.on(this, PLAYER_WALK_CONFIRM_NEEDED, this.onPlayerConfirmNeeded);
         this.gameController.on(this, DungeonEvents.CHANGE_CURRENT_LEVEL, this.onChangeDungeonLevel);
+        this.gameController.on(this, START_PLAYER_TURN, this.onPlayerTurnStarted);
     }
     /**
      * Method responsible for removing keyboard events from window and listening to object notifying.
@@ -98,6 +112,8 @@ export class MainController extends Controller {
 
         this.gameController.off(this, SHOW_MESSAGE_IN_VIEW);
         this.gameController.off(this, PLAYER_WALK_CONFIRM_NEEDED);
+        this.gameController.off(this, DungeonEvents.CHANGE_CURRENT_LEVEL);
+        this.gameController.off(this, START_PLAYER_TURN);
     }
     /**
      * Method responsible for registering user keyboard input and triggering {@code takeAction} method. Method checks
@@ -143,9 +159,8 @@ export class MainController extends Controller {
      */
     private async takeAction(keycode: number): Promise<void> {
         let choosenDirection: IDirection|false;
-
         if (this.shiftPressed) {
-            if (KEYBOARD_DIRECTIONS[keycode]) {
+            if (KEYBOARD_DIRECTIONS[keycode] && keycode !== 190) {
                 this.moveCamera(keycode); // shift + numpad direction, move camera around
             } else if (keycode === 188) {
                 this.gameController.takePlayerAction(PLAYER_ACTION_GO_UP);
@@ -160,6 +175,7 @@ export class MainController extends Controller {
             if (KEYBOARD_DIRECTIONS[keycode]) {
                 this.gameController.takePlayerAction(PLAYER_ACTION_MOVE_PLAYER, KEYBOARD_DIRECTIONS[keycode]);
             } else if (65 === keycode) {
+                // ACTIVATE
                 this.messagesController.showMessageInView('Activate object in which direction [1234567890]:');
 
                 choosenDirection = await this.getPlayerConfirmationDirection();
@@ -169,6 +185,8 @@ export class MainController extends Controller {
                 } else {
                     this.messagesController.showMessageInView('You abort your attempt.');
                 }
+            } else if (88 === keycode) {
+                this.enableExamineMode();
             }
         }
     }
@@ -192,6 +210,61 @@ export class MainController extends Controller {
     @boundMethod
     private onChangeDungeonLevel(data: ILevelInfo): void {
         this.infoController.changeLevelInfoMessage(data);
+    }
+    /**
+     * Method triggered after notification from game controller about examination of certain cell.
+     *
+     * @param cell  Cell which is examined by player
+     */
+    @boundMethod
+    private onExamineCell(cell: Cell): void {
+        /**
+         * Clear drawn information about previous cell
+         */
+        this.infoController.hideCellInformation();
+        this.infoController.displayCellInformation(cell);
+    }
+    /**
+     * Method triggered after players stops examining dungeon cells.
+     */
+    @boundMethod
+    private onStopExamineCell(): void {
+        this.infoController.hideCellInformation();
+        this.messagesController.removeLastMessage();
+    }
+    /**
+     * Method triggered after game controller emits event about start of player turn.
+     */
+    @boundMethod
+    private onPlayerTurnStarted(): void {
+        this.infoController.setPlayerStatsInView(this.gameController.getPlayerStats());
+    }
+    /**
+     * Method triggered after pressing 'x' key. Prepares game controller to examine visible cells.
+     */
+    @boundMethod
+    private enableExamineMode(): void {
+        this.messagesController.showMessageInView('Look at...(pick direction):');
+        this.gameController.enableExamineMode();
+        this.examineMode = true;
+
+        this.attachTemporaryEventListener(this.examinedModeEventListenerCallback);
+    }
+    /**
+     * Callback for temporary keydown event listener in examine mode.
+     *
+     * @param e Keyboard event object
+     */
+    @boundMethod
+    private examinedModeEventListenerCallback(e: KeyboardEvent): void {
+        if (e.which === 27) {
+            this.examineMode = false;
+            this.gameController.disableExamineMode();
+            this.attachEvents();
+            window.removeEventListener('keydown', this.examinedModeEventListenerCallback);
+        } else if (KEYBOARD_DIRECTIONS[e.which]) {
+            this.gameController.examineCellInDirection(KEYBOARD_DIRECTIONS[e.which]);
+        }
     }
     /**
      * Function responsible for resizing game window size and all other canvas/divs(messages, info and map) whenever
@@ -283,5 +356,10 @@ export class MainController extends Controller {
                 }
             }
         });
+    }
+    private attachTemporaryEventListener(callback: IAnyFunction): void {
+        this.detachEvents();
+
+        window.addEventListener('keydown', callback);
     }
 }

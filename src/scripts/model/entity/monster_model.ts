@@ -9,17 +9,12 @@ export class MonsterModel extends EntityModel implements IEntity {
     public constructor(config: IAnyObject) {
         super(config);
 
-        this.initialize(config.type);
-    }
-    protected initialize(type: string): void {
-        const entityConfig: Partial<IEntity> = monstersData[type];
+        const entityConfig: Partial<IEntity> = monstersData[config.type];
 
-        if (entityConfig) {
-            for (const attr in entityConfig) {
-                if (this.hasOwnProperty(attr)) {
-                    // @ts-ignore
-                    this[attr] = entityConfig[attr];
-                }
+        for (const attr in entityConfig) {
+            if (this.hasOwnProperty(attr)) {
+                // @ts-ignore
+                this[attr] = entityConfig[attr];
             }
         }
     }

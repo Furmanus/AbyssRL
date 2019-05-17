@@ -1,11 +1,12 @@
 import {calculateFov} from '../../helper/fov_helper';
 import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../../model/dungeon/cells/cell_model';
-import {EntityModel} from '../../model/entity/entity_model';
+import {EntityModel, IEntityStatsObject} from '../../model/entity/entity_model';
 import {Controller} from '../controller';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {boundMethod} from 'autobind-decorator';
+import {EntityStats} from '../../constants/monsters';
 
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
@@ -91,6 +92,21 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     public changeLevel(level: LevelModel, position: Cell): void {
         this.model.changeLevel(level);
         this.move(position);
+    }
+    /**
+     * Returns object with entity statistics (key is stats name).
+     */
+    public getStatsObject(): IEntityStatsObject {
+        return {
+            [EntityStats.STRENGTH]: this.model.strength,
+            [EntityStats.DEXTERITY]: this.model.dexterity,
+            [EntityStats.INTELLIGENCE]: this.model.intelligence,
+            [EntityStats.TOUGHNESS]: this.model.toughness,
+            [EntityStats.PERCEPTION]: this.model.perception,
+            [EntityStats.SPEED]: this.model.speed,
+            [EntityStats.HIT_POINTS]: this.model.hitPoints,
+            [EntityStats.MAX_HIT_POINTS]: this.model.maxHitPoints,
+        };
     }
     /**
      * Return property value from model.

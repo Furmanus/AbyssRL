@@ -4,6 +4,20 @@ import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {IEntity} from '../../interfaces/entity_interfaces';
+import {EntityStats, MonsterAttackTypes, MonsterSizes, MonstersTypes} from '../../constants/monsters';
+import {ItemsCollection} from '../../collections/items_collection';
+import {Dice} from '../dice';
+
+export interface IEntityStatsObject {
+    [EntityStats.STRENGTH]: number;
+    [EntityStats.DEXTERITY]: number;
+    [EntityStats.INTELLIGENCE]: number;
+    [EntityStats.TOUGHNESS]: number;
+    [EntityStats.PERCEPTION]: number;
+    [EntityStats.SPEED]: number;
+    [EntityStats.HIT_POINTS]: number;
+    [EntityStats.MAX_HIT_POINTS]: number;
+}
 
 export class EntityModel extends BaseModel implements IEntity {
     /**
@@ -22,15 +36,15 @@ export class EntityModel extends BaseModel implements IEntity {
      * Cell model where entity was in last turn.
      */
     public lastVisitedCell: Cell = null;
-    public strength: number;
-    public dexterity: number;
-    public toughness: number;
-    public intelligence: number;
+    public strength: number = null;
+    public dexterity: number = null;
+    public toughness: number = null;
+    public intelligence: number = null;
     /**
      * Speed statistic of entity. Important stat, used by time engine to calculate how often entity should act.
      */
-    public speed: number;
-    public perception: number;
+    public speed: number = null;
+    public perception: number = null;
     /**
      * Array of cell model which are in entity field of view
      */
@@ -42,13 +56,24 @@ export class EntityModel extends BaseModel implements IEntity {
     /**
      * Type of entity.
      */
-    public type: string = 'unknown_entity';
+    public type: MonstersTypes = MonstersTypes.UNKNOWN;
     /**
      * Is entity hostile to player.
      */
     public isHostile: boolean = false;
-    public hitPoints: number;
-    public maxHitPoints: number;
+    public hitPoints: number = null;
+    public maxHitPoints: number = null;
+    public size: MonsterSizes = null;
+    public inventory: ItemsCollection = null;
+    public baseAttackType: MonsterAttackTypes = null;
+    /**
+     * Damage dice for entity attacking with its base unarmed attack.
+     */
+    public baseDamage: Dice;
+    /**
+     * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
+     */
+    public protection: number;
 
     constructor(config: IAnyObject) {
         super();

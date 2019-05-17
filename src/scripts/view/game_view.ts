@@ -1,9 +1,7 @@
 /**
  * Created by Lukasz Lach on 2017-04-24.
  */
-import {
-    tileset,
-} from '../global/tiledata';
+import {tileset} from '../global/tiledata';
 import {Camera} from './camera';
 import {Observer} from '../core/observer';
 import {CANVAS_CELL_CLICK} from '../constants/game_actions';
@@ -11,6 +9,8 @@ import {config} from '../global/config';
 import {ICoordinates, IStringDictionary} from '../interfaces/common';
 import {Cell} from '../model/dungeon/cells/cell_model';
 import {LevelModel} from '../model/dungeon/level_model';
+import {boundMethod} from 'autobind-decorator';
+import {MonstersTypes} from '../constants/monsters';
 
 interface IMousePosition {
     x: number;
@@ -24,17 +24,37 @@ interface ISprites {
 interface IDrawnTiles {
     [prop: string]: Cell;
 }
+const ALTERNATIVE_BORDER_LENGTH: number = 8;
+enum entityHealthBarColor {
+    HOSTILE = 'red',
+    PLAYER = 'green',
+}
 
 export class GameView extends Observer {
     private rows: number;
     private columns: number;
     private TILE_SIZE: number;
     private tileset: CanvasImageSource;
+    private examineMode: boolean;
+    /**
+     * Current (in current turn) player field of vision. Used to recognize in draw animated image method if current cell
+     * is visible and if entity or inventory should be drawn if image is darkened (cell is not visible);
+     */
+    private currentPlayerFov: Cell[] = null;
     /**
      * Global animation frame for all animated sprites. Changes every 250ms.
      */
     private globalAnimationFrame: number = 0;
     private currentMousePosition: IMousePosition;
+    /**
+     * Position of alternative border drawn in examine mode.
+     */
+    private alternativeBorderPosition: ICoordinates;
+    /**
+     * Id returned from setInterval method used to animate border in examine mode.
+     */
+    private alternativeBorderIntervalId: number;
+    private isAlternativeBorderDrawn: boolean;
     private screen: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
     private context: CanvasRenderingContext2D = this.screen.getContext('2d');
     /*
@@ -114,13 +134,16 @@ export class GameView extends Observer {
         this.screen.addEventListener('mouseleave', this.mouseLeaveEventListener.bind(this));
     }
     /**
-     * Draws 32x32 pixels tile on game view at certain coordinates. Tile is choosen from game tileset from i row and j column.
-     * @param   x  Row position where tile on game view will be drawn
-     * @param   y  Column position where tile on game view will be drawn
-     * @param   i  Row position from tileset where from tile will be choosen to draw
-     * @param   j  Column position from tileset where from tile will be choosen to draw
+     * Draws 32x32 pixels tile on game view at certain coordinates. Tile is chosen from game tileset from i row and j column.
+     * @param   x               Row position where tile on game view will be drawn
+     * @param   y               Column position where tile on game view will be drawn
+     * @param   i               Row position from tileset where from tile will be chosen to draw
+     * @param   j               Column position from tileset where from tile will be chosen to draw
+     * @param   barPercentage   Percentage of horizontal bar drawn at top of image. Drawn only if barPercentage argument
+     *                          is passed to this function
+     * @param   barColor        Color of horizontal bar above image
      */
-    private drawImage(x: number, y: number, i: number, j: number): void {
+    private drawImage(x: number, y: number, i: number, j: number, barPercentage?: number, barColor?: string): void {
         this.context.drawImage(
             this.tileset,
             i * this.TILE_SIZE,
@@ -132,9 +155,16 @@ export class GameView extends Observer {
             32,
             32,
         );
+
+        if (barPercentage && barColor) {
+            const barLength: number = Math.floor(this.TILE_SIZE * barPercentage);
+
+            this.context.fillStyle = barColor;
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE - 4, barLength, 3);
+        }
     }
     /**
-     * Draws 32x32 pixels tile on game view at given coordinates. Tile is choosen from game tileset from x row
+     * Draws 32x32 pixels tile on game view at given coordinates. Tile is chosen from game tileset from x row
      * and y column. Tile is not animated and is darkened. If tile has more than one frame (is animated normally), only
      * first frame is drawn.
      *
@@ -172,11 +202,24 @@ export class GameView extends Observer {
         let j: number;
         let framesNumber: number;
         let interval;
+        let hpBarPercent: number = null;
+        let hpBarColor: string = null;
 
-        if (cell.entity) {
-            tile = cell.entity.display;
-        } else if (cell.inventory.length) {
-            tile = cell.inventory[0].display;
+        if (this.currentPlayerFov && this.currentPlayerFov.includes(cell)) {
+            if (cell.entity) {
+                tile = cell.entity.display;
+                hpBarPercent = cell.entity.hitPoints / cell.entity.maxHitPoints;
+
+                if (cell.entity.type === MonstersTypes.PLAYER) {
+                    hpBarColor = 'green';
+                } else {
+                    hpBarColor = 'red';
+                }
+            } else if (cell.inventory.length) {
+                tile = cell.inventory[0].display;
+            } else {
+                tile = cell.display;
+            }
         } else {
             tile = cell.display;
         }
@@ -197,10 +240,10 @@ export class GameView extends Observer {
             }
             return null;
         } else {
-            this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j); // we draw frame of animation
+            this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j, hpBarPercent, hpBarColor); // we draw frame of animation
 
             interval = window.setInterval(() => {
-                this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j);
+                this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j, hpBarPercent, hpBarColor);
 
                 if (light) {
                     /**
@@ -258,20 +301,62 @@ export class GameView extends Observer {
     }
     /**
      * Sets a border around certain tile.
-     * @param   x         Row coordinate of tile.
-     * @param   y         Column coordinate of tile.
-     * @param   color     Colour of border.
+     * @param   x                   Row coordinate of tile
+     * @param   y                   Column coordinate of tile
+     * @param   color               Colour of border
+     * @param   alternativeBorder   If alternative border (border only in corners of cell) should be drawn
      */
-    private setBorder(x: number, y: number, color: string): void {
+    private setBorder(x: number, y: number, color: string, alternativeBorder?: boolean): void {
         this.context.fillStyle = color;
         /*
         * Unusual method to draw border of rectangle in canvas. We draw every part of border as separate filled
         * rectangle, so we can later clear it in separate method.
         */
-        this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, this.TILE_SIZE, 2);
-        this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, this.TILE_SIZE);
-        this.context.fillRect(x * this.TILE_SIZE + this.TILE_SIZE - 2, y * this.TILE_SIZE, 2, this.TILE_SIZE);
-        this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE + this.TILE_SIZE - 2, this.TILE_SIZE, 2);
+        if (alternativeBorder) {
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, ALTERNATIVE_BORDER_LENGTH, 2);
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                y * this.TILE_SIZE,
+                ALTERNATIVE_BORDER_LENGTH,
+                2,
+            );
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, ALTERNATIVE_BORDER_LENGTH);
+            this.context.fillRect(
+                x * this.TILE_SIZE,
+                y * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                2,
+                ALTERNATIVE_BORDER_LENGTH,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - 2,
+                y * this.TILE_SIZE,
+                2,
+                ALTERNATIVE_BORDER_LENGTH,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - 2,
+                y * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                2,
+                ALTERNATIVE_BORDER_LENGTH,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE,
+                y * this.TILE_SIZE + this.TILE_SIZE - 2,
+                ALTERNATIVE_BORDER_LENGTH,
+                2,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                y * this.TILE_SIZE + this.TILE_SIZE - 2,
+                ALTERNATIVE_BORDER_LENGTH,
+                2,
+            );
+        } else {
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, this.TILE_SIZE, 2);
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, this.TILE_SIZE);
+            this.context.fillRect(x * this.TILE_SIZE + this.TILE_SIZE - 2, y * this.TILE_SIZE, 2, this.TILE_SIZE);
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE + this.TILE_SIZE - 2, this.TILE_SIZE, 2);
+        }
     }
     /**
      * Method responsible for removing border from certain tile.
@@ -319,6 +404,63 @@ export class GameView extends Observer {
         this.context.globalCompositeOperation = 'source-over'; // restore default composite operation
     }
     /**
+     * Draws and animates border around certain cell coordinates.
+     *
+     * @param row       Row of cell's border to animate
+     * @param column    Column of cell's border to animate
+     */
+    public drawAnimatedBorder(row: number, column: number): void {
+        const convertedCoords: ICoordinates = this.camera.convertMapCoordinatesToCameraCoords(row, column);
+        const {
+            x,
+            y,
+        } = convertedCoords;
+
+        this.clearAlternativeBorderAnimation();
+
+        if (convertedCoords) {
+            this.setBorder(x, y, 'silver', true);
+            this.alternativeBorderIntervalId = window.setInterval(this.animateAlternativeBorder, 250);
+            this.alternativeBorderPosition = {x, y};
+            this.isAlternativeBorderDrawn = true;
+        }
+    }
+    @boundMethod
+    private animateAlternativeBorder(): void {
+        const {
+            alternativeBorderPosition,
+        } = this;
+
+        if (this.isAlternativeBorderDrawn) {
+            this.clearBorder(alternativeBorderPosition.x, alternativeBorderPosition.y);
+            this.isAlternativeBorderDrawn = false;
+        } else {
+            this.setBorder(alternativeBorderPosition.x, alternativeBorderPosition.y, 'silver', true);
+            this.isAlternativeBorderDrawn = true;
+        }
+    }
+    /**
+     * Method responsible for removing active alternative border (used for example in examine mode to look at cells)
+     * animation.
+     */
+    public clearAlternativeBorderAnimation(): void {
+        if (this.alternativeBorderPosition) {
+            clearInterval(this.alternativeBorderIntervalId);
+            this.clearBorder(this.alternativeBorderPosition.x, this.alternativeBorderPosition.y);
+
+            this.alternativeBorderIntervalId = null;
+            this.alternativeBorderPosition = null;
+        }
+    }
+    /**
+     * Method responsible for removing any active border animations, by clearing animation interval and removing border
+     * from canvas.
+     */
+    public clearBorderAnimation(): void {
+        clearInterval(this.currentMousePosition.intervalId);
+        this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y);
+    }
+    /**
      * Event listener for clicking mouse inside game view canvas
      */
     private mouseClickEventListener(e: MouseEvent): void {
@@ -338,6 +480,11 @@ export class GameView extends Observer {
      * Event listener for moving mouse over game view canvas.
      */
     private mouseMoveEventListener(e: MouseEvent): void {
+        if (this.examineMode) {
+            this.clearBorderAnimation();
+
+            return;
+        }
         /**
          * Row coordinate where border will be animated
          */
@@ -395,7 +542,7 @@ export class GameView extends Observer {
                 /**
                  * We start animation, and we store interval id inside currentMousePosition object
                  */
-                this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 120);
+                this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 200);
                 this.currentMousePosition.isCursorBeyondLevel = false;
             }
         }
@@ -413,7 +560,7 @@ export class GameView extends Observer {
 
             this.currentMousePosition.x = row; // update current mouse position coordinates
             this.currentMousePosition.y = column;
-            this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 120);
+            this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 200);
         }
         function animateBorder(): void {
             const spriteAnimationId = this.sprites[`${row}x${column}`];
@@ -493,6 +640,8 @@ export class GameView extends Observer {
         const cameraY = cameraCoords.y;
         let examinedCell;
 
+        this.currentPlayerFov = playerFov;
+
         for (let i = 0; i < config.LEVEL_WIDTH; i++) {
             // if cell column is greater than view height, we skip it
             if (i >= this.rows || cameraX + i >= config.LEVEL_WIDTH) {
@@ -548,5 +697,14 @@ export class GameView extends Observer {
      */
     public centerCameraOnCoordinates(position: ICoordinates): void {
         this.camera.centerOnCoordinates(position.x, position.y);
+    }
+    public enableExamineMode(): void {
+        this.clearBorderAnimation();
+        this.examineMode = true;
+    }
+    public disableExamineMode(): void {
+        this.clearAlternativeBorderAnimation();
+        this.examineMode = false;
+        this.isAlternativeBorderDrawn = false;
     }
 }

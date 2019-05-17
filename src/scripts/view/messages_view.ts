@@ -87,6 +87,16 @@ export class MessagesView {
         this.messagesListElement.scrollTop = ( this.messagesListElement.lastChild as HTMLElement).offsetTop;
     }
     /**
+     * Removes last displayed message.
+     */
+    public removeLastMessage(): void {
+        this.messagesList.pop();
+
+        if (this.messagesListElement.hasChildNodes()) {
+            this.messagesListElement.removeChild(this.messagesListElement.lastChild);
+        }
+    }
+    /**
      * Returns DOM node element where messages are displayed.
      */
     public getScreen(): HTMLDivElement {

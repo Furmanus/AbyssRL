@@ -1,6 +1,6 @@
 import {GameView} from '../view/game_view';
 import {config} from '../global/config';
-import {CANVAS_CELL_CLICK} from '../constants/game_actions';
+import {CANVAS_CELL_CLICK, EXAMINE_CELL, STOP_EXAMINE_CELL} from '../constants/game_actions';
 import {entities} from '../constants/sprites';
 import {
     SHOW_MESSAGE_IN_VIEW,
@@ -22,6 +22,8 @@ import {cellTypes} from '../constants/cell_types';
 import {globalMessagesController} from '../global/messages';
 import {DungeonEvents} from '../constants/dungeon_events';
 import {ASCEND} from '../constants/directions';
+import {IEntityStatsObject} from '../model/entity/entity_model';
+import {validatePositionIsInMap} from '../helper/validation';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -32,6 +34,7 @@ export class GameController extends Controller {
     private currentLevel: LevelController;
     private playerController: PlayerController;
     private view: GameView;
+    private currentlyExaminedCell: Cell;
     /**
      * GameController class constructor.
      * @param   tileset    HTML Img element with tiles to draw.
@@ -42,6 +45,7 @@ export class GameController extends Controller {
         this.dungeonController = new DungeonController();
         this.currentLevel = null;
         this.playerController = null;
+        this.currentlyExaminedCell = null;
 
         this.view = new GameView(
             config.TILE_SIZE * config.ROWS,
@@ -98,6 +102,12 @@ export class GameController extends Controller {
             position: inititalPlayerCell,
             speed: 15,
             perception: 6,
+            strength: 12,
+            dexterity: 12,
+            intelligence: 12,
+            toughness: 12,
+            hitPoints: 20,
+            maxHitPoints: 20,
         });
 
         inititalPlayerCell.entity = this.playerController.getModel();
@@ -293,6 +303,8 @@ export class GameController extends Controller {
         this.currentLevel.lockTimeEngine();
         this.playerController.calculateFov();
         this.refreshGameScreen();
+
+        this.notify(START_PLAYER_TURN);
     }
     /**
      * Method triggered after player controller notifies about end of player turn.
@@ -307,9 +319,53 @@ export class GameController extends Controller {
         this.view.drawScreen(this.currentLevel.getModel(), this.playerController.getFov());
     }
     /**
+     * Displays information about cell in direction from currently examined cell.
+     *
+     * @param direction Direction object with x and y coordinates
+     */
+    public examineCellInDirection(direction: IDirection): void {
+        const lastCell: Cell = this.currentlyExaminedCell || this.playerController.getEntityPosition();
+        const nextCell: Cell = this.currentLevel.getCell(lastCell.x + direction.x, lastCell.y + direction.y);
+        if (nextCell) {
+            const playerFov: Cell[] = this.playerController.getPlayerFov();
+            const {
+                x,
+                y,
+            } = nextCell;
+
+            if (playerFov.includes(nextCell)) {
+                this.view.centerCameraOnCoordinates({x, y});
+                this.view.refreshScreen(this.currentLevel.getModel(), playerFov);
+                this.view.drawAnimatedBorder(x, y);
+                this.currentlyExaminedCell = nextCell;
+
+                this.notify(EXAMINE_CELL, nextCell);
+            }
+        }
+    }
+    /**
      * Returns player name taken from player controller.
      */
     public getPlayerName(): string {
         return this.playerController.getName();
+    }
+    public getPlayerStats(): IEntityStatsObject {
+        return this.playerController.getStatsObject();
+    }
+    public enableExamineMode(): void {
+        const playerCell: Cell = this.playerController.getEntityPosition();
+
+        this.view.enableExamineMode();
+        this.view.drawAnimatedBorder(playerCell.x, playerCell.y);
+    }
+    public disableExamineMode(): void {
+        const playerCell: Cell = this.playerController.getEntityPosition();
+
+        this.view.disableExamineMode();
+        this.currentlyExaminedCell = null;
+        this.view.centerCameraOnCoordinates({x: playerCell.x, y: playerCell.y});
+        this.view.refreshScreen(this.currentLevel.getModel(), this.playerController.getFov());
+
+        this.notify(STOP_EXAMINE_CELL);
     }
 }

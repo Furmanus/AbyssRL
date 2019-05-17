@@ -34,3 +34,10 @@ export interface IActionAttempt {
     result: boolean;
     message?: string;
 }
+export interface ITemplate {
+    [templateName: string]: string;
+}
+export interface ITemplateVariables {
+    // tslint:disable-next-line:no-any
+    [propName: string]: string | number;
+}
