@@ -4,10 +4,9 @@ import {EntityController} from '../controller/entity/entity_controller';
 import {
     MonstersTypes,
     MonsterSizes,
-    MonsterAttackTypes,
 } from '../constants/monsters';
 import {ItemsCollection} from '../collections/items_collection';
-import {Dice} from '../model/dice';
+import {INaturalWeapon} from './combat';
 
 export interface IEntity {
     display: string;
@@ -29,8 +28,7 @@ export interface IEntity {
     maxHitPoints: number;
     size: MonsterSizes;
     inventory: ItemsCollection;
-    baseDamage: Dice;
-    baseAttackType: MonsterAttackTypes;
+    naturalWeapon: INaturalWeapon;
 }
 export interface IEntityController {
     model: EntityController;

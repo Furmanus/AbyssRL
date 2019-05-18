@@ -7,6 +7,7 @@ import {IEntity} from '../../interfaces/entity_interfaces';
 import {EntityStats, MonsterAttackTypes, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
 import {Dice} from '../dice';
+import {INaturalWeapon} from '../../interfaces/combat';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -65,15 +66,14 @@ export class EntityModel extends BaseModel implements IEntity {
     public maxHitPoints: number = null;
     public size: MonsterSizes = null;
     public inventory: ItemsCollection = null;
-    public baseAttackType: MonsterAttackTypes = null;
     /**
-     * Damage dice for entity attacking with its base unarmed attack.
+     * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
-    public baseDamage: Dice;
+    public naturalWeapon: INaturalWeapon = null;
     /**
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
-    public protection: number;
+    public protection: number = 0;
 
     constructor(config: IAnyObject) {
         super();

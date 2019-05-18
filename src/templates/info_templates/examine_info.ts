@@ -11,6 +11,9 @@ export function getEntityInfoTemplate(variables: ITemplateVariables): ITemplate 
                 <div class="examine-stats">
                     <span>${variables.hitPoints}/${variables.maxHitPoints} HP</span>
                 </div>
+                <div class="examine-weapon">
+                    <span>Attack: ${variables.weaponType} ${variables.weaponDamage} ${variables.weaponDmgType}</span>
+                </div>
             </div>
         `,
         cell: `

@@ -10,6 +10,7 @@ export enum MonsterSizes {
 }
 export enum MonsterAttackTypes {
     BITE = 'bite',
+    FIST = 'fist',
 }
 export enum EntityBodyParts {
     HEAD = 'head',

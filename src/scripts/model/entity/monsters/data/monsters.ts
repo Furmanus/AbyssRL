@@ -1,12 +1,8 @@
 import {IEntity} from '../../../../interfaces/entity_interfaces';
-import {
-    MonstersTypes,
-    MonsterSizes,
-    MonsterAttackTypes,
-} from '../../../../constants/monsters';
+import {MonsterSizes, MonstersTypes,} from '../../../../constants/monsters';
 import {entities} from '../../../../constants/sprites';
 import {ItemsCollection} from '../../../../collections/items_collection';
-import {Dice} from '../../../dice';
+import {getMonsterNaturalWeapon} from '../../../../factory/natural_weapon_factory';
 
 interface IMonsterDataObject {
     [key: string]: Partial<IEntity>;
@@ -28,7 +24,6 @@ export const monstersData: IMonsterDataObject =  {
         maxHitPoints: 10,
         size: MonsterSizes.SMALL,
         inventory: new ItemsCollection(),
-        baseDamage: new Dice('2d1 + 1'),
-        baseAttackType: MonsterAttackTypes.BITE,
+        naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.GIANT_RAT),
     },
 };
