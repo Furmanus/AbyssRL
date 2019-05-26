@@ -1,6 +1,6 @@
 import {EntityModel} from './entity_model';
 import {IAnyObject} from '../../interfaces/common';
-import {MonstersTypes} from '../../constants/monsters';
+import {MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {getMonsterNaturalWeapon} from '../../factory/natural_weapon_factory';
 
 export class PlayerModel extends EntityModel {
@@ -15,6 +15,7 @@ export class PlayerModel extends EntityModel {
         this.toughness = config.toughness;
         this.hitPoints = config.hitPoints;
         this.maxHitPoints = config.maxHitPoints;
+        this.size = MonsterSizes.MEDIUM;
         this.naturalWeapon = getMonsterNaturalWeapon(MonstersTypes.PLAYER);
     }
 }

@@ -1,5 +1,5 @@
 import {IEntity} from '../../../../interfaces/entity_interfaces';
-import {MonsterSizes, MonstersTypes,} from '../../../../constants/monsters';
+import {MonsterSizes, MonstersTypes} from '../../../../constants/monsters';
 import {entities} from '../../../../constants/sprites';
 import {ItemsCollection} from '../../../../collections/items_collection';
 import {getMonsterNaturalWeapon} from '../../../../factory/natural_weapon_factory';

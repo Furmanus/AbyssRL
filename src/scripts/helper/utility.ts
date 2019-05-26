@@ -1,7 +1,8 @@
 import {config} from '../global/config';
 import {Position} from '../model/position/position';
 import {
-    IAnyFunction, IAnyObject,
+    IAnyFunction,
+    IAnyObject,
     IBooleanDictionary,
     ICoordinates,
 } from '../interfaces/common';

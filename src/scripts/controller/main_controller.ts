@@ -14,9 +14,16 @@ import {
     PLAYER_ACTION_ACTIVATE_OBJECT,
     PLAYER_ACTION_MOVE_PLAYER,
     PLAYER_WALK_CONFIRM_NEEDED,
-    SHOW_MESSAGE_IN_VIEW, START_PLAYER_TURN,
+    SHOW_MESSAGE_IN_VIEW,
+    START_PLAYER_TURN,
+    PLAYER_DEATH,
 } from '../constants/player_actions';
-import {IAnyFunction, IAnyObject, IDirection, IMessageData, IPlayerConfirmationObject} from '../interfaces/common';
+import {
+    IAnyFunction,
+    IDirection,
+    IMessageData,
+    IPlayerConfirmationObject,
+} from '../interfaces/common';
 import {Controller} from './controller';
 import {DungeonEvents} from '../constants/dungeon_events';
 import {boundMethod} from 'autobind-decorator';
@@ -102,6 +109,7 @@ export class MainController extends Controller {
         this.gameController.on(this, PLAYER_WALK_CONFIRM_NEEDED, this.onPlayerConfirmNeeded);
         this.gameController.on(this, DungeonEvents.CHANGE_CURRENT_LEVEL, this.onChangeDungeonLevel);
         this.gameController.on(this, START_PLAYER_TURN, this.onPlayerTurnStarted);
+        this.gameController.on(this, PLAYER_DEATH, this.onPlayerDeath);
     }
     /**
      * Method responsible for removing keyboard events from window and listening to object notifying.
@@ -203,6 +211,14 @@ export class MainController extends Controller {
         this.gameController.moveCameraInView(deltaX, deltaY);
     }
     /**
+     * Method triggered after game controller notifies about player death.
+     */
+    @boundMethod
+    private onPlayerDeath(): void {
+        this.setPlayerStats();
+        this.detachEvents();
+    }
+    /**
      * Method triggered after game controller emits event about level change by player.
      *
      * @param data  Data object passed along with event
@@ -237,6 +253,12 @@ export class MainController extends Controller {
      */
     @boundMethod
     private onPlayerTurnStarted(): void {
+        this.setPlayerStats();
+    }
+    /**
+     * Takes actual player stats from game controller and sets them in info view.
+     */
+    private setPlayerStats(): void {
         this.infoController.setPlayerStatsInView(this.gameController.getPlayerStats());
     }
     /**

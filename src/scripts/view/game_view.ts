@@ -54,6 +54,10 @@ export class GameView extends Observer {
      * Id returned from setInterval method used to animate border in examine mode.
      */
     private alternativeBorderIntervalId: number;
+    /**
+     * Id returned from setInterval method used to change global animation frame.
+     */
+    private globalAnimationFrameIntervalId: number;
     private isAlternativeBorderDrawn: boolean;
     private screen: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
     private context: CanvasRenderingContext2D = this.screen.getContext('2d');
@@ -120,7 +124,7 @@ export class GameView extends Observer {
     protected initialize(): void {
         this.attachEvents();
 
-        window.setInterval(() => {
+        this.globalAnimationFrameIntervalId = window.setInterval(() => {
             if (this.globalAnimationFrame < 4) {
                 this.globalAnimationFrame++;
             } else {
@@ -160,7 +164,7 @@ export class GameView extends Observer {
             const barLength: number = Math.floor(this.TILE_SIZE * barPercentage);
 
             this.context.fillStyle = barColor;
-            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE - 4, barLength, 3);
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE - 3, barLength, 4);
         }
     }
     /**
@@ -209,6 +213,7 @@ export class GameView extends Observer {
             if (cell.entity) {
                 tile = cell.entity.display;
                 hpBarPercent = cell.entity.hitPoints / cell.entity.maxHitPoints;
+                hpBarPercent = hpBarPercent > 0 ? hpBarPercent : 0;
 
                 if (cell.entity.type === MonstersTypes.PLAYER) {
                     hpBarColor = 'green';
@@ -706,5 +711,17 @@ export class GameView extends Observer {
         this.clearAlternativeBorderAnimation();
         this.examineMode = false;
         this.isAlternativeBorderDrawn = false;
+    }
+    /**
+     * Clears all animations on game screen by resetting appropriate intervals.
+     */
+    public clearGameWindowAnimations(): void {
+        clearInterval(this.globalAnimationFrameIntervalId);
+
+        for (const n in this.sprites) {
+            if (this.sprites.hasOwnProperty(n)) {
+                window.clearInterval(this.sprites[n]);
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ import {
     PLAYER_ACTION_ACTIVATE_OBJECT,
     PLAYER_ACTION_GO_UP,
     PLAYER_ACTION_GO_DOWN,
+    PLAYER_DEATH,
 } from '../constants/player_actions';
 import {PlayerController} from './entity/player_controller';
 import {DungeonController} from './dungeon/dungeon_controller';
@@ -23,7 +24,7 @@ import {globalMessagesController} from '../global/messages';
 import {DungeonEvents} from '../constants/dungeon_events';
 import {ASCEND} from '../constants/directions';
 import {IEntityStatsObject} from '../model/entity/entity_model';
-import {validatePositionIsInMap} from '../helper/validation';
+import {boundMethod} from 'autobind-decorator';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -55,6 +56,7 @@ export class GameController extends Controller {
 
         this.initialize();
         this.attachEvents();
+        this.attachEventsToCurrentLevel();
         this.startGame();
     }
     /**
@@ -88,6 +90,12 @@ export class GameController extends Controller {
         });
 
         this.dungeonController.on(this, DungeonEvents.CHANGE_CURRENT_LEVEL, this.onDungeonControllerLevelChange.bind(this));
+    }
+    /**
+     * Method responsible for attaching listening on events on current level.
+     */
+    private attachEventsToCurrentLevel(): void {
+        this.currentLevel.on(this, PLAYER_DEATH, this.onPlayerDeath);
     }
     /**
      * Creates player character and adds it to proper level controller time engine.
@@ -170,6 +178,14 @@ export class GameController extends Controller {
         }
     }
     /**
+     * Method triggered after current level notifies player death event.
+     */
+    @boundMethod
+    private onPlayerDeath(): void {
+        this.view.clearGameWindowAnimations();
+        this.notify(PLAYER_DEATH);
+    }
+    /**
      * Method triggered after dungeon controller notifies change on current level.
      *
      * @param data     Data passed along with event. Contains information about current level controller and
@@ -189,6 +205,7 @@ export class GameController extends Controller {
 
             this.currentLevel = newLevelController;
             this.currentLevel.addActorToTimeEngine(this.playerController);
+            this.attachEventsToCurrentLevel();
 
             if (this.currentLevel.wasTimeEngineStarted()) {
                 this.currentLevel.unlockTimeEngine();
@@ -242,6 +259,8 @@ export class GameController extends Controller {
 
         if (movementResult.canMove) {
             this.view.camera.centerOnCoordinates(newPlayerCellPosition.x, newPlayerCellPosition.y);
+        } else {
+            this.view.camera.centerOnCoordinates(playerModel.position.x, playerModel.position.y);
         }
         if (movementResult.message && !(direction.x === 0 && direction.y === 0)) {
             this.notify(SHOW_MESSAGE_IN_VIEW, {

@@ -6,7 +6,10 @@ import {Cell} from '../../model/dungeon/cells/cell_model';
 export interface IInitialConfigAi<C extends EntityController = MonsterController> {
     controller: C;
 }
-
+export interface IFilteredFov {
+    entities: Cell[];
+    items: Cell[];
+}
 export interface IArtificialIntelligence {
     performNextMove: () => void;
 }
@@ -28,6 +31,23 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
      * classes, this fallback option makes simplest random movement.
      */
     public performNextMove(): void {
+        this.makeMoveInRandomDirection();
+    }
+    protected examineFov(fov: Cell[]): IFilteredFov {
+        const filteredFov: IFilteredFov = {
+            entities: [],
+            items: [],
+        };
+
+        fov.forEach((cell: Cell) => {
+            if (cell.entity && cell.entity !== this.controller.getModel()) {
+                filteredFov.entities.push(cell);
+            }
+        });
+
+        return filteredFov;
+    }
+    protected makeMoveInRandomDirection(): void {
         const levelModel: LevelModel = this.controller.getLevelModel();
         const currentPosition: Cell = this.controller.getEntityPosition();
         const nextCell: Cell = levelModel.getRandomNeighbourCallback(currentPosition, (candidate: Cell) => {

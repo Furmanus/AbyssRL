@@ -7,6 +7,8 @@ import {LevelModel} from '../../model/dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {boundMethod} from 'autobind-decorator';
 import {EntityStats} from '../../constants/monsters';
+import {doCombatAction, ICombatResult} from '../../helper/combat_helper';
+import {globalMessagesController} from '../../global/messages';
 
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
@@ -21,14 +23,23 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     }
     protected attachEvents(): void {
         this.model.on(this, EntityEvents.ENTITY_MOVE, this.onEntityPositionChange);
+        this.model.on(this, EntityEvents.ENTITY_DEATH, this.onEntityDeath);
     }
     /**
      * Moves entity into new cell.
      */
     public move(newCell: Cell): void {
-        if (!newCell.entity) {
+        if (newCell.entity && newCell.entity !== this.getModel()) {
+            const attackResult: ICombatResult = this.attack(newCell.entity);
+
+            globalMessagesController.showMessageInView(attackResult.message);
+        } else {
             this.model.move(newCell);
         }
+    }
+    @boundMethod
+    public attack(defender: EntityModel): ICombatResult {
+        return doCombatAction(this.model, defender);
     }
     /**
      * Method triggered after position property has been changed in model.
@@ -39,6 +50,13 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     private onEntityPositionChange(newCell: Cell): void {
         newCell.walkEffect(this);
         this.calculateFov();
+    }
+    /**
+     * Method triggered after entity hp in model goes to zero or below.
+     */
+    @boundMethod
+    private onEntityDeath(): void {
+        this.notify(EntityEvents.ENTITY_DEATH, {entityController: this});
     }
     public activate(cell: Cell): void {
         const useAttemptResult = cell.useAttempt(this);

@@ -7,7 +7,7 @@ export function getMonsterNaturalWeapon(type: MonstersTypes): NaturalWeaponModel
     switch (type) {
         case MonstersTypes.GIANT_RAT:
             return new NaturalWeaponModel({
-                damage: new Dice('2d2'),
+                damage: new Dice('1d2+1'),
                 toHit: new Dice('1d2'),
                 type: DamageTypes.PIERCING,
                 naturalType: MonsterAttackTypes.BITE,

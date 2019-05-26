@@ -13,6 +13,7 @@ import {RoomModel} from './room_model';
 import {RoomConnectionModel} from './room_connection_model';
 import {DungeonModelEvents} from '../../constants/dungeon_events';
 import {MapWithObserver} from '../../core/map_with_observer';
+import {EntityModel} from '../entity/entity_model';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
 
@@ -63,6 +64,14 @@ export class LevelModel extends BaseModel {
         this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
 
         this.notify(DungeonModelEvents.CELL_TYPE_CHANGED, {x, y});
+    }
+    /**
+     * Method responsible for removing entity from level cells, if its present in any.
+     *
+     * @param entity    Entity model
+     */
+    public removeEntity(entity: EntityModel): void {
+        entity.position.entity = null;
     }
     /**
      * Method responsible for setting stairsUp field of level model.

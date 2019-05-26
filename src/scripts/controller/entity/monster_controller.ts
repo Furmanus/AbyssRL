@@ -1,9 +1,20 @@
 import {EntityController} from './entity_controller';
 import {MonsterModel} from '../../model/entity/monster_model';
 import {MonsterAi} from '../../strategy/ai/monster_ai';
+import {MonstersTypes} from '../../constants/monsters';
+import {AnimalAi} from '../../strategy/ai/animal_ai';
 
 interface IMonsterControllerConfig {
     model: MonsterModel;
+}
+type monstersAi = typeof MonsterAi | typeof AnimalAi;
+function getEntityAiStrategy(type: MonstersTypes): monstersAi {
+    switch (type) {
+        case MonstersTypes.GIANT_RAT:
+            return AnimalAi;
+        default:
+            return MonsterAi;
+    }
 }
 
 export class MonsterController extends EntityController<MonsterModel> {
@@ -13,10 +24,16 @@ export class MonsterController extends EntityController<MonsterModel> {
         super(config);
 
         this.model = config.model;
-        this.ai = new MonsterAi({
+        this.ai = new (getEntityAiStrategy(this.model.type))({
             controller: this,
         });
+
+        this.attachEvents();
     }
+    protected attachEvents(): void {
+        super.attachEvents();
+    }
+
     public act(): void {
         this.calculateFov();
         this.ai.performNextMove();

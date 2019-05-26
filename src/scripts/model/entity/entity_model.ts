@@ -4,10 +4,9 @@ import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {IEntity} from '../../interfaces/entity_interfaces';
-import {EntityStats, MonsterAttackTypes, MonsterSizes, MonstersTypes} from '../../constants/monsters';
+import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
-import {Dice} from '../dice';
-import {INaturalWeapon} from '../../interfaces/combat';
+import {INaturalWeapon, IWeapon} from '../../interfaces/combat';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -75,6 +74,10 @@ export class EntityModel extends BaseModel implements IEntity {
      */
     public protection: number = 0;
 
+    get weapon(): IWeapon {
+        return this.naturalWeapon;
+    }
+
     constructor(config: IAnyObject) {
         super();
 
@@ -109,7 +112,23 @@ export class EntityModel extends BaseModel implements IEntity {
         this.setProperty('fov', fovArray);
     }
     /**
-     * Changes position and lastVisitedCell properties of entity. Also changes properties of appriopiate cells (clears
+     * Method responsible for substracting damage from entity hp and calculating side effects.
+     *
+     * @param damage    Number of hit points to substract
+     */
+    public takeHit(damage: number): boolean {
+        this.hitPoints -= damage;
+
+        if (this.hitPoints < 1) {
+            this.notify(EntityEvents.ENTITY_DEATH, {
+                entity: this,
+            });
+        }
+
+        return this.hitPoints > 0;
+    }
+    /**
+     * Changes position and lastVisitedCell properties of entity. Also changes properties of appropriate cells (clears
      * entity property on old cell, and sets entity property on new cell).
      *
      * @param newCell   New cell where entity currently is
