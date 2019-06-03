@@ -125,6 +125,7 @@ export class EntityModel extends BaseModel implements IEntity {
             });
         }
 
+        this.notify(EntityEvents.ENTITY_HIT, this);
         return this.hitPoints > 0;
     }
     /**

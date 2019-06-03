@@ -6,6 +6,7 @@ export interface IWeapon {
     toHit: Dice;
     damage: Dice;
     type: DamageTypes;
+    naturalType?: MonsterAttackTypes;
 }
 export interface INaturalWeapon extends IWeapon {
     naturalType: MonsterAttackTypes;

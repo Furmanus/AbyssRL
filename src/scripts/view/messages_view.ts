@@ -69,7 +69,7 @@ export class MessagesView {
         messageNode.style.font = font;
         messageNode.style.fontWeight = weight;
         messageNode.style.fontStyle = style;
-        messageNode.style.fontSize = '18px';
+        messageNode.style.fontSize = '14px';
         messageNode.innerText = text;
         messagesListElement.appendChild(messageNode);
 

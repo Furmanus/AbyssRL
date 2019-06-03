@@ -11,6 +11,7 @@ import {Cell} from '../model/dungeon/cells/cell_model';
 import {LevelModel} from '../model/dungeon/level_model';
 import {boundMethod} from 'autobind-decorator';
 import {MonstersTypes} from '../constants/monsters';
+import {miscTiles} from '../constants/sprites';
 
 interface IMousePosition {
     x: number;
@@ -21,10 +22,19 @@ interface IMousePosition {
 interface ISprites {
     [prop: string]: number;
 }
+interface ITemporaryImages {
+    [imageTileCoord: string]: ITemporayImagesMember;
+}
+
+interface ITemporayImagesMember {
+    sprite: string;
+}
+
 interface IDrawnTiles {
     [prop: string]: Cell;
 }
 const ALTERNATIVE_BORDER_LENGTH: number = 8;
+const ALTERNATIVE_TILE_SPRITE_TIMEOUT: number = 125;
 enum entityHealthBarColor {
     HOSTILE = 'red',
     PLAYER = 'green',
@@ -33,8 +43,8 @@ enum entityHealthBarColor {
 export class GameView extends Observer {
     private rows: number;
     private columns: number;
-    private TILE_SIZE: number;
-    private tileset: CanvasImageSource;
+    private readonly TILE_SIZE: number;
+    private readonly tileset: CanvasImageSource;
     private examineMode: boolean;
     /**
      * Current (in current turn) player field of vision. Used to recognize in draw animated image method if current cell
@@ -85,6 +95,7 @@ export class GameView extends Observer {
         LIGHTEN: 'lighten',
     };
     public camera: Camera;
+    private temporaryDrawnImages: ITemporaryImages = {};
     /**
      *
      * @param width     Width of view(in pixels).
@@ -148,10 +159,17 @@ export class GameView extends Observer {
      * @param   barColor        Color of horizontal bar above image
      */
     private drawImage(x: number, y: number, i: number, j: number, barPercentage?: number, barColor?: string): void {
+        const tempSprite: ITemporayImagesMember = this.temporaryDrawnImages[`${x}x${y}`];
+        let tempSpriteData: {x: number; y: number; frames: number};
+
+        if (tempSprite) {
+            tempSpriteData = tileset[tempSprite.sprite];
+        }
+
         this.context.drawImage(
             this.tileset,
-            i * this.TILE_SIZE,
-            j * this.TILE_SIZE,
+            (tempSpriteData ? tempSpriteData.x : i) * this.TILE_SIZE,
+            (tempSpriteData ? tempSpriteData.y : j) * this.TILE_SIZE,
             32,
             32,
             x * this.TILE_SIZE,
@@ -723,5 +741,36 @@ export class GameView extends Observer {
                 window.clearInterval(this.sprites[n]);
             }
         }
+    }
+    /**
+     * Show explosion gfx in specified tile on canvas.
+     *
+     * @param position  Coordinates object
+     */
+    public showExplosionAtPosition(position: ICoordinates): void {
+        const convertedPosition: ICoordinates = this.camera.convertMapCoordinatesToCameraCoords(position.x, position.y);
+
+        this.setTemporaryImageWithTimeout(convertedPosition, miscTiles.explosion, ALTERNATIVE_TILE_SPRITE_TIMEOUT);
+    }
+    /**
+     * Sets temporary image in certain canvas coords. Way it works: method creates field in temporaryDrawnImages
+     * object. When function drawImage is called, it checks if coords with which it has been called exists in temporary
+     * drawnImages object. If they does, it draws sprite from temporaryDrawnImages object instead of sprite from
+     * function argument.
+     *
+     * @param canvasCoords  Coordinates on canvas where temporary image should be drawn
+     * @param sprite        Name of sprite to draw, key in global tiledata object
+     * @param timeout       Number of miliseconds after which temporary image should disappear
+     */
+    private setTemporaryImageWithTimeout(canvasCoords: ICoordinates, sprite: string, timeout: number): void {
+        const coordinates: string = `${canvasCoords.x}x${canvasCoords.y}`;
+
+        this.temporaryDrawnImages[coordinates] = {
+            sprite,
+        };
+
+        setTimeout(() => {
+            delete this.temporaryDrawnImages[coordinates];
+        }, timeout);
     }
 }

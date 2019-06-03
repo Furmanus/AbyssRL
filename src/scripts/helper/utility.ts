@@ -140,14 +140,6 @@ export function convertCoordsToDirection(coords1: ICoordinates, coords2: ICoordi
     return {x: directionX, y: directionY};
 }
 /**
- * Capitalizes first letter of given text.
- * @param   text    Text with first letter to capitalize.
- * @returns         Returns transformed text.
- */
-export function capitalizeString(text: string): string {
-    return text.charAt(0).toUpperCase() + text.slice(1);
-}
-/**
  * Method responsible for checking if two arrays are equal to each other (other array is given in form of arguments)
  */
 export function isArrayEqualToArguments<M = IAnyObject>(array: M[], ...args: M[]): boolean {
@@ -198,4 +190,21 @@ export function getPositionFromString(str: string, separator: string): Position 
 }
 export function getArrayRandomElement<P>(array: P[]): P {
     return array[Math.floor(Math.random() * array.length)];
+}
+/**
+ * Capitalizes first letter of given text.
+ *
+ * @param   str    Text with first letter to capitalize.
+ * @returns         Returns transformed text.
+ */
+export function capitalizeString(str: string): string {
+    const trimmedString: string = str.trim();
+
+    if (trimmedString.length === 0) {
+        return '';
+    } else if (trimmedString.length === 1) {
+        return trimmedString.toUpperCase();
+    } else {
+        return trimmedString.charAt(0).toUpperCase() + trimmedString.slice(1);
+    }
 }

@@ -2,6 +2,7 @@ import {EntityModel} from '../model/entity/entity_model';
 import {MonsterSizes} from '../constants/monsters';
 import {Dice} from '../model/dice';
 import {capitalizeString} from './utility';
+import {generateCombatMessage} from './combat/combat_messages';
 
 const sizeToDodgeModifierMap: {[prop: string]: Dice} = {
     [MonsterSizes.SMALL]: new Dice('3d2'),
@@ -66,7 +67,12 @@ export function doCombatAction(attacker: EntityModel, defender: EntityModel): IC
 
         if (damageDealt > 0) {
             const isAlive: boolean = defender.takeHit(damageDealt);
-            let message: string = `${attacker.description} hits ${defender.description} for ${damageDealt} damage!`;
+            let message: string = generateCombatMessage({
+                damageAmount: damageDealt,
+                wasDefenderHit: isDefenderHit,
+                attacker,
+                defender,
+            });
 
             if (!isAlive) {
                 message += ` ${capitalizeString(defender.description)} drops dead!`;
@@ -77,15 +83,29 @@ export function doCombatAction(attacker: EntityModel, defender: EntityModel): IC
                 message,
             };
         } else {
+            const message: string = generateCombatMessage({
+                damageAmount: damageDealt,
+                wasDefenderHit: isDefenderHit,
+                attacker,
+                defender,
+            });
+
             return {
-                message: `${attacker.description} fails to hurt ${defender.description}!`,
                 damageDealt: false,
+                message,
             };
         }
     } else {
+        const message: string = generateCombatMessage({
+            damageAmount: 0,
+            wasDefenderHit: isDefenderHit,
+            attacker,
+            defender,
+        });
+
         return {
-            message: `${attacker.description} misses ${defender.description}!`,
             damageDealt: false,
+            message,
         };
     }
 }

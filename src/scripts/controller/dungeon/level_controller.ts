@@ -55,6 +55,7 @@ export class LevelController extends Controller {
      */
     private attachEventsToMonsterController(controller: EntityController): void {
         controller.on(this, EntityEvents.ENTITY_DEATH, this.onMonsterDeath);
+        controller.on(this, EntityEvents.ENTITY_HIT, this.onEntityHit);
     }
     /**
      * Method responsible for detaching events from monster controller. Used for example in situation when entity
@@ -64,6 +65,7 @@ export class LevelController extends Controller {
      */
     private detachEventsFromMonsterController(controller: EntityController): void {
         controller.off(this, EntityEvents.ENTITY_DEATH);
+        controller.off(this, EntityEvents.ENTITY_HIT);
     }
     /**
      * Returns cell at given coordinates.
@@ -173,6 +175,15 @@ export class LevelController extends Controller {
             this.lockTimeEngine();
             this.notify(PLAYER_DEATH);
         }
+    }
+    /**
+     * Method triggered after notification from Entity Controller about entity taking damage.
+     *
+     * @param entity    EntityModel
+     */
+    @boundMethod
+    private onEntityHit(entity: EntityModel): void {
+        this.notify(EntityEvents.ENTITY_HIT, entity);
     }
     /**
      * Method responsible for removing entity model from level cells (if its present in any).

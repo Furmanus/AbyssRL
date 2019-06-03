@@ -24,6 +24,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     protected attachEvents(): void {
         this.model.on(this, EntityEvents.ENTITY_MOVE, this.onEntityPositionChange);
         this.model.on(this, EntityEvents.ENTITY_DEATH, this.onEntityDeath);
+        this.model.on(this, EntityEvents.ENTITY_HIT, this.onEntityHit);
     }
     /**
      * Moves entity into new cell.
@@ -57,6 +58,15 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     @boundMethod
     private onEntityDeath(): void {
         this.notify(EntityEvents.ENTITY_DEATH, {entityController: this});
+    }
+    /**
+     * Method triggered after entity takes hit.
+     *
+     * @param entity    Entity model
+     */
+    @boundMethod
+    private onEntityHit(entity: EntityModel): void {
+        this.notify(EntityEvents.ENTITY_HIT, entity);
     }
     public activate(cell: Cell): void {
         const useAttemptResult = cell.useAttempt(this);

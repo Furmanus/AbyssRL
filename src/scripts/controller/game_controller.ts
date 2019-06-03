@@ -23,8 +23,9 @@ import {cellTypes} from '../constants/cell_types';
 import {globalMessagesController} from '../global/messages';
 import {DungeonEvents} from '../constants/dungeon_events';
 import {ASCEND} from '../constants/directions';
-import {IEntityStatsObject} from '../model/entity/entity_model';
+import {EntityModel, IEntityStatsObject} from '../model/entity/entity_model';
 import {boundMethod} from 'autobind-decorator';
+import {EntityEvents} from '../constants/entity_events';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -96,6 +97,7 @@ export class GameController extends Controller {
      */
     private attachEventsToCurrentLevel(): void {
         this.currentLevel.on(this, PLAYER_DEATH, this.onPlayerDeath);
+        this.currentLevel.on(this, EntityEvents.ENTITY_HIT, this.onEntityHit);
     }
     /**
      * Creates player character and adds it to proper level controller time engine.
@@ -184,6 +186,15 @@ export class GameController extends Controller {
     private onPlayerDeath(): void {
         this.view.clearGameWindowAnimations();
         this.notify(PLAYER_DEATH);
+    }
+    /**
+     * Method triggered after notification from currently active level controller about entity taking damage.
+     *
+     * @param entity    Entity model
+     */
+    @boundMethod
+    private onEntityHit(entity: EntityModel): void {
+        this.view.showExplosionAtPosition({x: entity.position.x, y: entity.position.y});
     }
     /**
      * Method triggered after dungeon controller notifies change on current level.
