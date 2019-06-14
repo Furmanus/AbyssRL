@@ -270,6 +270,7 @@ export class GameController extends Controller {
 
         if (movementResult.canMove) {
             this.view.camera.centerOnCoordinates(newPlayerCellPosition.x, newPlayerCellPosition.y);
+            this.view.removeAllTemporaryMessages();
         } else {
             this.view.camera.centerOnCoordinates(playerModel.position.x, playerModel.position.y);
         }

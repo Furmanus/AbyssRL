@@ -4,7 +4,7 @@
 import {tileset} from '../global/tiledata';
 import {Camera} from './camera';
 import {Observer} from '../core/observer';
-import {CANVAS_CELL_CLICK} from '../constants/game_actions';
+import {CAMERA_MOVED, CANVAS_CELL_CLICK} from '../constants/game_actions';
 import {config} from '../global/config';
 import {ICoordinates, IStringDictionary} from '../interfaces/common';
 import {Cell} from '../model/dungeon/cells/cell_model';
@@ -12,6 +12,10 @@ import {LevelModel} from '../model/dungeon/level_model';
 import {boundMethod} from 'autobind-decorator';
 import {MonstersTypes} from '../constants/monsters';
 import {miscTiles} from '../constants/sprites';
+import {CanvasFonts} from '../constants/canvas_enum';
+import Timeout = NodeJS.Timeout;
+import {Vector} from '../model/position/vector';
+import {getPositionFromString} from '../helper/utility';
 
 interface IMousePosition {
     x: number;
@@ -70,6 +74,7 @@ export class GameView extends Observer {
     private globalAnimationFrameIntervalId: number;
     private isAlternativeBorderDrawn: boolean;
     private screen: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
+    private screenContainer: HTMLDivElement = document.getElementById('game-container') as HTMLDivElement;
     private context: CanvasRenderingContext2D = this.screen.getContext('2d');
     /*
     * Object literal which contains currently drawn animated sprites on view. Data is stored as JSON where keys are
@@ -96,6 +101,7 @@ export class GameView extends Observer {
     };
     public camera: Camera;
     private temporaryDrawnImages: ITemporaryImages = {};
+    private temporaryShownMessages: Map<Timeout, HTMLSpanElement> = new Map<Timeout, HTMLSpanElement>();
     /**
      *
      * @param width     Width of view(in pixels).
@@ -134,6 +140,7 @@ export class GameView extends Observer {
     }
     protected initialize(): void {
         this.attachEvents();
+        this.attachEventsToCamera();
 
         this.globalAnimationFrameIntervalId = window.setInterval(() => {
             if (this.globalAnimationFrame < 4) {
@@ -147,6 +154,21 @@ export class GameView extends Observer {
         this.screen.addEventListener('click', this.mouseClickEventListener.bind(this));
         this.screen.addEventListener('mousemove', this.mouseMoveEventListener.bind(this));
         this.screen.addEventListener('mouseleave', this.mouseLeaveEventListener.bind(this));
+    }
+    private attachEventsToCamera(): void {
+        this.camera.on(this, CAMERA_MOVED, this.onCameraMove);
+    }
+    /**
+     * Method triggered after camera notifies that it has been moved. Moves all temporary image coords by vector by
+     * which camera was moved. It's necessary, because otherwise temporary images would have been drawn at wrong places
+     * (at least in case of entity which has moved in last turn being hit - coordinates of explosion tiles are calculated
+     * first, but they are quickly outdated, because in next turn camera might have been moved).
+     *
+     * @param vector    Vector
+     */
+    @boundMethod
+    private onCameraMove(vector: Vector): void {
+        this.moveTemporaryImagesCoords(vector);
     }
     /**
      * Draws 32x32 pixels tile on game view at certain coordinates. Tile is chosen from game tileset from i row and j column.
@@ -640,10 +662,13 @@ export class GameView extends Observer {
      * Redraws static (not animated) sprite in current mouse position.
      */
     private redrawCurrentStaticSprite(): void {
+        this.redrawStaticSpriteAtPosition(this.currentMousePosition);
+    }
+    private redrawStaticSpriteAtPosition(position: ICoordinates): void {
         const {
             x,
             y,
-        } = this.currentMousePosition;
+        } = position;
         const spriteAnimationId = this.sprites[`${x}x${y}`];
         const currentCell = this.drawnTiles[`${x}x${y}`];
         const currentFoggedCell = this.foggedTiles[`${x}x${y}`];
@@ -750,7 +775,9 @@ export class GameView extends Observer {
     public showExplosionAtPosition(position: ICoordinates): void {
         const convertedPosition: ICoordinates = this.camera.convertMapCoordinatesToCameraCoords(position.x, position.y);
 
-        this.setTemporaryImageWithTimeout(convertedPosition, miscTiles.explosion, ALTERNATIVE_TILE_SPRITE_TIMEOUT);
+        if (convertedPosition) {
+            this.setTemporaryImageWithTimeout(convertedPosition, miscTiles.explosion, ALTERNATIVE_TILE_SPRITE_TIMEOUT);
+        }
     }
     /**
      * Sets temporary image in certain canvas coords. Way it works: method creates field in temporaryDrawnImages
@@ -771,6 +798,111 @@ export class GameView extends Observer {
 
         setTimeout(() => {
             delete this.temporaryDrawnImages[coordinates];
+            /**
+             * We redraw original static sprite behind temporary sprite - otherwise it would've been redrawn during next
+             * whole screen redraw.
+             */
+            this.redrawStaticSpriteAtPosition(canvasCoords);
         }, timeout);
+    }
+    /**
+     * Moves all temporary drawn images coords by specified vector.
+     *
+     * @param vector    Vector object
+     */
+    private moveTemporaryImagesCoords(vector: Vector): void {
+        const newTemporaryDrawnImages: ITemporaryImages = {};
+
+        Object.keys(this.temporaryDrawnImages).forEach((coord: string) => {
+            const {
+                x,
+                y,
+            } = getPositionFromString(coord, 'x');
+            const newCoords: string = `${x - vector.x}x${y - vector.y}`;
+
+            newTemporaryDrawnImages[`${x - vector.x}x${y - vector.y}`] = this.temporaryDrawnImages[coord];
+            setTimeout(() => {
+                delete newTemporaryDrawnImages[newCoords];
+            }, ALTERNATIVE_TILE_SPRITE_TIMEOUT);
+        });
+
+        this.temporaryDrawnImages = newTemporaryDrawnImages;
+    }
+    /**
+     * Displays temporary message on game screen above (or beyond) certain cell.
+     *
+     * @param message       Message to show on game canvas
+     * @param coordinates   Coordinates of cell near which message should be displayed
+     * @param font          Name of font in which message should be displayed
+     * @param timeout       Amount of milliseconds after which message should disappear
+     */
+    public showMessage(
+        message: string,
+        coordinates: ICoordinates = {x: 0, y: 0},
+        font: CanvasFonts = CanvasFonts.AVATAR,
+        timeout: number = 2000,
+    ): void {
+        const canvasContainer: HTMLDivElement = this.screenContainer;
+        const textSpan: HTMLSpanElement = document.createElement('span');
+
+        textSpan.innerText = message;
+        textSpan.classList.add(`canvas-text-${font}`);
+        /**
+         * Append element at this point, so we can access its computed style properties.
+         */
+        canvasContainer.appendChild(textSpan);
+
+        const {
+            width: widthString,
+            height: heightString,
+        } = window.getComputedStyle(textSpan);
+        const width: number = parseInt(widthString, 10);
+        const height: number = parseInt(heightString, 10);
+        let left: number = (coordinates.x * this.TILE_SIZE) - width / 2 + this.TILE_SIZE;
+        let top: number = (coordinates.y * this.TILE_SIZE) - height - 3;
+        let intervalTimeout: Timeout;
+
+        left = left < 0 ? (coordinates.x * this.TILE_SIZE) + 2 : left;
+        top = top < 0 ? (coordinates.y * this.TILE_SIZE) + this.TILE_SIZE + 3 : top;
+
+        if (left +  width >= this.columns * this.TILE_SIZE) {
+            left = (coordinates.x * this.TILE_SIZE) - width - 8;
+        }
+
+        textSpan.style.left = `${left}px`;
+        textSpan.style.top = `${top}px`;
+
+        intervalTimeout = setTimeout(() => {
+            this.removeTemporaryMessage(textSpan);
+            this.temporaryShownMessages.delete(intervalTimeout);
+        }, 2000);
+        /**
+         * Store data in map, so later we can retrieve it in remove all messages method.
+         */
+        this.temporaryShownMessages.set(intervalTimeout, textSpan);
+    }
+    /**
+     * Removes from DOM temporarily shown message on canvas.
+     *
+     * @param message   HTMLSpanElement with message
+     */
+    @boundMethod
+    private removeTemporaryMessage(message: HTMLSpanElement): void {
+        if (this.screenContainer.contains(message)) {
+            this.screenContainer.removeChild<HTMLSpanElement>(message);
+        }
+    }
+    /**
+     * Removes from DOM all temporarily shown messages.
+     */
+    public removeAllTemporaryMessages(): void {
+        this.temporaryShownMessages.forEach(( messageElement: HTMLSpanElement, timeout: Timeout) => {
+            if (clearTimeout) {
+                clearTimeout(timeout);
+            }
+            if (this.screenContainer.contains(messageElement)) {
+                this.screenContainer.removeChild(messageElement);
+            }
+        });
     }
 }

@@ -1,7 +1,10 @@
 import {config} from '../global/config';
 import {Position} from '../model/position/position';
+import {Observer} from '../core/observer';
+import {CAMERA_MOVED} from '../constants/game_actions';
+import {Vector} from '../model/position/vector';
 
-export class Camera {
+export class Camera  extends Observer {
     private x: number;
     private y: number;
     private readonly screenWidth: number;
@@ -14,6 +17,8 @@ export class Camera {
      * @param    screenHeight    Height(measured in squares) of game view.
      */
     constructor(x: number, y: number, screenWidth: number, screenHeight: number) {
+        super();
+
         this.x = x;
         this.y = y;
         this.screenWidth = Math.min(screenWidth, config.LEVEL_WIDTH);
@@ -50,6 +55,8 @@ export class Camera {
                 this.y = config.LEVEL_HEIGHT - this.screenHeight;
             }
         }
+
+        this.notify(CAMERA_MOVED, new Vector(deltaX, deltaY));
     }
     /**
      * Method responsible for returning current camera coordinates of its upper left point.
@@ -85,6 +92,8 @@ export class Camera {
      * @param   y   Column view coordinate
      */
     public centerOnCoordinates(x: number, y: number): void {
+        const oldX = this.x;
+        const oldY = this.y;
         let newCameraX = null; // new camera x coordinate of upper left point.
         let newCameraY = null; // new camera y coordinate of upper left point.
         /**
@@ -112,5 +121,7 @@ export class Camera {
 
         this.x = newCameraX;
         this.y = newCameraY;
+
+        this.notify(CAMERA_MOVED, new Vector(newCameraX - oldX, newCameraY - oldY));
     }
 }

@@ -115,9 +115,12 @@ export class EntityModel extends BaseModel implements IEntity {
      * Method responsible for substracting damage from entity hp and calculating side effects.
      *
      * @param damage    Number of hit points to substract
+     * @returns         Boolean variable indicating if entity is still alive (its hit points are above 0)
      */
     public takeHit(damage: number): boolean {
         this.hitPoints -= damage;
+
+        this.notify(EntityEvents.ENTITY_HIT, this);
 
         if (this.hitPoints < 1) {
             this.notify(EntityEvents.ENTITY_DEATH, {
@@ -125,7 +128,6 @@ export class EntityModel extends BaseModel implements IEntity {
             });
         }
 
-        this.notify(EntityEvents.ENTITY_HIT, this);
         return this.hitPoints > 0;
     }
     /**
