@@ -1,4 +1,4 @@
-###0.0.3 (work in progress)
+###0.0.3 (15.06.2019)
 * (Feature) Basic implementation of monsters (giant rat right now)
 * (Feature) Basic combat implementation
 * (Feature) Randomized combat messages
@@ -7,6 +7,7 @@
 * (Feature) Basic animal AI
 * (Feature) Implemented look command
 * (Feature) Special sprite when entity gets hit
+* (Feature) Temporary message on game screen
 ###0.0.2 (01.05.2019)
 * (Feature) Added mechanism to generate random dungeon room decorators (a.k.a vaults), added
 one basic random room (empty room with bed and chest of drawers)
