@@ -1,0 +1,23 @@
+.canvas-message {
+  z-index: 10;
+  position: absolute;
+  color: #EEEEEE;
+  font-size: 14px;
+  pointer-events: none;
+  max-width: 150px;
+  text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+}
+.canvas {
+  &-text {
+    &-avatar {
+      .canvas-message();
+
+      //font-family: avatar, fantasy;
+    }
+    &-runic {
+      .canvas-message();
+
+      //font-family: runic, fantasy;
+    }
+  }
+}

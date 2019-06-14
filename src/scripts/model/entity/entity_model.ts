@@ -3,8 +3,23 @@ import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
+import {IEntity} from '../../interfaces/entity_interfaces';
+import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
+import {ItemsCollection} from '../../collections/items_collection';
+import {INaturalWeapon, IWeapon} from '../../interfaces/combat';
 
-export class EntityModel extends BaseModel {
+export interface IEntityStatsObject {
+    [EntityStats.STRENGTH]: number;
+    [EntityStats.DEXTERITY]: number;
+    [EntityStats.INTELLIGENCE]: number;
+    [EntityStats.TOUGHNESS]: number;
+    [EntityStats.PERCEPTION]: number;
+    [EntityStats.SPEED]: number;
+    [EntityStats.HIT_POINTS]: number;
+    [EntityStats.MAX_HIT_POINTS]: number;
+}
+
+export class EntityModel extends BaseModel implements IEntity {
     /**
      * Visible sprite of entity. Member of file constants/sprites.js.
      */
@@ -21,14 +36,15 @@ export class EntityModel extends BaseModel {
      * Cell model where entity was in last turn.
      */
     public lastVisitedCell: Cell = null;
+    public strength: number = null;
+    public dexterity: number = null;
+    public toughness: number = null;
+    public intelligence: number = null;
     /**
-     * Speed statistic of entity.
+     * Speed statistic of entity. Important stat, used by time engine to calculate how often entity should act.
      */
-    public speed: number;
-    /**
-     * Perception statistics of entity.
-     */
-    public perception: number;
+    public speed: number = null;
+    public perception: number = null;
     /**
      * Array of cell model which are in entity field of view
      */
@@ -37,6 +53,30 @@ export class EntityModel extends BaseModel {
      * Description (usually text to display) of entity.
      */
     public description: string = 'unknown entity';
+    /**
+     * Type of entity.
+     */
+    public type: MonstersTypes = MonstersTypes.UNKNOWN;
+    /**
+     * Is entity hostile to player.
+     */
+    public isHostile: boolean = false;
+    public hitPoints: number = null;
+    public maxHitPoints: number = null;
+    public size: MonsterSizes = null;
+    public inventory: ItemsCollection = null;
+    /**
+     * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
+     */
+    public naturalWeapon: INaturalWeapon = null;
+    /**
+     * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
+     */
+    public protection: number = 0;
+
+    get weapon(): IWeapon {
+        return this.naturalWeapon;
+    }
 
     constructor(config: IAnyObject) {
         super();
@@ -47,6 +87,7 @@ export class EntityModel extends BaseModel {
         this.lastVisitedCell = config.lastVisitedCell || null;
         this.speed = config.speed;
         this.perception = config.perception;
+        this.type = config.type;
     }
     /**
      * Changes position property of entity.
@@ -71,7 +112,26 @@ export class EntityModel extends BaseModel {
         this.setProperty('fov', fovArray);
     }
     /**
-     * Changes position and lastVisitedCell properties of entity. Also changes properties of appriopiate cells (clears
+     * Method responsible for substracting damage from entity hp and calculating side effects.
+     *
+     * @param damage    Number of hit points to substract
+     * @returns         Boolean variable indicating if entity is still alive (its hit points are above 0)
+     */
+    public takeHit(damage: number): boolean {
+        this.hitPoints -= damage;
+
+        this.notify(EntityEvents.ENTITY_HIT, this);
+
+        if (this.hitPoints < 1) {
+            this.notify(EntityEvents.ENTITY_DEATH, {
+                entity: this,
+            });
+        }
+
+        return this.hitPoints > 0;
+    }
+    /**
+     * Changes position and lastVisitedCell properties of entity. Also changes properties of appropriate cells (clears
      * entity property on old cell, and sets entity property on new cell).
      *
      * @param newCell   New cell where entity currently is

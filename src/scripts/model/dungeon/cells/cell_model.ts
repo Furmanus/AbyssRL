@@ -107,6 +107,8 @@ export abstract class Cell extends BaseModel implements ICellModel {
     }
     /**
      * Sets value of entity field of cell model instance.
+     *
+     * @param entity    Model of entity
      */
     public setEntity(entity: EntityModel): void {
         this.entity = entity;

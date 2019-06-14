@@ -3,6 +3,9 @@ import {config} from '../global/config';
 import {Controller} from './controller';
 import {dungeonTypeToName} from '../constants/dungeon_types';
 import {ILevelInfo} from '../interfaces/level';
+import {IEntityStatsObject} from '../model/entity/entity_model';
+import {Cell} from '../model/dungeon/cells/cell_model';
+import tile from 'rot-js/lib/display/tile';
 
 /**
  * Controller of info data visible to player (player character info like HP, stats...).
@@ -10,12 +13,13 @@ import {ILevelInfo} from '../interfaces/level';
 export class InfoController extends Controller {
     private view: InfoView;
 
-    constructor() {
+    constructor(tileset: HTMLImageElement) {
         super();
 
         this.view = new InfoView(
             config.SCREEN_WIDTH - config.TILE_SIZE * config.ROWS - 30,
             config.TILE_SIZE * config.COLUMNS,
+            tileset,
         );
     }
     /**
@@ -41,5 +45,27 @@ export class InfoController extends Controller {
      */
     public changeLevelInfoMessage(levelInfo: ILevelInfo): void {
         this.view.changeLevelInfoMessage(`Level ${levelInfo.levelNumber} of ${dungeonTypeToName[levelInfo.branch]}`);
+    }
+    /**
+     * Displays player stats in view.
+     *
+     * @param stats Object with player statistics
+     */
+    public setPlayerStatsInView(stats: IEntityStatsObject): void {
+        this.view.setPlayerStats(stats);
+    }
+    /**
+     * Displays information about currently examined cell.
+     *
+     * @param cell  Cell which info is supposed to be displayed
+     */
+    public displayCellInformation(cell: Cell): void {
+        this.view.displayCellDescriptionInView(cell);
+    }
+    /**
+     * Hides examined cell information in view.
+     */
+    public hideCellInformation(): void {
+        this.view.removeDisplayCellDescription();
     }
 }

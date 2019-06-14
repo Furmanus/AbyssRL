@@ -6,7 +6,8 @@ export class Constructor extends Observer {
 
         // this.initialize();
     }
-    protected initialize(): void {
+    // tslint:disable-next-line:no-any
+    protected initialize(config?: any): void {
         // Default function called if no initialize method is found in sub-classes
     }
 }

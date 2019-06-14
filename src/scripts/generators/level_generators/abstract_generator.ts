@@ -17,6 +17,9 @@ import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Direction} from '../../model/position/direction';
 import {directionType} from '../../interfaces/common';
 import {MapWithObserver} from '../../core/map_with_observer';
+import {monsterFactory} from '../../factory/monster_factory';
+import {DungeonEvents} from '../../constants/dungeon_events';
+import {MonsterController} from '../../controller/entity/monster_controller';
 
 const {
     NE,
@@ -28,6 +31,8 @@ const {
     SE,
     E,
 } = DIRECTIONS_SHORT;
+const MONSTERS_LIMIT_PER_LEVEL: number = 20;
+
 /**
  * Which cell types can be replaced to stairs during level generation.
  */
@@ -549,5 +554,21 @@ export abstract class AbstractLevelGenerator {
         }
 
         return isCreationSuccessful;
+    }
+    /**
+     * Randomly generates monsters in dungeon.
+     *
+     * @param levelModel Model of dungeon level
+     */
+    public generateMonsters(levelModel: LevelModel): void {
+        for (let i = 0; i < MONSTERS_LIMIT_PER_LEVEL; i++) {
+            const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
+
+            if (randomCell) {
+                const monsterController: MonsterController = monsterFactory.getGiantRatController(levelModel, randomCell);
+                randomCell.setEntity(monsterController.getModel());
+                levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
+            }
+        }
     }
 }

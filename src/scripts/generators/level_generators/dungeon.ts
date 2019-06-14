@@ -92,6 +92,8 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
         rooms.forEach((room: RoomModel) => {
             DungeonVaultsGenerator.generateRandomRoom(room);
         });
+
+        this.generateMonsters(level);
     }
     /**
      * Method responsible for generating doors in level model.

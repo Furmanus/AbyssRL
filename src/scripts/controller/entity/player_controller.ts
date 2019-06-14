@@ -14,6 +14,7 @@ import {UseAttemptResult} from '../../model/dungeon/cells/effects/use_attempt_re
 import {UseEffectResult} from '../../model/dungeon/cells/effects/use_effect_result';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {DungeonEvents} from '../../constants/dungeon_events';
+import {ICombatResult} from '../../helper/combat_helper';
 
 export interface IMoveResolve {
     canMove: boolean;
@@ -152,6 +153,24 @@ export class PlayerController extends EntityController<PlayerModel> {
                 canMove: false,
                 message: `${Utility.capitalizeString(cellModel.description)} is blocking your way.`,
             });
+            return;
+        }
+        if (cellModel.entity && cellModel.entity.type !== 'player') {
+            if (cellModel.entity.isHostile) {
+                const attackResult: ICombatResult = this.attack(cellModel.entity);
+
+                this.notify(END_PLAYER_TURN);
+
+                promiseResolveFunction({
+                    canMove: false,
+                    message: attackResult.message,
+                });
+            } else {
+                promiseResolveFunction({
+                    canMove: false,
+                    message: `${Utility.capitalizeString(cellModel.entity.description)} is in your way.`,
+                });
+            }
             return;
         }
 

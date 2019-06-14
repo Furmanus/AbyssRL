@@ -13,6 +13,9 @@ import {RoomModel} from './room_model';
 import {RoomConnectionModel} from './room_connection_model';
 import {DungeonModelEvents} from '../../constants/dungeon_events';
 import {MapWithObserver} from '../../core/map_with_observer';
+import {EntityModel} from '../entity/entity_model';
+
+export type randomCellTest = (cellCandidate: Cell) => boolean;
 
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
@@ -61,6 +64,14 @@ export class LevelModel extends BaseModel {
         this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
 
         this.notify(DungeonModelEvents.CELL_TYPE_CHANGED, {x, y});
+    }
+    /**
+     * Method responsible for removing entity from level cells, if its present in any.
+     *
+     * @param entity    Entity model
+     */
+    public removeEntity(entity: EntityModel): void {
+        entity.position.entity = null;
     }
     /**
      * Method responsible for setting stairsUp field of level model.
@@ -179,7 +190,7 @@ export class LevelModel extends BaseModel {
 
         return result;
     }
-    public isCellAdjacentToCell(cell: Cell, callback: (cellCandidate: Cell) => boolean): boolean {
+    public isCellAdjacentToCell(cell: Cell, callback: randomCellTest): boolean {
         let result: boolean = false;
         const neighbours = this.getCellNeighbours(cell);
 
@@ -191,6 +202,37 @@ export class LevelModel extends BaseModel {
                 result = true;
             }
         });
+
+        return result;
+    }
+    public getRandomUnoccupiedCell(): Cell {
+        let cell: Cell = Array.from(this.cells.values()).random();
+        let attempt: number = 0;
+
+        while (cell.blockMovement || cell.entity) {
+            if (attempt > 100) {
+                cell = undefined;
+                break;
+            }
+            cell = Array.from(this.cells.values()).random();
+            attempt += 1;
+        }
+
+        return cell;
+    }
+    public getRandomNeighbourCallback(cell: Cell, callback: randomCellTest): Cell {
+        const neighbours: Cell[] = this.getCellNeighbours(cell);
+        let result: Cell = neighbours.random();
+        let attempt: number = 0;
+
+        while (!callback(result)) {
+            result = neighbours.random();
+            attempt += 1;
+
+            if (attempt > 15) {
+                return null;
+            }
+        }
 
         return result;
     }

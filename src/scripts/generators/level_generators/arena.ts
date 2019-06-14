@@ -63,6 +63,8 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
             this.generateRandomStairsDown(level);
         }
 
+        this.generateMonsters(level);
+
         function generatorCallback(x: number, y: number, value: number): void {
             if (value === 1) {
                 level.changeCellType(x, y, cellTypes.HIGH_PEAKS);

@@ -69,7 +69,7 @@ export class MessagesView {
         messageNode.style.font = font;
         messageNode.style.fontWeight = weight;
         messageNode.style.fontStyle = style;
-        messageNode.style.fontSize = '18px';
+        messageNode.style.fontSize = '14px';
         messageNode.innerText = text;
         messagesListElement.appendChild(messageNode);
 
@@ -85,6 +85,16 @@ export class MessagesView {
         this.messagesList[this.messagesList.length - 1] += ' ' + text;
         (this.messagesListElement.lastChild as HTMLElement).innerText += ` ${text}`;
         this.messagesListElement.scrollTop = ( this.messagesListElement.lastChild as HTMLElement).offsetTop;
+    }
+    /**
+     * Removes last displayed message.
+     */
+    public removeLastMessage(): void {
+        this.messagesList.pop();
+
+        if (this.messagesListElement.hasChildNodes()) {
+            this.messagesListElement.removeChild(this.messagesListElement.lastChild);
+        }
     }
     /**
      * Returns DOM node element where messages are displayed.

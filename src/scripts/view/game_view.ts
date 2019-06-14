@@ -1,16 +1,21 @@
 /**
  * Created by Lukasz Lach on 2017-04-24.
  */
-import {
-    tileset,
-} from '../global/tiledata';
+import {tileset} from '../global/tiledata';
 import {Camera} from './camera';
 import {Observer} from '../core/observer';
-import {CANVAS_CELL_CLICK} from '../constants/game_actions';
+import {CAMERA_MOVED, CANVAS_CELL_CLICK} from '../constants/game_actions';
 import {config} from '../global/config';
 import {ICoordinates, IStringDictionary} from '../interfaces/common';
 import {Cell} from '../model/dungeon/cells/cell_model';
 import {LevelModel} from '../model/dungeon/level_model';
+import {boundMethod} from 'autobind-decorator';
+import {MonstersTypes} from '../constants/monsters';
+import {miscTiles} from '../constants/sprites';
+import {CanvasFonts} from '../constants/canvas_enum';
+import Timeout = NodeJS.Timeout;
+import {Vector} from '../model/position/vector';
+import {getPositionFromString} from '../helper/utility';
 
 interface IMousePosition {
     x: number;
@@ -21,21 +26,55 @@ interface IMousePosition {
 interface ISprites {
     [prop: string]: number;
 }
+interface ITemporaryImages {
+    [imageTileCoord: string]: ITemporayImagesMember;
+}
+
+interface ITemporayImagesMember {
+    sprite: string;
+}
+
 interface IDrawnTiles {
     [prop: string]: Cell;
+}
+const ALTERNATIVE_BORDER_LENGTH: number = 8;
+const ALTERNATIVE_TILE_SPRITE_TIMEOUT: number = 125;
+enum entityHealthBarColor {
+    HOSTILE = 'red',
+    PLAYER = 'green',
 }
 
 export class GameView extends Observer {
     private rows: number;
     private columns: number;
-    private TILE_SIZE: number;
-    private tileset: CanvasImageSource;
+    private readonly TILE_SIZE: number;
+    private readonly tileset: CanvasImageSource;
+    private examineMode: boolean;
+    /**
+     * Current (in current turn) player field of vision. Used to recognize in draw animated image method if current cell
+     * is visible and if entity or inventory should be drawn if image is darkened (cell is not visible);
+     */
+    private currentPlayerFov: Cell[] = null;
     /**
      * Global animation frame for all animated sprites. Changes every 250ms.
      */
     private globalAnimationFrame: number = 0;
     private currentMousePosition: IMousePosition;
+    /**
+     * Position of alternative border drawn in examine mode.
+     */
+    private alternativeBorderPosition: ICoordinates;
+    /**
+     * Id returned from setInterval method used to animate border in examine mode.
+     */
+    private alternativeBorderIntervalId: number;
+    /**
+     * Id returned from setInterval method used to change global animation frame.
+     */
+    private globalAnimationFrameIntervalId: number;
+    private isAlternativeBorderDrawn: boolean;
     private screen: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
+    private screenContainer: HTMLDivElement = document.getElementById('game-container') as HTMLDivElement;
     private context: CanvasRenderingContext2D = this.screen.getContext('2d');
     /*
     * Object literal which contains currently drawn animated sprites on view. Data is stored as JSON where keys are
@@ -61,6 +100,8 @@ export class GameView extends Observer {
         LIGHTEN: 'lighten',
     };
     public camera: Camera;
+    private temporaryDrawnImages: ITemporaryImages = {};
+    private temporaryShownMessages: Map<Timeout, HTMLSpanElement> = new Map<Timeout, HTMLSpanElement>();
     /**
      *
      * @param width     Width of view(in pixels).
@@ -99,8 +140,9 @@ export class GameView extends Observer {
     }
     protected initialize(): void {
         this.attachEvents();
+        this.attachEventsToCamera();
 
-        window.setInterval(() => {
+        this.globalAnimationFrameIntervalId = window.setInterval(() => {
             if (this.globalAnimationFrame < 4) {
                 this.globalAnimationFrame++;
             } else {
@@ -113,18 +155,43 @@ export class GameView extends Observer {
         this.screen.addEventListener('mousemove', this.mouseMoveEventListener.bind(this));
         this.screen.addEventListener('mouseleave', this.mouseLeaveEventListener.bind(this));
     }
+    private attachEventsToCamera(): void {
+        this.camera.on(this, CAMERA_MOVED, this.onCameraMove);
+    }
     /**
-     * Draws 32x32 pixels tile on game view at certain coordinates. Tile is choosen from game tileset from i row and j column.
-     * @param   x  Row position where tile on game view will be drawn
-     * @param   y  Column position where tile on game view will be drawn
-     * @param   i  Row position from tileset where from tile will be choosen to draw
-     * @param   j  Column position from tileset where from tile will be choosen to draw
+     * Method triggered after camera notifies that it has been moved. Moves all temporary image coords by vector by
+     * which camera was moved. It's necessary, because otherwise temporary images would have been drawn at wrong places
+     * (at least in case of entity which has moved in last turn being hit - coordinates of explosion tiles are calculated
+     * first, but they are quickly outdated, because in next turn camera might have been moved).
+     *
+     * @param vector    Vector
      */
-    private drawImage(x: number, y: number, i: number, j: number): void {
+    @boundMethod
+    private onCameraMove(vector: Vector): void {
+        this.moveTemporaryImagesCoords(vector);
+    }
+    /**
+     * Draws 32x32 pixels tile on game view at certain coordinates. Tile is chosen from game tileset from i row and j column.
+     * @param   x               Row position where tile on game view will be drawn
+     * @param   y               Column position where tile on game view will be drawn
+     * @param   i               Row position from tileset where from tile will be chosen to draw
+     * @param   j               Column position from tileset where from tile will be chosen to draw
+     * @param   barPercentage   Percentage of horizontal bar drawn at top of image. Drawn only if barPercentage argument
+     *                          is passed to this function
+     * @param   barColor        Color of horizontal bar above image
+     */
+    private drawImage(x: number, y: number, i: number, j: number, barPercentage?: number, barColor?: string): void {
+        const tempSprite: ITemporayImagesMember = this.temporaryDrawnImages[`${x}x${y}`];
+        let tempSpriteData: {x: number; y: number; frames: number};
+
+        if (tempSprite) {
+            tempSpriteData = tileset[tempSprite.sprite];
+        }
+
         this.context.drawImage(
             this.tileset,
-            i * this.TILE_SIZE,
-            j * this.TILE_SIZE,
+            (tempSpriteData ? tempSpriteData.x : i) * this.TILE_SIZE,
+            (tempSpriteData ? tempSpriteData.y : j) * this.TILE_SIZE,
             32,
             32,
             x * this.TILE_SIZE,
@@ -132,9 +199,16 @@ export class GameView extends Observer {
             32,
             32,
         );
+
+        if (barPercentage && barColor) {
+            const barLength: number = Math.floor(this.TILE_SIZE * barPercentage);
+
+            this.context.fillStyle = barColor;
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE - 3, barLength, 4);
+        }
     }
     /**
-     * Draws 32x32 pixels tile on game view at given coordinates. Tile is choosen from game tileset from x row
+     * Draws 32x32 pixels tile on game view at given coordinates. Tile is chosen from game tileset from x row
      * and y column. Tile is not animated and is darkened. If tile has more than one frame (is animated normally), only
      * first frame is drawn.
      *
@@ -172,11 +246,25 @@ export class GameView extends Observer {
         let j: number;
         let framesNumber: number;
         let interval;
+        let hpBarPercent: number = null;
+        let hpBarColor: string = null;
 
-        if (cell.entity) {
-            tile = cell.entity.display;
-        } else if (cell.inventory.length) {
-            tile = cell.inventory[0].display;
+        if (this.currentPlayerFov && this.currentPlayerFov.includes(cell)) {
+            if (cell.entity) {
+                tile = cell.entity.display;
+                hpBarPercent = cell.entity.hitPoints / cell.entity.maxHitPoints;
+                hpBarPercent = hpBarPercent > 0 ? hpBarPercent : 0;
+
+                if (cell.entity.type === MonstersTypes.PLAYER) {
+                    hpBarColor = 'green';
+                } else {
+                    hpBarColor = 'red';
+                }
+            } else if (cell.inventory.length) {
+                tile = cell.inventory[0].display;
+            } else {
+                tile = cell.display;
+            }
         } else {
             tile = cell.display;
         }
@@ -197,10 +285,10 @@ export class GameView extends Observer {
             }
             return null;
         } else {
-            this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j); // we draw frame of animation
+            this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j, hpBarPercent, hpBarColor); // we draw frame of animation
 
             interval = window.setInterval(() => {
-                this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j);
+                this.drawImage(x, y, i + this.globalAnimationFrame % framesNumber, j, hpBarPercent, hpBarColor);
 
                 if (light) {
                     /**
@@ -258,20 +346,62 @@ export class GameView extends Observer {
     }
     /**
      * Sets a border around certain tile.
-     * @param   x         Row coordinate of tile.
-     * @param   y         Column coordinate of tile.
-     * @param   color     Colour of border.
+     * @param   x                   Row coordinate of tile
+     * @param   y                   Column coordinate of tile
+     * @param   color               Colour of border
+     * @param   alternativeBorder   If alternative border (border only in corners of cell) should be drawn
      */
-    private setBorder(x: number, y: number, color: string): void {
+    private setBorder(x: number, y: number, color: string, alternativeBorder?: boolean): void {
         this.context.fillStyle = color;
         /*
         * Unusual method to draw border of rectangle in canvas. We draw every part of border as separate filled
         * rectangle, so we can later clear it in separate method.
         */
-        this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, this.TILE_SIZE, 2);
-        this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, this.TILE_SIZE);
-        this.context.fillRect(x * this.TILE_SIZE + this.TILE_SIZE - 2, y * this.TILE_SIZE, 2, this.TILE_SIZE);
-        this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE + this.TILE_SIZE - 2, this.TILE_SIZE, 2);
+        if (alternativeBorder) {
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, ALTERNATIVE_BORDER_LENGTH, 2);
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                y * this.TILE_SIZE,
+                ALTERNATIVE_BORDER_LENGTH,
+                2,
+            );
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, ALTERNATIVE_BORDER_LENGTH);
+            this.context.fillRect(
+                x * this.TILE_SIZE,
+                y * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                2,
+                ALTERNATIVE_BORDER_LENGTH,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - 2,
+                y * this.TILE_SIZE,
+                2,
+                ALTERNATIVE_BORDER_LENGTH,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - 2,
+                y * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                2,
+                ALTERNATIVE_BORDER_LENGTH,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE,
+                y * this.TILE_SIZE + this.TILE_SIZE - 2,
+                ALTERNATIVE_BORDER_LENGTH,
+                2,
+            );
+            this.context.fillRect(
+                x * this.TILE_SIZE + this.TILE_SIZE - ALTERNATIVE_BORDER_LENGTH,
+                y * this.TILE_SIZE + this.TILE_SIZE - 2,
+                ALTERNATIVE_BORDER_LENGTH,
+                2,
+            );
+        } else {
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, this.TILE_SIZE, 2);
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE, 2, this.TILE_SIZE);
+            this.context.fillRect(x * this.TILE_SIZE + this.TILE_SIZE - 2, y * this.TILE_SIZE, 2, this.TILE_SIZE);
+            this.context.fillRect(x * this.TILE_SIZE, y * this.TILE_SIZE + this.TILE_SIZE - 2, this.TILE_SIZE, 2);
+        }
     }
     /**
      * Method responsible for removing border from certain tile.
@@ -319,6 +449,63 @@ export class GameView extends Observer {
         this.context.globalCompositeOperation = 'source-over'; // restore default composite operation
     }
     /**
+     * Draws and animates border around certain cell coordinates.
+     *
+     * @param row       Row of cell's border to animate
+     * @param column    Column of cell's border to animate
+     */
+    public drawAnimatedBorder(row: number, column: number): void {
+        const convertedCoords: ICoordinates = this.camera.convertMapCoordinatesToCameraCoords(row, column);
+        const {
+            x,
+            y,
+        } = convertedCoords;
+
+        this.clearAlternativeBorderAnimation();
+
+        if (convertedCoords) {
+            this.setBorder(x, y, 'silver', true);
+            this.alternativeBorderIntervalId = window.setInterval(this.animateAlternativeBorder, 250);
+            this.alternativeBorderPosition = {x, y};
+            this.isAlternativeBorderDrawn = true;
+        }
+    }
+    @boundMethod
+    private animateAlternativeBorder(): void {
+        const {
+            alternativeBorderPosition,
+        } = this;
+
+        if (this.isAlternativeBorderDrawn) {
+            this.clearBorder(alternativeBorderPosition.x, alternativeBorderPosition.y);
+            this.isAlternativeBorderDrawn = false;
+        } else {
+            this.setBorder(alternativeBorderPosition.x, alternativeBorderPosition.y, 'silver', true);
+            this.isAlternativeBorderDrawn = true;
+        }
+    }
+    /**
+     * Method responsible for removing active alternative border (used for example in examine mode to look at cells)
+     * animation.
+     */
+    public clearAlternativeBorderAnimation(): void {
+        if (this.alternativeBorderPosition) {
+            clearInterval(this.alternativeBorderIntervalId);
+            this.clearBorder(this.alternativeBorderPosition.x, this.alternativeBorderPosition.y);
+
+            this.alternativeBorderIntervalId = null;
+            this.alternativeBorderPosition = null;
+        }
+    }
+    /**
+     * Method responsible for removing any active border animations, by clearing animation interval and removing border
+     * from canvas.
+     */
+    public clearBorderAnimation(): void {
+        clearInterval(this.currentMousePosition.intervalId);
+        this.clearBorder(this.currentMousePosition.x, this.currentMousePosition.y);
+    }
+    /**
      * Event listener for clicking mouse inside game view canvas
      */
     private mouseClickEventListener(e: MouseEvent): void {
@@ -338,6 +525,11 @@ export class GameView extends Observer {
      * Event listener for moving mouse over game view canvas.
      */
     private mouseMoveEventListener(e: MouseEvent): void {
+        if (this.examineMode) {
+            this.clearBorderAnimation();
+
+            return;
+        }
         /**
          * Row coordinate where border will be animated
          */
@@ -395,7 +587,7 @@ export class GameView extends Observer {
                 /**
                  * We start animation, and we store interval id inside currentMousePosition object
                  */
-                this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 120);
+                this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 200);
                 this.currentMousePosition.isCursorBeyondLevel = false;
             }
         }
@@ -413,7 +605,7 @@ export class GameView extends Observer {
 
             this.currentMousePosition.x = row; // update current mouse position coordinates
             this.currentMousePosition.y = column;
-            this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 120);
+            this.currentMousePosition.intervalId = window.setInterval(animateBorder.bind(this), 200);
         }
         function animateBorder(): void {
             const spriteAnimationId = this.sprites[`${row}x${column}`];
@@ -470,10 +662,13 @@ export class GameView extends Observer {
      * Redraws static (not animated) sprite in current mouse position.
      */
     private redrawCurrentStaticSprite(): void {
+        this.redrawStaticSpriteAtPosition(this.currentMousePosition);
+    }
+    private redrawStaticSpriteAtPosition(position: ICoordinates): void {
         const {
             x,
             y,
-        } = this.currentMousePosition;
+        } = position;
         const spriteAnimationId = this.sprites[`${x}x${y}`];
         const currentCell = this.drawnTiles[`${x}x${y}`];
         const currentFoggedCell = this.foggedTiles[`${x}x${y}`];
@@ -492,6 +687,8 @@ export class GameView extends Observer {
         const cameraX = cameraCoords.x;
         const cameraY = cameraCoords.y;
         let examinedCell;
+
+        this.currentPlayerFov = playerFov;
 
         for (let i = 0; i < config.LEVEL_WIDTH; i++) {
             // if cell column is greater than view height, we skip it
@@ -548,5 +745,164 @@ export class GameView extends Observer {
      */
     public centerCameraOnCoordinates(position: ICoordinates): void {
         this.camera.centerOnCoordinates(position.x, position.y);
+    }
+    public enableExamineMode(): void {
+        this.clearBorderAnimation();
+        this.examineMode = true;
+    }
+    public disableExamineMode(): void {
+        this.clearAlternativeBorderAnimation();
+        this.examineMode = false;
+        this.isAlternativeBorderDrawn = false;
+    }
+    /**
+     * Clears all animations on game screen by resetting appropriate intervals.
+     */
+    public clearGameWindowAnimations(): void {
+        clearInterval(this.globalAnimationFrameIntervalId);
+
+        for (const n in this.sprites) {
+            if (this.sprites.hasOwnProperty(n)) {
+                window.clearInterval(this.sprites[n]);
+            }
+        }
+    }
+    /**
+     * Show explosion gfx in specified tile on canvas.
+     *
+     * @param position  Coordinates object
+     */
+    public showExplosionAtPosition(position: ICoordinates): void {
+        const convertedPosition: ICoordinates = this.camera.convertMapCoordinatesToCameraCoords(position.x, position.y);
+
+        if (convertedPosition) {
+            this.setTemporaryImageWithTimeout(convertedPosition, miscTiles.explosion, ALTERNATIVE_TILE_SPRITE_TIMEOUT);
+        }
+    }
+    /**
+     * Sets temporary image in certain canvas coords. Way it works: method creates field in temporaryDrawnImages
+     * object. When function drawImage is called, it checks if coords with which it has been called exists in temporary
+     * drawnImages object. If they does, it draws sprite from temporaryDrawnImages object instead of sprite from
+     * function argument.
+     *
+     * @param canvasCoords  Coordinates on canvas where temporary image should be drawn
+     * @param sprite        Name of sprite to draw, key in global tiledata object
+     * @param timeout       Number of miliseconds after which temporary image should disappear
+     */
+    private setTemporaryImageWithTimeout(canvasCoords: ICoordinates, sprite: string, timeout: number): void {
+        const coordinates: string = `${canvasCoords.x}x${canvasCoords.y}`;
+
+        this.temporaryDrawnImages[coordinates] = {
+            sprite,
+        };
+
+        setTimeout(() => {
+            delete this.temporaryDrawnImages[coordinates];
+            /**
+             * We redraw original static sprite behind temporary sprite - otherwise it would've been redrawn during next
+             * whole screen redraw.
+             */
+            this.redrawStaticSpriteAtPosition(canvasCoords);
+        }, timeout);
+    }
+    /**
+     * Moves all temporary drawn images coords by specified vector.
+     *
+     * @param vector    Vector object
+     */
+    private moveTemporaryImagesCoords(vector: Vector): void {
+        const newTemporaryDrawnImages: ITemporaryImages = {};
+
+        Object.keys(this.temporaryDrawnImages).forEach((coord: string) => {
+            const {
+                x,
+                y,
+            } = getPositionFromString(coord, 'x');
+            const newCoords: string = `${x - vector.x}x${y - vector.y}`;
+
+            newTemporaryDrawnImages[`${x - vector.x}x${y - vector.y}`] = this.temporaryDrawnImages[coord];
+            setTimeout(() => {
+                delete newTemporaryDrawnImages[newCoords];
+            }, ALTERNATIVE_TILE_SPRITE_TIMEOUT);
+        });
+
+        this.temporaryDrawnImages = newTemporaryDrawnImages;
+    }
+    /**
+     * Displays temporary message on game screen above (or beyond) certain cell.
+     *
+     * @param message       Message to show on game canvas
+     * @param coordinates   Coordinates of cell near which message should be displayed
+     * @param font          Name of font in which message should be displayed
+     * @param timeout       Amount of milliseconds after which message should disappear
+     */
+    public showMessage(
+        message: string,
+        coordinates: ICoordinates = {x: 0, y: 0},
+        font: CanvasFonts = CanvasFonts.AVATAR,
+        timeout: number = 2000,
+    ): void {
+        const canvasContainer: HTMLDivElement = this.screenContainer;
+        const textSpan: HTMLSpanElement = document.createElement('span');
+
+        textSpan.innerText = message;
+        textSpan.classList.add(`canvas-text-${font}`);
+        /**
+         * Append element at this point, so we can access its computed style properties.
+         */
+        canvasContainer.appendChild(textSpan);
+
+        const {
+            width: widthString,
+            height: heightString,
+        } = window.getComputedStyle(textSpan);
+        const width: number = parseInt(widthString, 10);
+        const height: number = parseInt(heightString, 10);
+        let left: number = (coordinates.x * this.TILE_SIZE) - width / 2 + this.TILE_SIZE;
+        let top: number = (coordinates.y * this.TILE_SIZE) - height - 3;
+        let intervalTimeout: Timeout;
+
+        left = left < 0 ? (coordinates.x * this.TILE_SIZE) + 2 : left;
+        top = top < 0 ? (coordinates.y * this.TILE_SIZE) + this.TILE_SIZE + 3 : top;
+
+        if (left +  width >= this.columns * this.TILE_SIZE) {
+            left = (coordinates.x * this.TILE_SIZE) - width - 8;
+        }
+
+        textSpan.style.left = `${left}px`;
+        textSpan.style.top = `${top}px`;
+
+        intervalTimeout = setTimeout(() => {
+            this.removeTemporaryMessage(textSpan);
+            this.temporaryShownMessages.delete(intervalTimeout);
+        }, 2000);
+        /**
+         * Store data in map, so later we can retrieve it in remove all messages method.
+         */
+        this.temporaryShownMessages.set(intervalTimeout, textSpan);
+    }
+    /**
+     * Removes from DOM temporarily shown message on canvas.
+     *
+     * @param message   HTMLSpanElement with message
+     */
+    @boundMethod
+    private removeTemporaryMessage(message: HTMLSpanElement): void {
+        if (this.screenContainer.contains(message)) {
+            this.screenContainer.removeChild<HTMLSpanElement>(message);
+        }
+    }
+    /**
+     * Removes from DOM all temporarily shown messages.
+     */
+    public removeAllTemporaryMessages(): void {
+        this.temporaryShownMessages.forEach(( messageElement: HTMLSpanElement, timeout: Timeout) => {
+            if (clearTimeout) {
+                clearTimeout(timeout);
+            }
+            if (this.screenContainer.contains(messageElement)) {
+                this.screenContainer.removeChild(messageElement);
+            }
+        });
     }
 }

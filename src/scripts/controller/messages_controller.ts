@@ -33,6 +33,12 @@ export class MessagesController extends Controller {
             this.view.addMessage(message);
         }
     }
+    /**
+     * Removes last displayed message.
+     */
+    public removeLastMessage(): void {
+        this.view.removeLastMessage();
+    }
     public static getInstance(): MessagesController {
         if (instance) {
             return instance;

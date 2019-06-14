@@ -1,11 +1,14 @@
 import {calculateFov} from '../../helper/fov_helper';
 import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../../model/dungeon/cells/cell_model';
-import {EntityModel} from '../../model/entity/entity_model';
+import {EntityModel, IEntityStatsObject} from '../../model/entity/entity_model';
 import {Controller} from '../controller';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {boundMethod} from 'autobind-decorator';
+import {EntityStats} from '../../constants/monsters';
+import {doCombatAction, ICombatResult} from '../../helper/combat_helper';
+import {globalMessagesController} from '../../global/messages';
 
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
@@ -20,12 +23,24 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     }
     protected attachEvents(): void {
         this.model.on(this, EntityEvents.ENTITY_MOVE, this.onEntityPositionChange);
+        this.model.on(this, EntityEvents.ENTITY_DEATH, this.onEntityDeath);
+        this.model.on(this, EntityEvents.ENTITY_HIT, this.onEntityHit);
     }
     /**
      * Moves entity into new cell.
      */
     public move(newCell: Cell): void {
-        this.model.move(newCell);
+        if (newCell.entity && newCell.entity !== this.getModel()) {
+            const attackResult: ICombatResult = this.attack(newCell.entity);
+
+            globalMessagesController.showMessageInView(attackResult.message);
+        } else {
+            this.model.move(newCell);
+        }
+    }
+    @boundMethod
+    public attack(defender: EntityModel): ICombatResult {
+        return doCombatAction(this.model, defender);
     }
     /**
      * Method triggered after position property has been changed in model.
@@ -33,9 +48,25 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      * @param newCell   New entity position (cell)
      */
     @boundMethod
-    public onEntityPositionChange(newCell: Cell): void {
+    private onEntityPositionChange(newCell: Cell): void {
         newCell.walkEffect(this);
         this.calculateFov();
+    }
+    /**
+     * Method triggered after entity hp in model goes to zero or below.
+     */
+    @boundMethod
+    private onEntityDeath(): void {
+        this.notify(EntityEvents.ENTITY_DEATH, {entityController: this});
+    }
+    /**
+     * Method triggered after entity takes hit.
+     *
+     * @param entity    Entity model
+     */
+    @boundMethod
+    private onEntityHit(entity: EntityModel): void {
+        this.notify(EntityEvents.ENTITY_HIT, entity);
     }
     public activate(cell: Cell): void {
         const useAttemptResult = cell.useAttempt(this);
@@ -63,6 +94,12 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
         return this.model;
     }
     /**
+     * Returns level model in which entity currently is present.
+     */
+    public getLevelModel(): LevelModel {
+        return this.model.level;
+    }
+    /**
      * Returns entity field of vision.
      */
     public getFov(): Cell[] {
@@ -83,6 +120,21 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     public changeLevel(level: LevelModel, position: Cell): void {
         this.model.changeLevel(level);
         this.move(position);
+    }
+    /**
+     * Returns object with entity statistics (key is stats name).
+     */
+    public getStatsObject(): IEntityStatsObject {
+        return {
+            [EntityStats.STRENGTH]: this.model.strength,
+            [EntityStats.DEXTERITY]: this.model.dexterity,
+            [EntityStats.INTELLIGENCE]: this.model.intelligence,
+            [EntityStats.TOUGHNESS]: this.model.toughness,
+            [EntityStats.PERCEPTION]: this.model.perception,
+            [EntityStats.SPEED]: this.model.speed,
+            [EntityStats.HIT_POINTS]: this.model.hitPoints,
+            [EntityStats.MAX_HIT_POINTS]: this.model.maxHitPoints,
+        };
     }
     /**
      * Return property value from model.
