@@ -13,7 +13,7 @@ const plugins = [
     }),
     new HtmlWebpackPlugin({
         title: 'Abyss the Roguelike',
-        template: './template.html',
+        template: 'src/template.html',
         filename: 'index.html',
     }),
     new MiniCssExtractPlugin({
