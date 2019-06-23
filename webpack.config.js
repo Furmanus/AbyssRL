@@ -9,30 +9,44 @@ const plugins = [
     new CleanWebpackPlugin(['dist/*.*'], {
         exclude: [],
         verbose: true,
-        dry: false
+        dry: false,
     }),
     new HtmlWebpackPlugin({
         title: 'Abyss the Roguelike',
         template: './template.html',
-        filename: '../index.html'
+        filename: 'index.html',
     }),
     new MiniCssExtractPlugin({
-        filename: '[name].css'
-    })
+        filename: '[name].[chunkhash].css',
+    }),
 ];
 
 module.exports = {
     mode: env,
     entry: {
-        app: ['@babel/polyfill', path.join(__dirname, '/src/scripts/entry.ts')],
-        vendors: ['rot-js', 'react', 'react-dom']
+        app: path.join(__dirname, '/src/scripts/entry.ts'),
     },
     output: {
         path: path.join(__dirname, '/dist'),
-        filename: '[name].[chunkhash].bundle.js'
+        filename: '[name].[chunkhash].bundle.js',
     },
     resolve: {
-        extensions: ['.ts', '.tsx', '.js', '.json']
+        extensions: ['.ts', '.tsx', '.js', '.json'],
+    },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10,
+                },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true,
+                },
+            },
+        },
     },
     module: {
         rules: [
@@ -43,35 +57,30 @@ module.exports = {
             },
             {
                 test: /\.ts|tsx/,
-                loader: 'awesome-typescript-loader'
+                loader: 'awesome-typescript-loader',
             },
             {
                 test: /\.less$/,
                 use: [
                     {
-                        loader: 'style-loader'
+                        loader: MiniCssExtractPlugin.loader,
                     },
                     {
-                        loader: 'css-loader'
+                        loader: 'css-loader',
                     },
                     {
-                        loader: 'less-loader'
-                    }
-                ]
+                        loader: 'less-loader',
+                    },
+                ],
             },
             {
-                test: /\.css$/,
+                test: /\.(png|jpg|gif)$/,
                 use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader'
-                    }
-                ]
-            }
-        ]
+                    {loader: 'file-loader'},
+                ],
+            },
+        ],
     },
-    devtool: 'eval-source-map',
-    plugins
+    devtool: env === 'development' ? 'eval-source-map' : undefined,
+    plugins,
 };
