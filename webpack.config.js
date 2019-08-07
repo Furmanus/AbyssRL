@@ -3,7 +3,6 @@ const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const env = process.env.NODE_ENV || 'development';
 
 const plugins = [
     new CleanWebpackPlugin(['dist/*.*'], {
@@ -21,66 +20,74 @@ const plugins = [
     }),
 ];
 
-module.exports = {
-    mode: env,
-    entry: {
-        app: path.join(__dirname, '/src/scripts/entry.ts'),
-    },
-    output: {
-        path: path.join(__dirname, '/dist'),
-        filename: '[name].[chunkhash].bundle.js',
-    },
-    resolve: {
-        extensions: ['.ts', '.tsx', '.js', '.json'],
-    },
-    optimization: {
-        splitChunks: {
-            cacheGroups: {
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10,
-                },
-                default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true,
+module.exports = env => {
+    const {
+        mode,
+        watch
+    } = env;
+
+    return {
+        entry: {
+            app: path.join(__dirname, '/src/scripts/entry.ts'),
+        },
+        output: {
+            path: path.join(__dirname, '/dist'),
+            filename: '[name].[chunkhash].bundle.js',
+        },
+        resolve: {
+            extensions: ['.ts', '.tsx', '.js', '.json'],
+        },
+        optimization: {
+            splitChunks: {
+                cacheGroups: {
+                    vendors: {
+                        test: /[\\/]node_modules[\\/]/,
+                        priority: -10,
+                    },
+                    default: {
+                        minChunks: 2,
+                        priority: -20,
+                        reuseExistingChunk: true,
+                    },
                 },
             },
         },
-    },
-    module: {
-        rules: [
-            {
-                test: /\.js|jsx/,
-                exclude: /node_modules/,
-                use: 'babel-loader',
-            },
-            {
-                test: /\.ts|tsx/,
-                loader: 'awesome-typescript-loader',
-            },
-            {
-                test: /\.less$/,
-                use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                    },
-                    {
-                        loader: 'css-loader',
-                    },
-                    {
-                        loader: 'less-loader',
-                    },
-                ],
-            },
-            {
-                test: /\.(png|jpg|gif)$/,
-                use: [
-                    {loader: 'file-loader'},
-                ],
-            },
-        ],
-    },
-    devtool: env === 'development' ? 'eval-source-map' : undefined,
-    plugins,
+        module: {
+            rules: [
+                {
+                    test: /\.js|jsx/,
+                    exclude: /node_modules/,
+                    use: 'babel-loader',
+                },
+                {
+                    test: /\.ts|tsx/,
+                    loader: 'awesome-typescript-loader',
+                },
+                {
+                    test: /\.less$/,
+                    use: [
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                        },
+                        {
+                            loader: 'css-loader',
+                        },
+                        {
+                            loader: 'less-loader',
+                        },
+                    ],
+                },
+                {
+                    test: /\.(png|jpg|gif)$/,
+                    use: [
+                        {loader: 'file-loader'},
+                    ],
+                },
+            ],
+        },
+        devtool: mode === 'development' ? 'eval-source-map' : 'hidden-source-map',
+        watch,
+        mode,
+        plugins,
+    }
 };
