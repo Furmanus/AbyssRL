@@ -88,6 +88,14 @@ export class LevelModel extends BaseModel {
         return this.stairsUp;
     }
     /**
+     * Checks whether two level models are in fact same level.
+     *
+     * @param level LevelModel
+     */
+    public isSame(level: LevelModel): boolean {
+        return level.branch === this.branch && level.levelNumber === this.levelNumber;
+    }
+    /**
      * Sets stairs down field location in level model.
      * @param   x   Row
      * @param   y   Column

@@ -3,6 +3,9 @@
  */
 
 import {MainController} from './controller/main_controller';
+// @ts-ignore
+import * as u5tiles from '../../assets/u5tiles.png';
+import '@babel/polyfill';
 import '../styles/app.less';
 // tslint:disable
 declare global {
@@ -26,7 +29,7 @@ Set.prototype.random = function<M>(): M {
 // tslint: enable
 (() => {
     const tileSet = document.createElement('img');
-    tileSet.setAttribute('src', 'assets/u5tiles.png');
+    tileSet.setAttribute('src', u5tiles);
 
     tileSet.addEventListener('load', () => {
         // tslint:disable-next-line:no-unused-expression
