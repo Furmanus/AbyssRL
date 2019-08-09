@@ -15,7 +15,6 @@ export class MapWithObserver<K, V extends Observer> extends Observer {
     public get size(): number {
         return this.map.size;
     }
-
     constructor(list?: Array<[K, V]>) {
         super();
 

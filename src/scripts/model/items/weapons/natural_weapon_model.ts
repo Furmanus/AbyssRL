@@ -11,10 +11,23 @@ export class NaturalWeaponModel extends BaseModel implements INaturalWeapon {
     public naturalType: MonsterAttackTypes;
 
     public constructor(config: Partial<INaturalWeapon>) {
+        const {
+            damage,
+            toHit,
+        } = config;
+
         super();
 
-        this.damage = config.damage;
-        this.toHit = config.toHit;
+        if (typeof damage === 'string') {
+            this.damage = new Dice(damage);
+        } else {
+            this.damage = damage;
+        }
+        if (typeof toHit === 'string') {
+            this.toHit = new Dice(toHit);
+        } else {
+            this.toHit = toHit;
+        }
         this.type = config.type;
         this.naturalType = config.naturalType;
     }
