@@ -3,8 +3,8 @@ import {MonsterAttackTypes} from '../constants/monsters';
 import {DamageTypes} from '../constants/combat_enums';
 
 export interface IWeapon {
-    toHit: Dice | string;
-    damage: Dice | string;
+    toHit: Dice;
+    damage: Dice;
     type: DamageTypes;
     naturalType?: MonsterAttackTypes;
 }

@@ -3,14 +3,15 @@ import {INaturalWeapon} from '../../../interfaces/combat';
 import {Dice} from '../../dice';
 import {DamageTypes} from '../../../constants/combat_enums';
 import {MonsterAttackTypes} from '../../../constants/monsters';
+import {IAnyObject} from '../../../interfaces/common';
 
 export class NaturalWeaponModel extends BaseModel implements INaturalWeapon {
     public damage: Dice;
     public toHit: Dice;
     public type: DamageTypes;
     public naturalType: MonsterAttackTypes;
-
-    public constructor(config: Partial<INaturalWeapon>) {
+    // TODO Think how to solve passing more specific config object type?
+    public constructor(config: IAnyObject) {
         const {
             damage,
             toHit,
