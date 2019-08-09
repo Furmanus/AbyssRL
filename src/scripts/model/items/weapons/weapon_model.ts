@@ -7,8 +7,8 @@ import {ItemSprites} from '../../../constants/sprites';
 export class WeaponModel extends WearableModel {
     public damage: Dice;
     public toHit: Dice;
-    public type: DamageTypes;
-    public name: string;
+    public readonly type: DamageTypes;
+    public readonly name: string;
     public display: string;
 
     get displayName(): string {
