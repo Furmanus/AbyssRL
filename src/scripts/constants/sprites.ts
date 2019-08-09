@@ -84,3 +84,6 @@ export enum dungeonFeaturesEnum {
     BARREL = 'barrel',
     CHEST_OF_DRAWERS = 'chest_drawers',
 }
+export enum ItemSprites {
+    WEAPON = 'weapon',
+}
