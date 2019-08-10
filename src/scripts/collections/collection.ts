@@ -13,6 +13,10 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
         [eventName: string]: IAnyFunction;
     }> = new Map();
 
+    get size(): number {
+        return this.collection.length;
+    }
+
     constructor(list?: M[]|M) {
         super();
 
@@ -32,6 +36,23 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
         this.notify(CollectionEvents.ADD, item);
 
         return this;
+    }
+    /**
+     * Returns element in collection as specific index.
+     *
+     * @param index  Position in collection from which item we want to retrieve. Returns whole collection if no index
+     *               is specified.
+     */
+    public get(index: number): M;
+    public get(): M[];
+    public get(index?: number): M|M[] {
+        if (typeof index === 'number') {
+            return this.collection[index];
+        } else if (index === undefined) {
+            return this.collection;
+        } else {
+            throw new Error(`Invalid argument type: ${index}`);
+        }
     }
     /**
      * Removes element from collection. Action is notified with REMOVE event from collection events enum.
