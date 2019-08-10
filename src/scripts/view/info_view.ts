@@ -121,7 +121,7 @@ export class InfoView {
 
             canvas = this.examineDisplay.querySelector('#image');
             this.drawCellDisplayOnCanvas(canvas, cell.entity.display);
-        } else if (cell.inventory.length) {
+        } else if (cell.inventory.size) {
             // placeholder
         } else {
             templateVariables = this.prepareCellDisplayVariables(cell);
