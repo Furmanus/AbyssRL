@@ -11,6 +11,7 @@ import {EntityModel} from '../../entity/entity_model';
 import {EntityController} from '../../../controller/entity/entity_controller';
 import {PlayerController} from '../../../controller/entity/player_controller';
 import {ICellModel} from '../../../interfaces/cell';
+import {ItemsCollection} from '../../../collections/items_collection';
 
 /**
  * Class representing single map square(field).
@@ -31,7 +32,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
     /**
      * Array of items in cell.
      */
-    public inventory: IAnyObject[] = []; // TODO after implementing items change it to array of items
+    public inventory: ItemsCollection = new ItemsCollection();
     /**
      * Boolean variable indicating whether cells display can be changed or not.
      */
@@ -65,6 +66,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
 
         this.x = x;
         this.y = y;
+        // TODO add initialization of inventory
     }
     /**
      * Whether cell blocks entity movement.

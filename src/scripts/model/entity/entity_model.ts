@@ -64,7 +64,7 @@ export class EntityModel extends BaseModel implements IEntity {
     public hitPoints: number = null;
     public maxHitPoints: number = null;
     public size: MonsterSizes = null;
-    public inventory: ItemsCollection = null;
+    public inventory: ItemsCollection = new ItemsCollection();
     /**
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
@@ -88,6 +88,7 @@ export class EntityModel extends BaseModel implements IEntity {
         this.speed = config.speed;
         this.perception = config.perception;
         this.type = config.type;
+        // TODO add initialization of inventory
     }
     /**
      * Changes position property of entity.
