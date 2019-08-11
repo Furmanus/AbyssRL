@@ -1,3 +1,5 @@
+import {ItemTypes} from '../constants/item';
+
 /* tslint:disable-next-line:no-any*/
 export type IAnyFunction = (...args: any[]) => any;
 export interface IAnyObject {
@@ -37,6 +39,9 @@ export interface IActionAttempt {
 export interface ITemplate {
     [templateName: string]: string;
 }
+export type TemplateType = {
+    [P in ItemTypes]: string;
+};
 export interface ITemplateVariables {
     // tslint:disable-next-line:no-any
     [propName: string]: string | number;

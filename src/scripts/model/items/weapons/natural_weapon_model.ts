@@ -5,20 +5,26 @@ import {MonsterAttackTypes} from '../../../constants/monsters';
 import {IAnyObject} from '../../../interfaces/common';
 import {WearableModel} from '../wearable_model';
 import {EntityModel} from '../../entity/entity_model';
+import {ItemTypes} from '../../../constants/item';
 
 export class NaturalWeaponModel extends WearableModel implements INaturalWeapon {
     public damage: Dice;
     public toHit: Dice;
     public type: DamageTypes;
+    public display: string = null;
+    public itemType: ItemTypes = null;
     public naturalType: MonsterAttackTypes;
+
+    get description(): string {
+        return this.naturalType;
+    }
     // TODO Think how to solve passing more specific config object type?
     public constructor(config: IAnyObject) {
+        super();
         const {
             damage,
             toHit,
         } = config;
-
-        super();
 
         if (typeof damage === 'string') {
             this.damage = new Dice(damage);

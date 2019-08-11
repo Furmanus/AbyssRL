@@ -2,6 +2,7 @@ import {WearableModel} from '../wearable_model';
 import {Dice} from '../../dice';
 import {IWeaponConstructorConfig} from '../../../interfaces/combat';
 import {ItemSprites} from '../../../constants/sprites';
+import {ItemTypes} from '../../../constants/item';
 
 export class WeaponModel extends WearableModel {
     public damage: Dice;
@@ -9,20 +10,20 @@ export class WeaponModel extends WearableModel {
     public readonly type: string;
     public readonly name: string;
     public display: string;
+    public itemType: ItemTypes = ItemTypes.WEAPON;
 
-    get displayName(): string {
+    get description(): string {
         return this.name;
     }
     // TODO Think how to solve passing more specific config object type?
     public constructor(config: IWeaponConstructorConfig) {
+        super();
         const {
             damage,
             toHit,
             name,
             type,
         } = config;
-
-        super();
 
         this.damage = new Dice(damage);
         this.toHit = new Dice(toHit);

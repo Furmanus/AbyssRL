@@ -6,6 +6,8 @@ import {getEntityInfoTemplate} from '../../templates/info_templates/examine_info
 import {config} from '../global/config';
 import {tileset} from '../global/tiledata';
 import Timeout = NodeJS.Timeout;
+import {ItemModel} from '../model/items/item_model';
+import {WeaponModel} from '../model/items/weapons/weapon_model';
 
 interface IStatsObject {
     [EntityStats.STRENGTH]: HTMLSpanElement;
@@ -122,7 +124,14 @@ export class InfoView {
             canvas = this.examineDisplay.querySelector('#image');
             this.drawCellDisplayOnCanvas(canvas, cell.entity.display);
         } else if (cell.inventory.size) {
-            // placeholder
+            const itemModel: ItemModel = cell.inventory.get(0);
+            templateVariables = this.prepareItemDisplayVariables(itemModel);
+            template = getEntityInfoTemplate(templateVariables, itemModel.itemType);
+
+            this.examineDisplay.innerHTML = template.item;
+
+            canvas = this.examineDisplay.querySelector('#image');
+            this.drawCellDisplayOnCanvas(canvas, itemModel.display);
         } else {
             templateVariables = this.prepareCellDisplayVariables(cell);
             template = getEntityInfoTemplate(templateVariables);
@@ -205,5 +214,18 @@ export class InfoView {
         return {
             description: cell.description,
         };
+    }
+    private prepareItemDisplayVariables(item: ItemModel): ITemplateVariables {
+        const baseVariables: ITemplateVariables = {
+            description: item.description,
+        };
+
+        if (item instanceof WeaponModel) {
+            return {
+                ...baseVariables,
+                damage: `${item.damage.getSerializedData()} (${item.type})`,
+                toHit: `${item.toHit.getSerializedData()}`,
+            };
+        }
     }
 }
