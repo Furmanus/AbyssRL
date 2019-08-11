@@ -1,6 +1,6 @@
 export enum WeaponNames {
-    LONGSWORD = 'longsword',
-    BROAD_AXE = 'broad axe',
-    SHORT_SPEAR = 'short spear',
-    MORNING_STAR = 'morning star',
+    LONG_SWORD = 'long_sword',
+    BROAD_AXE = 'broad_axe',
+    SHORT_SPEAR = 'short_spear',
+    MORNING_STAR = 'morning_star',
 }

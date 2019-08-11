@@ -9,6 +9,7 @@
     "jsx": "react",
     "noEmitOnError": true,
     "downlevelIteration": true,
+    "resolveJsonModule": true,
     "lib": [
       "dom",
       "esnext",

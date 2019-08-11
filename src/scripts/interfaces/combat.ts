@@ -14,6 +14,6 @@ export interface INaturalWeapon extends IWeapon {
 export interface IWeaponConstructorConfig {
     toHit: string;
     damage: string;
-    type: DamageTypes;
+    type: string;
     name: string;
 }

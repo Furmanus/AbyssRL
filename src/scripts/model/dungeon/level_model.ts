@@ -213,6 +213,9 @@ export class LevelModel extends BaseModel {
 
         return result;
     }
+    /**
+     * Returns random cell without any entity and without blocked movement.
+     */
     public getRandomUnoccupiedCell(): Cell {
         let cell: Cell = Array.from(this.cells.values()).random();
         let attempt: number = 0;

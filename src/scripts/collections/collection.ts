@@ -22,8 +22,10 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
 
         if (list instanceof Array) {
             this.collection = list;
-        } else {
+        } else if (list !== undefined) {
             this.collection = [list];
+        } else {
+            this.collection = [];
         }
     }
     /**
