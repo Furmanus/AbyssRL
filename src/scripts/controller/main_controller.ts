@@ -28,14 +28,23 @@ import {Controller} from './controller';
 import {DungeonEvents} from '../constants/dungeon_events';
 import {boundMethod} from 'autobind-decorator';
 import {ILevelInfo} from '../interfaces/level';
-import {EXAMINE_CELL, STOP_EXAMINE_CELL} from '../constants/game_actions';
+import {
+    EXAMINE_CELL,
+    ModalActions,
+    STOP_EXAMINE_CELL,
+} from '../constants/game_actions';
 import {Cell} from '../model/dungeon/cells/cell_model';
+import {ModalController} from './modal_controller';
+import {globalMessagesController} from '../global/messages';
+import {globalModalController} from '../global/modal';
+import {ItemsCollection} from '../collections/items_collection';
 
 export class MainController extends Controller {
     private readonly gameController: GameController;
     private readonly infoController: InfoController;
     private readonly miniMapController: MiniMapController;
     private readonly messagesController: MessagesController;
+    private readonly modalController: ModalController;
     private shiftPressed: boolean;
     private controlPressed: boolean;
     private altPressed: boolean;
@@ -54,7 +63,8 @@ export class MainController extends Controller {
         this.gameController = new GameController(tileset);
         this.infoController = new InfoController(tileset);
         this.miniMapController = new MiniMapController();
-        this.messagesController = MessagesController.getInstance();
+        this.messagesController = globalMessagesController;
+        this.modalController = globalModalController;
 
         this.shiftPressed = false;
         this.controlPressed = false;
@@ -70,6 +80,7 @@ export class MainController extends Controller {
     protected initialize(): void {
         this.bindMethods();
         this.attachEvents();
+        this.attachModalEvents();
         /**
          * This two events are attached in initialize, because they has to be active when other events are detached during
          * examine mode.
@@ -93,6 +104,13 @@ export class MainController extends Controller {
 
         this.onShowMessageInView = this.onShowMessageInView.bind(this);
         this.onPlayerConfirmNeeded = this.onPlayerConfirmNeeded.bind(this);
+    }
+    /**
+     * Enables listening on events notified by modal controller.
+     */
+    private attachModalEvents(): void {
+        this.modalController.on(this, ModalActions.OPEN_MODAL, this.onModalOpen);
+        this.modalController.on(this, ModalActions.CLOSE_MODAL, this.onModalClose);
     }
     /**
      * Method responsible for attaching keyboard events to window.
@@ -183,7 +201,7 @@ export class MainController extends Controller {
             if (KEYBOARD_DIRECTIONS[keycode]) {
                 this.gameController.takePlayerAction(PLAYER_ACTION_MOVE_PLAYER, KEYBOARD_DIRECTIONS[keycode]);
             } else if (65 === keycode) {
-                // ACTIVATE
+                // ACTIVATE COMMAND
                 this.messagesController.showMessageInView('Activate object in which direction [1234567890]:');
 
                 choosenDirection = await this.getPlayerConfirmationDirection();
@@ -194,7 +212,10 @@ export class MainController extends Controller {
                     this.messagesController.showMessageInView('You abort your attempt.');
                 }
             } else if (88 === keycode) {
+                // EXAMINE OR LOOK COMMAND
                 this.enableExamineMode();
+            } else if (73 === keycode) {
+                this.openInventory();
             }
         }
     }
@@ -209,6 +230,14 @@ export class MainController extends Controller {
         const deltaY = KEYBOARD_DIRECTIONS[keycode].y * 4;
 
         this.gameController.moveCameraInView(deltaX, deltaY);
+    }
+    @boundMethod
+    private onModalOpen(): void {
+        // TODO placeholder, code implementation later
+    }
+    @boundMethod
+    private onModalClose(): void {
+        // TODO placeholder, code implementation later
     }
     /**
      * Method triggered after game controller notifies about player death.
@@ -273,6 +302,17 @@ export class MainController extends Controller {
         this.attachTemporaryEventListener(this.examinedModeEventListenerCallback);
     }
     /**
+     * Opens player directory
+     */
+    private openInventory(): void {
+        const playerInventory: ItemsCollection = this.gameController.getPlayerInventory();
+
+        this.modalController.openModal();
+        this.detachEvents();
+        this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
+        // TODO draw player inventory in modal window
+    }
+    /**
      * Callback for temporary keydown event listener in examine mode.
      *
      * @param e Keyboard event object
@@ -286,6 +326,19 @@ export class MainController extends Controller {
             window.removeEventListener('keydown', this.examinedModeEventListenerCallback);
         } else if (KEYBOARD_DIRECTIONS[e.which]) {
             this.gameController.examineCellInDirection(KEYBOARD_DIRECTIONS[e.which]);
+        }
+    }
+    /**
+     * Callback for keydown event in inventory mode.
+     *
+     * @param e  Native keyboard event
+     */
+    @boundMethod
+    private inventoryModeEventListenerCallback(e: KeyboardEvent): void {
+        if (e.which === 27) {
+            this.modalController.closeModal();
+            this.attachEvents();
+            window.removeEventListener('keydown', this.examinedModeEventListenerCallback);
         }
     }
     /**

@@ -26,6 +26,7 @@ import {ASCEND} from '../constants/directions';
 import {EntityModel, IEntityStatsObject} from '../model/entity/entity_model';
 import {boundMethod} from 'autobind-decorator';
 import {EntityEvents} from '../constants/entity_events';
+import {ItemsCollection} from '../collections/items_collection';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -382,6 +383,13 @@ export class GameController extends Controller {
     }
     public getPlayerStats(): IEntityStatsObject {
         return this.playerController.getStatsObject();
+    }
+    /**
+     * Returns player inventory.
+     * @returns  ItemsCollection
+     */
+    public getPlayerInventory(): ItemsCollection {
+        return this.playerController.getPlayerInventory();
     }
     public enableExamineMode(): void {
         const playerCell: Cell = this.playerController.getEntityPosition();

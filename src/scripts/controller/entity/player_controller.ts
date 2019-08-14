@@ -15,6 +15,7 @@ import {UseEffectResult} from '../../model/dungeon/cells/effects/use_effect_resu
 import {LevelModel} from '../../model/dungeon/level_model';
 import {DungeonEvents} from '../../constants/dungeon_events';
 import {ICombatResult} from '../../helper/combat_helper';
+import {ItemsCollection} from '../../collections/items_collection';
 
 export interface IMoveResolve {
     canMove: boolean;
@@ -199,5 +200,12 @@ export class PlayerController extends EntityController<PlayerModel> {
      */
     public getName(): string {
         return this.model.description;
+    }
+    /**
+     * Returns player inventory.
+     * @returns Player inventory (ItemCollection)
+     */
+    public getPlayerInventory(): ItemsCollection {
+        return this.model.inventory;
     }
 }
