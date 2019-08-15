@@ -12,6 +12,7 @@ import {
     PLAYER_ACTION_GO_UP,
     PLAYER_ACTION_GO_DOWN,
     PLAYER_DEATH,
+    PlayerActions,
 } from '../constants/player_actions';
 import {PlayerController} from './entity/player_controller';
 import {DungeonController} from './dungeon/dungeon_controller';
@@ -152,6 +153,9 @@ export class GameController extends Controller {
             case PLAYER_ACTION_GO_DOWN:
                 this.descentDownLevel();
                 break;
+            case PlayerActions.PICK_UP:
+                this.playerPickUp();
+                break;
             default:
                 // placeholder
         }
@@ -167,6 +171,12 @@ export class GameController extends Controller {
         } else {
             globalMessagesController.showMessageInView('You can\'t go down here.');
         }
+    }
+    /**
+     * Attempts player to pick something from ground.
+     */
+    private playerPickUp(): void {
+        this.playerController.pickUp();
     }
     /**
      * Makes attempt to move player up one level in dungeon.

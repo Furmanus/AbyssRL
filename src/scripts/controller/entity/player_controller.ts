@@ -4,6 +4,7 @@ import {config} from '../../global/config';
 import {
     END_PLAYER_TURN,
     PLAYER_WALK_CONFIRM_NEEDED,
+    PlayerActions,
     START_PLAYER_TURN,
 } from '../../constants/player_actions';
 import {PlayerModel} from '../../model/entity/player_model';
@@ -16,6 +17,8 @@ import {LevelModel} from '../../model/dungeon/level_model';
 import {DungeonEvents} from '../../constants/dungeon_events';
 import {ICombatResult} from '../../helper/combat_helper';
 import {ItemsCollection} from '../../collections/items_collection';
+import {MessagesController} from '../messages_controller';
+import {ItemModel} from '../../model/items/item_model';
 
 export interface IMoveResolve {
     canMove: boolean;
@@ -23,6 +26,8 @@ export interface IMoveResolve {
 }
 
 export class PlayerController extends EntityController<PlayerModel> {
+    private globalMessageController: MessagesController = globalMessagesController;
+
     constructor(constructorConfig: IAnyObject) {
         super(constructorConfig);
 
@@ -135,6 +140,25 @@ export class PlayerController extends EntityController<PlayerModel> {
                 this.notify(END_PLAYER_TURN);
             }
         }
+    }
+    /**
+     * Attempts to pick up item from ground (ie. removing it from Cell inventory and moving to entity inventory).
+     */
+    public pickUp(): void {
+        const currentCellInventory: ItemsCollection = this.model.getCurrentCellInventory();
+
+        if (currentCellInventory.size === 0) {
+            globalMessagesController.showMessageInView('What do you want to pick up?');
+        } else if (currentCellInventory.size === 1) {
+            this.model.pickUp(currentCellInventory.getFirstItem());
+        } else {
+            // placeholder
+        }
+    }
+    public onEntityPickUp(item: ItemModel): void {
+        super.onEntityPickUp(item);
+
+        this.notify(PlayerActions.END_PLAYER_TURN);
     }
     /**
      * Function called when move attempt by player was successful. Called inside of move function.

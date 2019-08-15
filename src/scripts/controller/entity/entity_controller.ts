@@ -9,6 +9,7 @@ import {boundMethod} from 'autobind-decorator';
 import {EntityStats} from '../../constants/monsters';
 import {doCombatAction, ICombatResult} from '../../helper/combat_helper';
 import {globalMessagesController} from '../../global/messages';
+import {ItemModel} from '../../model/items/item_model';
 
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
@@ -25,6 +26,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
         this.model.on(this, EntityEvents.ENTITY_MOVE, this.onEntityPositionChange);
         this.model.on(this, EntityEvents.ENTITY_DEATH, this.onEntityDeath);
         this.model.on(this, EntityEvents.ENTITY_HIT, this.onEntityHit);
+        this.model.on(this, EntityEvents.ENTITY_PICKED_ITEM, this.onEntityPickUp);
     }
     /**
      * Moves entity into new cell.
@@ -80,6 +82,15 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
         const newFov = calculateFov(this.model);
 
         this.model.setFov(newFov);
+    }
+    /**
+     * Attempts to pick up item from ground (ie. removing it from Cell inventory and moving to entity inventory).
+     */
+    public pickUp(item: ItemModel): void {
+        this.model.pickUp(item);
+    }
+    public onEntityPickUp(item: ItemModel): void {
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} picks up ${item.description}.`);
     }
     /**
      * Returns speed of entity (how fast it can take action in time engine).

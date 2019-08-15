@@ -7,6 +7,7 @@ import {IEntity} from '../../interfaces/entity_interfaces';
 import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
 import {INaturalWeapon, IWeapon} from '../../interfaces/combat';
+import {ItemModel} from '../items/item_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -148,9 +149,35 @@ export class EntityModel extends BaseModel implements IEntity {
         this.notify(EntityEvents.ENTITY_MOVE, newCell);
     }
     /**
+     * Attempts to pick up item from ground (ie. removing it from Cell inventory and moving to entity inventory).
+     */
+    public pickUp(item: ItemModel): void {
+        const currentCellInventory: ItemsCollection = this.getCurrentCellInventory();
+
+        currentCellInventory.remove(item);
+        this.inventory.add(item);
+
+        this.notify(EntityEvents.ENTITY_PICKED_ITEM, item);
+    }
+    /**
      * Returns speed of entity.
      */
     public getSpeed(): number {
         return this.speed;
+    }
+    /**
+     * Returns inventory of Cell which entity currently occupies.
+     * @returns ItemsCollection
+     */
+    public getCurrentCellInventory(): ItemsCollection {
+        return this.position.inventory;
+    }
+    /**
+     * Return description of entity.
+     *
+     * @returns String description of entity
+     */
+    public getDescription(): string {
+        return this.description;
     }
 }

@@ -17,6 +17,7 @@ import {
     SHOW_MESSAGE_IN_VIEW,
     START_PLAYER_TURN,
     PLAYER_DEATH,
+    PlayerActions,
 } from '../constants/player_actions';
 import {
     IAnyFunction,
@@ -38,6 +39,10 @@ import {ModalController} from './modal_controller';
 import {globalMessagesController} from '../global/messages';
 import {globalModalController} from '../global/modal';
 import {ItemsCollection} from '../collections/items_collection';
+
+const keyCodeToActionMap: {[keycode: number]: string} = {
+    188: PlayerActions.PICK_UP,
+};
 
 export class MainController extends Controller {
     private readonly gameController: GameController;
@@ -216,6 +221,8 @@ export class MainController extends Controller {
                 this.enableExamineMode();
             } else if (73 === keycode) {
                 this.openInventory();
+            } else {
+                this.gameController.takePlayerAction(keyCodeToActionMap[keycode]);
             }
         }
     }
