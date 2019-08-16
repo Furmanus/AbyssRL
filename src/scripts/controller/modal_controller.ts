@@ -21,6 +21,9 @@ export class ModalController extends Controller {
         this.isModalOpen = false;
         this.view.close();
     }
+    public drawContentInView<E extends HTMLElement = HTMLElement>(content: E): void {
+        this.view.drawContent(content);
+    }
     public isOpen(): boolean {
         return this.isModalOpen;
     }

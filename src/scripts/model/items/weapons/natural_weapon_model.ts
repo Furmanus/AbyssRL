@@ -18,6 +18,9 @@ export class NaturalWeaponModel extends WearableModel implements INaturalWeapon 
     get description(): string {
         return this.naturalType;
     }
+    public get fullDescription(): string {
+        return `${this.description} ${this.damage.getSerializedData()} damage (${this.type})`;
+    }
     // TODO Think how to solve passing more specific config object type?
     public constructor(config: IAnyObject) {
         super();

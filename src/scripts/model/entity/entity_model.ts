@@ -8,6 +8,7 @@ import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters
 import {ItemsCollection} from '../../collections/items_collection';
 import {INaturalWeapon, IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
+import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -65,7 +66,11 @@ export class EntityModel extends BaseModel implements IEntity {
     public hitPoints: number = null;
     public maxHitPoints: number = null;
     public size: MonsterSizes = null;
-    public inventory: ItemsCollection = new ItemsCollection();
+    // TODO remove content of collection
+    public inventory: ItemsCollection = new ItemsCollection(
+        [weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel()],
+    );
     /**
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */

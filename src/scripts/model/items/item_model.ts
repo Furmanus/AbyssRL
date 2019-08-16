@@ -15,6 +15,10 @@ export abstract class ItemModel extends BaseModel {
      * Description of item, text displayed when examining item, in player or monster inventory, etc.
      */
     public abstract get description(): string;
+    /**
+     * Returns full description of item along with additional info (damage and damage type for weapons for example).
+     */
+    public abstract get fullDescription(): string;
 
     public drop(entity: EntityModel): void {
         // placeholder

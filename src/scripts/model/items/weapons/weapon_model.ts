@@ -15,6 +15,9 @@ export class WeaponModel extends WearableModel {
     get description(): string {
         return this.name;
     }
+    public get fullDescription(): string {
+        return `${this.description} ${this.damage.getSerializedData()} damage (${this.type})`;
+    }
     // TODO Think how to solve passing more specific config object type?
     public constructor(config: IWeaponConstructorConfig) {
         super();

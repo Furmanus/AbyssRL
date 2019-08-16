@@ -39,6 +39,7 @@ import {ModalController} from './modal_controller';
 import {globalMessagesController} from '../global/messages';
 import {globalModalController} from '../global/modal';
 import {ItemsCollection} from '../collections/items_collection';
+import {getPreparedInventoryElement} from '../../templates/inventory_template';
 
 const keyCodeToActionMap: {[keycode: number]: string} = {
     188: PlayerActions.PICK_UP,
@@ -317,7 +318,9 @@ export class MainController extends Controller {
         this.modalController.openModal();
         this.detachEvents();
         this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
-        // TODO draw player inventory in modal window
+
+        const modalContent: HTMLDivElement = getPreparedInventoryElement(playerInventory);
+        this.modalController.drawContentInView<HTMLDivElement>(modalContent);
     }
     /**
      * Callback for temporary keydown event listener in examine mode.
