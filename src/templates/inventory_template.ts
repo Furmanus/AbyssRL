@@ -18,7 +18,7 @@ export function getPreparedInventoryElement(items: ItemsCollection): HTMLDivElem
             groups[itemType] = generateItemGroup(itemType).content;
         }
 
-        list = groups[itemType].querySelector('ul[class="modal-inventory-list"]');
+        list = groups[itemType].querySelector('ul');
         list.appendChild(generateItemListElement(item).content);
     });
 
@@ -40,8 +40,8 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
     const group: HTMLTemplateElement = document.createElement('template');
     group.innerHTML = `
         <div class="modal-inventory-group">
-            <h4>${groupName}</h4>
-            <ul class="modal-inventory-list"/>
+            <h4 class="modal-inventory-group-header">${groupName}</h4>
+            <ul class="modal-inventory-group-list"/>
         </div>
     `;
 
@@ -50,7 +50,7 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
 function generateItemListElement(item: ItemModel): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
     template.innerHTML = `
-        <li class="modal-inventory-list-item">
+        <li class="modal-inventory-group-item">
             <canvas width="32" height="32"></canvas>
             <span>${item.fullDescription}</span>
         </li>

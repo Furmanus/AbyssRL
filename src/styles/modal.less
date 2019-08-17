@@ -28,10 +28,28 @@
   // INVENTORY
   &-inventory {
     &-wrapper {
-
+      color: @message-color;
     }
-    &-header {
-      text-transform: uppercase;
+    &-group {
+      &-header {
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 19px;
+        letter-spacing: 4px;
+      }
+      &-list {
+        list-style-type: none;
+      }
+      &-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+
+        span {
+          padding-left: 10px;
+        }
+      }
     }
   }
 }
