@@ -26,6 +26,8 @@ export function getPreparedInventoryElement(items: ItemsCollection): HTMLDivElem
         wrapper.appendChild(groupElement);
     });
 
+    wrapper.appendChild(generateFooter().content);
+
     return wrapper;
 }
 
@@ -56,6 +58,19 @@ function generateItemListElement(item: ItemModel): HTMLTemplateElement {
         </li>
     `;
     drawSpriteOnCanvas(template.content.querySelector('canvas'), item.display);
+
+    return template;
+}
+
+function generateFooter(): HTMLTemplateElement {
+    const template: HTMLTemplateElement = document.createElement('template');
+    template.innerHTML = `
+        <div class="modal-inventory-footer">
+            <button class="modal-inventory-action" id="inventory-drop">drop[D]</button>
+            <button class="modal-inventory-action" id="inventory-drop">equip[E]</button>
+            <button class="modal-inventory-action" id="inventory-drop">use[U]</button>
+        </div>
+    `;
 
     return template;
 }
