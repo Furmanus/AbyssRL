@@ -28,14 +28,24 @@
   // INVENTORY
   &-inventory {
     &-wrapper {
+      .flex-center();
+
+      justify-content: flex-start;
+      align-items: flex-start;
       color: @message-color;
+      height: 100%;
     }
     &-group {
+      &-container {
+        width: 100%;
+        flex-grow: 1;
+      }
       &-header {
         text-transform: uppercase;
         text-align: center;
         font-size: 19px;
         letter-spacing: 4px;
+        margin-bottom: 10px;
       }
       &-list {
         list-style-type: none;
@@ -48,6 +58,28 @@
 
         span {
           padding-left: 10px;
+        }
+      }
+    }
+    &-footer {
+      .flex-center-row();
+
+      justify-content: space-evenly;
+      width: 100%;
+      padding: 20px 20px;
+
+      .inventory-action {
+        background: transparent;
+        width: 120px;
+        letter-spacing: @letterSpacing;
+        color: @message-color;
+        border: 2px solid @borderColor;
+        border-radius: 15px;
+        transition: border 0.3s ease-in-out;
+        outline: none;
+
+        &:hover {
+          border-color: darkblue;
         }
       }
     }
