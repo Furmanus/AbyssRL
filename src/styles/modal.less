@@ -24,6 +24,7 @@
     background: #000000;
     opacity: 0.2;
     visibility: inherit;
+    z-index: @modalOverlayIndex;
   }
   // INVENTORY
   &-inventory {
@@ -75,9 +76,12 @@
         color: @message-color;
         border: 2px solid @borderColor;
         border-radius: 15px;
-        transition: border 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
         outline: none;
 
+        &.active {
+          background: #3e3e3e;
+        }
         &:hover {
           border-color: darkblue;
         }

@@ -35,11 +35,9 @@ import {
     STOP_EXAMINE_CELL,
 } from '../constants/game_actions';
 import {Cell} from '../model/dungeon/cells/cell_model';
-import {ModalController} from './modal_controller';
 import {globalMessagesController} from '../global/messages';
-import {globalModalController} from '../global/modal';
 import {ItemsCollection} from '../collections/items_collection';
-import {getPreparedInventoryElement} from '../../templates/inventory_template';
+import {globalInventoryController} from '../global/modal';
 
 const keyCodeToActionMap: {[keycode: number]: string} = {
     188: PlayerActions.PICK_UP,
@@ -50,7 +48,6 @@ export class MainController extends Controller {
     private readonly infoController: InfoController;
     private readonly miniMapController: MiniMapController;
     private readonly messagesController: MessagesController;
-    private readonly modalController: ModalController;
     private shiftPressed: boolean;
     private controlPressed: boolean;
     private altPressed: boolean;
@@ -70,7 +67,6 @@ export class MainController extends Controller {
         this.infoController = new InfoController(tileset);
         this.miniMapController = new MiniMapController();
         this.messagesController = globalMessagesController;
-        this.modalController = globalModalController;
 
         this.shiftPressed = false;
         this.controlPressed = false;
@@ -115,8 +111,8 @@ export class MainController extends Controller {
      * Enables listening on events notified by modal controller.
      */
     private attachModalEvents(): void {
-        this.modalController.on(this, ModalActions.OPEN_MODAL, this.onModalOpen);
-        this.modalController.on(this, ModalActions.CLOSE_MODAL, this.onModalClose);
+        globalInventoryController.on(this, ModalActions.OPEN_MODAL, this.onModalOpen);
+        globalInventoryController.on(this, ModalActions.CLOSE_MODAL, this.onModalClose);
     }
     /**
      * Method responsible for attaching keyboard events to window.
@@ -245,7 +241,8 @@ export class MainController extends Controller {
     }
     @boundMethod
     private onModalClose(): void {
-        // TODO placeholder, code implementation later
+        this.attachEvents();
+        window.removeEventListener('keydown', this.examinedModeEventListenerCallback);
     }
     /**
      * Method triggered after game controller notifies about player death.
@@ -315,12 +312,9 @@ export class MainController extends Controller {
     private openInventory(): void {
         const playerInventory: ItemsCollection = this.gameController.getPlayerInventory();
 
-        this.modalController.openModal();
+        globalInventoryController.openModal(playerInventory);
         this.detachEvents();
         this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
-
-        const modalContent: HTMLDivElement = getPreparedInventoryElement(playerInventory);
-        this.modalController.drawContentInView<HTMLDivElement>(modalContent);
     }
     /**
      * Callback for temporary keydown event listener in examine mode.
@@ -346,7 +340,7 @@ export class MainController extends Controller {
     @boundMethod
     private inventoryModeEventListenerCallback(e: KeyboardEvent): void {
         if (e.which === 27) {
-            this.modalController.closeModal();
+            globalInventoryController.closeModal();
             this.attachEvents();
             window.removeEventListener('keydown', this.examinedModeEventListenerCallback);
         }

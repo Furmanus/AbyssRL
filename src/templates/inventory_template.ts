@@ -1,12 +1,16 @@
 import {ItemsCollection} from '../scripts/collections/items_collection';
 import {ItemModel} from '../scripts/model/items/item_model';
 import {drawSpriteOnCanvas} from '../scripts/helper/canvas_helper';
+import {EntityInventoryActions} from '../scripts/constants/entity_events';
 
 interface IGroups {
     [groupName: string]: DocumentFragment;
 }
 
-export function getPreparedInventoryElement(items: ItemsCollection): HTMLDivElement {
+export function getPreparedInventoryElement(
+    items: ItemsCollection,
+    mode: EntityInventoryActions = EntityInventoryActions.LOOK,
+): HTMLDivElement {
     const wrapper: DocumentFragment = getInventoryWrapper().content;
     const wrapperElement: HTMLDivElement = wrapper.querySelector('div[class="modal-inventory-wrapper"]');
     const groupContainer: HTMLDivElement = wrapper.querySelector('div[class="modal-inventory-group-container"]');
@@ -21,7 +25,7 @@ export function getPreparedInventoryElement(items: ItemsCollection): HTMLDivElem
         }
 
         list = groups[itemType].querySelector('ul');
-        list.appendChild(generateItemListElement(item).content);
+        list.appendChild(generateItemListElement(item, mode).content);
     });
 
     Object.values(groups).forEach((groupElement: DocumentFragment) => {
@@ -55,7 +59,7 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
 
     return group;
 }
-function generateItemListElement(item: ItemModel): HTMLTemplateElement {
+function generateItemListElement(item: ItemModel, mode: EntityInventoryActions): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
     template.innerHTML = `
         <li class="modal-inventory-group-item">
@@ -73,8 +77,8 @@ function generateFooter(): HTMLTemplateElement {
     template.innerHTML = `
         <div class="modal-inventory-footer">
             <button class="inventory-action" id="inventory-drop">drop [D]</button>
-            <button class="inventory-action" id="inventory-drop">equip [E]</button>
-            <button class="inventory-action" id="inventory-drop">use [U]</button>
+            <button class="inventory-action" id="inventory-equip">equip [E]</button>
+            <button class="inventory-action" id="inventory-use">use [U]</button>
         </div>
     `;
 

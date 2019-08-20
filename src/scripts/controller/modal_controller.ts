@@ -2,18 +2,13 @@ import {Controller} from './controller';
 import {ModalView} from '../view/modal_view';
 import {ModalActions} from '../constants/game_actions';
 
-export class ModalController extends Controller {
-    private view: ModalView;
-    private isModalOpen: boolean = false;
+export class ModalController<M, V extends ModalView = ModalView> extends Controller {
+    protected currentContent: M;
+    protected view: V;
+    protected isModalOpen: boolean = false;
 
-    public constructor() {
-        super();
-
-        this.view = new ModalView();
-
-        this.attachEvents();
-    }
-    public openModal(): void {
+    public openModal(content: M): void {
+        this.currentContent = content;
         this.isModalOpen = true;
         this.view.open();
     }
@@ -27,7 +22,10 @@ export class ModalController extends Controller {
     public isOpen(): boolean {
         return this.isModalOpen;
     }
-    private attachEvents(): void {
+    public clearContentInView(): void {
+        this.view.clearContent();
+    }
+    protected attachEvents(): void {
         this.view.on(this, ModalActions.OVERLAY_CLICK, () => {
             this.closeModal();
             this.notify(ModalActions.CLOSE_MODAL);

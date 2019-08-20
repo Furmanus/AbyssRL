@@ -1,3 +1,3 @@
-import {ModalController} from '../controller/modal_controller';
+import {InventoryController} from '../controller/inventory_controller';
 
-export const globalModalController: ModalController = new ModalController();
+export const globalInventoryController: InventoryController = new InventoryController();
