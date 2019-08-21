@@ -2,6 +2,7 @@ import {ItemsCollection} from '../scripts/collections/items_collection';
 import {ItemModel} from '../scripts/model/items/item_model';
 import {drawSpriteOnCanvas} from '../scripts/helper/canvas_helper';
 import {EntityInventoryActions} from '../scripts/constants/entity_events';
+import {getLetterFromNumber} from '../scripts/helper/utility';
 
 interface IGroups {
     [groupName: string]: DocumentFragment;
@@ -16,7 +17,7 @@ export function getPreparedInventoryElement(
     const groupContainer: HTMLDivElement = wrapper.querySelector('div[class="modal-inventory-group-container"]');
     const groups: IGroups = {};
 
-    items.forEach((item: ItemModel) => {
+    items.forEach((item: ItemModel, index: number) => {
         const itemType: string = item.itemType;
         let list: HTMLUListElement;
 
@@ -25,7 +26,7 @@ export function getPreparedInventoryElement(
         }
 
         list = groups[itemType].querySelector('ul');
-        list.appendChild(generateItemListElement(item, mode).content);
+        list.appendChild(generateItemListElement(item, mode, index).content);
     });
 
     Object.values(groups).forEach((groupElement: DocumentFragment) => {
@@ -59,10 +60,11 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
 
     return group;
 }
-function generateItemListElement(item: ItemModel, mode: EntityInventoryActions): HTMLTemplateElement {
+function generateItemListElement(item: ItemModel, mode: EntityInventoryActions, index: number): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
     template.innerHTML = `
         <li class="modal-inventory-group-item">
+            <span class="identifier">[${getLetterFromNumber(index)}]</span>
             <canvas width="32" height="32"></canvas>
             <span>${item.fullDescription}</span>
         </li>

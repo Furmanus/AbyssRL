@@ -41,7 +41,7 @@ export class InventoryView extends ModalView {
                 this.equipButton.classList.remove('active');
                 break;
             default:
-                throw new Error(`Invalid  entity inventory action: ${mode}`);
+                throw new Error(`Invalid entity inventory action: ${mode}`);
         }
     }
     private setActionButtonsFields(): void {

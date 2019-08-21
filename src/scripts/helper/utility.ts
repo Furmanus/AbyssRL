@@ -208,3 +208,20 @@ export function capitalizeString(str: string): string {
         return trimmedString.charAt(0).toUpperCase() + trimmedString.slice(1);
     }
 }
+/**
+ * Converts first letter of given string to according natural number.
+ *
+ * @param   char  String which first char should be converted to number
+ * @returns       Number corresponding to given letter.
+ */
+export function getNumericValueOfChar(char: string): number {
+    return char.toLowerCase().charCodeAt(0) - 97;
+}
+/**
+ * Converts number to according lowercase letter of alphabet
+ * @param   num   Number to convert
+ * @returns       Letter to which number was converted
+ */
+export function getLetterFromNumber(num: number): string {
+    return String.fromCharCode(num + 97);
+}
