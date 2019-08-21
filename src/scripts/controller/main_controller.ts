@@ -237,7 +237,7 @@ export class MainController extends Controller {
     }
     @boundMethod
     private onModalOpen(): void {
-        // TODO placeholder, code implementation later
+        this.detachEvents();
     }
     @boundMethod
     private onModalClose(): void {
@@ -313,7 +313,6 @@ export class MainController extends Controller {
         const playerInventory: ItemsCollection = this.gameController.getPlayerInventory();
 
         globalInventoryController.openModal(playerInventory);
-        this.detachEvents();
         this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
     }
     /**
@@ -342,7 +341,7 @@ export class MainController extends Controller {
         if (e.which === 27) {
             globalInventoryController.closeModal();
             this.attachEvents();
-            window.removeEventListener('keydown', this.examinedModeEventListenerCallback);
+            window.removeEventListener('keydown', this.inventoryModeEventListenerCallback);
         }
     }
     /**
