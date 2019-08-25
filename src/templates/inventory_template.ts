@@ -54,16 +54,20 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
     group.innerHTML = `
         <div class="modal-inventory-group">
             <h4 class="modal-inventory-group-header">${groupName}</h4>
-            <ul class="modal-inventory-group-list"/>
+            <ul class="modal-inventory-group-list" id="modal-inventory-list"/>
         </div>
     `;
 
     return group;
 }
-function generateItemListElement(item: ItemModel, mode: EntityInventoryActions, index: number): HTMLTemplateElement {
+function generateItemListElement(
+    item: ItemModel,
+    mode: EntityInventoryActions,
+    index: number,
+): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
     template.innerHTML = `
-        <li class="modal-inventory-group-item">
+        <li class="modal-inventory-group-item" data-index="${index}">
             <span class="identifier">[${getLetterFromNumber(index)}]</span>
             <canvas width="32" height="32"></canvas>
             <span>${item.fullDescription}</span>

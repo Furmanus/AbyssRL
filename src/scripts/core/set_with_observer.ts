@@ -23,13 +23,17 @@ export class SetWithObserver<E> extends Observer {
         this.notify('add', item);
         return this;
     }
-    public clear(): void {
+    public clear(): this {
+        this.set.clear();
         this.notify('clear');
-        return this.set.clear();
+
+        return this;
     }
-    public delete(value: E): boolean {
+    public delete(value: E): this {
+        this.set.delete(value);
         this.notify('delete', value);
-        return this.set.delete(value);
+
+        return this;
     }
     public has(value: E): boolean {
         return this.set.has(value);

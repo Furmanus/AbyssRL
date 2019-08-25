@@ -6,7 +6,7 @@ import autobind from 'autobind-decorator';
 /**
  * Class describing view of global application modal.
  */
-export class ModalView extends Constructor {
+export abstract class ModalView extends Constructor {
     protected modalWrapper: HTMLDivElement;
     protected modalContent: HTMLDivElement;
     protected modalOverlay: HTMLDivElement;
@@ -35,10 +35,14 @@ export class ModalView extends Constructor {
     public attachEvents(): void {
         this.modalOverlay.addEventListener('click', this.onOverlayClick);
         this.modalContent.addEventListener('click', this.onContentClick);
+
+        window.addEventListener('keydown', this.onWindowKeydownCallback);
     }
     private detachEvents(): void {
         this.modalOverlay.removeEventListener('click', this.onOverlayClick);
         this.modalContent.removeEventListener('click', this.onContentClick);
+
+        window.removeEventListener('keydown', this.onWindowKeydownCallback);
     }
     @autobind
     private onOverlayClick(e: MouseEvent): void {
@@ -47,4 +51,5 @@ export class ModalView extends Constructor {
     private onContentClick(e: MouseEvent): void {
         e.stopPropagation();
     }
+    protected abstract onWindowKeydownCallback(e: KeyboardEvent): void;
 }

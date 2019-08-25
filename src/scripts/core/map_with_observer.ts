@@ -133,7 +133,7 @@ export class MapWithObserver<K, V extends Observer> extends Observer {
      * @param event         Event name
      * @param callback      Callback function called after event was notified
      */
-    private listenTo(controller: Controller, event: string, callback: IAnyFunction): void {
+    private listenTo(controller: Controller, event: string, callback: IAnyFunction): this {
         this.mapListeners.add({
             observer: controller,
             event,
@@ -142,5 +142,7 @@ export class MapWithObserver<K, V extends Observer> extends Observer {
         this.forEach((value: V) => {
             value.on(controller, event, callback);
         });
+
+        return this;
     }
 }

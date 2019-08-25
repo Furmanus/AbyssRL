@@ -15,4 +15,5 @@ export enum EntityInventoryActions {
 }
 export enum InventoryModalEvents {
     CLICK_ACTION_BUTTON = 'CLICK_ACTION_BUTTON',
+    INVENTORY_ITEM_SELECTED = 'INVENTORY_ITEM_SELECTED',
 }

@@ -50,12 +50,22 @@
       }
       &-list {
         list-style-type: none;
+        padding: 0 40px;
       }
       &-item {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
         align-items: center;
+        margin: 3px 0;
+
+        &.selected {
+          outline: 3px solid darkblue;
+        }
+
+        &:hover {
+          outline: 4px solid @borderColor;
+        }
 
         span {
           padding: 0 10px;
