@@ -3,6 +3,13 @@ import {EntityInventoryActions, InventoryModalEvents} from '../constants/entity_
 import {boundMethod} from 'autobind-decorator';
 import {SetWithObserver} from '../core/set_with_observer';
 import {getNumericValueOfChar} from '../helper/utility';
+import {IStringDictionary} from '../interfaces/common';
+
+const keyToInventoryActionMap: IStringDictionary = {
+    d: EntityInventoryActions.DROP,
+    e: EntityInventoryActions.EQUIP,
+    u: EntityInventoryActions.USE,
+};
 
 export class InventoryView extends ModalView {
     private dropButton: HTMLButtonElement;
@@ -17,15 +24,15 @@ export class InventoryView extends ModalView {
 
         this.dropButton.addEventListener('click', (e: MouseEvent) => {
             e.stopPropagation();
-            this.notify(InventoryModalEvents.CLICK_ACTION_BUTTON, EntityInventoryActions.DROP);
+            this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.DROP);
         });
         this.equipButton.addEventListener('click', (e: MouseEvent) => {
             e.stopPropagation();
-            this.notify(InventoryModalEvents.CLICK_ACTION_BUTTON, EntityInventoryActions.EQUIP);
+            this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.EQUIP);
         });
         this.useButton.addEventListener('click', (e: MouseEvent) => {
             e.stopPropagation();
-            this.notify(InventoryModalEvents.CLICK_ACTION_BUTTON, EntityInventoryActions.USE);
+            this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.USE);
         });
     }
     public setInventoryMode(mode: EntityInventoryActions): void {
@@ -55,8 +62,15 @@ export class InventoryView extends ModalView {
             key,
         } = e;
         const keyNumericValue: number = getNumericValueOfChar(key);
+        const wasMetaPressed: boolean = e.ctrlKey || e.shiftKey || e.altKey || e.metaKey;
 
-        this.notify(InventoryModalEvents.INVENTORY_ITEM_SELECTED, keyNumericValue);
+        e.preventDefault();
+
+        if (!wasMetaPressed) {
+            this.notify(InventoryModalEvents.INVENTORY_ITEM_SELECTED, keyNumericValue);
+        } else if (e.shiftKey && e.key.toLowerCase() !== 'shift') {
+            this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, keyToInventoryActionMap[e.key.toLowerCase()]);
+        }
     }
     private setElementsFields(): void {
         this.dropButton = this.modalContent.querySelector('#inventory-drop') as HTMLButtonElement;

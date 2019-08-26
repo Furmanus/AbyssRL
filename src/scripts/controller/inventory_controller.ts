@@ -38,7 +38,7 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
     protected attachEvents(): void {
         super.attachEvents();
 
-        this.view.on(this, InventoryModalEvents.CLICK_ACTION_BUTTON, this.onInventoryActionClickInView);
+        this.view.on(this, InventoryModalEvents.CHANGE_INVENTORY_ACTION, this.onInventoryActionChangeInView);
         this.view.on(this, InventoryModalEvents.INVENTORY_ITEM_SELECTED, this.onInventoryItemSelectedInView);
 
         this.selectedItems.on(this, 'add', this.onInventorySelectedItemsChange);
@@ -58,9 +58,11 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
         this.view.markItemsAsSelected(this.selectedItems);
     }
     @boundMethod
-    private onInventoryActionClickInView(action: EntityInventoryActions): void {
-        this.setMode(action);
-        this.setInventoryModelInView(action);
+    private onInventoryActionChangeInView(action: EntityInventoryActions): void {
+        if (action) {
+            this.setMode(action);
+            this.setInventoryModelInView(action);
+        }
     }
     @boundMethod
     private onInventoryItemSelectedInView(index: number): void {
