@@ -19,14 +19,23 @@ import {ICombatResult} from '../../helper/combat_helper';
 import {ItemsCollection} from '../../collections/items_collection';
 import {MessagesController} from '../messages_controller';
 import {ItemModel} from '../../model/items/item_model';
+import {InventoryController} from '../inventory_controller';
+import {globalInventoryController} from '../../global/modal';
+import {EntityInventoryActions, InventoryModalEvents} from '../../constants/entity_events';
+import {boundMethod} from 'autobind-decorator';
 
 export interface IMoveResolve {
     canMove: boolean;
     message: string;
 }
+interface IInventoryActionConfirmData {
+    action: EntityInventoryActions;
+    selectedItems: ItemModel[];
+}
 
 export class PlayerController extends EntityController<PlayerModel> {
     private globalMessageController: MessagesController = globalMessagesController;
+    private globalInventoryController: InventoryController = globalInventoryController;
 
     constructor(constructorConfig: IAnyObject) {
         super(constructorConfig);
@@ -34,7 +43,6 @@ export class PlayerController extends EntityController<PlayerModel> {
         this.model = new PlayerModel(constructorConfig);
         this.attachEvents();
     }
-
     protected attachEvents(): void {
         super.attachEvents();
 
@@ -44,8 +52,25 @@ export class PlayerController extends EntityController<PlayerModel> {
                 levelNumber: newLevelModel.levelNumber,
             });
         });
+        this.globalInventoryController.on(this, InventoryModalEvents.INVENTORY_ACTION_CONFIRMED, this.onInventoryActionConfirmed);
     }
+    @boundMethod
+    private onInventoryActionConfirmed(data: IInventoryActionConfirmData): void {
+        const {
+            action,
+            selectedItems,
+        } = data;
 
+        if (action === EntityInventoryActions.DROP && selectedItems.length) {
+            this.dropItems(selectedItems);
+            this.globalInventoryController.closeModal();
+        }
+    }
+    public dropItems(items: ItemModel[]): void {
+        super.dropItems(items);
+
+        this.notify(PlayerActions.END_PLAYER_TURN);
+    }
     /**
      * Method triggered at beginning of each player turn.
      */

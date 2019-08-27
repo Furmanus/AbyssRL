@@ -38,6 +38,7 @@ import {Cell} from '../model/dungeon/cells/cell_model';
 import {globalMessagesController} from '../global/messages';
 import {ItemsCollection} from '../collections/items_collection';
 import {globalInventoryController} from '../global/modal';
+import {InventoryModalEvents} from '../constants/entity_events';
 
 const keyCodeToActionMap: {[keycode: number]: string} = {
     188: PlayerActions.PICK_UP,
@@ -112,7 +113,7 @@ export class MainController extends Controller {
      */
     private attachModalEvents(): void {
         globalInventoryController.on(this, ModalActions.OPEN_MODAL, this.onModalOpen);
-        globalInventoryController.on(this, ModalActions.CLOSE_MODAL, this.onModalClose);
+        globalInventoryController.on(this, InventoryModalEvents.INVENTORY_MODAL_CLOSED, this.onInventoryModalClose);
     }
     /**
      * Method responsible for attaching keyboard events to window.
@@ -242,7 +243,6 @@ export class MainController extends Controller {
     @boundMethod
     private onModalClose(): void {
         this.attachEvents();
-        window.removeEventListener('keydown', this.examinedModeEventListenerCallback);
     }
     /**
      * Method triggered after game controller notifies about player death.
@@ -340,9 +340,15 @@ export class MainController extends Controller {
     private inventoryModeEventListenerCallback(e: KeyboardEvent): void {
         if (e.which === 27) {
             globalInventoryController.closeModal();
-            this.attachEvents();
-            window.removeEventListener('keydown', this.inventoryModeEventListenerCallback);
         }
+    }
+    /**
+     * Callback method triggered after inventory modal is being closed. Attaches back main event listeners.
+     */
+    @boundMethod
+    private onInventoryModalClose(): void {
+        this.attachEvents();
+        window.removeEventListener('keydown', this.inventoryModeEventListenerCallback);
     }
     /**
      * Function responsible for resizing game window size and all other canvas/divs(messages, info and map) whenever

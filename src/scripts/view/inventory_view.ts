@@ -10,6 +10,9 @@ const keyToInventoryActionMap: IStringDictionary = {
     e: EntityInventoryActions.EQUIP,
     u: EntityInventoryActions.USE,
 };
+const inventoryItemsAllowedChars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'z',
+];
 
 export class InventoryView extends ModalView {
     private dropButton: HTMLButtonElement;
@@ -66,8 +69,10 @@ export class InventoryView extends ModalView {
 
         e.preventDefault();
 
-        if (!wasMetaPressed) {
+        if (!wasMetaPressed && inventoryItemsAllowedChars.includes(key)) {
             this.notify(InventoryModalEvents.INVENTORY_ITEM_SELECTED, keyNumericValue);
+        } else if (!wasMetaPressed && key.toLowerCase() === 'enter') {
+            this.notify(InventoryModalEvents.INVENTORY_ACTION_CONFIRMED);
         } else if (e.shiftKey && e.key.toLowerCase() !== 'shift') {
             this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, keyToInventoryActionMap[e.key.toLowerCase()]);
         }

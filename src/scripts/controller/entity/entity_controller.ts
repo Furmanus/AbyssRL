@@ -27,6 +27,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
         this.model.on(this, EntityEvents.ENTITY_DEATH, this.onEntityDeath);
         this.model.on(this, EntityEvents.ENTITY_HIT, this.onEntityHit);
         this.model.on(this, EntityEvents.ENTITY_PICKED_ITEM, this.onEntityPickUp);
+        this.model.on(this, EntityEvents.ENTITY_DROPPED_ITEM, this.onEntityDropItem);
     }
     /**
      * Moves entity into new cell.
@@ -89,8 +90,19 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     public pickUp(item: ItemModel): void {
         this.model.pickUp(item);
     }
-    public onEntityPickUp(item: ItemModel): void {
+    /**
+     * Attempts to drop items on ground (remove from entity inventory and push to cell inventory).
+     *
+     * @param items     Array of items to drop
+     */
+    public dropItems(items: ItemModel[]): void {
+        this.model.dropItems(items);
+    }
+    protected onEntityPickUp(item: ItemModel): void {
         globalMessagesController.showMessageInView(`${this.model.getDescription()} picks up ${item.description}.`);
+    }
+    protected onEntityDropItem(item: ItemModel): void {
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} drops ${item.description}.`);
     }
     /**
      * Returns speed of entity (how fast it can take action in time engine).

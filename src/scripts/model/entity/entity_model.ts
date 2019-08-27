@@ -155,14 +155,36 @@ export class EntityModel extends BaseModel implements IEntity {
     }
     /**
      * Attempts to pick up item from ground (ie. removing it from Cell inventory and moving to entity inventory).
+     *
+     * @param item      Item to pick up
      */
     public pickUp(item: ItemModel): void {
         const currentCellInventory: ItemsCollection = this.getCurrentCellInventory();
 
-        currentCellInventory.remove(item);
-        this.inventory.add(item);
+        if (currentCellInventory.has(item)) {
+            currentCellInventory.remove(item);
+            this.inventory.add(item);
 
-        this.notify(EntityEvents.ENTITY_PICKED_ITEM, item);
+            this.notify(EntityEvents.ENTITY_PICKED_ITEM, item);
+        }
+    }
+    /**
+     * Attempts to drop on ground group of items (remove them from entity inventory and push to cell where entity is
+     * inventory).
+     *
+     * @param items     Array of items to drop
+     */
+    public dropItems(items: ItemModel[]): void {
+        const currentCellInventory: ItemsCollection = this.getCurrentCellInventory();
+
+        items.forEach((item: ItemModel) => {
+            if (this.inventory.has(item)) {
+                this.inventory.remove(item);
+                currentCellInventory.add(item);
+
+                this.notify(EntityEvents.ENTITY_DROPPED_ITEM, item);
+            }
+        });
     }
     /**
      * Returns speed of entity.

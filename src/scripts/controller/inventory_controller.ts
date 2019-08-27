@@ -6,6 +6,7 @@ import {InventoryView} from '../view/inventory_view';
 import {boundMethod} from 'autobind-decorator';
 import {SetWithObserver} from '../core/set_with_observer';
 import {ENTITY_MAX_INVENTORY_LENGTH} from '../constants/monsters';
+import {ItemModel} from '../model/items/item_model';
 
 export class InventoryController extends ModalController<ItemsCollection, InventoryView> {
     private inventoryMode: EntityInventoryActions;
@@ -34,12 +35,15 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
         this.view.clearContent();
         this.inventoryContent = null;
         this.view = null;
+
+        this.notify(InventoryModalEvents.INVENTORY_MODAL_CLOSED);
     }
     protected attachEvents(): void {
         super.attachEvents();
 
         this.view.on(this, InventoryModalEvents.CHANGE_INVENTORY_ACTION, this.onInventoryActionChangeInView);
         this.view.on(this, InventoryModalEvents.INVENTORY_ITEM_SELECTED, this.onInventoryItemSelectedInView);
+        this.view.on(this, InventoryModalEvents.INVENTORY_ACTION_CONFIRMED, this.onInventoryActionConfirmed);
 
         this.selectedItems.on(this, 'add', this.onInventorySelectedItemsChange);
         this.selectedItems.on(this, 'delete', this.onInventorySelectedItemsChange);
@@ -73,6 +77,19 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
             this.selectedItems.delete(index);
         } else {
             this.selectedItems.add(index);
+        }
+    }
+    @boundMethod
+    private onInventoryActionConfirmed(): void {
+        const selectedItems: ItemModel[] = this.inventoryContent.get().filter((item: ItemModel, index: number) => {
+            return this.selectedItems.has(index);
+        });
+
+        if (this.inventoryMode !== EntityInventoryActions.LOOK) {
+            this.notify(InventoryModalEvents.INVENTORY_ACTION_CONFIRMED, {
+                action: this.inventoryMode,
+                selectedItems,
+            });
         }
     }
 }
