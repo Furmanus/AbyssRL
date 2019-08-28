@@ -25,18 +25,20 @@ export class InventoryView extends ModalView {
         super.attachEvents();
         this.attachEventsToInventoryList();
 
-        this.dropButton.addEventListener('click', (e: MouseEvent) => {
-            e.stopPropagation();
-            this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.DROP);
-        });
-        this.equipButton.addEventListener('click', (e: MouseEvent) => {
-            e.stopPropagation();
-            this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.EQUIP);
-        });
-        this.useButton.addEventListener('click', (e: MouseEvent) => {
-            e.stopPropagation();
-            this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.USE);
-        });
+        if (this.inventoryList) {
+            this.dropButton.addEventListener('click', (e: MouseEvent) => {
+                e.stopPropagation();
+                this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.DROP);
+            });
+            this.equipButton.addEventListener('click', (e: MouseEvent) => {
+                e.stopPropagation();
+                this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.EQUIP);
+            });
+            this.useButton.addEventListener('click', (e: MouseEvent) => {
+                e.stopPropagation();
+                this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.USE);
+            });
+        }
     }
     public setInventoryMode(mode: EntityInventoryActions): void {
         switch (mode) {
@@ -84,7 +86,7 @@ export class InventoryView extends ModalView {
         this.inventoryList = this.modalContent.querySelector('#modal-inventory-list') as HTMLUListElement;
     }
     private attachEventsToInventoryList(): void {
-        Array.from(this.inventoryList.children).forEach((element: HTMLLIElement, index: number) => {
+        Array.from(this.inventoryList && this.inventoryList.children || []).forEach((element: HTMLLIElement, index: number) => {
             element.addEventListener('click', this.onInventoryListItemSelect.bind(this, index));
         });
     }

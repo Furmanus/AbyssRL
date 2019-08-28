@@ -17,23 +17,31 @@ export function getPreparedInventoryElement(
     const groupContainer: HTMLDivElement = wrapper.querySelector('div[class="modal-inventory-group-container"]');
     const groups: IGroups = {};
 
-    items.forEach((item: ItemModel, index: number) => {
-        const itemType: string = item.itemType;
-        let list: HTMLUListElement;
+    if (items.size) {
+        items.forEach((item: ItemModel, index: number) => {
+            const itemType: string = item.itemType;
+            let list: HTMLUListElement;
 
-        if (!groups[itemType]) {
-            groups[itemType] = generateItemGroup(itemType).content;
-        }
+            if (!groups[itemType]) {
+                groups[itemType] = generateItemGroup(itemType).content;
+            }
 
-        list = groups[itemType].querySelector('ul');
-        list.appendChild(generateItemListElement(item, mode, index).content);
-    });
+            list = groups[itemType].querySelector('ul');
+            list.appendChild(generateItemListElement(item, mode, index).content);
+        });
 
-    Object.values(groups).forEach((groupElement: DocumentFragment) => {
-        groupContainer.appendChild(groupElement);
-    });
+        Object.values(groups).forEach((groupElement: DocumentFragment) => {
+            groupContainer.appendChild(groupElement);
+        });
 
-    wrapperElement.appendChild(generateFooter().content);
+        wrapperElement.appendChild(generateFooter().content);
+    } else {
+        const noItemsMessage: HTMLParagraphElement = document.createElement('p');
+
+        noItemsMessage.textContent = 'Your inventory is empty';
+        noItemsMessage.classList.add('empty-content');
+        groupContainer.appendChild(noItemsMessage);
+    }
 
     return wrapperElement;
 }
