@@ -64,7 +64,21 @@
         margin: 3px 0;
 
         &.selected {
-          outline: 3px solid darkblue;
+          .checkbox {
+            .inventory-checkbox();
+
+            &:after {
+              content: '';
+              position: absolute;
+              left: 2px;
+              top: 4px;
+              width: 10px;
+              height: 4px;
+              border-top: 2px solid @lightBorderColor;
+              border-right: 2px solid @lightBorderColor;
+              transform: rotate(130deg);
+            }
+          }
         }
 
         &:hover {
@@ -73,10 +87,9 @@
 
         span {
           padding: 0 10px;
-
-          &.identifier {
-
-          }
+        }
+        .checkbox {
+          .inventory-checkbox();
         }
       }
     }
@@ -106,4 +119,13 @@
       }
     }
   }
+}
+
+.inventory-checkbox {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 1px solid @lightBorderColor;
+  border-radius: 4px;
+  margin-left: auto;
 }
