@@ -34,7 +34,7 @@ export function getPreparedInventoryElement(
             groupContainer.appendChild(groupElement);
         });
 
-        wrapperElement.appendChild(generateFooter().content);
+        wrapperElement.appendChild(generateFooter(mode).content);
     } else {
         const noItemsMessage: HTMLParagraphElement = document.createElement('p');
 
@@ -89,13 +89,19 @@ function generateItemListElement(
     return template;
 }
 
-function generateFooter(): HTMLTemplateElement {
+function generateFooter(mode: EntityInventoryActions): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
     template.innerHTML = `
         <div class="modal-inventory-footer">
-            <button class="inventory-action" id="inventory-drop">drop [D]</button>
-            <button class="inventory-action" id="inventory-equip">equip [E]</button>
-            <button class="inventory-action" id="inventory-use">use [U]</button>
+            <button class="inventory-action ${mode === EntityInventoryActions.DROP ? 'active' : ''}" id="inventory-drop">
+                drop [D]
+            </button>
+            <button class="inventory-action ${mode === EntityInventoryActions.EQUIP ? 'active' : ''}" id="inventory-equip">
+                equip [E]
+            </button>
+            <button class="inventory-action ${mode === EntityInventoryActions.USE ? 'active' : ''}" id="inventory-use">
+                use [U]
+            </button>
         </div>
     `;
 

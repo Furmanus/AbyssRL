@@ -1,6 +1,6 @@
 import {ModalView} from './modal_view';
 import {EntityInventoryActions, InventoryModalEvents} from '../constants/entity_events';
-import {boundMethod} from 'autobind-decorator';
+import autobind, {boundMethod} from 'autobind-decorator';
 import {SetWithObserver} from '../core/set_with_observer';
 import {getNumericValueOfChar} from '../helper/utility';
 import {IStringDictionary} from '../interfaces/common';
@@ -26,19 +26,19 @@ export class InventoryView extends ModalView {
         this.attachEventsToInventoryList();
 
         if (this.inventoryList) {
-            this.dropButton.addEventListener('click', (e: MouseEvent) => {
-                e.stopPropagation();
-                this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.DROP);
-            });
-            this.equipButton.addEventListener('click', (e: MouseEvent) => {
-                e.stopPropagation();
-                this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.EQUIP);
-            });
-            this.useButton.addEventListener('click', (e: MouseEvent) => {
-                e.stopPropagation();
-                this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.USE);
-            });
+            this.dropButton.addEventListener('click', this.onDropButtonClick);
+            this.equipButton.addEventListener('click', this.onEquipButtonClick);
+            this.useButton.addEventListener('click', this.onUseButtonClick);
         }
+    }
+    public detachEvents(): void {
+        if (this.inventoryList) {
+            this.dropButton.removeEventListener('click', this.onDropButtonClick);
+            this.equipButton.removeEventListener('click', this.onEquipButtonClick);
+            this.useButton.removeEventListener('click', this.onUseButtonClick);
+        }
+
+        window.removeEventListener('keydown', this.onWindowKeydownCallback);
     }
     public setInventoryMode(mode: EntityInventoryActions): void {
         switch (mode) {
@@ -85,6 +85,7 @@ export class InventoryView extends ModalView {
         this.useButton = this.modalContent.querySelector('#inventory-use') as HTMLButtonElement;
         this.inventoryList = this.modalContent.querySelector('#modal-inventory-list') as HTMLUListElement;
     }
+    // TODO detach those events to prevent memory leak
     private attachEventsToInventoryList(): void {
         Array.from(this.inventoryList && this.inventoryList.children || []).forEach((element: HTMLLIElement, index: number) => {
             element.addEventListener('click', this.onInventoryListItemSelect.bind(this, index));
@@ -109,5 +110,20 @@ export class InventoryView extends ModalView {
         for (const inventoryListItem of inventoryListItems) {
             inventoryListItem.classList.remove('selected');
         }
+    }
+    @autobind
+    private onDropButtonClick(e: MouseEvent): void {
+        e.stopPropagation();
+        this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.DROP);
+    }
+    @autobind
+    private onEquipButtonClick(e: MouseEvent): void {
+        e.stopPropagation();
+        this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.EQUIP);
+    }
+    @autobind
+    private onUseButtonClick(e: MouseEvent): void {
+        e.stopPropagation();
+        this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, EntityInventoryActions.USE);
     }
 }

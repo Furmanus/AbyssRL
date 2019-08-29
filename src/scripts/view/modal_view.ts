@@ -38,7 +38,7 @@ export abstract class ModalView extends Constructor {
 
         window.addEventListener('keydown', this.onWindowKeydownCallback);
     }
-    private detachEvents(): void {
+    public detachEvents(): void {
         this.modalOverlay.removeEventListener('click', this.onOverlayClick);
         this.modalContent.removeEventListener('click', this.onContentClick);
 

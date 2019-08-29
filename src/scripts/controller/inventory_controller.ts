@@ -51,8 +51,15 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
     private setMode(mode: EntityInventoryActions): void {
         this.inventoryMode = mode;
     }
-    private setInventoryModelInView(mode: EntityInventoryActions): void {
+    private setInventoryModeInView(mode: EntityInventoryActions): void {
         this.view.setInventoryMode(mode);
+    }
+    private rebuildView(mode: EntityInventoryActions): void {
+        this.view.detachEvents();
+        this.view.clearContent();
+
+        this.drawContentInView(getPreparedInventoryElement(this.inventoryContent, mode));
+        this.attachEventsInView();
     }
     private attachEventsInView(): void {
         this.view.attachEvents();
@@ -65,7 +72,7 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
     private onInventoryActionChangeInView(action: EntityInventoryActions): void {
         if (action) {
             this.setMode(action);
-            this.setInventoryModelInView(action);
+            this.rebuildView(action);
         }
     }
     @boundMethod
