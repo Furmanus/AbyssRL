@@ -74,12 +74,14 @@ function generateItemListElement(
     index: number,
 ): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
+    const shouldRenderMultiSelectBoxes: boolean = mode === EntityInventoryActions.DROP || mode === EntityInventoryActions.PICK_UP;
+
     template.innerHTML = `
         <li class="modal-inventory-group-item" data-index="${index}">
             <span class="identifier">[${getLetterFromNumber(index)}]</span>
             <canvas width="32" height="32"></canvas>
             <span>${item.fullDescription}</span>
-            <div class="checkbox" data-element="inventory-checkbox"/>
+            ${shouldRenderMultiSelectBoxes ? '<div class="checkbox" data-element="inventory-checkbox"/>' : ''}
         </li>
     `;
     drawSpriteOnCanvas(template.content.querySelector('canvas'), item.display);
