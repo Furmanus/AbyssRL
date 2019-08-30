@@ -73,6 +73,7 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
         if (action) {
             this.setMode(action);
             this.rebuildView(action);
+            this.selectedItems.clear();
         }
     }
     @boundMethod
