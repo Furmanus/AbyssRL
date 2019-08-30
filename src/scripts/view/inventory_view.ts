@@ -37,7 +37,7 @@ export class InventoryView extends ModalView {
             this.equipButton.removeEventListener('click', this.onEquipButtonClick);
             this.useButton.removeEventListener('click', this.onUseButtonClick);
         }
-
+        this.detachEventsFromInventoryList();
         window.removeEventListener('keydown', this.onWindowKeydownCallback);
     }
     public setInventoryMode(mode: EntityInventoryActions): void {
@@ -85,14 +85,25 @@ export class InventoryView extends ModalView {
         this.useButton = this.modalContent.querySelector('#inventory-use') as HTMLButtonElement;
         this.inventoryList = this.modalContent.querySelector('#modal-inventory-list') as HTMLUListElement;
     }
-    // TODO detach those events to prevent memory leak
     private attachEventsToInventoryList(): void {
-        Array.from(this.inventoryList && this.inventoryList.children || []).forEach((element: HTMLLIElement, index: number) => {
-            element.addEventListener('click', this.onInventoryListItemSelect.bind(this, index));
+        Array.from(this.inventoryList && this.inventoryList.children || []).forEach((element: HTMLLIElement) => {
+            element.addEventListener('click', this.onInventoryListItemSelect);
+        });
+    }
+    private detachEventsFromInventoryList(): void {
+        Array.from(this.inventoryList && this.inventoryList.children || []).forEach((element: HTMLLIElement) => {
+            element.removeEventListener('click', this.onInventoryListItemSelect);
         });
     }
     @boundMethod
-    private onInventoryListItemSelect(index: number): void {
+    private onInventoryListItemSelect(ev: MouseEvent): void {
+        let parent: HTMLElement = ev.target as HTMLElement;
+
+        while ((parent.tagName || '').toLowerCase() !== 'li') {
+            parent = parent.parentElement;
+        }
+        const index: number = parseInt(parent.dataset.index, 10);
+
         this.notify(InventoryModalEvents.INVENTORY_ITEM_SELECTED, index);
     }
     public markItemsAsSelected(selectedItems: SetWithObserver<number>): void {
