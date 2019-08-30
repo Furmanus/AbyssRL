@@ -3,6 +3,7 @@ import {ItemModel} from '../scripts/model/items/item_model';
 import {drawSpriteOnCanvas} from '../scripts/helper/canvas_helper';
 import {EntityInventoryActions} from '../scripts/constants/entity_events';
 import {getLetterFromNumber} from '../scripts/helper/utility';
+import {actionNameToModalHeaderMap} from '../scripts/constants/inventory';
 
 interface IGroups {
     [groupName: string]: DocumentFragment;
@@ -18,6 +19,12 @@ export function getPreparedInventoryElement(
     const groups: IGroups = {};
 
     if (items.size) {
+        const header: HTMLHeadingElement = document.createElement('h4');
+        header.classList.add('modal-inventory-header');
+        header.innerText = actionNameToModalHeaderMap[mode];
+
+        wrapperElement.insertAdjacentElement('afterbegin', header);
+
         items.forEach((item: ItemModel, index: number) => {
             const itemType: string = item.itemType;
             let list: HTMLUListElement;
