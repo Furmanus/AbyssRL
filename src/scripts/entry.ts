@@ -7,6 +7,7 @@ import {MainController} from './controller/main_controller';
 import * as u5tiles from '../../assets/u5tiles.png';
 import '@babel/polyfill';
 import '../styles/app.less';
+import {tilesetObject} from './global/tileset';
 // tslint:disable
 declare global {
     // tslint:disable-next-line:interface-name
@@ -32,6 +33,7 @@ Set.prototype.random = function<M>(): M {
     tileSet.setAttribute('src', u5tiles);
 
     tileSet.addEventListener('load', () => {
+        tilesetObject.tileset = tileSet;
         // tslint:disable-next-line:no-unused-expression
         new MainController(tileSet);
     });

@@ -7,6 +7,8 @@ import {IEntity} from '../../interfaces/entity_interfaces';
 import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
 import {INaturalWeapon, IWeapon} from '../../interfaces/combat';
+import {ItemModel} from '../items/item_model';
+import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -64,7 +66,11 @@ export class EntityModel extends BaseModel implements IEntity {
     public hitPoints: number = null;
     public maxHitPoints: number = null;
     public size: MonsterSizes = null;
-    public inventory: ItemsCollection = null;
+    // TODO remove content of collection
+    public inventory: ItemsCollection = new ItemsCollection(
+        [weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel()],
+    );
     /**
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
@@ -88,6 +94,7 @@ export class EntityModel extends BaseModel implements IEntity {
         this.speed = config.speed;
         this.perception = config.perception;
         this.type = config.type;
+        // TODO add initialization of inventory
     }
     /**
      * Changes position property of entity.
@@ -147,9 +154,57 @@ export class EntityModel extends BaseModel implements IEntity {
         this.notify(EntityEvents.ENTITY_MOVE, newCell);
     }
     /**
+     * Attempts to pick up item from ground (ie. removing it from Cell inventory and moving to entity inventory).
+     *
+     * @param item      Item to pick up
+     */
+    public pickUp(item: ItemModel): void {
+        const currentCellInventory: ItemsCollection = this.getCurrentCellInventory();
+
+        if (currentCellInventory.has(item)) {
+            currentCellInventory.remove(item);
+            this.inventory.add(item);
+
+            this.notify(EntityEvents.ENTITY_PICKED_ITEM, item);
+        }
+    }
+    /**
+     * Attempts to drop on ground group of items (remove them from entity inventory and push to cell where entity is
+     * inventory).
+     *
+     * @param items     Array of items to drop
+     */
+    public dropItems(items: ItemModel[]): void {
+        const currentCellInventory: ItemsCollection = this.getCurrentCellInventory();
+
+        items.forEach((item: ItemModel) => {
+            if (this.inventory.has(item)) {
+                this.inventory.remove(item);
+                currentCellInventory.add(item);
+
+                this.notify(EntityEvents.ENTITY_DROPPED_ITEM, item);
+            }
+        });
+    }
+    /**
      * Returns speed of entity.
      */
     public getSpeed(): number {
         return this.speed;
+    }
+    /**
+     * Returns inventory of Cell which entity currently occupies.
+     * @returns ItemsCollection
+     */
+    public getCurrentCellInventory(): ItemsCollection {
+        return this.position.inventory;
+    }
+    /**
+     * Return description of entity.
+     *
+     * @returns String description of entity
+     */
+    public getDescription(): string {
+        return this.description;
     }
 }

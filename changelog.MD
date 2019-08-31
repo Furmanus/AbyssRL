@@ -1,5 +1,6 @@
-###0.0.4
-* (Fix) Webpack application build fixes and improvements
+###0.0.4 (01.09.2019)
+* (Feature) Basic implementation of items (four weapons). Player is able to pick up, drop items and display inventory 
+* (Fix)     Webpack application build fixes and improvements
 ###0.0.3 (15.06.2019)
 * (Feature) Basic implementation of monsters (giant rat right now)
 * (Feature) Basic combat implementation

@@ -5,6 +5,9 @@ import * as Rng from '../../helper/rng';
 import {config} from '../../global/config';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {IDungeonStrategyGenerateLevelConfig} from '../../interfaces/generators';
+import {Cell} from '../../model/dungeon/cells/cell_model';
+import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
+import {WeaponModel} from '../../model/items/weapons/weapon_model';
 
 type AllGeneratorsTypes = ArenaLevelGenerator | CavernLevelGenerator | DungeonLevelGenerator;
 
@@ -44,6 +47,16 @@ export class MainDungeonLevelGenerationStrategy {
                 } else {
                     dungeonLevelGenerator.generateLevel(levelModel, generateConfig);
                 }
+        }
+
+        this.fillLevelWithItems(levelModel);
+    }
+    public fillLevelWithItems(levelModel: LevelModel): void {
+        for (let i = 0; i < 10; i++) {
+            const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
+            const weaponModel: WeaponModel = weaponModelFactory.getRandomWeaponModel();
+
+            randomCell.inventory.add(weaponModel);
         }
     }
 }

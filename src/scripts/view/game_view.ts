@@ -260,8 +260,8 @@ export class GameView extends Observer {
                 } else {
                     hpBarColor = 'red';
                 }
-            } else if (cell.inventory.length) {
-                tile = cell.inventory[0].display;
+            } else if (cell.inventory.size) {
+                tile = cell.inventory.get(0).display;
             } else {
                 tile = cell.display;
             }

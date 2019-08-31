@@ -1,0 +1,137 @@
+.modal {
+  &-content {
+    position: absolute;
+    width: 100vh;
+    height: 80vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #000000;
+    opacity: 0.9;
+    border-radius: 10px;
+    border: 4px solid @borderColor;
+    z-index: @modalIndex;
+    visibility: inherit;
+  }
+  &-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #000000;
+    opacity: 0.2;
+    visibility: inherit;
+    z-index: @modalOverlayIndex;
+  }
+  // INVENTORY
+  &-inventory {
+    &-header {
+      text-align: center;
+      font-size: 19px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    &-wrapper {
+      .flex-center();
+
+      justify-content: flex-start;
+      align-items: flex-start;
+      color: @message-color;
+      height: 100%;
+    }
+    &-group {
+      &-container {
+        width: 100%;
+        flex-grow: 1;
+        
+        .empty-content {
+          text-align: center;
+        }
+      }
+      &-header {
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 17px;
+        letter-spacing: 4px;
+        margin: 10px auto;
+      }
+      &-list {
+        list-style-type: none;
+        padding: 0 40px;
+      }
+      &-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        margin: 3px 0;
+
+        &.selected {
+          .checkbox {
+            .inventory-checkbox();
+
+            &:after {
+              content: '';
+              position: absolute;
+              left: 2px;
+              top: 4px;
+              width: 10px;
+              height: 4px;
+              border-top: 2px solid @lightBorderColor;
+              border-right: 2px solid @lightBorderColor;
+              transform: rotate(130deg);
+            }
+          }
+        }
+
+        &:hover {
+          outline: 4px solid @borderColor;
+        }
+
+        span {
+          padding: 0 10px;
+        }
+        .checkbox {
+          .inventory-checkbox();
+        }
+      }
+    }
+    &-footer {
+      .flex-center-row();
+
+      justify-content: space-evenly;
+      width: 100%;
+      padding: 20px 20px;
+
+      .inventory-action {
+        background: transparent;
+        width: 120px;
+        letter-spacing: @letterSpacing;
+        color: @message-color;
+        border: 2px solid @borderColor;
+        border-radius: 15px;
+        transition: all 0.3s ease-in-out;
+        outline: none;
+
+        &.active {
+          background: #3e3e3e;
+        }
+        &:hover {
+          border-color: darkblue;
+        }
+      }
+    }
+  }
+}
+
+.inventory-checkbox {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 1px solid @lightBorderColor;
+  border-radius: 4px;
+  margin-left: auto;
+}

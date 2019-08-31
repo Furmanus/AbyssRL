@@ -7,3 +7,8 @@ export const END_PLAYER_TURN = 'END_PLAYER_TURN';
 export const PLAYER_ACTION_GO_UP = 'PLAYER_ACTION_GO_UP';
 export const PLAYER_ACTION_GO_DOWN = 'PLAYER_ACTION_GO_DOWN';
 export const PLAYER_DEATH = 'PLAYER_DEATH';
+// TODO move above constants inside enum
+export enum PlayerActions {
+    PICK_UP = 'PICK_UP',
+    END_PLAYER_TURN = 'END_PLAYER_TURN',
+}

@@ -11,3 +11,9 @@ export interface IWeapon {
 export interface INaturalWeapon extends IWeapon {
     naturalType: MonsterAttackTypes;
 }
+export interface IWeaponConstructorConfig {
+    toHit: string;
+    damage: string;
+    type: string;
+    name: string;
+}

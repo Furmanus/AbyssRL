@@ -12,6 +12,7 @@ import {
     PLAYER_ACTION_GO_UP,
     PLAYER_ACTION_GO_DOWN,
     PLAYER_DEATH,
+    PlayerActions,
 } from '../constants/player_actions';
 import {PlayerController} from './entity/player_controller';
 import {DungeonController} from './dungeon/dungeon_controller';
@@ -26,6 +27,7 @@ import {ASCEND} from '../constants/directions';
 import {EntityModel, IEntityStatsObject} from '../model/entity/entity_model';
 import {boundMethod} from 'autobind-decorator';
 import {EntityEvents} from '../constants/entity_events';
+import {ItemsCollection} from '../collections/items_collection';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -83,6 +85,7 @@ export class GameController extends Controller {
      */
     private attachEvents(): void {
         this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick.bind(this));
+        this.playerController.on(this, PlayerActions.PICK_UP, this.onPlayerControllerPickUp);
         this.playerController.on(this, PLAYER_WALK_CONFIRM_NEEDED, this.onPlayerMoveConfirmNeeded.bind(this));
         this.playerController.on(this, START_PLAYER_TURN, this.onPlayerStartTurn.bind(this));
         this.playerController.on(this, END_PLAYER_TURN, this.onPlayerEndTurn.bind(this));
@@ -151,6 +154,9 @@ export class GameController extends Controller {
             case PLAYER_ACTION_GO_DOWN:
                 this.descentDownLevel();
                 break;
+            case PlayerActions.PICK_UP:
+                this.playerPickUp();
+                break;
             default:
                 // placeholder
         }
@@ -166,6 +172,12 @@ export class GameController extends Controller {
         } else {
             globalMessagesController.showMessageInView('You can\'t go down here.');
         }
+    }
+    /**
+     * Attempts player to pick something from ground.
+     */
+    private playerPickUp(): void {
+        this.playerController.pickUp();
     }
     /**
      * Makes attempt to move player up one level in dungeon.
@@ -328,6 +340,16 @@ export class GameController extends Controller {
         this.notify(PLAYER_WALK_CONFIRM_NEEDED, data);
     }
     /**
+     * Method called when player controller notifies that player attempts to pick up items when there are multiple items
+     * on ground.
+     *
+     * @param cellItems    Collection of items from cell where player is
+     */
+    @boundMethod
+    private onPlayerControllerPickUp(cellItems: ItemsCollection): void {
+        this.notify(PlayerActions.PICK_UP, cellItems);
+    }
+    /**
      * Method triggered after player controller notifies about beginning of player turn.
      */
     private onPlayerStartTurn(): void {
@@ -382,6 +404,19 @@ export class GameController extends Controller {
     }
     public getPlayerStats(): IEntityStatsObject {
         return this.playerController.getStatsObject();
+    }
+    /**
+     * Returns player inventory.
+     * @returns  ItemsCollection
+     */
+    public getPlayerInventory(): ItemsCollection {
+        return this.playerController.getPlayerInventory();
+    }
+    /**
+     * Returns inventory of a cell on which player is actually standing.
+     */
+    public getPlayerCellInventory(): ItemsCollection {
+        return this.playerController.getEntityPositionInventory();
     }
     public enableExamineMode(): void {
         const playerCell: Cell = this.playerController.getEntityPosition();
