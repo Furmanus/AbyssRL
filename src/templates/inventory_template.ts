@@ -98,15 +98,19 @@ function generateItemListElement(
 
 function generateFooter(mode: EntityInventoryActions): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
+    const isDropAction: boolean = mode === EntityInventoryActions.DROP;
+    const isEquipAction: boolean = mode === EntityInventoryActions.EQUIP;
+    const isUseAction: boolean = mode === EntityInventoryActions.USE;
+
     template.innerHTML = `
         <div class="modal-inventory-footer">
-            <button class="inventory-action ${mode === EntityInventoryActions.DROP ? 'active' : ''}" id="inventory-drop">
-                drop [D]
+            <button class="inventory-action ${isDropAction ? 'active' : ''}" id="inventory-drop">
+                ${isDropAction ? 'confirm [D]' : 'drop [D]'}
             </button>
-            <button class="inventory-action ${mode === EntityInventoryActions.EQUIP ? 'active' : ''}" id="inventory-equip">
+            <button class="inventory-action ${isEquipAction ? 'active' : ''}" id="inventory-equip">
                 equip [E]
             </button>
-            <button class="inventory-action ${mode === EntityInventoryActions.USE ? 'active' : ''}" id="inventory-use">
+            <button class="inventory-action ${isUseAction ? 'active' : ''}" id="inventory-use">
                 use [U]
             </button>
         </div>

@@ -71,9 +71,13 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
     @boundMethod
     private onInventoryActionChangeInView(action: EntityInventoryActions): void {
         if (action) {
-            this.setMode(action);
-            this.rebuildView(action);
-            this.selectedItems.clear();
+            if (action === this.inventoryMode) {
+                this.onInventoryActionConfirmed();
+            } else {
+                this.setMode(action);
+                this.rebuildView(action);
+                this.selectedItems.clear();
+            }
         }
     }
     @boundMethod
