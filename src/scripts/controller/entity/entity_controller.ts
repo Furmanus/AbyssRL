@@ -10,6 +10,7 @@ import {EntityStats} from '../../constants/monsters';
 import {doCombatAction, ICombatResult} from '../../helper/combat_helper';
 import {globalMessagesController} from '../../global/messages';
 import {ItemModel} from '../../model/items/item_model';
+import {ItemsCollection} from '../../collections/items_collection';
 
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
@@ -133,6 +134,14 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      */
     public getEntityPosition(): Cell {
         return this.model.position;
+    }
+    /**
+     * Returns inventory of cell where entity actually is.
+     *
+     * @returns     Returns ItemsCollection
+     */
+    public getEntityPositionInventory(): ItemsCollection {
+        return this.getEntityPosition().inventory;
     }
     /**
      * Changes model information about level and position (cell) where player currently is.

@@ -70,7 +70,7 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
     }
     @boundMethod
     private onInventoryActionChangeInView(action: EntityInventoryActions): void {
-        if (action) {
+        if (action && this.inventoryMode !== EntityInventoryActions.PICK_UP) {
             if (action === this.inventoryMode) {
                 this.onInventoryActionConfirmed();
             } else {

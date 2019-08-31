@@ -9,15 +9,15 @@ import {MessagesController} from './messages_controller';
 import {KEYBOARD_DIRECTIONS} from '../constants/keyboard_directions';
 import {config} from '../global/config';
 import {
+    PLAYER_ACTION_ACTIVATE_OBJECT,
     PLAYER_ACTION_GO_DOWN,
     PLAYER_ACTION_GO_UP,
-    PLAYER_ACTION_ACTIVATE_OBJECT,
     PLAYER_ACTION_MOVE_PLAYER,
+    PLAYER_DEATH,
     PLAYER_WALK_CONFIRM_NEEDED,
+    PlayerActions,
     SHOW_MESSAGE_IN_VIEW,
     START_PLAYER_TURN,
-    PLAYER_DEATH,
-    PlayerActions,
 } from '../constants/player_actions';
 import {
     IAnyFunction,
@@ -96,6 +96,7 @@ export class MainController extends Controller {
          */
         this.gameController.on(this, EXAMINE_CELL, this.onExamineCell);
         this.gameController.on(this, STOP_EXAMINE_CELL, this.onStopExamineCell);
+        this.gameController.on(this, PlayerActions.PICK_UP, this.onGameControllerPlayerPickUp);
 
         this.infoController.changePlayerNameMessageInView(this.gameController.getPlayerName());
         this.infoController.setPlayerStatsInView(this.gameController.getPlayerStats());
@@ -269,6 +270,16 @@ export class MainController extends Controller {
         this.infoController.changeLevelInfoMessage(data);
     }
     /**
+     * Method called when game controller notifies that player attempts to pick up items when there are multiple items
+     * on ground.
+     *
+     * @param cellItems    Collection of items from cell where player is
+     */
+    @boundMethod
+    private onGameControllerPlayerPickUp(cellItems: ItemsCollection): void {
+        this.openInventory(EntityInventoryActions.PICK_UP, cellItems);
+    }
+    /**
      * Method triggered after notification from game controller about examination of certain cell.
      *
      * @param cell  Cell which is examined by player
@@ -316,10 +327,10 @@ export class MainController extends Controller {
     /**
      * Opens player directory
      */
-    private openInventory(mode?: EntityInventoryActions): void {
+    private openInventory(mode?: EntityInventoryActions, items?: ItemsCollection): void {
         const playerInventory: ItemsCollection = this.gameController.getPlayerInventory();
 
-        globalInventoryController.openModal(playerInventory, mode);
+        globalInventoryController.openModal(items || playerInventory, mode);
         this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
     }
     /**

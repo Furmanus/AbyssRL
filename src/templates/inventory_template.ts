@@ -41,7 +41,9 @@ export function getPreparedInventoryElement(
             groupContainer.appendChild(groupElement);
         });
 
-        wrapperElement.appendChild(generateFooter(mode).content);
+        if (mode !== EntityInventoryActions.PICK_UP) {
+            wrapperElement.appendChild(generateFooter(mode).content);
+        }
     } else {
         const noItemsMessage: HTMLParagraphElement = document.createElement('p');
 

@@ -85,6 +85,7 @@ export class GameController extends Controller {
      */
     private attachEvents(): void {
         this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick.bind(this));
+        this.playerController.on(this, PlayerActions.PICK_UP, this.onPlayerControllerPickUp);
         this.playerController.on(this, PLAYER_WALK_CONFIRM_NEEDED, this.onPlayerMoveConfirmNeeded.bind(this));
         this.playerController.on(this, START_PLAYER_TURN, this.onPlayerStartTurn.bind(this));
         this.playerController.on(this, END_PLAYER_TURN, this.onPlayerEndTurn.bind(this));
@@ -339,6 +340,16 @@ export class GameController extends Controller {
         this.notify(PLAYER_WALK_CONFIRM_NEEDED, data);
     }
     /**
+     * Method called when player controller notifies that player attempts to pick up items when there are multiple items
+     * on ground.
+     *
+     * @param cellItems    Collection of items from cell where player is
+     */
+    @boundMethod
+    private onPlayerControllerPickUp(cellItems: ItemsCollection): void {
+        this.notify(PlayerActions.PICK_UP, cellItems);
+    }
+    /**
      * Method triggered after player controller notifies about beginning of player turn.
      */
     private onPlayerStartTurn(): void {
@@ -400,6 +411,12 @@ export class GameController extends Controller {
      */
     public getPlayerInventory(): ItemsCollection {
         return this.playerController.getPlayerInventory();
+    }
+    /**
+     * Returns inventory of a cell on which player is actually standing.
+     */
+    public getPlayerCellInventory(): ItemsCollection {
+        return this.playerController.getEntityPositionInventory();
     }
     public enableExamineMode(): void {
         const playerCell: Cell = this.playerController.getEntityPosition();

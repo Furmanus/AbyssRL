@@ -25,14 +25,14 @@ export class InventoryView extends ModalView {
         super.attachEvents();
         this.attachEventsToInventoryList();
 
-        if (this.inventoryList) {
+        if (this.dropButton && this.equipButton && this.useButton) {
             this.dropButton.addEventListener('click', this.onDropButtonClick);
             this.equipButton.addEventListener('click', this.onEquipButtonClick);
             this.useButton.addEventListener('click', this.onUseButtonClick);
         }
     }
     public detachEvents(): void {
-        if (this.inventoryList) {
+        if (this.dropButton && this.equipButton && this.useButton) {
             this.dropButton.removeEventListener('click', this.onDropButtonClick);
             this.equipButton.removeEventListener('click', this.onEquipButtonClick);
             this.useButton.removeEventListener('click', this.onUseButtonClick);

@@ -61,8 +61,16 @@ export class PlayerController extends EntityController<PlayerModel> {
             selectedItems,
         } = data;
 
-        if (action === EntityInventoryActions.DROP && selectedItems.length) {
+        if (!selectedItems.length) {
+            this.globalInventoryController.closeModal();
+            return;
+        }
+
+        if (action === EntityInventoryActions.DROP) {
             this.dropItems(selectedItems);
+            this.globalInventoryController.closeModal();
+        } else if (action === EntityInventoryActions.PICK_UP) {
+            this.pickUpItems(selectedItems);
             this.globalInventoryController.closeModal();
         }
     }
@@ -177,8 +185,19 @@ export class PlayerController extends EntityController<PlayerModel> {
         } else if (currentCellInventory.size === 1) {
             this.model.pickUp(currentCellInventory.getFirstItem());
         } else {
-            // placeholder
+            /*Notify to open inventory modal*/
+            this.notify(PlayerActions.PICK_UP, currentCellInventory);
         }
+    }
+    /**
+     * Picks up items from given collection. For every items from collection pickUp method from model is called.
+     *
+     * @param items     Collection of items to pick up.
+     */
+    public pickUpItems(items: ItemModel[]): void {
+        items.forEach((item: ItemModel) => {
+            this.model.pickUp(item);
+        });
     }
     public onEntityPickUp(item: ItemModel): void {
         super.onEntityPickUp(item);
