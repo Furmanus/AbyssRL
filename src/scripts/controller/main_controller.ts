@@ -38,10 +38,16 @@ import {Cell} from '../model/dungeon/cells/cell_model';
 import {globalMessagesController} from '../global/messages';
 import {ItemsCollection} from '../collections/items_collection';
 import {globalInventoryController} from '../global/modal';
-import {InventoryModalEvents} from '../constants/entity_events';
+import {EntityInventoryActions, InventoryModalEvents} from '../constants/entity_events';
 
 const keyCodeToActionMap: {[keycode: number]: string} = {
     188: PlayerActions.PICK_UP,
+};
+const keyCodeToInventoryMode: {[keycode: number]: EntityInventoryActions} = {
+    68: EntityInventoryActions.DROP,
+    69: EntityInventoryActions.EQUIP,
+    73: EntityInventoryActions.LOOK,
+    85: EntityInventoryActions.USE,
 };
 
 export class MainController extends Controller {
@@ -99,6 +105,7 @@ export class MainController extends Controller {
     /**
      * Method responsible for binding methods to main controller object. Methods has to be bound here, because in
      * certain circumstances event listeners to which those function are callbacks are removed from appriopiate objects.
+     * TODO refactor to use boundMethod decorator and remove this method
      */
     private bindMethods(): void {
         this.registerKeyPressed = this.registerKeyPressed.bind(this);
@@ -217,8 +224,8 @@ export class MainController extends Controller {
             } else if (88 === keycode) {
                 // EXAMINE OR LOOK COMMAND
                 this.enableExamineMode();
-            } else if (73 === keycode) {
-                this.openInventory();
+            } else if (keyCodeToInventoryMode[keycode]) {
+                this.openInventory(keyCodeToInventoryMode[keycode]);
             } else {
                 this.gameController.takePlayerAction(keyCodeToActionMap[keycode]);
             }
@@ -309,10 +316,10 @@ export class MainController extends Controller {
     /**
      * Opens player directory
      */
-    private openInventory(): void {
+    private openInventory(mode?: EntityInventoryActions): void {
         const playerInventory: ItemsCollection = this.gameController.getPlayerInventory();
 
-        globalInventoryController.openModal(playerInventory);
+        globalInventoryController.openModal(playerInventory, mode);
         this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
     }
     /**
