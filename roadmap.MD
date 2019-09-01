@@ -1,4 +1,4 @@
-Things to do before releasing first alpha version 0.1.0:
+#0.1.0 Release
 
 ###Dungeon and map generation
 - [R.0.1.D1] Add more (at least twenty different) different level vaults
@@ -28,3 +28,11 @@ Things to do before releasing first alpha version 0.1.0:
 - [R.0.1.G6] Rewrite game models to allow easier serialization to JSON
 ###Misc
 - [R.0.1.M1] Electron desktop build
+
+#0.2.0
+
+###Dungeon and map generation
+- [R.0.2.0.D1] Dynamic events system (various events happening outside player FOV but close to him)
+###Combat
+- [R.0.2.0.C1] Implement ranged combat
+- [R.0.2.0.C2] Spellcasting system, magic combat 
