@@ -1,6 +1,12 @@
 import {Constructor} from './constructor';
 
-export class BaseModel extends Constructor {
+export interface IBaseModel {
+    // tslint:disable-next-line:no-any
+    setProperty: (key: string, value: any, silent: boolean) => void;
+    getSerializedData: () => string;
+}
+
+export class BaseModel extends Constructor implements IBaseModel {
     /**
      * Models extending base model can have different number and type of properties
      */
@@ -25,5 +31,8 @@ export class BaseModel extends Constructor {
             // tslint:disable-next-line:no-console
             console.warn(`Attempt to set unknown property ${key}`);
         }
+    }
+    public getSerializedData(): string {
+        return JSON.stringify(this);
     }
 }
