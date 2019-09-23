@@ -1,11 +1,15 @@
 /**
  * Class representing two dimensional vector.
  */
-export class Vector {
+import {BaseModel} from '../../core/base_model';
+
+export class Vector extends BaseModel {
     public x: number;
     public y: number;
 
     constructor(x: number, y: number) {
+        super();
+
         this.x = x;
         this.y = y;
     }
