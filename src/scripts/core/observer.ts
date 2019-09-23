@@ -2,7 +2,7 @@
  * @author Lukasz Lach
  */
 import {
-    IAnyFunction,
+    IAnyFunction, IAnyObject,
 } from '../interfaces/common';
 
 interface IObserverEntry {
@@ -10,14 +10,15 @@ interface IObserverEntry {
     event?: string;
     callback: IAnyFunction;
 }
+const observers: WeakMap<IAnyObject, Set<IObserverEntry>> = new WeakMap<IAnyObject, Set<IObserverEntry>>();
 
 export class Observer {
-    private observers: Set<IObserverEntry> = new Set();
-
     constructor() {
         if (new.target === Observer) {
             throw new Error('Cannot create new Observer object. Observer is supposed to be inherited only.');
         }
+
+        observers.set(this, new Set<IObserverEntry>());
     }
     /**
      * Turns on listening on observer instance on specified event by another observer instance. After event is notified,
@@ -28,7 +29,7 @@ export class Observer {
      * @param callback  Callback function called after event is notified
      */
     public on(observer: Observer, event: string, callback: IAnyFunction): void {
-        this.observers.add({
+        observers.get(this).add({
             observer,
             event,
             callback,
@@ -41,12 +42,12 @@ export class Observer {
      * @param event     Event name
      */
     public off(observer: Observer, event?: string): void {
-        const observers = this.observers;
-        const observerEntries = observers.values();
+        const observersSet = observers.get(this);
+        const observerEntries = observersSet.values();
 
         for (const entry of observerEntries) {
             if (entry.observer === observer && (!event || entry.event === event)) {
-                observers.delete(entry);
+                observersSet.delete(entry);
             }
         }
     }
@@ -59,7 +60,7 @@ export class Observer {
      */
     // tslint:disable-next-line:no-any
     public notify(event: string, data?: any): void {
-        const observerEntries = this.observers.values();
+        const observerEntries = observers.get(this).values();
 
         for (const entry of observerEntries) {
             if (entry.event === event) {
