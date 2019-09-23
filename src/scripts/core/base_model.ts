@@ -1,7 +1,6 @@
 import {Constructor} from './constructor';
-import {IAnyObject} from '../interfaces/common';
 
-export class BaseModel extends Constructor implements IAnyObject {
+export class BaseModel extends Constructor {
     /**
      * Models extending base model can have different number and type of properties
      */
