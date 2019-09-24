@@ -12,7 +12,12 @@ const weaponModel: NaturalWeaponModel = new NaturalWeaponModel({
 const testDice: Dice = new Dice('2d5');
 const testDiceSecond: Dice = new Dice('1d2');
 
-const serializedWeaponModel: string = '{"damage":"2d5","toHit":"1d2","type":"bludgeoning","naturalType":"fist"}';
+const serializedWeaponModel = {
+    damage: "2d5",
+    toHit: "1d2",
+    type: "bludgeoning",
+    naturalType: "fist",
+};
 
 describe('Test natural weapon model', () => {
     const testWeaponModel = new NaturalWeaponModel({
@@ -33,9 +38,6 @@ describe('Test natural weapon model', () => {
         expect(secondTestWeaponModel).toEqual(weaponModel);
     });
     it('Should serialize weapon model properly', () => {
-        expect(testWeaponModel.getDataToSerialization()).toBe(serializedWeaponModel);
-    });
-    it('Should create proper model instance from serialized string', () => {
-        expect(new NaturalWeaponModel(JSON.parse(serializedWeaponModel))).toEqual(testWeaponModel);
+        expect(testWeaponModel.getSerializedData()).toEqual(serializedWeaponModel);
     });
 });

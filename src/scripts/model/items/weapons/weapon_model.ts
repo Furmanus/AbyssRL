@@ -44,9 +44,6 @@ export class WeaponModel extends WearableModel {
             toHit: this.toHit.getSerializedData(),
             type: this.type,
             name: this.name,
-            naturalType: this.naturalType,
-            display: this.display,
-            itemType: this.itemType,
         };
     }
 }

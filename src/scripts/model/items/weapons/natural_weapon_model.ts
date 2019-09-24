@@ -46,13 +46,13 @@ export class NaturalWeaponModel extends WearableModel implements INaturalWeapon 
      * Returns serialized model data.
      * @returns  Serialized natural weapon model data
      */
-    public getDataToSerialization(): string {
-        return JSON.stringify({
+    public getSerializedData(): object {
+        return {
             damage: this.damage.getSerializedData(),
             toHit: this.toHit.getSerializedData(),
             type: this.type,
             naturalType: this.naturalType,
-        });
+        };
     }
     public wear(entity: EntityModel): never {
         throw new Error('Can\'t wear natural weapon');
