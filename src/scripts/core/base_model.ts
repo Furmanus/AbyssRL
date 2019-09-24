@@ -1,12 +1,22 @@
 import {Constructor} from './constructor';
+import { uid } from '../helper/uid_helper';
 
 export interface IBaseModel {
     // tslint:disable-next-line:no-any
     setProperty: (key: string, value: any, silent: boolean) => void;
     getSerializedData: () => object;
 }
+interface IBaseModelConfig {
+    id?: string;
+}
 
 export class BaseModel extends Constructor implements IBaseModel {
+    public id: string;
+    public constructor(config: IBaseModelConfig = {}) {
+        super();
+
+        this.id = config.id || uid();
+    }
     /**
      * Models extending base model can have different number and type of properties
      */
@@ -33,6 +43,6 @@ export class BaseModel extends Constructor implements IBaseModel {
         }
     }
     public getSerializedData(): object {
-        return {...this};
+        return {id: this.id};
     }
 }
