@@ -1,15 +1,11 @@
 /**
  * Class representing two dimensional vector.
  */
-import {BaseModel} from '../../core/base_model';
-
-export class Vector extends BaseModel {
+export class Vector {
     public x: number;
     public y: number;
 
     constructor(x: number, y: number) {
-        super();
-
         this.x = x;
         this.y = y;
     }
@@ -24,5 +20,8 @@ export class Vector extends BaseModel {
         this.y -= vector.y;
 
         return this;
+    }
+    public getSerializedData(): {x: number, y: number} {
+        return {...this};
     }
 }

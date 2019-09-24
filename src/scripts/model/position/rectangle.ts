@@ -72,4 +72,11 @@ export class Rectangle {
 
         return Math.max(secondRect.top - firstRect.bottom, 0);
     }
+    public getSerializedData(): {leftTop: {x: number, y: number}, width: number, height: number} {
+        return {
+            leftTop: this.leftTop.getSerializedData(),
+            width: this.width,
+            height: this.height,
+        };
+    }
 }
