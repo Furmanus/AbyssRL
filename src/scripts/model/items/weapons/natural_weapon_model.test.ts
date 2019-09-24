@@ -40,4 +40,7 @@ describe('Test natural weapon model', () => {
     it('Should serialize weapon model properly', () => {
         expect(testWeaponModel.getSerializedData()).toEqual(serializedWeaponModel);
     });
+    it('Should properly create model from serialized data', () => {
+        expect(new NaturalWeaponModel(serializedWeaponModel)).toEqual(testWeaponModel);
+    });
 });
