@@ -3,7 +3,7 @@ import {Constructor} from './constructor';
 export interface IBaseModel {
     // tslint:disable-next-line:no-any
     setProperty: (key: string, value: any, silent: boolean) => void;
-    getSerializedData: () => string;
+    getSerializedData: () => object;
 }
 
 export class BaseModel extends Constructor implements IBaseModel {
@@ -32,7 +32,7 @@ export class BaseModel extends Constructor implements IBaseModel {
             console.warn(`Attempt to set unknown property ${key}`);
         }
     }
-    public getSerializedData(): string {
-        return JSON.stringify(this);
+    public getSerializedData(): object {
+        return {...this};
     }
 }

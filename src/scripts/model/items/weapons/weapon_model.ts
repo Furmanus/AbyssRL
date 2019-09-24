@@ -38,12 +38,15 @@ export class WeaponModel extends WearableModel {
      * Returns serialized model data.
      * @returns  Serialized natural weapon model data
      */
-    public getDataToSerialization(): string {
-        return JSON.stringify({
+    public getSerializedData(): object {
+        return {
             damage: this.damage.getSerializedData(),
             toHit: this.toHit.getSerializedData(),
             type: this.type,
+            name: this.name,
             naturalType: this.naturalType,
-        });
+            display: this.display,
+            itemType: this.itemType,
+        };
     }
 }
