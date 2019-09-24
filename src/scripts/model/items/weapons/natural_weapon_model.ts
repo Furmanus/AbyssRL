@@ -23,7 +23,7 @@ export class NaturalWeaponModel extends WearableModel implements INaturalWeapon 
     }
     // TODO Think how to solve passing more specific config object type?
     public constructor(config: IAnyObject) {
-        super();
+        super(config);
         const {
             damage,
             toHit,
@@ -48,6 +48,7 @@ export class NaturalWeaponModel extends WearableModel implements INaturalWeapon 
      */
     public getSerializedData(): object {
         return {
+            ...super.getSerializedData(),
             damage: this.damage.getSerializedData(),
             toHit: this.toHit.getSerializedData(),
             type: this.type,
