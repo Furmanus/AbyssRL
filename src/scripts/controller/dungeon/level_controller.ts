@@ -149,6 +149,14 @@ export class LevelController extends Controller {
         return this.model;
     }
     /**
+     * Returns id of level model.
+     *
+     * @returns Returns unique number (id) of level model.
+     */
+    public getModelId(): string {
+        return this.model.id;
+    }
+    /**
      * Method triggered after level model notifies that new monster has been spawned.
      *
      * @param monster   Newly spawned monster controller

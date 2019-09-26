@@ -10,7 +10,7 @@ import {INaturalWeapon} from './combat';
 
 export interface IEntity {
     display: string;
-    level: LevelModel;
+    levelId: string;
     position: Cell;
     lastVisitedCell: Cell;
     strength: number;

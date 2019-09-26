@@ -110,7 +110,7 @@ export class GameController extends Controller {
         const playerLevel: LevelController = this.currentLevel;
 
         this.playerController = new PlayerController({
-            level: playerLevel,
+            levelId: playerLevel.getModelId(),
             display: entities.AVATAR,
             position: inititalPlayerCell,
             speed: 15,

@@ -121,7 +121,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      * Returns level model in which entity currently is present.
      */
     public getLevelModel(): LevelModel {
-        return this.model.level;
+        return this.model.getLevel();
     }
     /**
      * Returns entity field of vision.
