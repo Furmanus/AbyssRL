@@ -57,6 +57,14 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
         }
     }
     /**
+     * Searches and returns model with given id field.
+     *
+     * @param id    Unique identifier of model
+     */
+    public getById(id: string): M {
+        return this.get().find((item: M) => item.id === id);
+    }
+    /**
      * Removes element from collection. Action is notified with REMOVE event from collection events enum.
      *
      * @param item  Element to remove from collection
