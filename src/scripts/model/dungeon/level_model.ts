@@ -14,8 +14,11 @@ import {RoomConnectionModel} from './room_connection_model';
 import {DungeonModelEvents} from '../../constants/dungeon_events';
 import {MapWithObserver} from '../../core/map_with_observer';
 import {EntityModel} from '../entity/entity_model';
+import {Collection} from '../../collections/collection';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
+
+export const globalLevelCollection: Collection<LevelModel> = new Collection<LevelModel>();
 
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
@@ -36,6 +39,8 @@ export class LevelModel extends BaseModel {
 
         this.branch = branch;
         this.levelNumber = levelNumber;
+
+        globalLevelCollection.add(this);
     }
     /**
      * Initializes level model data.
