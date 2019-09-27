@@ -34,10 +34,6 @@ export class EntityModel extends BaseModel implements IEntity {
      * Cell model where entity is.
      */
     public position: Cell;
-    /**
-     * Cell model where entity was in last turn.
-     */
-    public lastVisitedCell: Cell = null;
     public strength: number = null;
     public dexterity: number = null;
     public toughness: number = null;
@@ -144,7 +140,6 @@ export class EntityModel extends BaseModel implements IEntity {
      * @param newCell   New cell where entity currently is
      */
     public move(newCell: Cell): void {
-        this.lastVisitedCell = this.position; // remember on what cell entity was in previous turn
         this.position.clearEntity(); // we clear entity field of cell which entity is right now at
         this.position = newCell; // we move entity to new position
         /**

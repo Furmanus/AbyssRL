@@ -1,4 +1,3 @@
-import {LevelModel} from '../model/dungeon/level_model';
 import {Cell} from '../model/dungeon/cells/cell_model';
 import {EntityController} from '../controller/entity/entity_controller';
 import {
@@ -12,7 +11,6 @@ export interface IEntity {
     display: string;
     levelId: string;
     position: Cell;
-    lastVisitedCell: Cell;
     strength: number;
     dexterity: number;
     toughness: number;
