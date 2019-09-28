@@ -3,16 +3,15 @@ import {config} from '../global/config';
 import {getDistance} from './utility';
 import {EntityModel} from '../model/entity/entity_model';
 import {Cell} from '../model/dungeon/cells/cell_model';
-import {LevelModel} from '../model/dungeon/level_model';
 /**
  * Calculates field of view for given entity.
  * @param   entity      Model of entity
  */
 export function calculateFov(entity: EntityModel): Cell[] {
     const {
+        level,
         position,
     } = entity;
-    const level: LevelModel = entity.getLevel();
     const calculatedFov: Cell[] = [];
     /**
      * Function used to determine whether certain cell allows to fov pass through.

@@ -1,7 +1,7 @@
 import {BaseModel} from '../../core/base_model';
 import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../dungeon/cells/cell_model';
-import {globalLevelCollection, LevelModel} from '../dungeon/level_model';
+import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {IEntity} from '../../interfaces/entity_interfaces';
 import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
@@ -29,7 +29,7 @@ export class EntityModel extends BaseModel implements IEntity {
     /**
      * Level model where entity is.
      */
-    public levelId: string;
+    public level: LevelModel;
     /**
      * Cell model where entity is.
      */
@@ -84,7 +84,7 @@ export class EntityModel extends BaseModel implements IEntity {
         super();
 
         this.display = config.display;
-        this.levelId = config.levelId;
+        this.level = config.level;
         this.position = config.position;
         this.lastVisitedCell = config.lastVisitedCell || null;
         this.speed = config.speed;
@@ -106,7 +106,7 @@ export class EntityModel extends BaseModel implements IEntity {
      * @param level         New entity level
      */
     public changeLevel(level: LevelModel): void {
-        this.setProperty('levelId', level.id);
+        this.setProperty('level', level);
     }
     /**
      * Sets new fov array of entity.
@@ -201,11 +201,5 @@ export class EntityModel extends BaseModel implements IEntity {
      */
     public getDescription(): string {
         return this.description;
-    }
-    /**
-     * Returns level model on which entity currently is.
-     */
-    public getLevel(): LevelModel {
-        return globalLevelCollection.getById(this.levelId);
     }
 }
