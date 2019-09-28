@@ -8,6 +8,7 @@ const weaponModel: NaturalWeaponModel = new NaturalWeaponModel({
     toHit: new Dice('1d2'),
     naturalType: MonsterAttackTypes.FIST,
     type: DamageTypes.BLUDGEONING,
+    id: '666',
 });
 const testDice: Dice = new Dice('2d5');
 const testDiceSecond: Dice = new Dice('1d2');
@@ -17,6 +18,7 @@ const serializedWeaponModel = {
     toHit: "1d2",
     type: "bludgeoning",
     naturalType: "fist",
+    id: '666',
 };
 
 describe('Test natural weapon model', () => {
@@ -25,12 +27,14 @@ describe('Test natural weapon model', () => {
         toHit: testDiceSecond,
         naturalType: MonsterAttackTypes.FIST,
         type: DamageTypes.BLUDGEONING,
+        id: '666',
     });
     const secondTestWeaponModel: NaturalWeaponModel = new NaturalWeaponModel({
         damage: '2d5',
         toHit: '1d2',
         naturalType: MonsterAttackTypes.FIST,
         type: DamageTypes.BLUDGEONING,
+        id: '666',
     });
 
     it('Should construct weapon model properly', () => {
