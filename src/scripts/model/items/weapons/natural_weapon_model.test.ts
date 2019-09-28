@@ -4,7 +4,6 @@ import {MonsterAttackTypes} from '../../../constants/monsters';
 import {DamageTypes} from '../../../constants/combat_enums';
 
 const weaponModel: NaturalWeaponModel = new NaturalWeaponModel({
-    id: "666",
     damage: new Dice('2d5'),
     toHit: new Dice('1d2'),
     naturalType: MonsterAttackTypes.FIST,
@@ -14,7 +13,6 @@ const testDice: Dice = new Dice('2d5');
 const testDiceSecond: Dice = new Dice('1d2');
 
 const serializedWeaponModel = {
-    id: "666",
     damage: "2d5",
     toHit: "1d2",
     type: "bludgeoning",
@@ -23,14 +21,12 @@ const serializedWeaponModel = {
 
 describe('Test natural weapon model', () => {
     const testWeaponModel = new NaturalWeaponModel({
-        id: "666",
         damage: testDice,
         toHit: testDiceSecond,
         naturalType: MonsterAttackTypes.FIST,
         type: DamageTypes.BLUDGEONING,
     });
     const secondTestWeaponModel: NaturalWeaponModel = new NaturalWeaponModel({
-        id: "666",
         damage: '2d5',
         toHit: '1d2',
         naturalType: MonsterAttackTypes.FIST,
