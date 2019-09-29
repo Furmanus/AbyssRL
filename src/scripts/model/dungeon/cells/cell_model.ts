@@ -12,6 +12,9 @@ import {EntityController} from '../../../controller/entity/entity_controller';
 import {PlayerController} from '../../../controller/entity/player_controller';
 import {ICellModel} from '../../../interfaces/cell';
 import {ItemsCollection} from '../../../collections/items_collection';
+import {Collection} from '../../../collections/collection';
+
+export const globalCellsCollection: Collection<Cell> = new Collection<Cell>();
 
 /**
  * Class representing single map square(field).
@@ -67,6 +70,8 @@ export abstract class Cell extends BaseModel implements ICellModel {
         this.x = x;
         this.y = y;
         // TODO add initialization of inventory
+
+        globalCellsCollection.add(this);
     }
     /**
      * Whether cell blocks entity movement.
