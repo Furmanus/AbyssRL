@@ -1,4 +1,3 @@
-import {INaturalWeapon} from '../../../interfaces/combat';
 import {Dice} from '../../dice';
 import {DamageTypes} from '../../../constants/combat_enums';
 import {MonsterAttackTypes} from '../../../constants/monsters';
@@ -7,7 +6,7 @@ import {WearableModel} from '../wearable_model';
 import {EntityModel} from '../../entity/entity_model';
 import {ItemTypes} from '../../../constants/item';
 
-export class NaturalWeaponModel extends WearableModel implements INaturalWeapon {
+export class NaturalWeaponModel extends WearableModel {
     public damage: Dice;
     public toHit: Dice;
     public type: DamageTypes;
