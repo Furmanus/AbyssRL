@@ -6,9 +6,10 @@ import {EntityEvents} from '../../constants/entity_events';
 import {IEntity} from '../../interfaces/entity_interfaces';
 import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
-import {INaturalWeapon, IWeapon} from '../../interfaces/combat';
+import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
+import {NaturalWeaponModel} from '../items/weapons/natural_weapon_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -70,7 +71,7 @@ export class EntityModel extends BaseModel implements IEntity {
     /**
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
-    public naturalWeapon: INaturalWeapon = null;
+    public naturalWeapon: NaturalWeaponModel = null;
     /**
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
@@ -201,5 +202,17 @@ export class EntityModel extends BaseModel implements IEntity {
      */
     public getDescription(): string {
         return this.description;
+    }
+    public getSerializedData(): object {
+        const serializedEntityModel: IAnyObject = {...this};
+
+        serializedEntityModel.position = this.position.getSerializedData();
+        serializedEntityModel.level = this.level.getSerializedData();
+        serializedEntityModel.naturalWeapon = this.naturalWeapon.getSerializedData();
+        serializedEntityModel.inventory = this.inventory.getSerializedData();
+
+        delete serializedEntityModel.fov;
+
+        return serializedEntityModel;
     }
 }
