@@ -13,6 +13,7 @@ import {PlayerController} from '../../../controller/entity/player_controller';
 import {ICellModel} from '../../../interfaces/cell';
 import {ItemsCollection} from '../../../collections/items_collection';
 import {Collection} from '../../../collections/collection';
+import {DungeonTypes} from '../../../constants/dungeon_types';
 
 export const globalCellsCollection: Collection<Cell> = new Collection<Cell>();
 
@@ -28,6 +29,14 @@ export abstract class Cell extends BaseModel implements ICellModel {
      * Vertical position on level grid.
      */
     public y: number;
+    /**
+     * Type of dungeon where cell is (main dungeon or some branch)
+     */
+    public dungeonType: DungeonTypes;
+    /**
+     * Specific level number in dungeon branch where cell is
+     */
+    public levelNumber: number;
     /**
      * Entity (monster or player) occupying cell.
      */
