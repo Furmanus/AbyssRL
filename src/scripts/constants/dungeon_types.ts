@@ -1,7 +1,6 @@
-import {IAnyObject} from '../interfaces/common';
-
-export const MAIN_DUNGEON = 'main_dungeon';
-
-export const dungeonTypeToName: IAnyObject = {
-    [MAIN_DUNGEON]: 'the Great Abyss',
+export enum DungeonTypes {
+    MAIN_DUNGEON = 'main_dungeon',
+}
+export const dungeonTypeToName: {[P in DungeonTypes]: string} = {
+    [DungeonTypes.MAIN_DUNGEON]: 'the Great Abyss',
 };
