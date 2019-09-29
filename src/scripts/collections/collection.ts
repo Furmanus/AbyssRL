@@ -132,4 +132,7 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
         }
         return this;
     }
+    public getSerializedData(): object {
+        return this.collection.map((item: M) => item.getSerializedData());
+    }
 }
