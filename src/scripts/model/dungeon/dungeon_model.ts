@@ -6,6 +6,7 @@ import {DungeonEvents} from '../../constants/dungeon_events';
 import {IActionAttempt} from '../../interfaces/common';
 import {ASCEND, DESCEND} from '../../constants/directions';
 import {DungeonTypes} from '../../constants/dungeon_types';
+import {globalDungeonsCollection} from '../../global/collections';
 
 export class DungeonModel extends BaseModel {
     private currentLevelNumber: number = null;
@@ -21,8 +22,10 @@ export class DungeonModel extends BaseModel {
         super();
 
         this.currentLevelNumber = levelNumber || 1;
-        this.type = type; // string determining type of dungeon
+        this.type = type; // type of dungeon (main dungeon or some branch)
         this.maxLevelNumber = maxLevelNumber; // number determining number of dungeon levels (how deep it is)
+
+        globalDungeonsCollection.add(this);
     }
     /**
      * Sets currentLevelNumber property in model. Action is notified with event CHANGE_CURRENT_LEVEL from dungeon events

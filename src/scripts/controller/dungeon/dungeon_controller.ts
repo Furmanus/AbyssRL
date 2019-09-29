@@ -19,7 +19,7 @@ export class DungeonController extends Controller {
     /**
      * Type of dungeon.
      */
-    private readonly type: string;
+    private readonly type: DungeonTypes;
     /**
      * Model of dungeon.
      */
@@ -30,7 +30,7 @@ export class DungeonController extends Controller {
     private readonly levels: ILevelControllersMap;
     private readonly strategy: MainDungeonLevelGenerationStrategy;
 
-    constructor(type: string = DungeonTypes.MAIN_DUNGEON, maxLevelNumber: number = 8) {
+    constructor(type: DungeonTypes = DungeonTypes.MAIN_DUNGEON, maxLevelNumber: number = 8) {
         super();
 
         this.type = type;
