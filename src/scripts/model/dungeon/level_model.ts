@@ -15,6 +15,7 @@ import {DungeonModelEvents} from '../../constants/dungeon_events';
 import {MapWithObserver} from '../../core/map_with_observer';
 import {EntityModel} from '../entity/entity_model';
 import { globalLevelCollection } from '../../global/collections';
+import {DungeonTypes} from '../../constants/dungeon_types';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
 
@@ -22,7 +23,7 @@ export type randomCellTest = (cellCandidate: Cell) => boolean;
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
 export class LevelModel extends BaseModel {
-    public branch: string;
+    public branch: DungeonTypes;
     public levelNumber: number;
     private defaultWallType: string = null;
     private rooms: RoomModel[] = [];
@@ -32,7 +33,7 @@ export class LevelModel extends BaseModel {
      * @param   branch             Object to which this level belongs
      * @param   levelNumber         Number of this dungeon level
      */
-    constructor(branch: string, levelNumber: number) {
+    constructor(branch: DungeonTypes, levelNumber: number) {
         super();
 
         this.branch = branch;
@@ -59,12 +60,18 @@ export class LevelModel extends BaseModel {
 
         for (let i = 0; i < globalConfig.LEVEL_WIDTH; i++) {
             for (let j = 0; j < globalConfig.LEVEL_HEIGHT; j++) {
-                this.cells.set(`${i}x${j}`, CellModelFactory.getCellModel(i, j, defaultWallType));
+                this.cells.set(`${i}x${j}`, CellModelFactory.getCellModel(i, j, defaultWallType, {
+                    dungeonType: this.branch,
+                    levelNumber: this.levelNumber,
+                }));
             }
         }
     }
     public changeCellType(x: number, y: number, type: string): void {
-        this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
+        this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type, {
+            dungeonType: this.branch,
+            levelNumber: this.levelNumber,
+        }));
 
         this.notify(DungeonModelEvents.CELL_TYPE_CHANGED, {x, y});
     }
