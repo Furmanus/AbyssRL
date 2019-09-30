@@ -1,18 +1,18 @@
 import {Cell} from '../cell_model';
-import {cellTypes} from '../../../../constants/cell_types';
+import {CellTypes} from '../../../../constants/cell_types';
 import {cellsDescriptions} from '../../../../helper/cells_description';
-import {terrain} from '../../../../constants/sprites';
-import {ICellModel} from '../../../../interfaces/cell';
+import {TerrainSprites} from '../../../../constants/sprites';
+import {ICellConstructorConfig} from '../../../../interfaces/cell';
 
-export class BushModel extends Cell implements ICellModel {
-    constructor(x: number, y: number) {
-        super(x, y);
+export class BushModel extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
-        this.type = cellTypes.BUSH;
-        this.description = cellsDescriptions[cellTypes.BUSH];
+        this.type = CellTypes.BUSH;
+        this.description = cellsDescriptions[CellTypes.BUSH];
     }
     get display(): string {
-        return terrain.THICK_BUSH;
+        return TerrainSprites.THICK_BUSH;
     }
     get walkMessage(): string {
         return 'A thick bush is growing here';

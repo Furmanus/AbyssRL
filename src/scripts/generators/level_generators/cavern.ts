@@ -1,6 +1,6 @@
 import {config as globalConfig} from '../../global/config';
 import {AbstractLevelGenerator} from './abstract_generator';
-import {cellTypes} from '../../constants/cell_types';
+import {CellTypes} from '../../constants/cell_types';
 import * as ROT from 'rot-js';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {IAnyFunction} from '../../interfaces/common';
@@ -58,24 +58,24 @@ export class CavernLevelGenerator extends AbstractLevelGenerator {
 
         function generatorCallback(x: number, y: number, value: number): void {
             if (value === 1) {
-                level.changeCellType(x + 1, y + 1, cellTypes.MOUNTAIN);
+                level.changeCellType(x + 1, y + 1, CellTypes.MOUNTAIN);
             } else {
-                level.changeCellType(x + 1, y + 1, cellTypes.GRASS);
+                level.changeCellType(x + 1, y + 1, CellTypes.GRASS);
             }
             if (x === 1 && y === 1) {
-                level.changeCellType(1, 1, cellTypes.WOODEN_SOLID_DOORS);
+                level.changeCellType(1, 1, CellTypes.WOODEN_SOLID_DOORS);
             }
         }
 
         generator.connect((x: number, y: number, value: number) => {
             if (value === 0) {
-                level.changeCellType(x + 1, y + 1, cellTypes.GRASS);
+                level.changeCellType(x + 1, y + 1, CellTypes.GRASS);
             }
         }, 0);
         this.smoothLevel(level, {
-            cellsToSmooth: [cellTypes.HIGH_PEAKS, cellTypes.MOUNTAIN],
-            cellsToChange: [cellTypes.GRASS],
-            cellsAfterChange: [cellTypes.HILLS],
+            cellsToSmooth: [CellTypes.HIGH_PEAKS, CellTypes.MOUNTAIN],
+            cellsToChange: [CellTypes.GRASS],
+            cellsAfterChange: [CellTypes.HILLS],
         });
         this.smoothLevelHills(level);
         this.generateRandomStairsUp(level);

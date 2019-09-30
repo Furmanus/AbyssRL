@@ -1,7 +1,3 @@
-/**
- * Created by Docent Furman on 16.07.2017.
- */
-
 import {WalkAttemptResult} from './effects/walk_attempt_result';
 import {UseAttemptResult} from './effects/use_attempt_result';
 import {UseEffectResult} from './effects/use_effect_result';
@@ -10,17 +6,18 @@ import {BaseModel} from '../../../core/base_model';
 import {EntityModel} from '../../entity/entity_model';
 import {EntityController} from '../../../controller/entity/entity_controller';
 import {PlayerController} from '../../../controller/entity/player_controller';
-import {ICellModel} from '../../../interfaces/cell';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 import {ItemsCollection} from '../../../collections/items_collection';
 import {Collection} from '../../../collections/collection';
 import {DungeonTypes} from '../../../constants/dungeon_types';
+import {CellTypes} from '../../../constants/cell_types';
 
 export const globalCellsCollection: Collection<Cell> = new Collection<Cell>();
 
 /**
  * Class representing single map square(field).
  */
-export abstract class Cell extends BaseModel implements ICellModel {
+export abstract class Cell<C extends ICellConstructorConfig = ICellConstructorConfig> extends BaseModel {
     /**
      * Horizontal position on level grid.
      */
@@ -65,19 +62,21 @@ export abstract class Cell extends BaseModel implements ICellModel {
     /**
      * Type of cell.
      */
-    public type: string = '';
+    public type: CellTypes;
     /**
-     * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
+     * Initializes cell and fills it with data. Data is imported from {@code CellTypes} object, where constructor parameter is used as key.
      *
      * @param   x       Horizontal position on level grid.
      * @param   y       Vertical position on level grid.
      * @param   config  Object with additional configuration data.
      */
-    constructor(x: number, y: number, config: IAnyObject = {}) {
+    constructor(x: number, y: number, config: C) {
         super();
 
         this.x = x;
         this.y = y;
+        this.levelNumber = config.levelNumber;
+        this.dungeonType = config.dungeonType;
         // TODO add initialization of inventory
 
         globalCellsCollection.add(this);

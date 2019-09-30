@@ -1,2 +1,4 @@
-export const UP = 'up';
-export const DOWN = 'down';
+export enum StairDirections {
+    UP = 'up',
+    DOWN = 'down',
+}

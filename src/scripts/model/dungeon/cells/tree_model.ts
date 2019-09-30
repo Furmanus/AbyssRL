@@ -1,21 +1,21 @@
 import {Cell} from './cell_model';
-import {cellTypes} from '../../../constants/cell_types';
+import {CellTypes} from '../../../constants/cell_types';
 import {cellsDescriptions} from '../../../helper/cells_description';
-import {terrain} from '../../../constants/sprites';
-import {ICellModel} from '../../../interfaces/cell';
+import {TerrainSprites} from '../../../constants/sprites';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 
-export class TreeModel extends Cell implements ICellModel {
-    constructor(x: number, y: number) {
-        super(x, y);
+export class TreeModel extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
         this.confirmMovement = false;
-        this.type = cellTypes.TREE;
-        this.description = cellsDescriptions[cellTypes.TREE];
+        this.type = CellTypes.TREE;
+        this.description = cellsDescriptions[CellTypes.TREE];
     }
     get blockMovement(): boolean {
         return true;
     }
     get display(): string {
-        return terrain.TREE;
+        return TerrainSprites.TREE;
     }
 }

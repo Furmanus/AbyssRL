@@ -1,6 +1,6 @@
 import {RoomModel} from '../../../model/dungeon/room_model';
 import {dungeonVaults} from '../../../constants/vaults';
-import {cellTypes} from '../../../constants/cell_types';
+import {CellTypes} from '../../../constants/cell_types';
 import {LevelModel} from '../../../model/dungeon/level_model';
 import {FloorModel} from '../../../model/dungeon/cells/floor_model';
 import * as levelDecoratorHelper from '../../../helper/level_decorator_helper';
@@ -24,13 +24,13 @@ export abstract class DungeonVaultsGenerator {
 
         if (bedCells) {
             let barrelCell: FloorModel;
-            roomLevelModel.changeCellType(bedCells[0].x, bedCells[0].y, cellTypes.BED_HEAD);
-            roomLevelModel.changeCellType(bedCells[1].x, bedCells[1].y, cellTypes.BED_FOOT);
+            roomLevelModel.changeCellType(bedCells[0].x, bedCells[0].y, CellTypes.BED_HEAD);
+            roomLevelModel.changeCellType(bedCells[1].x, bedCells[1].y, CellTypes.BED_FOOT);
 
             barrelCell = levelDecoratorHelper.getRandomInteriorFloorCellAdjacentToWall(room);
 
             if (barrelCell) {
-                roomLevelModel.changeCellType(barrelCell.x, barrelCell.y, cellTypes.CHEST_OF_DRAWERS);
+                roomLevelModel.changeCellType(barrelCell.x, barrelCell.y, CellTypes.CHEST_OF_DRAWERS);
             }
 
             return true;

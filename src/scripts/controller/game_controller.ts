@@ -20,7 +20,7 @@ import {Cell} from '../model/dungeon/cells/cell_model';
 import {IAnyObject, IDirection} from '../interfaces/common';
 import {LevelController} from './dungeon/level_controller';
 import {Controller} from './controller';
-import {cellTypes} from '../constants/cell_types';
+import {CellTypes} from '../constants/cell_types';
 import {globalMessagesController} from '../global/messages';
 import {DungeonEvents} from '../constants/dungeon_events';
 import {ASCEND} from '../constants/directions';
@@ -167,7 +167,7 @@ export class GameController extends Controller {
     private descentDownLevel(): void {
         const playerPositionCellType: string = this.playerController.getEntityPosition().type;
 
-        if (playerPositionCellType === cellTypes.STAIRS_DOWN) {
+        if (playerPositionCellType === CellTypes.STAIRS_DOWN) {
             this.dungeonController.changeLevel(this.dungeonController.getCurrentLevelNumber() + 1);
         } else {
             globalMessagesController.showMessageInView('You can\'t go down here.');
@@ -185,7 +185,7 @@ export class GameController extends Controller {
     private ascendUpLevel(): void {
         const playerPositionCellType: string = this.playerController.getEntityPosition().type;
 
-        if (playerPositionCellType === cellTypes.STAIRS_UP) {
+        if (playerPositionCellType === CellTypes.STAIRS_UP) {
             this.dungeonController.changeLevel(this.dungeonController.getCurrentLevelNumber() - 1);
         } else {
             globalMessagesController.showMessageInView('You can\'t go up here.');
@@ -276,7 +276,7 @@ export class GameController extends Controller {
         );
         /**
          * Await for movement object. It happens immediately except for situation when player tries to move into
-         * dangerous terrain and he needs to confirm move.
+         * dangerous TerrainSprites and he needs to confirm move.
          */
         const movementResult = await this.playerController.move(newPlayerCellPosition);
 

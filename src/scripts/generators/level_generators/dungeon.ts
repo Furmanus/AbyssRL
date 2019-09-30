@@ -1,6 +1,6 @@
 import {config as globalConfig} from '../../global/config';
 import {AbstractLevelGenerator} from './abstract_generator';
-import {cellTypes} from '../../constants/cell_types';
+import {CellTypes} from '../../constants/cell_types';
 import {Position} from '../../model/position/position';
 import {RoomModel} from '../../model/dungeon/room_model';
 import {
@@ -60,7 +60,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
         const createdAreas: DungeonAreaModel[] = bspRegions.createdAreas;
         const rooms: RoomModel[] = this.createRoomsFromRegions(createdRooms);
 
-        level.initialize(cellTypes.GRAY_WALL);
+        level.initialize(CellTypes.GRAY_WALL);
         /**
          * Transform rectangles into rooms on level model.
          */
@@ -83,9 +83,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
         function generatorCallback(x: number, y: number, value: number): void {
             if (value === 1) {
-                level.changeCellType(x, y, cellTypes.GRAY_WALL);
+                level.changeCellType(x, y, CellTypes.GRAY_WALL);
             } else {
-                level.changeCellType(x, y, cellTypes.RED_FLOOR);
+                level.changeCellType(x, y, CellTypes.RED_FLOOR);
             }
         }
 
@@ -109,7 +109,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
                 if (doorSpots) {
                     doorSpots.forEach((doorSpot: Position) => {
-                        level.changeCellType(doorSpot.x, doorSpot.y, cellTypes.WOODEN_SOLID_DOORS);
+                        level.changeCellType(doorSpot.x, doorSpot.y, CellTypes.WOODEN_SOLID_DOORS);
                     });
                 }
             });
@@ -299,7 +299,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
         });
 
         if (chosenRooms) {
-            this.connectTwoRooms(level, chosenRooms[0], chosenRooms[1], [cellTypes.RED_FLOOR]);
+            this.connectTwoRooms(level, chosenRooms[0], chosenRooms[1], [CellTypes.RED_FLOOR]);
         }
     }
     /**
@@ -418,7 +418,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
         const randomRoom: RoomModel = rooms.random();
         const randomCellPosition: Position = randomRoom.getRandomRoomCellPosition();
 
-        level.changeCellType(randomCellPosition.x, randomCellPosition.y, cellTypes.STAIRS_UP);
+        level.changeCellType(randomCellPosition.x, randomCellPosition.y, CellTypes.STAIRS_UP);
         level.setStairsUp(randomCellPosition.x, randomCellPosition.y);
     }
     /**
@@ -437,7 +437,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
         randomCellPosition = randomRoom.getRandomRoomCellPosition();
 
-        level.changeCellType(randomCellPosition.x, randomCellPosition.y, cellTypes.STAIRS_DOWN);
+        level.changeCellType(randomCellPosition.x, randomCellPosition.y, CellTypes.STAIRS_DOWN);
         level.setStairsDown(randomCellPosition.x, randomCellPosition.y);
     }
     /**

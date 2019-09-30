@@ -3,7 +3,7 @@
  */
 
 import {config as globalConfig} from '../../global/config';
-import {cellTypes} from '../../constants/cell_types';
+import {CellTypes} from '../../constants/cell_types';
 import {CellModelFactory} from '../../factory/cell_model_factory';
 import {BaseModel} from '../../core/base_model';
 import {Position} from '../position/position';
@@ -45,7 +45,7 @@ export class LevelModel extends BaseModel {
      *
      * @param   defaultWallType     Type of default wall of level
      */
-    public initialize(defaultWallType: string = cellTypes.HIGH_PEAKS): void {
+    public initialize(defaultWallType: string = CellTypes.HIGH_PEAKS): void {
         // TODO remove setting default wall type from here and move it to constructor
         this.defaultWallType = defaultWallType;
 

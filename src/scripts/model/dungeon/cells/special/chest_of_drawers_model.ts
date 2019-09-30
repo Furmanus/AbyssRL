@@ -1,18 +1,18 @@
 import {Cell} from '../cell_model';
-import {ICellModel} from '../../../../interfaces/cell';
-import {cellTypes} from '../../../../constants/cell_types';
+import {ICellConstructorConfig} from '../../../../interfaces/cell';
+import {CellTypes} from '../../../../constants/cell_types';
 import {cellsDescriptions} from '../../../../helper/cells_description';
-import {dungeonFeaturesEnum} from '../../../../constants/sprites';
+import {DungeonFeaturesSprites} from '../../../../constants/sprites';
 
-export class ChestOfDrawersModel extends Cell implements ICellModel {
-    constructor(x: number, y: number) {
-        super(x, y);
+export class ChestOfDrawersModel extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
-        this.type = cellTypes.CHEST_OF_DRAWERS;
-        this.description = cellsDescriptions[cellTypes.CHEST_OF_DRAWERS];
+        this.type = CellTypes.CHEST_OF_DRAWERS;
+        this.description = cellsDescriptions[CellTypes.CHEST_OF_DRAWERS];
     }
     get display(): string {
-        return dungeonFeaturesEnum.CHEST_OF_DRAWERS;
+        return DungeonFeaturesSprites.CHEST_OF_DRAWERS;
     }
     get blockMovement(): boolean {
         return true;
