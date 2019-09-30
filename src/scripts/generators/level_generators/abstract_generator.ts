@@ -36,11 +36,7 @@ const MONSTERS_LIMIT_PER_LEVEL: number = 20;
 /**
  * Which cell types can be replaced to stairs during level generation.
  */
-const stairsReplaceCells = {
-    [CellTypes.GRASS]: true,
-    [CellTypes.RED_FLOOR]: true,
-    [CellTypes.BUSH]: true,
-};
+const stairsReplaceCells = [CellTypes.GRASS, CellTypes.RED_FLOOR, CellTypes.BUSH];
 
 /**
  * Abstract class of dungeon levels generator. Contains common methods for all other generators. Generators methods
@@ -372,7 +368,7 @@ export abstract class AbstractLevelGenerator {
         );
         let attemptNumber: number = 0;
 
-        while (!stairsReplaceCells[randomCell.type]) {
+        while (!stairsReplaceCells.includes(randomCell.type)) {
             randomCell = levelModel.getCell(
                 Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
                 Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
@@ -396,7 +392,7 @@ export abstract class AbstractLevelGenerator {
         const stairsUp = levelModel.getStairsUpLocation() || {x: Infinity, y: Infinity};
         let distanceFromStairsUp = Utility.getDistance(stairsUp.x, stairsUp.y, randomCell.x, randomCell.y);
 
-        while (!stairsReplaceCells[randomCell.type] && distanceFromStairsUp < 40) {
+        while (!stairsReplaceCells.includes(randomCell.type) && distanceFromStairsUp < 40) {
             randomCell = levelModel.getCell(
                 Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
                 Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
