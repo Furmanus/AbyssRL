@@ -39,11 +39,11 @@ export interface ICellConstructorConfig {
     levelNumber: number;
     type?: CellTypes;
     description?: string;
-    display?: DungeonTerrainSprites[];
+    display?: TerrainSprites[];
 }
 export interface IStairsCellConstructorConfig extends ICellConstructorConfig {
     direction: StairDirections;
 }
 export interface IDoorsCellConstructorConfig extends ICellConstructorConfig {
-    openDoorsDisplay: DungeonTerrainSprites;
+    openDoorsDisplay?: DungeonTerrainSprites;
 }
