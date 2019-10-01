@@ -1,6 +1,8 @@
 import {BaseModel} from '../../core/base_model';
 import {EntityModel} from '../entity/entity_model';
 import {ItemTypes} from '../../constants/item';
+import {IAnyObject} from '../../interfaces/common';
+import {globalItemCollection} from '../../global/collections';
 
 export abstract class ItemModel extends BaseModel {
     /**
@@ -20,6 +22,11 @@ export abstract class ItemModel extends BaseModel {
      */
     public abstract get fullDescription(): string;
 
+    public constructor(config: IAnyObject) {
+        super(config);
+
+        globalItemCollection.add(this);
+    }
     public drop(entity: EntityModel): void {
         // placeholder
     }
