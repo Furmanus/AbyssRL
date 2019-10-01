@@ -8,11 +8,9 @@ import {EntityController} from '../../../controller/entity/entity_controller';
 import {PlayerController} from '../../../controller/entity/player_controller';
 import {ICellConstructorConfig} from '../../../interfaces/cell';
 import {ItemsCollection} from '../../../collections/items_collection';
-import {Collection} from '../../../collections/collection';
 import {DungeonTypes} from '../../../constants/dungeon_types';
 import {CellTypes} from '../../../constants/cell_types';
-
-export const globalCellsCollection: Collection<Cell> = new Collection<Cell>();
+import {globalCellsCollection} from '../../../global/collections';
 
 /**
  * Class representing single map square(field).

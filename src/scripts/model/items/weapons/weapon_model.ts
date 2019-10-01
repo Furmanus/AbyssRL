@@ -20,7 +20,7 @@ export class WeaponModel extends WearableModel {
     }
     // TODO Think how to solve passing more specific config object type?
     public constructor(config: IWeaponConstructorConfig) {
-        super();
+        super(config);
         const {
             damage,
             toHit,

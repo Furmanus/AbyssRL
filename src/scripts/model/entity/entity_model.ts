@@ -206,12 +206,15 @@ export class EntityModel extends BaseModel implements IEntity {
     public getSerializedData(): object {
         const serializedEntityModel: IAnyObject = {...this};
 
-        serializedEntityModel.position = this.position.getSerializedData();
-        serializedEntityModel.level = this.level.getSerializedData();
-        serializedEntityModel.naturalWeapon = this.naturalWeapon.getSerializedData();
-        serializedEntityModel.inventory = this.inventory.getSerializedData();
+        serializedEntityModel.positionId = this.position.id;
+        serializedEntityModel.levelId = this.level.id;
+        serializedEntityModel.naturalWeaponId = this.naturalWeapon.id;
+        serializedEntityModel.inventory = this.inventory.getAllIds();
 
         delete serializedEntityModel.fov;
+        delete serializedEntityModel.position;
+        delete serializedEntityModel.level;
+        delete serializedEntityModel.naturalWeapon;
 
         return serializedEntityModel;
     }
