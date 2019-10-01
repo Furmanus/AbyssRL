@@ -57,6 +57,12 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
         }
     }
     /**
+     * Returns array of collection entries unique identifiers.
+     */
+    public getAllIds(): string[] {
+        return this.get().map((item: M) => item.id);
+    }
+    /**
      * Searches and returns model with given id field.
      *
      * @param id    Unique identifier of model
