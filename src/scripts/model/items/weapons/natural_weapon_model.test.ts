@@ -13,12 +13,13 @@ const weaponModel: NaturalWeaponModel = new NaturalWeaponModel({
 const testDice: Dice = new Dice('2d5');
 const testDiceSecond: Dice = new Dice('1d2');
 
-const serializedWeaponModel = {
+const serializedWeaponModel: object = {
     damage: "2d5",
     toHit: "1d2",
     type: "bludgeoning",
     naturalType: "fist",
     id: '666',
+    itemType: null,
 };
 
 describe('Test natural weapon model', () => {
