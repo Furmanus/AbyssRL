@@ -53,6 +53,7 @@ export class NaturalWeaponModel extends WearableModel {
             damage: this.damage.getSerializedData(),
             toHit: this.toHit.getSerializedData(),
             type: this.type,
+            itemType: this.itemType,
             naturalType: this.naturalType,
         };
     }

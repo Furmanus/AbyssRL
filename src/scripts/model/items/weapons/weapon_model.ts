@@ -34,4 +34,21 @@ export class WeaponModel extends WearableModel {
         this.name = name;
         this.display = ItemSprites.WEAPON;
     }
+    /**
+     * Returns serialized model data.
+     * @returns  Serialized natural weapon model data
+     */
+    public getSerializedData(): object {
+        const serializedParentData = super.getSerializedData();
+
+        return {
+            ...serializedParentData,
+            damage: this.damage.getSerializedData(),
+            toHit: this.toHit.getSerializedData(),
+            type: this.type,
+            name: this.name,
+            display: this.display,
+            itemType: this.itemType,
+        };
+    }
 }
