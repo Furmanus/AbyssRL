@@ -211,4 +211,14 @@ export class RoomModel extends BaseModel {
     public getLevelModel(): LevelModel {
         return this.levelModel;
     }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            rectangle: this.rectangle.getSerializedData(),
+            iteration: this.iteration,
+            levelModelId: this.levelModel.id,
+            cells: this.cells.map((position: Position) => position.getSerializedData()),
+            doorSpots: Array.from(this.doorSpots).map((position: Position) => position.getSerializedData()),
+        };
+    }
 }
