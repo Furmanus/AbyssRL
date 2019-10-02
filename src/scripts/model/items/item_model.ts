@@ -1,5 +1,4 @@
 import {BaseModel} from '../../core/base_model';
-import {EntityModel} from '../entity/entity_model';
 import {ItemTypes} from '../../constants/item';
 import {IAnyObject} from '../../interfaces/common';
 import {globalItemCollection} from '../../global/collections';
@@ -26,11 +25,5 @@ export abstract class ItemModel extends BaseModel {
         super(config);
 
         globalItemCollection.add(this);
-    }
-    public drop(entity: EntityModel): void {
-        // placeholder
-    }
-    public pickup(entity: EntityModel): void {
-        // placeholder
     }
 }
