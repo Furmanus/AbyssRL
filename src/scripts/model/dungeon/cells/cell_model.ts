@@ -152,7 +152,7 @@ export abstract class Cell<C extends ICellConstructorConfig = ICellConstructorCo
      * Effect from certain cell while entity walks over it. Default function is below empty function. Can be implemented
      * in child classes.
      */
-    public walkEffect(entity?: EntityController): void {
+    public walkEffect(): void {
         // do nothing
     }
     /**
@@ -175,5 +175,13 @@ export abstract class Cell<C extends ICellConstructorConfig = ICellConstructorCo
      */
     public useAttempt(entity: EntityController): UseAttemptResult {
         return new UseAttemptResult();
+    }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            ...this,
+            entity: this.entity && this.entity.id,
+            inventory: this.inventory.getSerializedData(),
+        };
     }
 }
