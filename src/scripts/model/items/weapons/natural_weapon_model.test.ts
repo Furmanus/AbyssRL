@@ -8,11 +8,19 @@ const weaponModel: NaturalWeaponModel = new NaturalWeaponModel({
     toHit: new Dice('1d2'),
     naturalType: MonsterAttackTypes.FIST,
     type: DamageTypes.BLUDGEONING,
+    id: '666',
 });
 const testDice: Dice = new Dice('2d5');
 const testDiceSecond: Dice = new Dice('1d2');
 
-const serializedWeaponModel: string = '{"damage":"2d5","toHit":"1d2","type":"bludgeoning","naturalType":"fist"}';
+const serializedWeaponModel: object = {
+    damage: "2d5",
+    toHit: "1d2",
+    type: "bludgeoning",
+    naturalType: "fist",
+    id: '666',
+    itemType: null,
+};
 
 describe('Test natural weapon model', () => {
     const testWeaponModel = new NaturalWeaponModel({
@@ -20,12 +28,14 @@ describe('Test natural weapon model', () => {
         toHit: testDiceSecond,
         naturalType: MonsterAttackTypes.FIST,
         type: DamageTypes.BLUDGEONING,
+        id: '666',
     });
     const secondTestWeaponModel: NaturalWeaponModel = new NaturalWeaponModel({
         damage: '2d5',
         toHit: '1d2',
         naturalType: MonsterAttackTypes.FIST,
         type: DamageTypes.BLUDGEONING,
+        id: '666',
     });
 
     it('Should construct weapon model properly', () => {
@@ -33,9 +43,9 @@ describe('Test natural weapon model', () => {
         expect(secondTestWeaponModel).toEqual(weaponModel);
     });
     it('Should serialize weapon model properly', () => {
-        expect(testWeaponModel.getDataToSerialization()).toBe(serializedWeaponModel);
+        expect(testWeaponModel.getSerializedData()).toEqual(serializedWeaponModel);
     });
-    it('Should create proper model instance from serialized string', () => {
-        expect(new NaturalWeaponModel(JSON.parse(serializedWeaponModel))).toEqual(testWeaponModel);
+    it('Should properly create model from serialized data', () => {
+        expect(new NaturalWeaponModel(serializedWeaponModel)).toEqual(testWeaponModel);
     });
 });

@@ -1,6 +1,6 @@
 import {AbstractLevelGenerator} from './abstract_generator';
 import {config as globalConfig} from '../../global/config';
-import {cellTypes} from '../../constants/cell_types';
+import {CellTypes} from '../../constants/cell_types';
 import * as Utility from '../../helper/utility';
 import * as ROT from 'rot-js';
 import {LevelModel} from '../../model/dungeon/level_model';
@@ -13,7 +13,6 @@ import {
 } from '../../interfaces/generators';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Position} from '../../model/position/position';
-import {MapWithObserver} from '../../core/map_with_observer';
 
 const singletonToken: symbol = Symbol('ArenaLevelGenerator singleton token');
 let instance: ArenaLevelGenerator;
@@ -48,14 +47,14 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
         generator.create(debugCallback || generatorCallback);
 
         this.fillLevelWithVoronoiPoints(level, {
-            targetCellType: cellTypes.SHALLOW_WATER,
-            cellAllowedToChange: cellTypes.GRASS,
+            targetCellType: CellTypes.SHALLOW_WATER,
+            cellAllowedToChange: CellTypes.GRASS,
         });
         this.smoothShallowWaterCoastline(level);
         this.generateDeepWater(level);
         this.changeEveryCellInLevel(level, {
-            cellsToChange: [cellTypes.GRASS],
-            cellsAfterChange: [cellTypes.BUSH, cellTypes.BUSH, cellTypes.BUSH, cellTypes.TREE],
+            cellsToChange: [CellTypes.GRASS],
+            cellsAfterChange: [CellTypes.BUSH, CellTypes.BUSH, CellTypes.BUSH, CellTypes.TREE],
             probability: 70,
         });
         this.generateRandomStairsUp(level);
@@ -67,9 +66,9 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
 
         function generatorCallback(x: number, y: number, value: number): void {
             if (value === 1) {
-                level.changeCellType(x, y, cellTypes.HIGH_PEAKS);
+                level.changeCellType(x, y, CellTypes.HIGH_PEAKS);
             } else {
-                level.changeCellType(x, y, cellTypes.GRASS);
+                level.changeCellType(x, y, CellTypes.GRASS);
             }
         }
     }
@@ -86,7 +85,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
             targetCellType,
             cellAllowedToChange,
         } = config;
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellsClosestVoronoiPointType: IExaminedCellsClosestVoronoiPointType;
         let examinedVoronoiPointDistance: number;
         /**

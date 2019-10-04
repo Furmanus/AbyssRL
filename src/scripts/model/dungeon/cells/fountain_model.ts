@@ -1,20 +1,20 @@
 import {Cell} from './cell_model';
-import {cellTypes} from '../../../constants/cell_types';
+import {CellTypes} from '../../../constants/cell_types';
 import {cellsDescriptions} from '../../../helper/cells_description';
-import {terrain} from '../../../constants/sprites';
-import {ICellModel} from '../../../interfaces/cell';
+import {TerrainSprites} from '../../../constants/sprites';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 
-export class FountainModel extends Cell implements ICellModel {
-    constructor(x: number, y: number) {
-        super(x, y);
+export class FountainModel extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
-        this.type = cellTypes.FOUNTAIN;
-        this.description = cellsDescriptions[cellTypes.FOUNTAIN];
+        this.type = CellTypes.FOUNTAIN;
+        this.description = cellsDescriptions[CellTypes.FOUNTAIN];
     }
     get blockMovement(): boolean {
         return true;
     }
     get display(): string {
-        return terrain.FOUNTAIN;
+        return TerrainSprites.FOUNTAIN;
     }
 }

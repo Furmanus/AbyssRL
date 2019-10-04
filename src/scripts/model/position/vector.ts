@@ -21,4 +21,7 @@ export class Vector {
 
         return this;
     }
+    public getSerializedData(): {x: number, y: number} {
+        return {...this};
+    }
 }

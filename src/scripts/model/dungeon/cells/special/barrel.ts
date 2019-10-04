@@ -1,18 +1,18 @@
 import {Cell} from '../cell_model';
-import {cellTypes} from '../../../../constants/cell_types';
+import {CellTypes} from '../../../../constants/cell_types';
 import {cellsDescriptions} from '../../../../helper/cells_description';
-import {dungeonFeaturesEnum} from '../../../../constants/sprites';
-import {ICellModel} from '../../../../interfaces/cell';
+import {DungeonFeaturesSprites} from '../../../../constants/sprites';
+import {ICellConstructorConfig} from '../../../../interfaces/cell';
 
-export class BarrelModel extends Cell implements ICellModel {
-    constructor(x: number, y: number) {
-        super(x, y);
+export class BarrelModel extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
-        this.type = cellTypes.BARREL;
-        this.description = cellsDescriptions[cellTypes.BARREL];
+        this.type = CellTypes.BARREL;
+        this.description = cellsDescriptions[CellTypes.BARREL];
     }
     get display(): string {
-        return dungeonFeaturesEnum.BARREL;
+        return DungeonFeaturesSprites.BARREL;
     }
     get blockMovement(): boolean {
         return true;

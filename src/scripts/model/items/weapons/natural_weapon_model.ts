@@ -1,4 +1,3 @@
-import {INaturalWeapon} from '../../../interfaces/combat';
 import {Dice} from '../../dice';
 import {DamageTypes} from '../../../constants/combat_enums';
 import {MonsterAttackTypes} from '../../../constants/monsters';
@@ -7,7 +6,7 @@ import {WearableModel} from '../wearable_model';
 import {EntityModel} from '../../entity/entity_model';
 import {ItemTypes} from '../../../constants/item';
 
-export class NaturalWeaponModel extends WearableModel implements INaturalWeapon {
+export class NaturalWeaponModel extends WearableModel {
     public damage: Dice;
     public toHit: Dice;
     public type: DamageTypes;
@@ -23,7 +22,7 @@ export class NaturalWeaponModel extends WearableModel implements INaturalWeapon 
     }
     // TODO Think how to solve passing more specific config object type?
     public constructor(config: IAnyObject) {
-        super();
+        super(config);
         const {
             damage,
             toHit,
@@ -46,24 +45,16 @@ export class NaturalWeaponModel extends WearableModel implements INaturalWeapon 
      * Returns serialized model data.
      * @returns  Serialized natural weapon model data
      */
-    public getDataToSerialization(): string {
-        return JSON.stringify({
+    public getSerializedData(): object {
+        const serializedParentData = super.getSerializedData();
+
+        return {
+            ...serializedParentData,
             damage: this.damage.getSerializedData(),
             toHit: this.toHit.getSerializedData(),
             type: this.type,
+            itemType: this.itemType,
             naturalType: this.naturalType,
-        });
-    }
-    public wear(entity: EntityModel): never {
-        throw new Error('Can\'t wear natural weapon');
-    }
-    public takeoff(entity: EntityModel): never {
-        throw new Error('Can\'t take off natural weapon');
-    }
-    public drop(entity: EntityModel): never {
-        throw new Error('Can\'t drop natural weapon');
-    }
-    public pickup(entity: EntityModel): never {
-        throw new Error('Can\'t pick up natural weapon');
+        };
     }
 }

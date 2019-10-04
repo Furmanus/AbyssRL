@@ -1,5 +1,6 @@
 import {RoomModel} from './room_model';
 import {BaseModel} from '../../core/base_model';
+import {Position} from '../position/position';
 
 export class RoomConnectionModel extends BaseModel {
     public firstRoom: RoomModel;
@@ -12,5 +13,13 @@ export class RoomConnectionModel extends BaseModel {
         this.firstRoom = firstRoom;
         this.secondRoom = secondRoom;
         this.corridor = corridor;
+    }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            firstRoom: this.firstRoom.getSerializedData(),
+            secondRoom: this.secondRoom.getSerializedData(),
+            corridor: this.corridor.map((position: Position) => position.getSerializedData()),
+        };
     }
 }

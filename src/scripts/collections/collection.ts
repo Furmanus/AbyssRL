@@ -57,6 +57,20 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
         }
     }
     /**
+     * Returns array of collection entries unique identifiers.
+     */
+    public getAllIds(): string[] {
+        return this.get().map((item: M) => item.id);
+    }
+    /**
+     * Searches and returns model with given id field.
+     *
+     * @param id    Unique identifier of model
+     */
+    public getById(id: string): M {
+        return this.get().find((item: M) => item.id === id);
+    }
+    /**
      * Removes element from collection. Action is notified with REMOVE event from collection events enum.
      *
      * @param item  Element to remove from collection
@@ -123,5 +137,8 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
             this.listeners.delete(controller);
         }
         return this;
+    }
+    public getSerializedData(): object {
+        return this.collection.map((item: M) => item.getSerializedData());
     }
 }

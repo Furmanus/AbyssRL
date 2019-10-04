@@ -1,17 +1,17 @@
 import {Cell} from '../cell_model';
-import {ICellModel} from '../../../../interfaces/cell';
-import {cellTypes} from '../../../../constants/cell_types';
+import {ICellConstructorConfig} from '../../../../interfaces/cell';
+import {CellTypes} from '../../../../constants/cell_types';
 import {cellsDescriptions} from '../../../../helper/cells_description';
-import {dungeonFeaturesEnum} from '../../../../constants/sprites';
+import {DungeonFeaturesSprites} from '../../../../constants/sprites';
 
-export class BedFoot extends Cell implements ICellModel {
-    constructor(x: number, y: number) {
-        super(x, y);
+export class BedFoot extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
-        this.type = cellTypes.BED_FOOT;
-        this.description = cellsDescriptions[cellTypes.BED_FOOT];
+        this.type = CellTypes.BED_FOOT;
+        this.description = cellsDescriptions[CellTypes.BED_FOOT];
     }
     get display(): string {
-        return dungeonFeaturesEnum.BED_FOOT;
+        return DungeonFeaturesSprites.BED_FOOT;
     }
 }

@@ -25,4 +25,7 @@ export class Position {
     public getDistanceFromPosition(position: Position): number {
         return Math.sqrt(Math.pow(position.x - this.x, 2) + Math.pow(position.y - this.y, 2));
     }
+    public getSerializedData(): {x: number, y: number} {
+        return {...this};
+    }
 }

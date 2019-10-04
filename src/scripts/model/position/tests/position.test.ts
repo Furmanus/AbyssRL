@@ -25,4 +25,7 @@ describe('Test Position class instances', () => {
         expect(position.getDistanceFromPosition(positionB)).toBe(2);
         expect(Math.floor(position.getDistanceFromPosition(positionC))).toBe(5);
     });
+    it('Should return correctly serialized data', () => {
+        expect(position.getSerializedData()).toEqual({x: 1, y: 1});
+    });
 });

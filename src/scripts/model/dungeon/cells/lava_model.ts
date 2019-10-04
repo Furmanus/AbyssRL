@@ -1,19 +1,20 @@
 import {FloorModel} from './floor_model';
-import {cellTypes} from '../../../constants/cell_types';
+import {CellTypes} from '../../../constants/cell_types';
 import {cellsDescriptions} from '../../../helper/cells_description';
-import {terrain} from '../../../constants/sprites';
-import {ICellModel} from '../../../interfaces/cell';
+import {TerrainSprites} from '../../../constants/sprites';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 
-export class LavaCellModel extends FloorModel implements ICellModel {
-    constructor(x: number, y: number) {
+export class LavaCellModel extends FloorModel {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
         super(x, y, {
-            type: cellTypes.LAVA,
-            description: cellsDescriptions[cellTypes.LAVA],
+            ...config,
+            type: CellTypes.LAVA,
+            description: cellsDescriptions[CellTypes.LAVA],
         });
 
         this.confirmMovement = true;
     }
     get display(): string {
-        return terrain.LAVA;
+        return TerrainSprites.LAVA;
     }
 }

@@ -1,8 +1,8 @@
 import {Cell} from './cell_model';
 import {IAnyObject} from '../../../interfaces/common';
-import {ICellModel} from '../../../interfaces/cell';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 
-export class FloorModel extends Cell implements ICellModel {
+export class FloorModel extends Cell {
     /**
      * @param   x                   Horizontal position on level grid.
      * @param   y                   Vertical position on level grid.
@@ -11,12 +11,12 @@ export class FloorModel extends Cell implements ICellModel {
      * @param   config.description  Description of cell (visible for example while looking at it).
      * @param   config.display      Array with cell types name. They must be equal to keys global tiledata.
      */
-    constructor(x: number, y: number, config: IAnyObject) {
-        super(x, y);
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
         this.type = config.type;
         this.description = config.description;
-        this.displaySet = config.display;
+        this.displaySet = config.display.random();
     }
     get display(): string {
         return this.displaySet;

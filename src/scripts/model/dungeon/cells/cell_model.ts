@@ -1,7 +1,3 @@
-/**
- * Created by Docent Furman on 16.07.2017.
- */
-
 import {WalkAttemptResult} from './effects/walk_attempt_result';
 import {UseAttemptResult} from './effects/use_attempt_result';
 import {UseEffectResult} from './effects/use_effect_result';
@@ -10,13 +6,16 @@ import {BaseModel} from '../../../core/base_model';
 import {EntityModel} from '../../entity/entity_model';
 import {EntityController} from '../../../controller/entity/entity_controller';
 import {PlayerController} from '../../../controller/entity/player_controller';
-import {ICellModel} from '../../../interfaces/cell';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 import {ItemsCollection} from '../../../collections/items_collection';
+import {DungeonTypes} from '../../../constants/dungeon_types';
+import {CellTypes} from '../../../constants/cell_types';
+import {globalCellsCollection} from '../../../global/collections';
 
 /**
  * Class representing single map square(field).
  */
-export abstract class Cell extends BaseModel implements ICellModel {
+export abstract class Cell<C extends ICellConstructorConfig = ICellConstructorConfig> extends BaseModel {
     /**
      * Horizontal position on level grid.
      */
@@ -25,6 +24,14 @@ export abstract class Cell extends BaseModel implements ICellModel {
      * Vertical position on level grid.
      */
     public y: number;
+    /**
+     * Type of dungeon where cell is (main dungeon or some branch)
+     */
+    public dungeonType: DungeonTypes;
+    /**
+     * Specific level number in dungeon branch where cell is
+     */
+    public levelNumber: number;
     /**
      * Entity (monster or player) occupying cell.
      */
@@ -53,20 +60,24 @@ export abstract class Cell extends BaseModel implements ICellModel {
     /**
      * Type of cell.
      */
-    public type: string = '';
+    public type: CellTypes;
     /**
-     * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
+     * Initializes cell and fills it with data. Data is imported from {@code CellTypes} object, where constructor parameter is used as key.
      *
      * @param   x       Horizontal position on level grid.
      * @param   y       Vertical position on level grid.
      * @param   config  Object with additional configuration data.
      */
-    constructor(x: number, y: number, config: IAnyObject = {}) {
+    constructor(x: number, y: number, config: C) {
         super();
 
         this.x = x;
         this.y = y;
+        this.levelNumber = config.levelNumber;
+        this.dungeonType = config.dungeonType;
         // TODO add initialization of inventory
+
+        globalCellsCollection.add(this);
     }
     /**
      * Whether cell blocks entity movement.
@@ -141,7 +152,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
      * Effect from certain cell while entity walks over it. Default function is below empty function. Can be implemented
      * in child classes.
      */
-    public walkEffect(entity?: EntityController): void {
+    public walkEffect(): void {
         // do nothing
     }
     /**
@@ -164,5 +175,13 @@ export abstract class Cell extends BaseModel implements ICellModel {
      */
     public useAttempt(entity: EntityController): UseAttemptResult {
         return new UseAttemptResult();
+    }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            ...this,
+            entity: this.entity && this.entity.id,
+            inventory: this.inventory.getSerializedData(),
+        };
     }
 }

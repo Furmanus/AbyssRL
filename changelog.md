@@ -1,3 +1,5 @@
+###0.0.5 (currently developed)
+* (Refactor) Refactored game models so game data can be now easily serialized
 ###0.0.4 (01.09.2019)
 * (Feature) Basic implementation of items (four weapons). Player is able to pick up, drop items and display inventory 
 * (Fix)     Webpack application build fixes and improvements

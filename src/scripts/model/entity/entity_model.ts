@@ -6,9 +6,10 @@ import {EntityEvents} from '../../constants/entity_events';
 import {IEntity} from '../../interfaces/entity_interfaces';
 import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
-import {INaturalWeapon, IWeapon} from '../../interfaces/combat';
+import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
+import {NaturalWeaponModel} from '../items/weapons/natural_weapon_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -34,10 +35,6 @@ export class EntityModel extends BaseModel implements IEntity {
      * Cell model where entity is.
      */
     public position: Cell;
-    /**
-     * Cell model where entity was in last turn.
-     */
-    public lastVisitedCell: Cell = null;
     public strength: number = null;
     public dexterity: number = null;
     public toughness: number = null;
@@ -74,7 +71,7 @@ export class EntityModel extends BaseModel implements IEntity {
     /**
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
-    public naturalWeapon: INaturalWeapon = null;
+    public naturalWeapon: NaturalWeaponModel = null;
     /**
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
@@ -144,7 +141,6 @@ export class EntityModel extends BaseModel implements IEntity {
      * @param newCell   New cell where entity currently is
      */
     public move(newCell: Cell): void {
-        this.lastVisitedCell = this.position; // remember on what cell entity was in previous turn
         this.position.clearEntity(); // we clear entity field of cell which entity is right now at
         this.position = newCell; // we move entity to new position
         /**
@@ -206,5 +202,20 @@ export class EntityModel extends BaseModel implements IEntity {
      */
     public getDescription(): string {
         return this.description;
+    }
+    public getSerializedData(): object {
+        const serializedEntityModel: IAnyObject = {...this};
+
+        serializedEntityModel.positionId = this.position.id;
+        serializedEntityModel.levelId = this.level.id;
+        serializedEntityModel.naturalWeaponId = this.naturalWeapon.id;
+        serializedEntityModel.inventory = this.inventory.getAllIds();
+
+        delete serializedEntityModel.fov;
+        delete serializedEntityModel.position;
+        delete serializedEntityModel.level;
+        delete serializedEntityModel.naturalWeapon;
+
+        return serializedEntityModel;
     }
 }

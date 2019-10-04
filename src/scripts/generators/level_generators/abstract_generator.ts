@@ -1,9 +1,9 @@
-import {cellTypes} from '../../constants/cell_types';
+import {CellTypes} from '../../constants/cell_types';
 import {config as globalConfig} from '../../global/config';
 import * as Rng from '../../helper/rng';
 import * as Utility from "../../helper/utility";
 import {DIRECTIONS, DIRECTIONS_SHORT} from '../../constants/keyboard_directions';
-import {terrain} from '../../constants/sprites';
+import {TerrainSprites} from '../../constants/sprites';
 import {getCircleFromLevelCells} from '../../helper/level_cells_helper';
 import {DIRECTION_HORIZONTAL} from '../../constants/directions';
 import {Position} from '../../model/position/position';
@@ -16,10 +16,6 @@ import {
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Direction} from '../../model/position/direction';
 import {directionType} from '../../interfaces/common';
-import {MapWithObserver} from '../../core/map_with_observer';
-import {monsterFactory} from '../../factory/monster_factory';
-import {DungeonEvents} from '../../constants/dungeon_events';
-import {MonsterController} from '../../controller/entity/monster_controller';
 
 const {
     NE,
@@ -36,11 +32,7 @@ const MONSTERS_LIMIT_PER_LEVEL: number = 20;
 /**
  * Which cell types can be replaced to stairs during level generation.
  */
-const stairsReplaceCells = {
-    [cellTypes.GRASS]: true,
-    [cellTypes.RED_FLOOR]: true,
-    [cellTypes.BUSH]: true,
-};
+const stairsReplaceCells = [CellTypes.GRASS, CellTypes.RED_FLOOR, CellTypes.BUSH];
 
 /**
  * Abstract class of dungeon levels generator. Contains common methods for all other generators. Generators methods
@@ -63,7 +55,7 @@ export abstract class AbstractLevelGenerator {
             cellsToChange,
             cellsAfterChange,
         } = config;
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellNeighbours;
 
         if (cellsToSmooth.length && cellsToChange.length && cellsAfterChange.length) {
@@ -89,17 +81,17 @@ export abstract class AbstractLevelGenerator {
      * @param   level      Level model containing level cells.
      */
     protected smoothLevelHills(level: LevelModel): void {
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellNeighbours: ISearchCellSurroundingResult;
         let isHillFromLeftSide: boolean;
         let isHillFromRightSide: boolean;
 
         levelCells.forEach((examinedCell: Cell) => {
-            if (examinedCell.type === cellTypes.GRASS) {
+            if (examinedCell.type === CellTypes.GRASS) {
                 examinedCellNeighbours = this.isCertainCellInCellSurroundings(
                     levelCells,
                     examinedCell,
-                    [cellTypes.HILLS],
+                    [CellTypes.HILLS],
                 );
 
                 if (examinedCellNeighbours.directions.length) {
@@ -111,11 +103,11 @@ export abstract class AbstractLevelGenerator {
                     });
 
                     if (isHillFromLeftSide && isHillFromRightSide) {
-                        level.changeCellType(examinedCell.x, examinedCell.y, cellTypes.HILLS);
+                        level.changeCellType(examinedCell.x, examinedCell.y, CellTypes.HILLS);
                     } else if (isHillFromLeftSide && !isHillFromRightSide) {
-                        level.changeCellType(examinedCell.x, examinedCell.y, cellTypes.RIGHT_HILLS);
+                        level.changeCellType(examinedCell.x, examinedCell.y, CellTypes.RIGHT_HILLS);
                     } else if (!isHillFromLeftSide && isHillFromRightSide) {
-                        level.changeCellType(examinedCell.x, examinedCell.y, cellTypes.LEFT_HILLS);
+                        level.changeCellType(examinedCell.x, examinedCell.y, CellTypes.LEFT_HILLS);
                     }
                 }
             }
@@ -130,7 +122,7 @@ export abstract class AbstractLevelGenerator {
      * @returns                 Returns object with information about direction of searched cells in cell surrounding.
      */
     protected isCertainCellInCellSurroundings(
-        levelCells: MapWithObserver<string, Cell>,
+        levelCells: Map<string, Cell>,
         cell: Cell,
         searchedCells: string[] = [],
     ): ISearchCellSurroundingResult {
@@ -204,11 +196,11 @@ export abstract class AbstractLevelGenerator {
             /**
              * We smooth only grass tiles, because only grass sprites are suitable for smoothing water.
              */
-            if (cell.type === cellTypes.GRASS) {
+            if (cell.type === CellTypes.GRASS) {
                 examinedCellWaterNeighbours = abstractLevelGenerator.isCertainCellInCellSurroundings(
                     levelCells,
                     cell,
-                    [cellTypes.SHALLOW_WATER],
+                    [CellTypes.SHALLOW_WATER],
                 ).directions.map((item) => {
                     return DIRECTIONS[`${item.x}x${item.y}`];
                 });
@@ -219,7 +211,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, N, NW) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, N)
                 ) {
-                    cell.changeDisplay([terrain.NORTH_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.NORTH_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NW, W, SW) ||
@@ -227,7 +219,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, SW, W) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, W)
                 ) {
-                    cell.changeDisplay([terrain.WEST_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.WEST_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NE, E, SE) ||
@@ -235,7 +227,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, E, SE) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, E)
                 ) {
-                    cell.changeDisplay([terrain.EAST_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.EAST_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, SE, S, SW) ||
@@ -243,7 +235,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, S, SW) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, S)
                 ) {
-                    cell.changeDisplay([terrain.SOUTH_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.SOUTH_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, SE, E, S) ||
@@ -251,7 +243,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NE, E, S, SE) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NE, E, S, SE, SW)
                 ) {
-                    cell.changeDisplay([terrain.NORTHWEST_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.NORTHWEST_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, W, S, SW) ||
@@ -259,7 +251,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NW, W, SW, S) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NW, W, SW, S, SE)
                 ) {
-                    cell.changeDisplay([terrain.NORTHEAST_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.NORTHEAST_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NE, E, N) ||
@@ -267,7 +259,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NE, E, N, SE) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NW, NE, E, N, SE)
                 ) {
-                    cell.changeDisplay([terrain.SOUTHWEST_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.SOUTHWEST_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NW, N, W) ||
@@ -275,7 +267,7 @@ export abstract class AbstractLevelGenerator {
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NW, N, W, SW) ||
                     Utility.isArrayEqualToArguments<string>(examinedCellWaterNeighbours, NE, NW, N, W, SW)
                 ) {
-                    cell.changeDisplay([terrain.SOUTHEAST_COASTLINE]);
+                    cell.changeDisplay([TerrainSprites.SOUTHEAST_COASTLINE]);
                     cell.disableDisplayChange();
                 } else if (
                     Utility.doesArrayContainsArguments<string>(examinedCellWaterNeighbours, W, N, E) ||
@@ -287,7 +279,7 @@ export abstract class AbstractLevelGenerator {
                      * Cell is single grass cell surrounded from three sides by water. We can't smooth such cell (lack
                      * of proper grass sprite), so we change it to water.
                      */
-                    level.changeCellType(cell.x, cell.y, cellTypes.SHALLOW_WATER);
+                    level.changeCellType(cell.x, cell.y, CellTypes.SHALLOW_WATER);
                     /**
                      * We changed grass cell to shallow water cell, most likely one of its neighbours in straight line
                      * has already been examined, and will not be smooth, that's why we recursively call smooth callback
@@ -308,22 +300,22 @@ export abstract class AbstractLevelGenerator {
      * @param     level   LevelModel
      */
     protected generateDeepWater(level: LevelModel): void {
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellSurrounding: Position[];
         let isCellSurroundedByWaterOnly: boolean;
 
         levelCells.forEach((cell: Cell) => {
-            if (cell.type === cellTypes.SHALLOW_WATER) {
+            if (cell.type === CellTypes.SHALLOW_WATER) {
                 examinedCellSurrounding = getCircleFromLevelCells(cell.x, cell.y, 2);
 
                 isCellSurroundedByWaterOnly = examinedCellSurrounding.every((neighbour: Position) => {
                     const neighbourCellType = level.getCell(neighbour.x, neighbour.y).type;
 
-                    return (neighbourCellType === cellTypes.SHALLOW_WATER || neighbourCellType === cellTypes.DEEP_WATER);
+                    return (neighbourCellType === CellTypes.SHALLOW_WATER || neighbourCellType === CellTypes.DEEP_WATER);
                 });
 
                 if (isCellSurroundedByWaterOnly) {
-                    level.changeCellType(cell.x, cell.y, cellTypes.DEEP_WATER);
+                    level.changeCellType(cell.x, cell.y, CellTypes.DEEP_WATER);
                 }
             }
         });
@@ -372,7 +364,7 @@ export abstract class AbstractLevelGenerator {
         );
         let attemptNumber: number = 0;
 
-        while (!stairsReplaceCells[randomCell.type]) {
+        while (!stairsReplaceCells.includes(randomCell.type)) {
             randomCell = levelModel.getCell(
                 Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
                 Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
@@ -384,7 +376,7 @@ export abstract class AbstractLevelGenerator {
             }
         }
 
-        levelModel.changeCellType(randomCell.x, randomCell.y, cellTypes.STAIRS_UP);
+        levelModel.changeCellType(randomCell.x, randomCell.y, CellTypes.STAIRS_UP);
         levelModel.setStairsUp(randomCell.x, randomCell.y);
     }
     protected generateRandomStairsDown(levelModel: LevelModel): void {
@@ -396,7 +388,7 @@ export abstract class AbstractLevelGenerator {
         const stairsUp = levelModel.getStairsUpLocation() || {x: Infinity, y: Infinity};
         let distanceFromStairsUp = Utility.getDistance(stairsUp.x, stairsUp.y, randomCell.x, randomCell.y);
 
-        while (!stairsReplaceCells[randomCell.type] && distanceFromStairsUp < 40) {
+        while (!stairsReplaceCells.includes(randomCell.type) && distanceFromStairsUp < 40) {
             randomCell = levelModel.getCell(
                 Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
                 Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
@@ -408,7 +400,7 @@ export abstract class AbstractLevelGenerator {
             }
         }
 
-        levelModel.changeCellType(randomCell.x, randomCell.y, cellTypes.STAIRS_DOWN);
+        levelModel.changeCellType(randomCell.x, randomCell.y, CellTypes.STAIRS_DOWN);
         levelModel.setStairsDown(randomCell.x, randomCell.y);
     }
     /**
@@ -445,13 +437,11 @@ export abstract class AbstractLevelGenerator {
         let examinedY: number;
         let examinedCell: Cell;
         let middlePointValue: number;
-        let distance: number;
         let isCreationSuccessful: boolean = true;
 
         cellsToChangeArray.push(firstCell);
 
         if (DIRECTION_HORIZONTAL === direction) {
-            distance = Math.abs(point2.x - point1.x);
             middlePointValue = Math.floor((point1.x + point2.x) / 2);
             firstMiddlePoint = new Position(middlePointValue, point1.y);
             secondMiddlePoint = new Position(middlePointValue, point2.y);
@@ -496,7 +486,6 @@ export abstract class AbstractLevelGenerator {
                 }
             }
         } else {
-            distance = Math.abs(point2.y - point1.y);
             middlePointValue = Math.floor((point1.y + point2.y) / 2);
             firstMiddlePoint = new Position(point1.x, middlePointValue);
             secondMiddlePoint = new Position(point2.x, middlePointValue);
@@ -565,9 +554,9 @@ export abstract class AbstractLevelGenerator {
             const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
 
             if (randomCell) {
-                const monsterController: MonsterController = monsterFactory.getGiantRatController(levelModel, randomCell);
-                randomCell.setEntity(monsterController.getModel());
-                levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
+                // const monsterController: MonsterController = monsterFactory.getGiantRatController(levelModel, randomCell);
+                // randomCell.setEntity(monsterController.getModel());
+                // levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
             }
         }
     }

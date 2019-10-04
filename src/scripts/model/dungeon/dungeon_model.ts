@@ -5,23 +5,27 @@ import {BaseModel} from '../../core/base_model';
 import {DungeonEvents} from '../../constants/dungeon_events';
 import {IActionAttempt} from '../../interfaces/common';
 import {ASCEND, DESCEND} from '../../constants/directions';
+import {DungeonTypes} from '../../constants/dungeon_types';
+import {globalDungeonsCollection} from '../../global/collections';
 
 export class DungeonModel extends BaseModel {
     private currentLevelNumber: number = null;
     private parentDungeonBranch: DungeonModel = null;
-    public readonly type: string;
+    public readonly type: DungeonTypes;
     public readonly maxLevelNumber: number;
     /**
      * @param   type             DungeonModel type (main dungeon or some branches)
      * @param   maxLevelNumber   How many levels this dungeon or branch contains
      * @param   levelNumber      Current level number (default to 1)
      */
-    constructor(type: string, maxLevelNumber: number, levelNumber?: number) {
+    constructor(type: DungeonTypes, maxLevelNumber: number, levelNumber?: number) {
         super();
 
         this.currentLevelNumber = levelNumber || 1;
-        this.type = type; // string determining type of dungeon
+        this.type = type; // type of dungeon (main dungeon or some branch)
         this.maxLevelNumber = maxLevelNumber; // number determining number of dungeon levels (how deep it is)
+
+        globalDungeonsCollection.add(this);
     }
     /**
      * Sets currentLevelNumber property in model. Action is notified with event CHANGE_CURRENT_LEVEL from dungeon events
@@ -70,6 +74,15 @@ export class DungeonModel extends BaseModel {
         return {
             result,
             message,
+        };
+    }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            currentLevelNumber: this.currentLevelNumber,
+            parentDungeonBranch: this.parentDungeonBranch,
+            type: this.type,
+            maxLevelNumber: this.maxLevelNumber,
         };
     }
 }

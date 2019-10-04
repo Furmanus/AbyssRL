@@ -1,18 +1,18 @@
-import {terrain} from '../../../constants/sprites';
-import {cellTypes} from '../../../constants/cell_types';
+import {TerrainSprites} from '../../../constants/sprites';
+import {CellTypes} from '../../../constants/cell_types';
 import {cellsDescriptions} from '../../../helper/cells_description';
 import {Cell} from './cell_model';
-import {ICellModel} from '../../../interfaces/cell';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 
-export class ShallowWater extends Cell implements ICellModel {
-    constructor(x: number, y: number) {
-        super(x, y);
+export class ShallowWater extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
-        this.type = cellTypes.SHALLOW_WATER;
-        this.description = cellsDescriptions[cellTypes.SHALLOW_WATER];
+        this.type = CellTypes.SHALLOW_WATER;
+        this.description = cellsDescriptions[CellTypes.SHALLOW_WATER];
     }
     get display(): string {
-        return terrain.SHALLOW_WATER;
+        return TerrainSprites.SHALLOW_WATER;
     }
     get walkMessage(): string {
         return 'You walk through knee deep water.';

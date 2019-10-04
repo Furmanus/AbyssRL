@@ -3,7 +3,7 @@
  */
 
 import {config as globalConfig} from '../../global/config';
-import {cellTypes} from '../../constants/cell_types';
+import {CellTypes} from '../../constants/cell_types';
 import {CellModelFactory} from '../../factory/cell_model_factory';
 import {BaseModel} from '../../core/base_model';
 import {Position} from '../position/position';
@@ -12,8 +12,9 @@ import {DungeonAreaModel} from './dungeon_area_model';
 import {RoomModel} from './room_model';
 import {RoomConnectionModel} from './room_connection_model';
 import {DungeonModelEvents} from '../../constants/dungeon_events';
-import {MapWithObserver} from '../../core/map_with_observer';
 import {EntityModel} from '../entity/entity_model';
+import { globalLevelCollection } from '../../global/collections';
+import {DungeonTypes} from '../../constants/dungeon_types';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
 
@@ -21,28 +22,30 @@ export type randomCellTest = (cellCandidate: Cell) => boolean;
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
 export class LevelModel extends BaseModel {
-    public branch: string;
+    public branch: DungeonTypes;
     public levelNumber: number;
     private defaultWallType: string = null;
     private rooms: RoomModel[] = [];
     private roomConnections: Set<RoomConnectionModel> = new Set();
-    private cells: MapWithObserver<string, Cell> = new MapWithObserver();
+    private cells: Map<string, Cell> = new Map();
     /**
      * @param   branch             Object to which this level belongs
      * @param   levelNumber         Number of this dungeon level
      */
-    constructor(branch: string, levelNumber: number) {
+    constructor(branch: DungeonTypes, levelNumber: number) {
         super();
 
         this.branch = branch;
         this.levelNumber = levelNumber;
+
+        globalLevelCollection.add(this);
     }
     /**
      * Initializes level model data.
      *
      * @param   defaultWallType     Type of default wall of level
      */
-    public initialize(defaultWallType: string = cellTypes.HIGH_PEAKS): void {
+    public initialize(defaultWallType: string = CellTypes.HIGH_PEAKS): void {
         // TODO remove setting default wall type from here and move it to constructor
         this.defaultWallType = defaultWallType;
 
@@ -56,12 +59,18 @@ export class LevelModel extends BaseModel {
 
         for (let i = 0; i < globalConfig.LEVEL_WIDTH; i++) {
             for (let j = 0; j < globalConfig.LEVEL_HEIGHT; j++) {
-                this.cells.set(`${i}x${j}`, CellModelFactory.getCellModel(i, j, defaultWallType));
+                this.cells.set(`${i}x${j}`, CellModelFactory.getCellModel(i, j, defaultWallType, {
+                    dungeonType: this.branch,
+                    levelNumber: this.levelNumber,
+                }));
             }
         }
     }
     public changeCellType(x: number, y: number, type: string): void {
-        this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
+        this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type, {
+            dungeonType: this.branch,
+            levelNumber: this.levelNumber,
+        }));
 
         this.notify(DungeonModelEvents.CELL_TYPE_CHANGED, {x, y});
     }
@@ -124,7 +133,7 @@ export class LevelModel extends BaseModel {
     /**
      * Returns map object containing level cells.
      */
-    public getCells(): MapWithObserver<string, Cell> {
+    public getCells(): Map<string, Cell> {
         return this.cells;
     }
     /**
@@ -246,5 +255,16 @@ export class LevelModel extends BaseModel {
         }
 
         return result;
+    }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            branch: this.branch,
+            levelNumber: this.levelNumber,
+            defaultWallType: this.defaultWallType,
+            rooms: this.rooms.map((room: RoomModel) => room.getSerializedData()),
+            roomConnections: Array.from(this.roomConnections).map((connection: RoomConnectionModel) => connection.getSerializedData()),
+            cells: Array.from(this.cells).map((entry: [string, Cell]) => [entry[0], entry[1].id]),
+        };
     }
 }

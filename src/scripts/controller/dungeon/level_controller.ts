@@ -11,9 +11,10 @@ import {boundMethod} from 'autobind-decorator';
 import {EntityModel} from '../../model/entity/entity_model';
 import {MonstersTypes} from '../../constants/monsters';
 import {PLAYER_DEATH} from '../../constants/player_actions';
+import {DungeonTypes} from '../../constants/dungeon_types';
 
 interface ILevelControllerConstructorConfig {
-    readonly branch: string;
+    readonly branch: DungeonTypes;
     readonly levelNumber: number;
 }
 

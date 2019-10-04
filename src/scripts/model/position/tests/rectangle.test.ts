@@ -39,4 +39,11 @@ describe('Test Rectangle class', () => {
         expect(rect.getVerticalDistanceFromRect(rect2)).toBe(2);
         expect(rect.getVerticalDistanceFromRect(rect3)).toBe(0);
     });
+    it('Should return correct serialized data', () => {
+        expect(rect.getSerializedData()).toEqual({
+            leftTop: {x: 0, y: 0},
+            width: 3,
+            height: 4,
+        });
+    });
 });

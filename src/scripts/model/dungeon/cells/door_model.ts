@@ -4,12 +4,12 @@ import {WalkAttemptResult} from './effects/walk_attempt_result';
 import {UseEffectResult} from './effects/use_effect_result';
 import {IAnyObject} from '../../../interfaces/common';
 import {EntityController} from '../../../controller/entity/entity_controller';
-import {ICellModel} from '../../../interfaces/cell';
+import {ICellConstructorConfig} from '../../../interfaces/cell';
 import {UseAttemptResult} from './effects/use_attempt_result';
 
-export class DoorModel extends Cell implements ICellModel {
-    constructor(x: number, y: number, config: IAnyObject) {
-        super(x, y);
+export class DoorModel extends Cell {
+    constructor(x: number, y: number, config: ICellConstructorConfig) {
+        super(x, y, config);
 
         this.areOpen = false;
     }

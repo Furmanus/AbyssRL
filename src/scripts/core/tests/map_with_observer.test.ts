@@ -3,6 +3,7 @@ import {WallModel} from '../../model/dungeon/cells/wall_model';
 import {MapWithObserver} from '../map_with_observer';
 import {IAnyFunction} from '../../interfaces/common';
 import {CellModelFactory} from '../../factory/cell_model_factory';
+import {DungeonTypes} from '../../constants/dungeon_types';
 
 jest.mock('../../controller/controller');
 
@@ -21,9 +22,9 @@ describe('Test MapWithObserver class', () => {
 
     beforeEach(() => {
         controller = new Controller();
-        cell1 = CellModelFactory.getGrayWallModel(2, 2);
-        cell2 = CellModelFactory.getGrayWallModel(3, 3);
-        cell3 = CellModelFactory.getGrayWallModel(4, 4);
+        cell1 = CellModelFactory.getGrayWallModel(2, 2, {dungeonType: DungeonTypes.MAIN_DUNGEON, levelNumber: 1});
+        cell2 = CellModelFactory.getGrayWallModel(3, 3, {dungeonType: DungeonTypes.MAIN_DUNGEON, levelNumber: 1});
+        cell3 = CellModelFactory.getGrayWallModel(4, 4, {dungeonType: DungeonTypes.MAIN_DUNGEON, levelNumber: 1});
         map = new MapWithObserver([['2x2', cell1], ['3x3', cell2]]);
         callback = jest.fn();
         callback2 = jest.fn();

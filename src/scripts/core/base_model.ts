@@ -1,7 +1,22 @@
 import {Constructor} from './constructor';
-import {IAnyObject} from '../interfaces/common';
+import { uid } from '../helper/uid_helper';
 
-export class BaseModel extends Constructor implements IAnyObject {
+export interface IBaseModel {
+    // tslint:disable-next-line:no-any
+    setProperty: (key: string, value: any, silent: boolean) => void;
+    getSerializedData: () => object;
+}
+interface IBaseModelConfig {
+    id?: string;
+}
+
+export class BaseModel extends Constructor implements IBaseModel {
+    public id: string;
+    public constructor(config: IBaseModelConfig = {}) {
+        super();
+
+        this.id = config.id || uid();
+    }
     /**
      * Models extending base model can have different number and type of properties
      */
@@ -26,5 +41,8 @@ export class BaseModel extends Constructor implements IAnyObject {
             // tslint:disable-next-line:no-console
             console.warn(`Attempt to set unknown property ${key}`);
         }
+    }
+    public getSerializedData(): object {
+        return {id: this.id};
     }
 }

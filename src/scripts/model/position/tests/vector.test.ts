@@ -19,4 +19,7 @@ describe('Test Vector class', () => {
         expect(vector.x).toBe(0);
         expect(vector.y).toBe(0);
     });
+    it('Should serialize instance correctly', () => {
+        expect(vector.getSerializedData()).toEqual({x: 1, y: 1});
+    });
 });
