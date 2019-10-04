@@ -25,7 +25,7 @@
 - [R.0.1.G3] Add fancy title screen and menu
 - [R.0.1.G4] Add "demo" for title screen (similiar to original Ultima 5)
 - [R.0.1.G5] Add minimap
-- [R.0.1.G6] Rewrite game models to allow easier serialization to JSON
+- [R.0.1.G6] ~~Rewrite game models to allow easier serialization to JSON~~ DONE
 ###Misc
 - [R.0.1.M1] Electron desktop build
 
