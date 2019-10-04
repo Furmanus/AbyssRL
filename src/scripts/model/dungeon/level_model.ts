@@ -12,7 +12,6 @@ import {DungeonAreaModel} from './dungeon_area_model';
 import {RoomModel} from './room_model';
 import {RoomConnectionModel} from './room_connection_model';
 import {DungeonModelEvents} from '../../constants/dungeon_events';
-import {MapWithObserver} from '../../core/map_with_observer';
 import {EntityModel} from '../entity/entity_model';
 import { globalLevelCollection } from '../../global/collections';
 import {DungeonTypes} from '../../constants/dungeon_types';
@@ -28,7 +27,7 @@ export class LevelModel extends BaseModel {
     private defaultWallType: string = null;
     private rooms: RoomModel[] = [];
     private roomConnections: Set<RoomConnectionModel> = new Set();
-    private cells: MapWithObserver<string, Cell> = new MapWithObserver();
+    private cells: Map<string, Cell> = new Map();
     /**
      * @param   branch             Object to which this level belongs
      * @param   levelNumber         Number of this dungeon level
@@ -134,7 +133,7 @@ export class LevelModel extends BaseModel {
     /**
      * Returns map object containing level cells.
      */
-    public getCells(): MapWithObserver<string, Cell> {
+    public getCells(): Map<string, Cell> {
         return this.cells;
     }
     /**
@@ -256,5 +255,16 @@ export class LevelModel extends BaseModel {
         }
 
         return result;
+    }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            branch: this.branch,
+            levelNumber: this.levelNumber,
+            defaultWallType: this.defaultWallType,
+            rooms: this.rooms.map((room: RoomModel) => room.getSerializedData()),
+            roomConnections: Array.from(this.roomConnections).map((connection: RoomConnectionModel) => connection.getSerializedData()),
+            cells: Array.from(this.cells).map((entry: [string, Cell]) => [entry[0], entry[1].id]),
+        };
     }
 }

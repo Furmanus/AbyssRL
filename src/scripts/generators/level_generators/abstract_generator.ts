@@ -16,10 +16,6 @@ import {
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Direction} from '../../model/position/direction';
 import {directionType} from '../../interfaces/common';
-import {MapWithObserver} from '../../core/map_with_observer';
-import {monsterFactory} from '../../factory/monster_factory';
-import {DungeonEvents} from '../../constants/dungeon_events';
-import {MonsterController} from '../../controller/entity/monster_controller';
 
 const {
     NE,
@@ -59,7 +55,7 @@ export abstract class AbstractLevelGenerator {
             cellsToChange,
             cellsAfterChange,
         } = config;
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellNeighbours;
 
         if (cellsToSmooth.length && cellsToChange.length && cellsAfterChange.length) {
@@ -85,7 +81,7 @@ export abstract class AbstractLevelGenerator {
      * @param   level      Level model containing level cells.
      */
     protected smoothLevelHills(level: LevelModel): void {
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellNeighbours: ISearchCellSurroundingResult;
         let isHillFromLeftSide: boolean;
         let isHillFromRightSide: boolean;
@@ -126,7 +122,7 @@ export abstract class AbstractLevelGenerator {
      * @returns                 Returns object with information about direction of searched cells in cell surrounding.
      */
     protected isCertainCellInCellSurroundings(
-        levelCells: MapWithObserver<string, Cell>,
+        levelCells: Map<string, Cell>,
         cell: Cell,
         searchedCells: string[] = [],
     ): ISearchCellSurroundingResult {
@@ -304,7 +300,7 @@ export abstract class AbstractLevelGenerator {
      * @param     level   LevelModel
      */
     protected generateDeepWater(level: LevelModel): void {
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellSurrounding: Position[];
         let isCellSurroundedByWaterOnly: boolean;
 
@@ -441,13 +437,11 @@ export abstract class AbstractLevelGenerator {
         let examinedY: number;
         let examinedCell: Cell;
         let middlePointValue: number;
-        let distance: number;
         let isCreationSuccessful: boolean = true;
 
         cellsToChangeArray.push(firstCell);
 
         if (DIRECTION_HORIZONTAL === direction) {
-            distance = Math.abs(point2.x - point1.x);
             middlePointValue = Math.floor((point1.x + point2.x) / 2);
             firstMiddlePoint = new Position(middlePointValue, point1.y);
             secondMiddlePoint = new Position(middlePointValue, point2.y);
@@ -492,7 +486,6 @@ export abstract class AbstractLevelGenerator {
                 }
             }
         } else {
-            distance = Math.abs(point2.y - point1.y);
             middlePointValue = Math.floor((point1.y + point2.y) / 2);
             firstMiddlePoint = new Position(point1.x, middlePointValue);
             secondMiddlePoint = new Position(point2.x, middlePointValue);

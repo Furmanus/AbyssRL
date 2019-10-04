@@ -13,7 +13,6 @@ import {
 } from '../../interfaces/generators';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Position} from '../../model/position/position';
-import {MapWithObserver} from '../../core/map_with_observer';
 
 const singletonToken: symbol = Symbol('ArenaLevelGenerator singleton token');
 let instance: ArenaLevelGenerator;
@@ -86,7 +85,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
             targetCellType,
             cellAllowedToChange,
         } = config;
-        const levelCells: MapWithObserver<string, Cell> = level.getCells();
+        const levelCells: Map<string, Cell> = level.getCells();
         let examinedCellsClosestVoronoiPointType: IExaminedCellsClosestVoronoiPointType;
         let examinedVoronoiPointDistance: number;
         /**
