@@ -76,4 +76,13 @@ export class DungeonModel extends BaseModel {
             message,
         };
     }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            currentLevelNumber: this.currentLevelNumber,
+            parentDungeonBranch: this.parentDungeonBranch,
+            type: this.type,
+            maxLevelNumber: this.maxLevelNumber,
+        };
+    }
 }
