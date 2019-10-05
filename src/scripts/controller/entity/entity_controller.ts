@@ -74,10 +74,9 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     }
     public activate(cell: Cell): void {
         const useAttemptResult = cell.useAttempt(this);
-        let useEffect;
 
         if (useAttemptResult.canUse) {
-            useEffect = cell.useEffect(this);
+            cell.useEffect(this);
         }
     }
     public calculateFov(): void {
@@ -100,7 +99,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
         this.model.dropItems(items);
     }
     protected onEntityPickUp(item: ItemModel): void {
-        globalMessagesController.showMessageInView(`${this.model.getDescription()} picks up ${item.description}.`);
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} picks up ${item.fullDescription}.`);
     }
     protected onEntityDropItem(item: ItemModel): void {
         globalMessagesController.showMessageInView(`${this.model.getDescription()} drops ${item.description}.`);
