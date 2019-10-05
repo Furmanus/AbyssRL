@@ -59,19 +59,19 @@ export const weaponsData: IWeaponData = {
   },
   halberd: {
     damage: `2d7+1`,
-    toHit: `-1d2`,
+    toHit: `1d1`,
     name: `halberd`,
     type: `slashing`,
   },
   club: {
     damage: `1d6`,
-    toHit: `1d2`,
+    toHit: `1d1`,
     name: `club`,
     type: `bludgeoning`,
   },
   two_handed_hammer: {
     damage: `2d6+2`,
-    toHit: `-1d2`,
+    toHit: `1d1`,
     name: `two handed hammer`,
     type: 'bludgeoning',
   },
@@ -83,7 +83,7 @@ export const weaponsData: IWeaponData = {
   },
   two_handed_axe: {
     damage: `2d6+4`,
-    toHit: `-1d1`,
+    toHit: `1d1`,
     name: `two handed axe`,
     type: 'slashing',
   },
