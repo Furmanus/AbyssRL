@@ -8,7 +8,7 @@ export class Dice {
     public constructor(description: string) {
         const splitDesc: string[] = description.trim().split('d');
         const multiplier: number = Number(splitDesc[0]);
-        const rest: string[] = splitDesc[1].trim().split('+');
+        const rest: string[] = splitDesc[1].trim().split(/[+\-]/);
         const sides: number = Number(rest[0]);
         let additional: number;
 
