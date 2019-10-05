@@ -225,3 +225,25 @@ export function getNumericValueOfChar(char: string): number {
 export function getLetterFromNumber(num: number): string {
     return String.fromCharCode(num + 97);
 }
+/**
+ * For given string returns new string starting with 'an' if given string starts with vowel or with 'a' otherwise.
+ *
+ * @param str   String from which new string shall be built
+ */
+export function getStringWithAnOrAPrefix(str: string): string {
+    if (isVowel(str)) {
+        return `an ${str}`;
+    } else {
+        return `a ${str}`;
+    }
+}
+/**
+ * Check if first letter of string is vowel.
+ *
+ * @param str   String to check
+ */
+export function isVowel(str: string): boolean {
+    const c = str.trim().charAt(0).toLowerCase();
+
+    return c === 'a' || c === 'e' || c === 'i' || c === 'o' || c === 'u' || c === 'y';
+}

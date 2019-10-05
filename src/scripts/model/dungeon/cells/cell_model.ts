@@ -152,7 +152,7 @@ export abstract class Cell<C extends ICellConstructorConfig = ICellConstructorCo
      * Effect from certain cell while entity walks over it. Default function is below empty function. Can be implemented
      * in child classes.
      */
-    public walkEffect(): void {
+    public walkEffect(controller: EntityController): void {
         // do nothing
     }
     /**

@@ -17,12 +17,12 @@ import {LevelModel} from '../../model/dungeon/level_model';
 import {DungeonEvents} from '../../constants/dungeon_events';
 import {ICombatResult} from '../../helper/combat_helper';
 import {ItemsCollection} from '../../collections/items_collection';
-import {MessagesController} from '../messages_controller';
 import {ItemModel} from '../../model/items/item_model';
 import {InventoryController} from '../inventory_controller';
 import {globalInventoryController} from '../../global/modal';
 import {EntityInventoryActions, InventoryModalEvents} from '../../constants/entity_events';
 import {boundMethod} from 'autobind-decorator';
+import {getStringWithAnOrAPrefix} from '../../helper/utility';
 
 export interface IMoveResolve {
     canMove: boolean;
@@ -34,7 +34,6 @@ interface IInventoryActionConfirmData {
 }
 
 export class PlayerController extends EntityController<PlayerModel> {
-    private globalMessageController: MessagesController = globalMessagesController;
     private globalInventoryController: InventoryController = globalInventoryController;
 
     constructor(constructorConfig: IAnyObject) {
@@ -102,10 +101,6 @@ export class PlayerController extends EntityController<PlayerModel> {
             y,
         } = newCell;
         const playerController = this;
-        /**
-         * Move function from entity class bound to this player controller instance.
-         */
-        const entityMoveFunction = super.move.bind(this);
         const playerModel = this.model;
 
         if (x < 0 || y < 0 || x > config.LEVEL_WIDTH - 1 || y > config.LEVEL_HEIGHT - 1) {
@@ -246,7 +241,9 @@ export class PlayerController extends EntityController<PlayerModel> {
         if (canPlayerMove) {
             entityMoveFunction(cellModel);
 
-            if (cellModel.walkMessage) {
+            if (cellModel.inventory.size) {
+                moveAttemptMessage = `There is ${getStringWithAnOrAPrefix(cellModel.inventory.getFirstItem().fullDescription)} lying here.`;
+            } else if (cellModel.walkMessage) {
                 moveAttemptMessage = cellModel.walkMessage;
             }
         }
