@@ -1,5 +1,5 @@
 import {MonsterAttackTypes, MonstersTypes} from '../constants/monsters';
-import {NaturalWeaponModel} from '../model/items/weapons/natural_weapon_model';
+import {NaturalWeaponModel} from '../model/items/natural_weapon_model';
 import {Dice} from '../model/dice';
 import {DamageTypes} from '../constants/combat_enums';
 

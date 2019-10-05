@@ -1,10 +1,10 @@
-import {Dice} from '../../dice';
-import {DamageTypes} from '../../../constants/combat_enums';
-import {MonsterAttackTypes} from '../../../constants/monsters';
-import {IAnyObject} from '../../../interfaces/common';
-import {WearableModel} from '../wearable_model';
-import {EntityModel} from '../../entity/entity_model';
-import {ItemTypes} from '../../../constants/item';
+import {Dice} from '../dice';
+import {DamageTypes} from '../../constants/combat_enums';
+import {MonsterAttackTypes} from '../../constants/monsters';
+import {IAnyObject} from '../../interfaces/common';
+import {WearableModel} from './wearable_model';
+import {EntityModel} from '../entity/entity_model';
+import {ItemTypes} from '../../constants/item';
 
 export class NaturalWeaponModel extends WearableModel {
     public damage: Dice;

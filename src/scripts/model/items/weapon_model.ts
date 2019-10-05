@@ -1,8 +1,8 @@
-import {WearableModel} from '../wearable_model';
-import {Dice} from '../../dice';
-import {IWeaponConstructorConfig} from '../../../interfaces/combat';
-import {ItemSprites} from '../../../constants/sprites';
-import {ItemTypes} from '../../../constants/item';
+import {WearableModel} from './wearable_model';
+import {Dice} from '../dice';
+import {IWeaponConstructorConfig} from '../../interfaces/combat';
+import {ItemSprites} from '../../constants/sprites';
+import {ItemTypes} from '../../constants/item';
 
 export class WeaponModel extends WearableModel {
     public damage: Dice;

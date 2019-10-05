@@ -7,7 +7,7 @@ import {LevelModel} from '../../model/dungeon/level_model';
 import {IDungeonStrategyGenerateLevelConfig} from '../../interfaces/generators';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
-import {WeaponModel} from '../../model/items/weapons/weapon_model';
+import {WeaponModel} from '../../model/items/weapon_model';
 
 type AllGeneratorsTypes = ArenaLevelGenerator | CavernLevelGenerator | DungeonLevelGenerator;
 
