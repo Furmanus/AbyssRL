@@ -5,12 +5,13 @@ import {IAnyObject} from '../../interfaces/common';
 import {WearableModel} from './wearable_model';
 import {EntityModel} from '../entity/entity_model';
 import {ItemTypes} from '../../constants/item';
+import {ItemSprites} from '../../constants/sprites';
 
 export class NaturalWeaponModel extends WearableModel {
     public damage: Dice;
     public toHit: Dice;
     public type: DamageTypes;
-    public display: string = null;
+    public display: ItemSprites = null;
     public itemType: ItemTypes = null;
     public naturalType: MonsterAttackTypes;
 

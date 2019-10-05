@@ -9,7 +9,7 @@ export class WeaponModel extends WearableModel {
     public toHit: Dice;
     public readonly type: string;
     public readonly name: string;
-    public display: string;
+    public display: ItemSprites;
     public itemType: ItemTypes = ItemTypes.WEAPON;
 
     get description(): string {
