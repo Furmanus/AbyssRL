@@ -5,14 +5,12 @@ import {ArmourNames} from '../../constants/weapons';
 
 export interface IArmourModelConstructorConfig {
     name: ArmourNames;
-    type: ArmourNames;
     protection: number;
     evasion: number;
 }
 
 export class ArmourModel extends WearableModel {
-    public readonly name: string;
-    public readonly type: string;
+    public readonly name: ArmourNames;
     public readonly itemType: ItemTypes = ItemTypes.ARMOUR;
     public readonly display: ItemSprites = ItemSprites.ARMOUR;
     public protection: number;
@@ -28,7 +26,6 @@ export class ArmourModel extends WearableModel {
         super(config);
 
         this.name = config.name;
-        this.type = config.type;
         this.protection = config.protection;
         this.evasion = config.evasion;
 

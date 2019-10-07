@@ -3,13 +3,13 @@ import {ArmourNames} from '../../../constants/weapons';
 interface IArmourConfigObject {
     evasion: number;
     protection: number;
-    name: string;
+    name: ArmourNames;
 }
 interface IArmourData {
     [key: string]: IArmourConfigObject;
 }
 
-function getArmourConfig(name: string, evasion: number, protection: number): IArmourConfigObject {
+function getArmourConfig(name: ArmourNames, evasion: number, protection: number): IArmourConfigObject {
     return {
         name,
         evasion,

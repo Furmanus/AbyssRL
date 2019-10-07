@@ -8,6 +8,8 @@ import {IDungeonStrategyGenerateLevelConfig} from '../../interfaces/generators';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {WeaponModel} from '../../model/items/weapon_model';
+import {ArmourModel} from '../../model/items/armour_model';
+import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
 
 type AllGeneratorsTypes = ArenaLevelGenerator | CavernLevelGenerator | DungeonLevelGenerator;
 
@@ -55,8 +57,9 @@ export class MainDungeonLevelGenerationStrategy {
         for (let i = 0; i < 10; i++) {
             const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
             const weaponModel: WeaponModel = weaponModelFactory.getRandomWeaponModel();
+            const armourModel: ArmourModel = ArmourModelFactory.getRandomArmourModel();
 
-            randomCell.inventory.add(weaponModel);
+            randomCell.inventory.add(Rng.getPercentage() < 50 ? weaponModel : armourModel);
         }
     }
 }
