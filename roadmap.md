@@ -17,7 +17,7 @@
 - [R.0.1.E4] Basic combat and non combat abilities for player/entities
 ### Items
 - [R.0.1.I1] ~~Add more weapons~~ DONE
-- [R.0.1.I2] Add armours, rings, amulets, scrolls and potions
+- [R.0.1.I2] Add armours, rings, amulets, scrolls and potions PARTIALLY DONE, ARMOURS ADDED
 - [R.0.1.I3] Make armours, rings and amulets equipable, make scrolls and potions consumable
 ### Game
 - [R.0.1.G1] Basic game finishing condition (for example completing fifteen levels od dungeon)
