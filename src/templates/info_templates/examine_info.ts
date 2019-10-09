@@ -41,6 +41,7 @@ export function getEntityInfoTemplate(variables: ITemplateVariables, itemType?: 
                 </div>
             </div>
         `,
+        [ItemTypes.ARMOUR]: ``,
     };
 
     return {

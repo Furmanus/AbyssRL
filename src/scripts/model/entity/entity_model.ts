@@ -9,7 +9,7 @@ import {ItemsCollection} from '../../collections/items_collection';
 import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
-import {NaturalWeaponModel} from '../items/weapons/natural_weapon_model';
+import {NaturalWeaponModel} from '../items/natural_weapon_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;

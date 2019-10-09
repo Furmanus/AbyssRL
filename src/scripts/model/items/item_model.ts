@@ -2,6 +2,7 @@ import {BaseModel} from '../../core/base_model';
 import {ItemTypes} from '../../constants/item';
 import {IAnyObject} from '../../interfaces/common';
 import {globalItemCollection} from '../../global/collections';
+import {ItemSprites} from '../../constants/sprites';
 
 export abstract class ItemModel extends BaseModel {
     /**
@@ -11,7 +12,7 @@ export abstract class ItemModel extends BaseModel {
     /**
      * Name of sprite which should be drawn on game canvas.
      */
-    public abstract display: string;
+    public abstract display: ItemSprites;
     /**
      * Description of item, text displayed when examining item, in player or monster inventory, etc.
      */

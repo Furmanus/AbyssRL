@@ -7,7 +7,7 @@ import {config} from '../global/config';
 import {tileset} from '../global/tiledata';
 import Timeout = NodeJS.Timeout;
 import {ItemModel} from '../model/items/item_model';
-import {WeaponModel} from '../model/items/weapons/weapon_model';
+import {WeaponModel} from '../model/items/weapon_model';
 
 interface IStatsObject {
     [EntityStats.STRENGTH]: HTMLSpanElement;

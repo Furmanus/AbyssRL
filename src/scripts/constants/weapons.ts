@@ -1,6 +1,14 @@
 export enum WeaponNames {
     LONG_SWORD = 'long_sword',
-    BROAD_AXE = 'broad_axe',
-    SHORT_SPEAR = 'short_spear',
+    AXE = 'axe',
+    SPEAR = 'spear',
     MORNING_STAR = 'morning_star',
+}
+export enum ArmourNames {
+    CLOTH_ARMOUR = 'cloth armour',
+    LEATHER_ARMOUR = 'leather armour',
+    RING_MAIL = 'ring mail',
+    SCALE_MAIL = 'scale mail',
+    CHAIN_MAIL = 'chain mail',
+    PLATE_MAIL = 'plate mail',
 }

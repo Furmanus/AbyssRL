@@ -1,7 +1,7 @@
 import {NaturalWeaponModel} from './natural_weapon_model';
-import {Dice} from '../../dice';
-import {MonsterAttackTypes} from '../../../constants/monsters';
-import {DamageTypes} from '../../../constants/combat_enums';
+import {Dice} from '../dice';
+import {MonsterAttackTypes} from '../../constants/monsters';
+import {DamageTypes} from '../../constants/combat_enums';
 
 const weaponModel: NaturalWeaponModel = new NaturalWeaponModel({
     damage: new Dice('2d5'),
