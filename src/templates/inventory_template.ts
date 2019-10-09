@@ -71,7 +71,7 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
     group.innerHTML = `
         <div class="modal-inventory-group">
             <h4 class="modal-inventory-group-header">${groupName}</h4>
-            <ul class="modal-inventory-group-list" id="modal-inventory-list"/>
+            <ul class="modal-inventory-group-list" data-element="modal-inventory-list"/>
         </div>
     `;
 

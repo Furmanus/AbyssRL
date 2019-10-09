@@ -4,6 +4,7 @@ import autobind, {boundMethod} from 'autobind-decorator';
 import {SetWithObserver} from '../core/set_with_observer';
 import {getNumericValueOfChar} from '../helper/utility';
 import {IStringDictionary} from '../interfaces/common';
+import {getHTMLListsChildrensArray} from '../helper/dom_helper';
 
 const keyToInventoryActionMap: IStringDictionary = {
     d: EntityInventoryActions.DROP,
@@ -18,7 +19,7 @@ export class InventoryView extends ModalView {
     private dropButton: HTMLButtonElement;
     private equipButton: HTMLButtonElement;
     private useButton: HTMLButtonElement;
-    private inventoryList: HTMLUListElement;
+    private inventoryList: NodeListOf<HTMLUListElement>;
 
     public attachEvents(): void {
         this.setElementsFields();
@@ -83,16 +84,20 @@ export class InventoryView extends ModalView {
         this.dropButton = this.modalContent.querySelector('#inventory-drop') as HTMLButtonElement;
         this.equipButton = this.modalContent.querySelector('#inventory-equip') as HTMLButtonElement;
         this.useButton = this.modalContent.querySelector('#inventory-use') as HTMLButtonElement;
-        this.inventoryList = this.modalContent.querySelector('#modal-inventory-list') as HTMLUListElement;
+        this.inventoryList = this.modalContent.querySelectorAll('[data-element=modal-inventory-list]');
     }
     private attachEventsToInventoryList(): void {
-        Array.from(this.inventoryList && this.inventoryList.children || []).forEach((element: HTMLLIElement) => {
-            element.addEventListener('click', this.onInventoryListItemSelect);
+        this.inventoryList.forEach((ulListElement: HTMLUListElement) => {
+            Array.from(ulListElement && ulListElement.children || []).forEach((element: HTMLLIElement) => {
+                element.addEventListener('click', this.onInventoryListItemSelect);
+            });
         });
     }
     private detachEventsFromInventoryList(): void {
-        Array.from(this.inventoryList && this.inventoryList.children || []).forEach((element: HTMLLIElement) => {
-            element.removeEventListener('click', this.onInventoryListItemSelect);
+        this.inventoryList.forEach((ulListElement: HTMLUListElement) => {
+            Array.from(ulListElement && ulListElement.children || []).forEach((element: HTMLLIElement) => {
+                element.removeEventListener('click', this.onInventoryListItemSelect);
+            });
         });
     }
     @boundMethod
@@ -107,16 +112,16 @@ export class InventoryView extends ModalView {
         this.notify(InventoryModalEvents.INVENTORY_ITEM_SELECTED, index);
     }
     public markItemsAsSelected(selectedItems: SetWithObserver<number>): void {
-        this.markAllItemsAsDeselected();
+        const inventoryListItems: HTMLLIElement[] = getHTMLListsChildrensArray(Array.from(this.inventoryList));
 
-        const inventoryListItems: HTMLCollection = this.inventoryList.children;
+        this.markAllItemsAsDeselected();
 
         selectedItems.forEach((index: number) => {
             inventoryListItems[index].classList.add('selected');
         });
     }
     private markAllItemsAsDeselected(): void {
-        const inventoryListItems: HTMLCollection = this.inventoryList.children;
+        const inventoryListItems: HTMLLIElement[] = getHTMLListsChildrensArray(Array.from(this.inventoryList));
 
         for (const inventoryListItem of inventoryListItems) {
             inventoryListItem.classList.remove('selected');
