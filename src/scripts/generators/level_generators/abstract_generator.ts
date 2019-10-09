@@ -16,6 +16,9 @@ import {
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {Direction} from '../../model/position/direction';
 import {directionType} from '../../interfaces/common';
+import {MonsterController} from '../../controller/entity/monster_controller';
+import {monsterFactory} from '../../factory/monster_factory';
+import {DungeonEvents} from '../../constants/dungeon_events';
 
 const {
     NE,
@@ -554,9 +557,9 @@ export abstract class AbstractLevelGenerator {
             const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
 
             if (randomCell) {
-                // const monsterController: MonsterController = monsterFactory.getGiantRatController(levelModel, randomCell);
-                // randomCell.setEntity(monsterController.getModel());
-                // levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
+                const monsterController: MonsterController = monsterFactory.getGiantRatController(levelModel, randomCell);
+                randomCell.setEntity(monsterController.getModel());
+                levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
             }
         }
     }

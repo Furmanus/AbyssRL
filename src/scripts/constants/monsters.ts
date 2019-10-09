@@ -18,6 +18,14 @@ export enum EntityBodyParts {
     ARMS = 'arms',
     LEGS = 'legs',
 }
+export enum EntityBodySlots {
+    HEAD = 'head',
+    TORSO = 'torso',
+    LEFT_HAND = 'left hand',
+    RIGHT_HAND = 'right hand',
+    NECK = 'neck',
+    FINGER = 'finger',
+}
 export enum EntityStats {
     STRENGTH = 'strength',
     DEXTERITY = 'dexterity',

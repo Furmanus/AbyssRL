@@ -4,7 +4,7 @@ import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {IEntity} from '../../interfaces/entity_interfaces';
-import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
+import {EntityBodySlots, EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
 import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
@@ -21,6 +21,11 @@ export interface IEntityStatsObject {
     [EntityStats.HIT_POINTS]: number;
     [EntityStats.MAX_HIT_POINTS]: number;
 }
+export type IBodySlots = {
+    [P in EntityBodySlots]?: ItemModel;
+};
+
+export const animalTypes: MonstersTypes[] = [MonstersTypes.GIANT_RAT];
 
 export class EntityModel extends BaseModel implements IEntity {
     /**
@@ -68,6 +73,14 @@ export class EntityModel extends BaseModel implements IEntity {
         [weaponModelFactory.getRandomWeaponModel(),
             weaponModelFactory.getRandomWeaponModel()],
     );
+    public bodySlots: IBodySlots = {
+        [EntityBodySlots.HEAD]: null,
+        [EntityBodySlots.NECK]: null,
+        [EntityBodySlots.TORSO]: null,
+        [EntityBodySlots.LEFT_HAND]: null,
+        [EntityBodySlots.RIGHT_HAND]: null,
+        [EntityBodySlots.FINGER]: null,
+    };
     /**
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
@@ -92,6 +105,9 @@ export class EntityModel extends BaseModel implements IEntity {
         this.perception = config.perception;
         this.type = config.type;
         // TODO add initialization of inventory
+        if (animalTypes.includes(this.type)) {
+            this.bodySlots = {};
+        }
     }
     /**
      * Changes position property of entity.
