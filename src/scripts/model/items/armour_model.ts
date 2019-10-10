@@ -2,6 +2,7 @@ import {WearableModel} from './wearable_model';
 import {ItemTypes} from '../../constants/item';
 import {ItemSprites} from '../../constants/sprites';
 import {ArmourNames} from '../../constants/weapons';
+import {EntityBodySlots} from '../../constants/monsters';
 
 export interface IArmourModelConstructorConfig {
     name: ArmourNames;
@@ -13,6 +14,7 @@ export class ArmourModel extends WearableModel {
     public readonly name: ArmourNames;
     public readonly itemType: ItemTypes = ItemTypes.ARMOUR;
     public readonly display: ItemSprites = ItemSprites.ARMOUR;
+    public readonly bodyPart: EntityBodySlots[] = [EntityBodySlots.TORSO];
     public protection: number;
     public evasion: number;
 
