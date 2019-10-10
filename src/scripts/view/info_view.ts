@@ -18,6 +18,7 @@ interface IStatsObject {
     [EntityStats.SPEED]: HTMLSpanElement;
     [EntityStats.HIT_POINTS]: HTMLSpanElement;
     [EntityStats.MAX_HIT_POINTS]: HTMLSpanElement;
+    [EntityStats.PROTECTION]: HTMLSpanElement;
 }
 
 /**
@@ -41,6 +42,7 @@ export class InfoView {
         [EntityStats.SPEED]: document.getElementById('info-stat-speed'),
         [EntityStats.HIT_POINTS]: document.getElementById('info-stat-hitpoints'),
         [EntityStats.MAX_HIT_POINTS]: document.getElementById('info-stat-maxhitpoints'),
+        [EntityStats.PROTECTION]: document.getElementById('info-stat-protection'),
     };
 
     constructor(width: number, height: number, tiledata: HTMLImageElement) {
@@ -100,6 +102,9 @@ export class InfoView {
     public setMaxHitpoints(value: string|number): void {
         this.stats[EntityStats.MAX_HIT_POINTS].innerText = value as string;
     }
+    public setProtection(value: string|number): void {
+        this.stats[EntityStats.PROTECTION].innerText = value as string;
+    }
     public setPlayerStats(stats: IEntityStatsObject): void {
         this.setStrength(stats[EntityStats.STRENGTH]);
         this.setDexterity(stats[EntityStats.DEXTERITY]);
@@ -109,6 +114,7 @@ export class InfoView {
         this.setSpeed(stats[EntityStats.SPEED]);
         this.setHitpoints(stats[EntityStats.HIT_POINTS]);
         this.setMaxHitpoints(stats[EntityStats.MAX_HIT_POINTS]);
+        this.setProtection(stats[EntityStats.PROTECTION]);
     }
     public displayCellDescriptionInView(cell: Cell): void {
         let templateVariables: ITemplateVariables;

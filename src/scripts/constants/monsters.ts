@@ -35,5 +35,6 @@ export enum EntityStats {
     SPEED = 'speed',
     HIT_POINTS = 'hitpoints',
     MAX_HIT_POINTS = 'maxHitpoints',
+    PROTECTION = 'protection',
 }
 export const ENTITY_MAX_INVENTORY_LENGTH = 24;

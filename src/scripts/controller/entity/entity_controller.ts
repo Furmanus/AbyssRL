@@ -173,6 +173,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
             [EntityStats.SPEED]: this.model.speed,
             [EntityStats.HIT_POINTS]: this.model.hitPoints,
             [EntityStats.MAX_HIT_POINTS]: this.model.maxHitPoints,
+            [EntityStats.PROTECTION]: this.model.protection,
         };
     }
     /**

@@ -21,6 +21,7 @@ export interface IEntityStatsObject {
     [EntityStats.SPEED]: number;
     [EntityStats.HIT_POINTS]: number;
     [EntityStats.MAX_HIT_POINTS]: number;
+    [EntityStats.PROTECTION]: number;
 }
 export type IBodySlots = {
     [P in EntityBodySlots]?: ItemModel;
