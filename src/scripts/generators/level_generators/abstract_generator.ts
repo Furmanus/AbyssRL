@@ -557,9 +557,9 @@ export abstract class AbstractLevelGenerator {
             const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
 
             if (randomCell) {
-                const monsterController: MonsterController = monsterFactory.getGiantRatController(levelModel, randomCell);
-                randomCell.setEntity(monsterController.getModel());
-                levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
+                // const monsterController: MonsterController = monsterFactory.getGiantRatController(levelModel, randomCell);
+                // randomCell.setEntity(monsterController.getModel());
+                // levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
             }
         }
     }

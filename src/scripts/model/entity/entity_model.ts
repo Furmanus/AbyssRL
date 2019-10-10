@@ -203,6 +203,7 @@ export class EntityModel extends BaseModel implements IEntity {
         if (this.inventory.has(item)) {
             if (this.bodySlots[item.bodyPart[0]]) {
                 this.bodySlots[item.bodyPart[0]].isEquipped = false;
+                this.notify(EntityEvents.ENTITY_REMOVED_ITEM, this.bodySlots[item.bodyPart[0]]);
             }
             this.bodySlots[item.bodyPart[0]] = item;
             item.isEquipped = true;
@@ -215,6 +216,7 @@ export class EntityModel extends BaseModel implements IEntity {
         if (this.bodySlots[itemBodySlot[0]]) {
             this.bodySlots[itemBodySlot[0]] = null;
             item.isEquipped = false;
+            this.notify(EntityEvents.ENTITY_REMOVED_ITEM, item);
         }
     }
     /**

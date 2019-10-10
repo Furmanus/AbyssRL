@@ -54,11 +54,11 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
     private setInventoryModeInView(mode: EntityInventoryActions): void {
         this.view.setInventoryMode(mode);
     }
-    private rebuildView(mode: EntityInventoryActions): void {
+    public rebuildView(mode?: EntityInventoryActions): void {
         this.view.detachEvents();
         this.view.clearContent();
 
-        this.drawContentInView(getPreparedInventoryElement(this.inventoryContent, mode));
+        this.drawContentInView(getPreparedInventoryElement(this.inventoryContent, mode || this.inventoryMode));
         this.attachEventsInView();
     }
     private attachEventsInView(): void {
@@ -85,10 +85,19 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
         if (index >= ENTITY_MAX_INVENTORY_LENGTH || index >= this.inventoryContent.size) {
             return;
         }
-        if (this.selectedItems.has(index)) {
-            this.selectedItems.delete(index);
-        } else {
-            this.selectedItems.add(index);
+        if (this.inventoryMode === EntityInventoryActions.PICK_UP || this.inventoryMode === EntityInventoryActions.DROP) {
+            if (this.selectedItems.has(index)) {
+                this.selectedItems.delete(index);
+            } else {
+                this.selectedItems.add(index);
+            }
+        } else if (this.inventoryMode === EntityInventoryActions.EQUIP) {
+            const selectedItem: ItemModel = this.inventoryContent.get(index);
+            const eventToNotify = selectedItem.isEquipped ?
+                InventoryModalEvents.ENTITY_REMOVED_ITEM :
+                InventoryModalEvents.ENTITY_EQUIPPED_ITEM;
+
+            this.notify(eventToNotify, selectedItem);
         }
     }
     @boundMethod
