@@ -201,8 +201,11 @@ export class EntityModel extends BaseModel implements IEntity {
     }
     public equipItem(item: WearableModel): void {
         if (this.inventory.has(item)) {
+            if (this.bodySlots[item.bodyPart[0]]) {
+                this.bodySlots[item.bodyPart[0]].isEquipped = false;
+            }
             this.bodySlots[item.bodyPart[0]] = item;
-            this.inventory.remove(item);
+            item.isEquipped = true;
             this.notify(EntityEvents.ENTITY_EQUIPPED_ITEM, item);
         }
     }
@@ -211,7 +214,7 @@ export class EntityModel extends BaseModel implements IEntity {
 
         if (this.bodySlots[itemBodySlot[0]]) {
             this.bodySlots[itemBodySlot[0]] = null;
-            this.inventory.add(item);
+            item.isEquipped = false;
         }
     }
     /**
