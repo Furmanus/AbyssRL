@@ -4,6 +4,8 @@ export enum EntityEvents {
     ENTITY_HIT = 'entity:hit',
     ENTITY_PICKED_ITEM = 'ENTITY_PICKED_ITEM',
     ENTITY_DROPPED_ITEM = 'ENTITY_DROPPED_ITEM',
+    ENTITY_EQUIPPED_ITEM = 'ENTITY_EQUIPPED_ITEM',
+    ENTITY_REMOVED_ITEM = 'ENTITY_REMOVED_ITEM',
 }
 
 export enum EntityInventoryActions {

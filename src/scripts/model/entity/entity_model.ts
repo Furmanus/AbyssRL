@@ -10,6 +10,7 @@ import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {NaturalWeaponModel} from '../items/natural_weapon_model';
+import {WearableModel} from '../items/wearable_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -197,6 +198,21 @@ export class EntityModel extends BaseModel implements IEntity {
                 this.notify(EntityEvents.ENTITY_DROPPED_ITEM, item);
             }
         });
+    }
+    public equipItem(item: WearableModel): void {
+        if (this.inventory.has(item)) {
+            this.bodySlots[item.bodyPart[0]] = item;
+            this.inventory.remove(item);
+            this.notify(EntityEvents.ENTITY_EQUIPPED_ITEM, item);
+        }
+    }
+    public removeItem(item: WearableModel): void {
+        const itemBodySlot = item.bodyPart;
+
+        if (this.bodySlots[itemBodySlot[0]]) {
+            this.bodySlots[itemBodySlot[0]] = null;
+            this.inventory.add(item);
+        }
     }
     /**
      * Returns speed of entity.
