@@ -1,9 +1,8 @@
 import {Dice} from '../dice';
 import {DamageTypes} from '../../constants/combat_enums';
-import {MonsterAttackTypes} from '../../constants/monsters';
+import {EntityBodySlots, MonsterAttackTypes} from '../../constants/monsters';
 import {IAnyObject} from '../../interfaces/common';
 import {WearableModel} from './wearable_model';
-import {EntityModel} from '../entity/entity_model';
 import {ItemTypes} from '../../constants/item';
 import {ItemSprites} from '../../constants/sprites';
 
@@ -14,6 +13,7 @@ export class NaturalWeaponModel extends WearableModel {
     public display: ItemSprites = null;
     public itemType: ItemTypes = null;
     public naturalType: MonsterAttackTypes;
+    public bodyPart: EntityBodySlots[] = [EntityBodySlots.RIGHT_HAND];
 
     get description(): string {
         return this.naturalType;
