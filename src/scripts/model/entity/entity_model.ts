@@ -90,7 +90,11 @@ export class EntityModel extends BaseModel implements IEntity {
     /**
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
-    public protection: number = 0;
+    get protection(): number {
+        return Object.values(this.bodySlots).reduce((previous: ItemModel, current: ItemModel) => {
+            return previous + (current as WearableModel || {protection: 0}).protection || 0;
+        }, 0);
+    }
 
     get weapon(): IWeapon {
         return this.naturalWeapon;
