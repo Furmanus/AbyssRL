@@ -9,10 +9,10 @@ export class PlayerModel extends EntityModel {
 
         this.description = config.name || 'Anonymous brave hero';
         this.type = MonstersTypes.PLAYER;
-        this.strength = config.strength;
-        this.dexterity = config.dexterity;
-        this.intelligence = config.intelligence;
-        this.toughness = config.toughness;
+        this.baseStrength = config.strength;
+        this.baseDexterity = config.dexterity;
+        this.baseIntelligence = config.intelligence;
+        this.baseToughness = config.toughness;
         this.hitPoints = config.hitPoints;
         this.maxHitPoints = config.maxHitPoints;
         this.size = MonsterSizes.MEDIUM;

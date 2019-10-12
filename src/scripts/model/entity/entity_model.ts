@@ -29,7 +29,7 @@ export type IBodySlots = {
 
 export const animalTypes: MonstersTypes[] = [MonstersTypes.GIANT_RAT];
 
-export class EntityModel extends BaseModel implements IEntity {
+export class EntityModel extends BaseModel {
     /**
      * Visible sprite of entity. Member of file constants/sprites.js.
      */
@@ -42,15 +42,15 @@ export class EntityModel extends BaseModel implements IEntity {
      * Cell model where entity is.
      */
     public position: Cell;
-    public strength: number = null;
-    public dexterity: number = null;
-    public toughness: number = null;
-    public intelligence: number = null;
+    public baseStrength: number = null;
+    public baseDexterity: number = null;
+    public baseToughness: number = null;
+    public baseIntelligence: number = null;
     /**
      * Speed statistic of entity. Important stat, used by time engine to calculate how often entity should act.
      */
-    public speed: number = null;
-    public perception: number = null;
+    public baseSpeed: number = null;
+    public basePerception: number = null;
     /**
      * Array of cell model which are in entity field of view
      */
@@ -95,7 +95,24 @@ export class EntityModel extends BaseModel implements IEntity {
             return previous + (current as WearableModel || {protection: 0}).protection || 0;
         }, 0);
     }
-
+    get strength(): number {
+        return this.baseStrength;
+    }
+    get dexterity(): number {
+        return this.baseDexterity;
+    }
+    get intelligence(): number {
+        return this.baseIntelligence;
+    }
+    get toughness(): number {
+        return this.baseToughness;
+    }
+    get perception(): number {
+        return this.basePerception;
+    }
+    get speed(): number {
+        return this.baseSpeed;
+    }
     get weapon(): IWeapon {
         return this.naturalWeapon;
     }
@@ -107,8 +124,8 @@ export class EntityModel extends BaseModel implements IEntity {
         this.level = config.level;
         this.position = config.position;
         this.lastVisitedCell = config.lastVisitedCell || null;
-        this.speed = config.speed;
-        this.perception = config.perception;
+        this.baseSpeed = config.speed;
+        this.basePerception = config.perception;
         this.type = config.type;
         // TODO add initialization of inventory
         if (animalTypes.includes(this.type)) {

@@ -3,7 +3,7 @@ import {IEntity} from '../../interfaces/entity_interfaces';
 import {IAnyObject} from '../../interfaces/common';
 import {monstersData} from './monsters/data/monsters';
 
-export class MonsterModel extends EntityModel implements IEntity {
+export class MonsterModel extends EntityModel {
     public isHostile: boolean = true;
 
     public constructor(config: IAnyObject) {

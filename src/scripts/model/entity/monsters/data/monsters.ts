@@ -10,12 +10,12 @@ interface IMonsterDataObject {
 
 export const monstersData: IMonsterDataObject =  {
     [MonstersTypes.GIANT_RAT]: {
-        strength: 2,
-        dexterity: 10,
-        intelligence: 5,
-        toughness: 2,
-        speed: 15,
-        perception: 6,
+        baseStrength: 2,
+        baseDexterity: 10,
+        baseIntelligence: 5,
+        baseToughness: 2,
+        baseSpeed: 15,
+        basePerception: 6,
         description: "giant rat",
         type: MonstersTypes.GIANT_RAT,
         display: entities.GIANT_RAT,

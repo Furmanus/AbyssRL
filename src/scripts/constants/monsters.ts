@@ -27,12 +27,12 @@ export enum EntityBodySlots {
     FINGER = 'finger',
 }
 export enum EntityStats {
-    STRENGTH = 'strength',
-    DEXTERITY = 'dexterity',
-    INTELLIGENCE = 'intelligence',
-    TOUGHNESS = 'toughness',
-    PERCEPTION = 'perception',
-    SPEED = 'speed',
+    STRENGTH = 'baseStrength',
+    DEXTERITY = 'baseDexterity',
+    INTELLIGENCE = 'baseIntelligence',
+    TOUGHNESS = 'baseToughness',
+    PERCEPTION = 'basePerception',
+    SPEED = 'baseSpeed',
     HIT_POINTS = 'hitpoints',
     MAX_HIT_POINTS = 'maxHitpoints',
     PROTECTION = 'protection',
