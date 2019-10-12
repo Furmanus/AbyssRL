@@ -52,8 +52,8 @@ export class PlayerController extends EntityController<PlayerModel> {
                 levelNumber: newLevelModel.levelNumber,
             });
         });
-        this.model.on(this, EntityEvents.ENTITY_EQUIPPED_ITEM, this.markItemAsEquippedInView);
-        this.model.on(this, EntityEvents.ENTITY_REMOVED_ITEM, this.markItemAsUnequippedInView);
+        this.model.on(this, EntityEvents.ENTITY_EQUIPPED_ITEM, this.onItemEquippedInModel);
+        this.model.on(this, EntityEvents.ENTITY_REMOVED_ITEM, this.onItemUnequippedInModel);
 
         this.globalInventoryController.on(this, InventoryModalEvents.INVENTORY_ACTION_CONFIRMED, this.onInventoryActionConfirmed);
         this.globalInventoryController.on(this, InventoryModalEvents.ENTITY_EQUIPPED_ITEM, this.onInventoryItemEquippedInView);
@@ -298,6 +298,24 @@ export class PlayerController extends EntityController<PlayerModel> {
         if (isWearableItem(item)) {
             this.model.removeItem(item);
         }
+    }
+    private onItemEquippedInModel(): void {
+        this.markItemAsEquippedInView();
+
+        if (this.globalInventoryController.isOpen()) {
+            this.globalInventoryController.closeModal();
+        }
+
+        this.notify(PlayerActions.END_PLAYER_TURN);
+    }
+    private onItemUnequippedInModel(): void {
+        this.markItemAsUnequippedInView();
+
+        if (this.globalInventoryController.isOpen()) {
+            this.globalInventoryController.closeModal();
+        }
+
+        this.notify(PlayerActions.END_PLAYER_TURN);
     }
     private markItemAsEquippedInView(): void {
         if (this.globalInventoryController.isOpen()) {
