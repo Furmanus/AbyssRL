@@ -1,8 +1,8 @@
-import {EntityStats} from '../../constants/monsters';
+import {EntityActualStats} from '../../constants/monsters';
 import {BaseModel} from '../../core/base_model';
 
 type StatsModifers = {
-    [P in EntityStats]?: number;
+    [P in EntityActualStats]?: number;
 };
 
 export interface IModifiersModel {

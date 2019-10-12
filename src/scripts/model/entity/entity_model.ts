@@ -3,8 +3,7 @@ import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
-import {IEntity} from '../../interfaces/entity_interfaces';
-import {EntityBodySlots, EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
+import {EntityActualStats, EntityBodySlots, EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
 import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
@@ -96,22 +95,22 @@ export class EntityModel extends BaseModel {
         }, 0);
     }
     get strength(): number {
-        return this.baseStrength;
+        return this.baseStrength + this.getStatsModifiers(EntityActualStats.STRENGTH);
     }
     get dexterity(): number {
-        return this.baseDexterity;
+        return this.baseDexterity + this.getStatsModifiers(EntityActualStats.DEXTERITY);
     }
     get intelligence(): number {
-        return this.baseIntelligence;
+        return this.baseIntelligence + this.getStatsModifiers(EntityActualStats.INTELLIGENCE);
     }
     get toughness(): number {
-        return this.baseToughness;
+        return this.baseToughness + this.getStatsModifiers(EntityActualStats.TOUGHNESS);
     }
     get perception(): number {
-        return this.basePerception;
+        return this.basePerception + this.getStatsModifiers(EntityActualStats.PERCEPTION);
     }
     get speed(): number {
-        return this.baseSpeed;
+        return this.baseSpeed + this.getStatsModifiers(EntityActualStats.SPEED);
     }
     get weapon(): IWeapon {
         return this.naturalWeapon;
@@ -131,6 +130,19 @@ export class EntityModel extends BaseModel {
         if (animalTypes.includes(this.type)) {
             this.bodySlots = {};
         }
+    }
+    /**
+     * Returns sum of all worn item modifiers for given stat.
+     *
+     * @param type  Modifiers for which stat should be calculated
+     */
+    private getStatsModifiers(type: EntityActualStats): number {
+        return Object.values(this.bodySlots).reduce((previous: number, current: ItemModel) => {
+            if (current) {
+                return previous + ((current.modifiers || {stats: {}}).stats[type] || 0);
+            }
+            return previous;
+        }, 0);
     }
     /**
      * Changes position property of entity.
