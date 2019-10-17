@@ -12,3 +12,7 @@ export enum ArmourNames {
     CHAIN_MAIL = 'chain mail',
     PLATE_MAIL = 'plate mail',
 }
+export enum RingsNames {
+    RING = 'ring',
+    RING_OF_PROTECTION = 'ring of protection',
+}

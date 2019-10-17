@@ -10,6 +10,8 @@ import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {NaturalWeaponModel} from '../items/natural_weapon_model';
 import {WearableModel} from '../items/wearable_model';
+import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
+import {RingModelFactory} from '../../factory/item/ring_model_factory';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -72,7 +74,10 @@ export class EntityModel extends BaseModel {
     // TODO remove content of collection
     public inventory: ItemsCollection = new ItemsCollection(
         [weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel()],
+            weaponModelFactory.getRandomWeaponModel(),
+            ArmourModelFactory.getRandomArmourModel(),
+            RingModelFactory.getRandomRingModel(),
+        ],
     );
     public bodySlots: IBodySlots = {
         [EntityBodySlots.HEAD]: null,
@@ -90,9 +95,9 @@ export class EntityModel extends BaseModel {
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
     get protection(): number {
-        return Object.values(this.bodySlots).reduce((previous: ItemModel, current: ItemModel) => {
-            return previous + (current as WearableModel || {protection: 0}).protection || 0;
-        }, 0);
+        return (Object.values(this.bodySlots).reduce((previous: ItemModel, current: ItemModel) => {
+            return previous + ((current as WearableModel || {protection: 0}).protection || 0);
+        }, 0) + this.getStatsModifiers(EntityActualStats.PROTECTION));
     }
     get strength(): number {
         return this.baseStrength + this.getStatsModifiers(EntityActualStats.STRENGTH);

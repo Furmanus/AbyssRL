@@ -93,6 +93,7 @@ function generateItemListElement(
             case ItemTypes.WEAPON:
                 equipText = '[wielded]';
                 break;
+            case ItemTypes.RING:
             case ItemTypes.ARMOUR:
                 equipText = '[worn]';
                 break;
