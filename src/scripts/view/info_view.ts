@@ -8,6 +8,8 @@ import {tileset} from '../global/tiledata';
 import Timeout = NodeJS.Timeout;
 import {ItemModel} from '../model/items/item_model';
 import {WeaponModel} from '../model/items/weapon_model';
+import {ArmourModel} from '../model/items/armour_model';
+import {RingModel} from '../model/items/ring_model';
 
 interface IStatsObject {
     [EntityStats.STRENGTH]: HTMLSpanElement;
@@ -231,6 +233,16 @@ export class InfoView {
                 ...baseVariables,
                 damage: `${item.damage.getSerializedData()} (${item.type})`,
                 toHit: `${item.toHit.getSerializedData()}`,
+            };
+        } else if (item instanceof ArmourModel) {
+            return {
+                ...baseVariables,
+                evasion: item.evasion,
+                protection: item.protection,
+            };
+        } else if (item instanceof RingModel) {
+            return {
+                ...baseVariables,
             };
         }
     }
