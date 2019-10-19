@@ -10,6 +10,7 @@ import {ItemModel} from '../model/items/item_model';
 import {WeaponModel} from '../model/items/weapon_model';
 import {ArmourModel} from '../model/items/armour_model';
 import {RingModel} from '../model/items/ring_model';
+import {AmuletModel} from '../model/items/amulet_model';
 
 interface IStatsObject {
     [EntityStats.STRENGTH]: HTMLSpanElement;
@@ -241,6 +242,10 @@ export class InfoView {
                 protection: item.protection,
             };
         } else if (item instanceof RingModel) {
+            return {
+                ...baseVariables,
+            };
+        } else if (item instanceof AmuletModel) {
             return {
                 ...baseVariables,
             };

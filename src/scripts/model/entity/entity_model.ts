@@ -12,6 +12,7 @@ import {NaturalWeaponModel} from '../items/natural_weapon_model';
 import {WearableModel} from '../items/wearable_model';
 import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
 import {RingModelFactory} from '../../factory/item/ring_model_factory';
+import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -77,6 +78,7 @@ export class EntityModel extends BaseModel {
             weaponModelFactory.getRandomWeaponModel(),
             ArmourModelFactory.getRandomArmourModel(),
             RingModelFactory.getRandomRingModel(),
+            AmuletModelFactory.getRandomAmuletModel(),
         ],
     );
     public bodySlots: IBodySlots = {

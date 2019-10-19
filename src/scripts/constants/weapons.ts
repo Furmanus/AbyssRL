@@ -16,3 +16,8 @@ export enum RingsNames {
     RING = 'ring',
     RING_OF_PROTECTION = 'ring of protection',
 }
+export enum AmuletNames {
+    NECKLACE = 'necklace',
+    AMULET_OF_PROTECTION = 'amulet of protection',
+    SPIKED_COLLAR = 'spiked collar',
+}

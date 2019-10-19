@@ -63,6 +63,14 @@ export function getEntityInfoTemplate(variables: ITemplateVariables, itemType?: 
                 </div>
             </div>
         `,
+        [ItemTypes.AMULET]: `
+            <div class="examine-wrapper">
+                <canvas width="32" height="32" id="image"></canvas>
+                <div class="examine-description">
+                    <span>${variables.description}</span>
+                </div>
+            </div>
+        `,
     };
 
     return {
