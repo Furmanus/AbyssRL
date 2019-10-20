@@ -76,6 +76,12 @@ export class EntityModel extends BaseModel {
     public inventory: ItemsCollection = new ItemsCollection(
         [weaponModelFactory.getRandomWeaponModel(),
             weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel(),
+            ArmourModelFactory.getRandomArmourModel(),
+            ArmourModelFactory.getRandomArmourModel(),
+            ArmourModelFactory.getRandomArmourModel(),
             ArmourModelFactory.getRandomArmourModel(),
             RingModelFactory.getRandomRingModel(),
             AmuletModelFactory.getRandomAmuletModel(),
