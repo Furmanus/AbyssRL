@@ -19,6 +19,7 @@ export class InventoryView extends ModalView {
     private dropButton: HTMLButtonElement;
     private equipButton: HTMLButtonElement;
     private useButton: HTMLButtonElement;
+    private inventoryGroupsContainer: HTMLDivElement;
     private inventoryList: NodeListOf<HTMLUListElement>;
 
     public attachEvents(): void {
@@ -62,6 +63,24 @@ export class InventoryView extends ModalView {
                 throw new Error(`Invalid entity inventory action: ${mode}`);
         }
     }
+    public scrollInventoryDown(): void {
+        const {
+            inventoryGroupsContainer,
+        } = this;
+
+        if (inventoryGroupsContainer.scrollHeight > inventoryGroupsContainer.offsetHeight) {
+            inventoryGroupsContainer.scrollTop += 36;
+        }
+    }
+    public scrollInventoryUp(): void {
+        const {
+            inventoryGroupsContainer,
+        } = this;
+
+        if (inventoryGroupsContainer.scrollHeight > inventoryGroupsContainer.offsetHeight) {
+            inventoryGroupsContainer.scrollTop -= 36;
+        }
+    }
     @boundMethod
     protected onWindowKeydownCallback(e: KeyboardEvent): void {
         const {
@@ -78,6 +97,10 @@ export class InventoryView extends ModalView {
             this.notify(InventoryModalEvents.INVENTORY_ACTION_CONFIRMED);
         } else if (e.shiftKey && e.key.toLowerCase() !== 'shift') {
             this.notify(InventoryModalEvents.CHANGE_INVENTORY_ACTION, keyToInventoryActionMap[e.key.toLowerCase()]);
+        } else if (!wasMetaPressed && e.key.toLowerCase() === 'pagedown') {
+            this.notify(InventoryModalEvents.INVENTORY_SCROLL_DOWN);
+        } else if (!wasMetaPressed && e.key.toLowerCase() === 'pageup') {
+            this.notify(InventoryModalEvents.INVENTORY_SCROLL_UP);
         }
     }
     private setElementsFields(): void {
@@ -85,6 +108,7 @@ export class InventoryView extends ModalView {
         this.equipButton = this.modalContent.querySelector('#inventory-equip') as HTMLButtonElement;
         this.useButton = this.modalContent.querySelector('#inventory-use') as HTMLButtonElement;
         this.inventoryList = this.modalContent.querySelectorAll('[data-element=modal-inventory-list]');
+        this.inventoryGroupsContainer = this.modalContent.querySelector('[data-element=modal-inventory-group-container]');
     }
     private attachEventsToInventoryList(): void {
         this.inventoryList.forEach((ulListElement: HTMLUListElement) => {

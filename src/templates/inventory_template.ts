@@ -60,7 +60,7 @@ function getInventoryWrapper(): HTMLTemplateElement {
     const wrapper: HTMLTemplateElement = document.createElement('template');
     wrapper.innerHTML = `
         <div class="modal-inventory-wrapper">
-            <div class="modal-inventory-group-container"></div>
+            <div class="modal-inventory-group-container" data-element="modal-inventory-group-container"></div>
         </div>
     `;
 

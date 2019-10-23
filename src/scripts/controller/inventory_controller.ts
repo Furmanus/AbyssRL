@@ -44,6 +44,8 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
         this.view.on(this, InventoryModalEvents.CHANGE_INVENTORY_ACTION, this.onInventoryActionChangeInView);
         this.view.on(this, InventoryModalEvents.INVENTORY_ITEM_SELECTED, this.onInventoryItemSelectedInView);
         this.view.on(this, InventoryModalEvents.INVENTORY_ACTION_CONFIRMED, this.onInventoryActionConfirmed);
+        this.view.on(this, InventoryModalEvents.INVENTORY_SCROLL_DOWN, this.onInventoryViewScrollDown);
+        this.view.on(this, InventoryModalEvents.INVENTORY_SCROLL_UP, this.onInventoryViewScrollUp);
 
         this.selectedItems.on(this, 'add', this.onInventorySelectedItemsChange);
         this.selectedItems.on(this, 'delete', this.onInventorySelectedItemsChange);
@@ -112,5 +114,13 @@ export class InventoryController extends ModalController<ItemsCollection, Invent
                 selectedItems,
             });
         }
+    }
+    @boundMethod
+    private onInventoryViewScrollDown(): void {
+        this.view.scrollInventoryDown();
+    }
+    @boundMethod
+    private onInventoryViewScrollUp(): void {
+        this.view.scrollInventoryUp();
     }
 }
