@@ -1,6 +1,6 @@
 ### 0.0.5 (currently developed)
-* (Feature)  Armours and weapons can be worn now, giving appropriate modifiers for stats and in combat
-* (Feature)  Added armours
+* (Feature)  Armours, rings, amulets and weapons can be worn now, giving appropriate modifiers for stats and in combat
+* (Feature)  Added armours, rings and amulets
 * (Refactor) Refactored game models so game data can be now easily serialized
 ### 0.0.4 (01.09.2019)
 * (Feature) Basic implementation of items (four weapons). Player is able to pick up, drop items and display inventory 

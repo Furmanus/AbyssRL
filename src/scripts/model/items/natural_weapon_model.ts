@@ -13,6 +13,7 @@ export class NaturalWeaponModel extends WearableModel {
     public display: ItemSprites = null;
     public itemType: ItemTypes = null;
     public naturalType: MonsterAttackTypes;
+    public name: string = this.naturalType;
     public bodyPart: EntityBodySlots[] = [EntityBodySlots.RIGHT_HAND];
 
     get description(): string {

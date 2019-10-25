@@ -5,7 +5,6 @@ import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {EntityActualStats, EntityBodySlots, EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
-import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {NaturalWeaponModel} from '../items/natural_weapon_model';
@@ -13,6 +12,7 @@ import {WearableModel} from '../items/wearable_model';
 import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
 import {RingModelFactory} from '../../factory/item/ring_model_factory';
 import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
+import {WeaponModel} from '../items/weapon_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -125,8 +125,8 @@ export class EntityModel extends BaseModel {
     get speed(): number {
         return this.baseSpeed + this.getStatsModifiers(EntityActualStats.SPEED);
     }
-    get weapon(): IWeapon {
-        return this.naturalWeapon;
+    get weapon(): WeaponModel {
+        return this.bodySlots['right hand'] as WeaponModel || this.naturalWeapon;
     }
 
     constructor(config: IAnyObject) {

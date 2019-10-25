@@ -1,7 +1,6 @@
 import {EntityModel} from '../model/entity/entity_model';
 import {MonsterSizes} from '../constants/monsters';
 import {Dice} from '../model/dice';
-import {capitalizeString} from './utility';
 import {generateCombatMessage} from './combat/combat_messages';
 
 const sizeToDodgeModifierMap: {[prop: string]: Dice} = {
@@ -66,17 +65,12 @@ export function doCombatAction(attacker: EntityModel, defender: EntityModel): IC
         damageDealt = attackerWeapon.damage.roll() - defenderProtection;
 
         if (damageDealt > 0) {
-            const isAlive: boolean = defender.takeHit(damageDealt);
-            let message: string = generateCombatMessage({
+            const message: string = generateCombatMessage({
                 damageAmount: damageDealt,
                 wasDefenderHit: isDefenderHit,
                 attacker,
                 defender,
             });
-
-            if (!isAlive) {
-                message += ` ${capitalizeString(defender.description)} drops dead!`;
-            }
 
             return {
                 damageDealt: true,
