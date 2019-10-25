@@ -12,12 +12,12 @@ export interface IEntity {
     display: string;
     level: LevelModel;
     position: Cell;
-    strength: number;
-    dexterity: number;
-    toughness: number;
-    intelligence: number;
-    speed: number;
-    perception: number;
+    baseStrength: number;
+    baseDexterity: number;
+    baseToughness: number;
+    baseIntelligence: number;
+    baseSpeed: number;
+    basePerception: number;
     fov: Cell[];
     description: string;
     type: MonstersTypes;

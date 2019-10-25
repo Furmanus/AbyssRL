@@ -4,6 +4,7 @@ import {drawSpriteOnCanvas} from '../scripts/helper/canvas_helper';
 import {EntityInventoryActions} from '../scripts/constants/entity_events';
 import {getLetterFromNumber} from '../scripts/helper/utility';
 import {actionNameToModalHeaderMap} from '../scripts/constants/inventory';
+import {ItemTypes} from '../scripts/constants/item';
 
 interface IGroups {
     [groupName: string]: DocumentFragment;
@@ -59,7 +60,7 @@ function getInventoryWrapper(): HTMLTemplateElement {
     const wrapper: HTMLTemplateElement = document.createElement('template');
     wrapper.innerHTML = `
         <div class="modal-inventory-wrapper">
-            <div class="modal-inventory-group-container"></div>
+            <div class="modal-inventory-group-container" data-element="modal-inventory-group-container"></div>
         </div>
     `;
 
@@ -84,12 +85,27 @@ function generateItemListElement(
 ): HTMLTemplateElement {
     const template: HTMLTemplateElement = document.createElement('template');
     const shouldRenderMultiSelectBoxes: boolean = mode === EntityInventoryActions.DROP || mode === EntityInventoryActions.PICK_UP;
+    const isItemEquipped: boolean = item.isEquipped;
+    let equipText: string = '';
+
+    if (isItemEquipped) {
+        switch (item.itemType) {
+            case ItemTypes.WEAPON:
+                equipText = '[wielded]';
+                break;
+            case ItemTypes.RING:
+            case ItemTypes.AMULET:
+            case ItemTypes.ARMOUR:
+                equipText = '[worn]';
+                break;
+        }
+    }
 
     template.innerHTML = `
         <li class="modal-inventory-group-item" data-index="${index}">
             <span class="identifier">[${getLetterFromNumber(index)}]</span>
             <canvas width="32" height="32"></canvas>
-            <span>${item.fullDescription}</span>
+            <span>${item.fullDescription} ${equipText}</span>
             ${shouldRenderMultiSelectBoxes ? '<div class="checkbox" data-element="inventory-checkbox"/>' : ''}
         </li>
     `;

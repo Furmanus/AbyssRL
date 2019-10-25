@@ -29,6 +29,8 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
         this.model.on(this, EntityEvents.ENTITY_HIT, this.onEntityHit);
         this.model.on(this, EntityEvents.ENTITY_PICKED_ITEM, this.onEntityPickUp);
         this.model.on(this, EntityEvents.ENTITY_DROPPED_ITEM, this.onEntityDropItem);
+        this.model.on(this, EntityEvents.ENTITY_EQUIPPED_ITEM, this.onEntityEquipItem);
+        this.model.on(this, EntityEvents.ENTITY_REMOVED_ITEM, this.onEntityUnequipItem);
     }
     /**
      * Moves entity into new cell.
@@ -104,6 +106,12 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     protected onEntityDropItem(item: ItemModel): void {
         globalMessagesController.showMessageInView(`${this.model.getDescription()} drops ${item.description}.`);
     }
+    protected onEntityEquipItem(item: ItemModel): void {
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} equips ${item.fullDescription}`);
+    }
+    protected onEntityUnequipItem(item: ItemModel): void {
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} removes ${item.fullDescription}`);
+    }
     /**
      * Returns speed of entity (how fast it can take action in time engine).
      */
@@ -165,6 +173,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
             [EntityStats.SPEED]: this.model.speed,
             [EntityStats.HIT_POINTS]: this.model.hitPoints,
             [EntityStats.MAX_HIT_POINTS]: this.model.maxHitPoints,
+            [EntityStats.PROTECTION]: this.model.protection,
         };
     }
     /**

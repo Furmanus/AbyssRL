@@ -20,9 +20,10 @@ import {ItemsCollection} from '../../collections/items_collection';
 import {ItemModel} from '../../model/items/item_model';
 import {InventoryController} from '../inventory_controller';
 import {globalInventoryController} from '../../global/modal';
-import {EntityInventoryActions, InventoryModalEvents} from '../../constants/entity_events';
+import {EntityEvents, EntityInventoryActions, InventoryModalEvents} from '../../constants/entity_events';
 import {boundMethod} from 'autobind-decorator';
 import {getStringWithAnOrAPrefix} from '../../helper/utility';
+import {isWearableItem} from '../../interfaces/type_guards';
 
 export interface IMoveResolve {
     canMove: boolean;
@@ -51,7 +52,12 @@ export class PlayerController extends EntityController<PlayerModel> {
                 levelNumber: newLevelModel.levelNumber,
             });
         });
+        this.model.on(this, EntityEvents.ENTITY_EQUIPPED_ITEM, this.onItemEquippedInModel);
+        this.model.on(this, EntityEvents.ENTITY_REMOVED_ITEM, this.onItemUnequippedInModel);
+
         this.globalInventoryController.on(this, InventoryModalEvents.INVENTORY_ACTION_CONFIRMED, this.onInventoryActionConfirmed);
+        this.globalInventoryController.on(this, InventoryModalEvents.ENTITY_EQUIPPED_ITEM, this.onInventoryItemEquippedInView);
+        this.globalInventoryController.on(this, InventoryModalEvents.ENTITY_REMOVED_ITEM, this.onInventoryItemUnquippedInView);
     }
     @boundMethod
     private onInventoryActionConfirmed(data: IInventoryActionConfirmData): void {
@@ -272,5 +278,53 @@ export class PlayerController extends EntityController<PlayerModel> {
      */
     public getPlayerInventory(): ItemsCollection {
         return this.model.inventory;
+    }
+    /**
+     * Callback method triggered when inventory controller notifies that item was selected to equip in inventory modal view.
+     *
+     * @param item  Item model selected to equip
+     */
+    private onInventoryItemEquippedInView(item: ItemModel): void {
+        if (isWearableItem(item)) {
+            this.model.equipItem(item);
+        }
+    }
+    /**
+     * Callback method triggered when inventory controller notifies that item was selected to remove in inventory modal view.
+     *
+     * @param item  Item model selected to remove
+     */
+    private onInventoryItemUnquippedInView(item: ItemModel): void {
+        if (isWearableItem(item)) {
+            this.model.removeItem(item);
+        }
+    }
+    private onItemEquippedInModel(): void {
+        this.markItemAsEquippedInView();
+
+        if (this.globalInventoryController.isOpen()) {
+            this.globalInventoryController.closeModal();
+        }
+
+        this.notify(PlayerActions.END_PLAYER_TURN);
+    }
+    private onItemUnequippedInModel(): void {
+        this.markItemAsUnequippedInView();
+
+        if (this.globalInventoryController.isOpen()) {
+            this.globalInventoryController.closeModal();
+        }
+
+        this.notify(PlayerActions.END_PLAYER_TURN);
+    }
+    private markItemAsEquippedInView(): void {
+        if (this.globalInventoryController.isOpen()) {
+            this.globalInventoryController.rebuildView();
+        }
+    }
+    private markItemAsUnequippedInView(): void {
+        if (this.globalInventoryController.isOpen()) {
+            this.globalInventoryController.rebuildView();
+        }
     }
 }

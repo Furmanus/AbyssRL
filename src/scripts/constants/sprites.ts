@@ -87,5 +87,7 @@ export enum DungeonFeaturesSprites {
 export enum ItemSprites {
     WEAPON = 'weapon',
     ARMOUR = 'armour',
+    RING = 'ring',
+    AMULET = 'necklace',
 }
 export type DungeonTerrainSprites = DungeonFeaturesSprites & TerrainSprites;

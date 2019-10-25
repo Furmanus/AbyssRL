@@ -8,6 +8,9 @@ import {tileset} from '../global/tiledata';
 import Timeout = NodeJS.Timeout;
 import {ItemModel} from '../model/items/item_model';
 import {WeaponModel} from '../model/items/weapon_model';
+import {ArmourModel} from '../model/items/armour_model';
+import {RingModel} from '../model/items/ring_model';
+import {AmuletModel} from '../model/items/amulet_model';
 
 interface IStatsObject {
     [EntityStats.STRENGTH]: HTMLSpanElement;
@@ -18,6 +21,7 @@ interface IStatsObject {
     [EntityStats.SPEED]: HTMLSpanElement;
     [EntityStats.HIT_POINTS]: HTMLSpanElement;
     [EntityStats.MAX_HIT_POINTS]: HTMLSpanElement;
+    [EntityStats.PROTECTION]: HTMLSpanElement;
 }
 
 /**
@@ -41,6 +45,7 @@ export class InfoView {
         [EntityStats.SPEED]: document.getElementById('info-stat-speed'),
         [EntityStats.HIT_POINTS]: document.getElementById('info-stat-hitpoints'),
         [EntityStats.MAX_HIT_POINTS]: document.getElementById('info-stat-maxhitpoints'),
+        [EntityStats.PROTECTION]: document.getElementById('info-stat-protection'),
     };
 
     constructor(width: number, height: number, tiledata: HTMLImageElement) {
@@ -100,6 +105,9 @@ export class InfoView {
     public setMaxHitpoints(value: string|number): void {
         this.stats[EntityStats.MAX_HIT_POINTS].innerText = value as string;
     }
+    public setProtection(value: string|number): void {
+        this.stats[EntityStats.PROTECTION].innerText = value as string;
+    }
     public setPlayerStats(stats: IEntityStatsObject): void {
         this.setStrength(stats[EntityStats.STRENGTH]);
         this.setDexterity(stats[EntityStats.DEXTERITY]);
@@ -109,6 +117,7 @@ export class InfoView {
         this.setSpeed(stats[EntityStats.SPEED]);
         this.setHitpoints(stats[EntityStats.HIT_POINTS]);
         this.setMaxHitpoints(stats[EntityStats.MAX_HIT_POINTS]);
+        this.setProtection(stats[EntityStats.PROTECTION]);
     }
     public displayCellDescriptionInView(cell: Cell): void {
         let templateVariables: ITemplateVariables;
@@ -225,6 +234,20 @@ export class InfoView {
                 ...baseVariables,
                 damage: `${item.damage.getSerializedData()} (${item.type})`,
                 toHit: `${item.toHit.getSerializedData()}`,
+            };
+        } else if (item instanceof ArmourModel) {
+            return {
+                ...baseVariables,
+                evasion: item.evasion,
+                protection: item.protection,
+            };
+        } else if (item instanceof RingModel) {
+            return {
+                ...baseVariables,
+            };
+        } else if (item instanceof AmuletModel) {
+            return {
+                ...baseVariables,
             };
         }
     }

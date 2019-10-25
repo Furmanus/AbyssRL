@@ -3,13 +3,16 @@ import {IAnyObject} from '../../interfaces/common';
 import {Cell} from '../dungeon/cells/cell_model';
 import {LevelModel} from '../dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
-import {IEntity} from '../../interfaces/entity_interfaces';
-import {EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
+import {EntityActualStats, EntityBodySlots, EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
-import {IWeapon} from '../../interfaces/combat';
 import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {NaturalWeaponModel} from '../items/natural_weapon_model';
+import {WearableModel} from '../items/wearable_model';
+import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
+import {RingModelFactory} from '../../factory/item/ring_model_factory';
+import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
+import {WeaponModel} from '../items/weapon_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -20,9 +23,15 @@ export interface IEntityStatsObject {
     [EntityStats.SPEED]: number;
     [EntityStats.HIT_POINTS]: number;
     [EntityStats.MAX_HIT_POINTS]: number;
+    [EntityStats.PROTECTION]: number;
 }
+export type IBodySlots = {
+    [P in EntityBodySlots]?: ItemModel;
+};
 
-export class EntityModel extends BaseModel implements IEntity {
+export const animalTypes: MonstersTypes[] = [MonstersTypes.GIANT_RAT];
+
+export class EntityModel extends BaseModel {
     /**
      * Visible sprite of entity. Member of file constants/sprites.js.
      */
@@ -35,15 +44,15 @@ export class EntityModel extends BaseModel implements IEntity {
      * Cell model where entity is.
      */
     public position: Cell;
-    public strength: number = null;
-    public dexterity: number = null;
-    public toughness: number = null;
-    public intelligence: number = null;
+    public baseStrength: number = null;
+    public baseDexterity: number = null;
+    public baseToughness: number = null;
+    public baseIntelligence: number = null;
     /**
      * Speed statistic of entity. Important stat, used by time engine to calculate how often entity should act.
      */
-    public speed: number = null;
-    public perception: number = null;
+    public baseSpeed: number = null;
+    public basePerception: number = null;
     /**
      * Array of cell model which are in entity field of view
      */
@@ -66,8 +75,26 @@ export class EntityModel extends BaseModel implements IEntity {
     // TODO remove content of collection
     public inventory: ItemsCollection = new ItemsCollection(
         [weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel()],
+            weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel(),
+            weaponModelFactory.getRandomWeaponModel(),
+            ArmourModelFactory.getRandomArmourModel(),
+            ArmourModelFactory.getRandomArmourModel(),
+            ArmourModelFactory.getRandomArmourModel(),
+            ArmourModelFactory.getRandomArmourModel(),
+            RingModelFactory.getRandomRingModel(),
+            AmuletModelFactory.getRandomAmuletModel(),
+        ],
     );
+    public bodySlots: IBodySlots = {
+        [EntityBodySlots.HEAD]: null,
+        [EntityBodySlots.NECK]: null,
+        [EntityBodySlots.TORSO]: null,
+        [EntityBodySlots.LEFT_HAND]: null,
+        [EntityBodySlots.RIGHT_HAND]: null,
+        [EntityBodySlots.FINGER]: null,
+    };
     /**
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
@@ -75,10 +102,31 @@ export class EntityModel extends BaseModel implements IEntity {
     /**
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
-    public protection: number = 0;
-
-    get weapon(): IWeapon {
-        return this.naturalWeapon;
+    get protection(): number {
+        return (Object.values(this.bodySlots).reduce((previous: ItemModel, current: ItemModel) => {
+            return previous + ((current as WearableModel || {protection: 0}).protection || 0);
+        }, 0) + this.getStatsModifiers(EntityActualStats.PROTECTION));
+    }
+    get strength(): number {
+        return this.baseStrength + this.getStatsModifiers(EntityActualStats.STRENGTH);
+    }
+    get dexterity(): number {
+        return this.baseDexterity + this.getStatsModifiers(EntityActualStats.DEXTERITY);
+    }
+    get intelligence(): number {
+        return this.baseIntelligence + this.getStatsModifiers(EntityActualStats.INTELLIGENCE);
+    }
+    get toughness(): number {
+        return this.baseToughness + this.getStatsModifiers(EntityActualStats.TOUGHNESS);
+    }
+    get perception(): number {
+        return this.basePerception + this.getStatsModifiers(EntityActualStats.PERCEPTION);
+    }
+    get speed(): number {
+        return this.baseSpeed + this.getStatsModifiers(EntityActualStats.SPEED);
+    }
+    get weapon(): WeaponModel {
+        return this.bodySlots['right hand'] as WeaponModel || this.naturalWeapon;
     }
 
     constructor(config: IAnyObject) {
@@ -88,10 +136,26 @@ export class EntityModel extends BaseModel implements IEntity {
         this.level = config.level;
         this.position = config.position;
         this.lastVisitedCell = config.lastVisitedCell || null;
-        this.speed = config.speed;
-        this.perception = config.perception;
+        this.baseSpeed = config.speed;
+        this.basePerception = config.perception;
         this.type = config.type;
         // TODO add initialization of inventory
+        if (animalTypes.includes(this.type)) {
+            this.bodySlots = {};
+        }
+    }
+    /**
+     * Returns sum of all worn item modifiers for given stat.
+     *
+     * @param type  Modifiers for which stat should be calculated
+     */
+    private getStatsModifiers(type: EntityActualStats): number {
+        return Object.values(this.bodySlots).reduce((previous: number, current: ItemModel) => {
+            if (current) {
+                return previous + ((current.modifiers || {stats: {}}).stats[type] || 0);
+            }
+            return previous;
+        }, 0);
     }
     /**
      * Changes position property of entity.
@@ -181,6 +245,26 @@ export class EntityModel extends BaseModel implements IEntity {
                 this.notify(EntityEvents.ENTITY_DROPPED_ITEM, item);
             }
         });
+    }
+    public equipItem(item: WearableModel): void {
+        if (this.inventory.has(item)) {
+            if (this.bodySlots[item.bodyPart[0]]) {
+                this.bodySlots[item.bodyPart[0]].isEquipped = false;
+                this.notify(EntityEvents.ENTITY_REMOVED_ITEM, this.bodySlots[item.bodyPart[0]]);
+            }
+            this.bodySlots[item.bodyPart[0]] = item;
+            item.isEquipped = true;
+            this.notify(EntityEvents.ENTITY_EQUIPPED_ITEM, item);
+        }
+    }
+    public removeItem(item: WearableModel): void {
+        const itemBodySlot = item.bodyPart;
+
+        if (this.bodySlots[itemBodySlot[0]]) {
+            this.bodySlots[itemBodySlot[0]] = null;
+            item.isEquipped = false;
+            this.notify(EntityEvents.ENTITY_REMOVED_ITEM, item);
+        }
     }
     /**
      * Returns speed of entity.

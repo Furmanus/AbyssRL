@@ -1,6 +1,3 @@
-/**
- * @author Lukasz Lach
- */
 import {
     IAnyFunction, IAnyObject,
 } from '../interfaces/common';

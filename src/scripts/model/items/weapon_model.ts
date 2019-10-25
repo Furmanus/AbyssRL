@@ -3,6 +3,7 @@ import {Dice} from '../dice';
 import {IWeaponConstructorConfig} from '../../interfaces/combat';
 import {ItemSprites} from '../../constants/sprites';
 import {ItemTypes} from '../../constants/item';
+import {EntityBodySlots} from '../../constants/monsters';
 
 export class WeaponModel extends WearableModel {
     public damage: Dice;
@@ -11,6 +12,7 @@ export class WeaponModel extends WearableModel {
     public readonly name: string;
     public display: ItemSprites;
     public itemType: ItemTypes = ItemTypes.WEAPON;
+    public bodyPart: EntityBodySlots[] = [EntityBodySlots.RIGHT_HAND];
 
     get description(): string {
         return this.name;

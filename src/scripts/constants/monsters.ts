@@ -18,7 +18,26 @@ export enum EntityBodyParts {
     ARMS = 'arms',
     LEGS = 'legs',
 }
+export enum EntityBodySlots {
+    HEAD = 'head',
+    TORSO = 'torso',
+    LEFT_HAND = 'left hand',
+    RIGHT_HAND = 'right hand',
+    NECK = 'neck',
+    FINGER = 'finger',
+}
 export enum EntityStats {
+    STRENGTH = 'baseStrength',
+    DEXTERITY = 'baseDexterity',
+    INTELLIGENCE = 'baseIntelligence',
+    TOUGHNESS = 'baseToughness',
+    PERCEPTION = 'basePerception',
+    SPEED = 'baseSpeed',
+    HIT_POINTS = 'hitpoints',
+    MAX_HIT_POINTS = 'maxHitpoints',
+    PROTECTION = 'protection',
+}
+export enum EntityActualStats {
     STRENGTH = 'strength',
     DEXTERITY = 'dexterity',
     INTELLIGENCE = 'intelligence',
@@ -27,5 +46,6 @@ export enum EntityStats {
     SPEED = 'speed',
     HIT_POINTS = 'hitpoints',
     MAX_HIT_POINTS = 'maxHitpoints',
+    PROTECTION = 'protection',
 }
 export const ENTITY_MAX_INVENTORY_LENGTH = 24;

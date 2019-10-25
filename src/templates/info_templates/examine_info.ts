@@ -41,7 +41,36 @@ export function getEntityInfoTemplate(variables: ITemplateVariables, itemType?: 
                 </div>
             </div>
         `,
-        [ItemTypes.ARMOUR]: ``,
+        [ItemTypes.ARMOUR]: `
+            <div class="examine-wrapper">
+                <canvas width="32" height="32" id="image"></canvas>
+                <div class="examine-description">
+                    <span>${variables.description}</span>
+                </div>
+                <div class="examine-stats">
+                    <span>Evasion: ${variables.evasion}</span>
+                </div>
+                <div class="examine-stats">
+                    <span>Protection: ${variables.protection}</span>
+                </div>
+            </div>
+        `,
+        [ItemTypes.RING]: `
+            <div class="examine-wrapper">
+                <canvas width="32" height="32" id="image"></canvas>
+                <div class="examine-description">
+                    <span>${variables.description}</span>
+                </div>
+            </div>
+        `,
+        [ItemTypes.AMULET]: `
+            <div class="examine-wrapper">
+                <canvas width="32" height="32" id="image"></canvas>
+                <div class="examine-description">
+                    <span>${variables.description}</span>
+                </div>
+            </div>
+        `,
     };
 
     return {
