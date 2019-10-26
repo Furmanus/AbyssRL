@@ -2,6 +2,7 @@ export enum MonstersTypes {
     PLAYER = 'player',
     UNKNOWN = 'unknown_entity',
     GIANT_RAT = 'giant_rat',
+    ORC = 'orc',
 }
 export enum MonsterSizes {
     SMALL = 'small',

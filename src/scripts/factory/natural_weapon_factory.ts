@@ -12,6 +12,13 @@ export function getMonsterNaturalWeapon(type: MonstersTypes): NaturalWeaponModel
                 type: DamageTypes.PIERCING,
                 naturalType: MonsterAttackTypes.BITE,
             });
+        case MonstersTypes.ORC:
+            return new NaturalWeaponModel({
+                damage: new Dice('2d2+1'),
+                toHit: new Dice('1d1'),
+                type: DamageTypes.BLUDGEONING,
+                naturalType: MonsterAttackTypes.FIST,
+            });
         case MonstersTypes.PLAYER:
             return new NaturalWeaponModel({
                 damage: new Dice('1d5'),

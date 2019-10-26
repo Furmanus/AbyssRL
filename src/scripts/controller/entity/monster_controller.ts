@@ -12,6 +12,7 @@ function getEntityAiStrategy(type: MonstersTypes): monstersAi {
     switch (type) {
         case MonstersTypes.GIANT_RAT:
             return AnimalAi;
+        case MonstersTypes.ORC:
         default:
             return MonsterAi;
     }
