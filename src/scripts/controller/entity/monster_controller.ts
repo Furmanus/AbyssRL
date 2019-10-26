@@ -3,6 +3,7 @@ import {MonsterModel} from '../../model/entity/monster_model';
 import {MonsterAi} from '../../strategy/ai/monster_ai';
 import {MonstersTypes} from '../../constants/monsters';
 import {AnimalAi} from '../../strategy/ai/animal_ai';
+import {HumanoidAi} from '../../strategy/ai/humanoid_ai';
 
 interface IMonsterControllerConfig {
     model: MonsterModel;
@@ -13,6 +14,7 @@ function getEntityAiStrategy(type: MonstersTypes): monstersAi {
         case MonstersTypes.GIANT_RAT:
             return AnimalAi;
         case MonstersTypes.ORC:
+            return HumanoidAi;
         default:
             return MonsterAi;
     }
