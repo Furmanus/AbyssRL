@@ -557,7 +557,9 @@ export abstract class AbstractLevelGenerator {
             const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
 
             if (randomCell) {
-                const monsterController: MonsterController = monsterFactory.getOrcController(levelModel, randomCell);
+                const monsterController: MonsterController = Math.random() < 0.5 ?
+                    monsterFactory.getOrcController(levelModel, randomCell) :
+                    monsterFactory.getGiantRatController(levelModel, randomCell);
                 randomCell.setEntity(monsterController.getModel());
                 levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
             }

@@ -2,6 +2,8 @@ import {EntityController} from '../../controller/entity/entity_controller';
 import {MonsterController} from '../../controller/entity/monster_controller';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {Cell} from '../../model/dungeon/cells/cell_model';
+import {MonstersTypes} from '../../constants/monsters';
+import {EntityModel} from '../../model/entity/entity_model';
 
 export interface IInitialConfigAi<C extends EntityController = MonsterController> {
     controller: C;
@@ -56,6 +58,18 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
 
         if (nextCell) {
             this.controller.move(nextCell);
+        }
+    }
+    protected getMonsterEnemiesList(): MonstersTypes[] {
+        const model: EntityModel = this.controller.getModel();
+
+        switch (model.type) {
+            case MonstersTypes.GIANT_RAT:
+                return [MonstersTypes.PLAYER, MonstersTypes.ORC];
+            case MonstersTypes.ORC:
+                return [MonstersTypes.PLAYER, MonstersTypes.GIANT_RAT];
+            default:
+                return [];
         }
     }
 }

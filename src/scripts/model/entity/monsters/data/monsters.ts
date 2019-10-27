@@ -31,7 +31,7 @@ export const monstersData: IMonsterDataObject =  {
         baseDexterity: 6,
         baseIntelligence: 4,
         baseToughness: 12,
-        baseSpeed: 10,
+        baseSpeed: 13,
         basePerception: 4,
         type: MonstersTypes.ORC,
         description: "orc",
