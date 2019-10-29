@@ -4,6 +4,8 @@ import {LevelModel} from '../../model/dungeon/level_model';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {MonstersTypes} from '../../constants/monsters';
 import {EntityModel} from '../../model/entity/entity_model';
+import {calculatePathToCell} from '../../helper/pathfinding_helper';
+import {ICoordinates} from '../../interfaces/common';
 
 export interface IInitialConfigAi<C extends EntityController = MonsterController> {
     controller: C;
@@ -14,6 +16,10 @@ export interface IFilteredFov {
 }
 export interface IArtificialIntelligence {
     performNextMove: () => void;
+}
+export interface IHostilesWithDistance {
+    entity: EntityModel;
+    path: ICoordinates[];
 }
 /**
  * Abstract class containing AI algorithms and methods for game entities. Class contains common methods for all types
@@ -71,5 +77,17 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
             default:
                 return [];
         }
+    }
+    public getHostilesWithDistance(entities: EntityModel[]): IHostilesWithDistance[] {
+        const hostileList: MonstersTypes[] = this.getMonsterEnemiesList();
+        const model: EntityModel = this.controller.getModel();
+        const levelModel: LevelModel = this.controller.getLevelModel();
+
+        return entities.filter((entity: EntityModel) => hostileList.includes(entity.type)).map((entity: EntityModel) => {
+            return {
+                path: calculatePathToCell(model.position, entity.position, levelModel),
+                entity,
+            };
+        }).sort((first, second) => first.path.length - second.path.length);
     }
 }

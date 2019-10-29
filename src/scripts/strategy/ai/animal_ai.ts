@@ -1,7 +1,6 @@
 import {MonsterAi} from './monster_ai';
 import {Cell} from '../../model/dungeon/cells/cell_model';
-import {IFilteredFov} from './ai';
-import {MonstersTypes} from '../../constants/monsters';
+import {IFilteredFov, IHostilesWithDistance} from './ai';
 import {ICoordinates} from '../../interfaces/common';
 import {calculatePathToCell} from '../../helper/pathfinding_helper';
 import {LevelModel} from '../../model/dungeon/level_model';
@@ -12,18 +11,13 @@ export class AnimalAi extends MonsterAi {
         const filteredFov: IFilteredFov = this.examineFov(fov);
         const entityPosition: Cell = this.controller.getEntityPosition();
         const levelModel: LevelModel = this.controller.getLevelModel();
+        const hostiles: IHostilesWithDistance[] = this.getHostilesWithDistance(filteredFov.entities.map((cell: Cell) => cell.entity));
         let entityPriority: Cell;
         let pathToTarget: ICoordinates[];
 
-        filteredFov.entities.forEach((cell: Cell) => {
-            const {
-                entity,
-            } = cell;
-
-            if (entity.type === MonstersTypes.PLAYER) {
-                entityPriority = cell;
-            }
-        });
+        if (hostiles.length) {
+            entityPriority = hostiles[0].entity.position;
+        }
 
         if (entityPriority) {
             pathToTarget = calculatePathToCell(entityPosition, entityPriority, levelModel);

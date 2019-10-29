@@ -1,11 +1,10 @@
 import {MonsterAi} from './monster_ai';
 import {Cell} from '../../model/dungeon/cells/cell_model';
-import {IFilteredFov} from './ai';
+import {IFilteredFov, IHostilesWithDistance} from './ai';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {ICoordinates} from '../../interfaces/common';
 import {ItemsCollection} from '../../collections/items_collection';
 import {EntityModel} from '../../model/entity/entity_model';
-import {MonstersTypes} from '../../constants/monsters';
 import {calculatePathToCell} from '../../helper/pathfinding_helper';
 import {ItemModel} from '../../model/items/item_model';
 import {isWearableItem} from '../../interfaces/type_guards';
@@ -23,10 +22,6 @@ interface IEntityItemNeeds {
     priority: 1 | 2 | 3 | 4 | 5;
     cell?: Cell;
     inInventory: boolean;
-}
-interface IHostilesWithDistance {
-    entity: EntityModel;
-    path: ICoordinates[];
 }
 
 export class HumanoidAi extends MonsterAi {
@@ -61,18 +56,6 @@ export class HumanoidAi extends MonsterAi {
             [EntityNeeds.LOW_HEALTH]: entityModel.hitPoints / entityModel.maxHitPoints < 0.25,
             [EntityNeeds.NEED_WEAPON]: entityModel.bodySlots['right hand'] === null,
         };
-    }
-    public getHostilesWithDistance(entities: EntityModel[]): IHostilesWithDistance[] {
-        const hostileList: MonstersTypes[] = this.getMonsterEnemiesList();
-        const model: EntityModel = this.controller.getModel();
-        const levelModel: LevelModel = this.controller.getLevelModel();
-
-        return entities.filter((entity: EntityModel) => hostileList.includes(entity.type)).map((entity: EntityModel) => {
-            return {
-                path: calculatePathToCell(model.position, entity.position, levelModel),
-                entity,
-            };
-        }).sort((first, second) => first.path.length - second.path.length);
     }
     public examineItemsInFov(inventory: ItemsCollection, fov: Cell[], entityNeeds: EntityNeedsType): IEntityItemNeeds[] {
         const model: EntityModel = this.controller.getModel();
