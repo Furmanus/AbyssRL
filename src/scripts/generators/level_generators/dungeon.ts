@@ -338,8 +338,8 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
         level: LevelModel,
         room1: RoomModel,
         room2: RoomModel,
-        cellsToChange: string[],
-        forbidenCells: string[] = [],
+        cellsToChange: CellTypes[],
+        forbidenCells: CellTypes[] = [],
     ): boolean {
         const x1: number = room1.left;
         const y1: number = room1.top;

@@ -126,7 +126,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
              * Iterate through voronoi points to find closest point to examined cell. Store distance for comparision
              * with further points and its type.
              */
-            voronoiPoints.forEach((examinedVoronoiPoint: Position & {type: string}) => {
+            voronoiPoints.forEach((examinedVoronoiPoint: Position & {type: CellTypes}) => {
                 examinedVoronoiPointDistance = Utility.getDistance(
                     examinedCellX,
                     examinedCellY,

@@ -18,7 +18,6 @@ import {Direction} from '../../model/position/direction';
 import {directionType} from '../../interfaces/common';
 import {MonsterController} from '../../controller/entity/monster_controller';
 import {monsterFactory} from '../../factory/monster_factory';
-import {DungeonEvents} from '../../constants/dungeon_events';
 
 const {
     NE,
@@ -425,8 +424,8 @@ export abstract class AbstractLevelGenerator {
         direction: string,
         point1: Position,
         point2: Position,
-        newCells: string[],
-        forbiddenCells: string[] = [],
+        newCells: CellTypes[],
+        forbiddenCells: CellTypes[] = [],
     ): boolean | Position[] {
         const firstCell: Cell = levelModel.getCellFromPosition(point1);
         const secondCell: Cell = levelModel.getCellFromPosition(point2);
@@ -560,8 +559,8 @@ export abstract class AbstractLevelGenerator {
                 const monsterController: MonsterController = Math.random() < 0.5 ?
                     monsterFactory.getOrcController(levelModel, randomCell) :
                     monsterFactory.getGiantRatController(levelModel, randomCell);
-                randomCell.setEntity(monsterController.getModel());
-                levelModel.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
+
+                levelModel.spawnMonster(monsterController, randomCell);
             }
         }
     }
