@@ -5,6 +5,7 @@
   "main": "src/index.html",
   "scripts": {
     "start": "NODE_ENV=development webpack --config webpack.config.js --env.watch --env.mode=development",
+    "start:test": "NODE_ENV=development webpack --config webpack.config.js --env.watch --env.mode=development --env.test",
     "build:prod": "NODE_ENV=production webpack --config webpack.config.js --env.mode=production",
     "build:dev": "NODE_ENV=development webpack --config webpack.config.js --env.mode=development",
     "lint:js": "eslint --max-warnings 0 src/scripts",
