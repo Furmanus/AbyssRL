@@ -46,8 +46,10 @@ export class MainDungeonLevelGenerationStrategy {
             default:
                 const percentDieRoll: number = Rng.getPercentage();
 
-                testLevelGenerator.generateLevel(levelModel);
-                return;
+                if (process.env.test) {
+                    testLevelGenerator.generateLevel(levelModel);
+                    return;
+                }
 
                 if (percentDieRoll < 33) {
                     arenaLevelGenerator.generateLevel(levelModel, generateConfig);

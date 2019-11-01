@@ -123,6 +123,10 @@ export class GameController extends Controller {
             maxHitPoints: 20,
         });
 
+        if (process.env.test) {
+            this.playerController.getModel().basePerception = 99;
+        }
+
         inititalPlayerCell.entity = this.playerController.getModel();
         this.playerController.calculateFov();
         this.currentLevel.addActorToTimeEngine(this.playerController);
