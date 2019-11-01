@@ -20,6 +20,7 @@ export interface IArtificialIntelligence {
 export interface IHostilesWithDistance {
     entity: EntityModel;
     path: ICoordinates[];
+    priority?: number;
 }
 /**
  * Abstract class containing AI algorithms and methods for game entities. Class contains common methods for all types
@@ -48,8 +49,14 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
         };
 
         fov.forEach((cell: Cell) => {
-            if (cell.entity && cell.entity !== this.controller.getModel()) {
+            const cellHasEntity: boolean = cell.entity && cell.entity !== this.controller.getModel();
+            const cellHasItems: boolean = cell.inventory.size > 0;
+
+            if (cellHasEntity) {
                 filteredFov.entities.push(cell);
+            }
+            if (cellHasItems) {
+                filteredFov.items.push(cell);
             }
         });
 

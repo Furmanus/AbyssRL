@@ -7,8 +7,10 @@ import {ItemsCollection} from '../../collections/items_collection';
 import {EntityModel} from '../../model/entity/entity_model';
 import {calculatePathToCell} from '../../helper/pathfinding_helper';
 import {ItemModel} from '../../model/items/item_model';
-import {isWearableItem} from '../../interfaces/type_guards';
+import {isItemModel, isWearableItem} from '../../interfaces/type_guards';
 import {ItemTypes} from '../../constants/item';
+import {EntityState} from '../../constants/ai_enums';
+import {WearableModel} from '../../model/items/wearable_model';
 
 enum EntityNeeds {
     LOW_HEALTH = 'low_health',
@@ -17,11 +19,13 @@ enum EntityNeeds {
 type EntityNeedsType = {
     [P in EntityNeeds]: boolean;
 };
-interface IEntityItemNeeds {
-    item: ItemModel;
-    priority: 1 | 2 | 3 | 4 | 5;
-    cell?: Cell;
-    inInventory: boolean;
+interface IEntityGoal {
+    type: EntityState;
+    priority: number;
+    cell: Cell;
+    path: ICoordinates[];
+    goal: EntityModel | WearableModel;
+    inInventory?: boolean;
 }
 
 export class HumanoidAi extends MonsterAi {
@@ -34,32 +38,99 @@ export class HumanoidAi extends MonsterAi {
         const levelModel: LevelModel = this.controller.getLevelModel();
         const entityNeeds: EntityNeedsType = this.calculateNeeds();
         const hostiles: IHostilesWithDistance[] = this.getHostilesWithDistance(filteredFov.entities.map((cell: Cell) => cell.entity));
-        const priorityCandidates: Cell[] = [];
-        const itemsNeeds = this.examineItemsInFov(entityInventory, filteredFov.items, entityNeeds);
-        let entityPriority: Cell;
-        let pathToTarget: ICoordinates[];
+        const itemsNeeds: IEntityGoal[] = this.examineItemsInFov(entityInventory, filteredFov.items, entityNeeds);
+        let currentTarget: IEntityGoal = {priority: 0} as IEntityGoal;
 
         if (hostiles.length) {
-            entityPriority = hostiles[0].entity.position;
+            const nearestHostile = hostiles[0];
+            const pathToTarget = calculatePathToCell(model.position, nearestHostile.entity.position, levelModel);
+            const currentGoal: IEntityGoal = {
+                cell: nearestHostile.entity.position,
+                goal: nearestHostile.entity,
+                type: EntityState.AGGRESIVE,
+                path: pathToTarget,
+                priority: this.calculatePriorityForEntity(nearestHostile.entity, pathToTarget.length),
+            };
 
-            pathToTarget = calculatePathToCell(model.position, entityPriority, levelModel);
+            if (currentGoal.priority > currentTarget.priority) {
+                currentTarget = currentGoal;
+            }
+        } else if (itemsNeeds.length) {
+            const itemPriority: IEntityGoal = itemsNeeds[0];
+            let currentGoal: IEntityGoal;
+            let pathToTarget: ICoordinates[];
 
-            this.controller.move(levelModel.getCell(pathToTarget[1].x, pathToTarget[1].y));
+            if (itemPriority.inInventory) {
+                if (isWearableItem(itemPriority.goal)) {
+                    currentGoal = {
+                        goal: itemPriority.goal,
+                        type: EntityState.DESIRE,
+                        path: null,
+                        cell: null,
+                        inInventory: true,
+                        priority: itemPriority.priority,
+                    };
+
+                    if (currentGoal.priority > currentTarget.priority) {
+                        currentTarget = currentGoal;
+                    }
+                }
+            } else {
+                pathToTarget = calculatePathToCell(entityPosition, itemPriority.cell, levelModel);
+
+                currentGoal = {
+                    goal: itemPriority.goal,
+                    type: EntityState.DESIRE,
+                    path: pathToTarget,
+                    cell: itemPriority.cell,
+                    inInventory: false,
+                    priority: itemPriority.priority,
+                };
+
+                if (currentGoal.priority > currentTarget.priority) {
+                    currentTarget = currentGoal;
+                }
+            }
+        }
+
+        if (currentTarget.goal && currentTarget.priority > 0) {
+            if (currentTarget.type === EntityState.DESIRE) {
+                if (currentTarget.inInventory && isWearableItem(currentTarget.goal)) {
+                    this.controller.equipItem(currentTarget.goal);
+                } else {
+                    if (currentTarget.path.length === 1 && isItemModel(currentTarget.goal)) {
+                        this.controller.pickUp(currentTarget.goal);
+                    } else if (currentTarget.path.length > 1) {
+                        this.controller.move(levelModel.getCell(currentTarget.path[1].x, currentTarget.path[1].y));
+                    }
+                }
+            } else if (currentTarget.type === EntityState.AGGRESIVE) {
+                this.controller.move(levelModel.getCell(currentTarget.path[1].x, currentTarget.path[1].y));
+            }
         } else {
-            this.makeMoveInRandomDirection();
+            this.performIdleTargetMove();
         }
     }
+    /**
+     * Calculates and returns current "critical" needs of entity (for example, low health, lack of weapon). It doesn't
+     * involve any FOV examination.
+     */
     public calculateNeeds(): EntityNeedsType {
         const entityModel = this.controller.getModel();
 
         return {
-            [EntityNeeds.LOW_HEALTH]: entityModel.hitPoints / entityModel.maxHitPoints < 0.25,
+            [EntityNeeds.LOW_HEALTH]: entityModel.hitPoints / entityModel.maxHitPoints < 0.20,
             [EntityNeeds.NEED_WEAPON]: entityModel.bodySlots['right hand'] === null,
         };
     }
-    public examineItemsInFov(inventory: ItemsCollection, fov: Cell[], entityNeeds: EntityNeedsType): IEntityItemNeeds[] {
+    /**
+     * Examines items in entity FOV. This is divided into two steps. In first step items in entity inventory are
+     * examined, in second step items in entity FOV.
+     */
+    public examineItemsInFov(inventory: ItemsCollection, fov: Cell[], entityNeeds: EntityNeedsType): IEntityGoal[] {
         const model: EntityModel = this.controller.getModel();
-        const result: IEntityItemNeeds[] = [];
+        const levelModel: LevelModel = this.controller.getLevelModel();
+        const result: IEntityGoal[] = [];
 
         inventory.forEach((item: ItemModel) => {
             if (isWearableItem(item)) {
@@ -68,9 +139,12 @@ export class HumanoidAi extends MonsterAi {
                  */
                 if (model.bodySlots[item.bodyPart[0]] === null) {
                     result.push({
-                        priority: item.itemType === ItemTypes.WEAPON ? 5 : 3,
+                        priority: item.itemType === ItemTypes.WEAPON ? 6 : 3,
                         inInventory: true,
-                        item,
+                        goal: item,
+                        type: EntityState.DESIRE,
+                        cell: null,
+                        path: null,
                     });
                 } else {
                     // Entity already have similiar item equipped, should check if item in fov isn't better
@@ -85,10 +159,12 @@ export class HumanoidAi extends MonsterAi {
                      */
                     if (model.bodySlots[item.bodyPart[0]] === null) {
                         result.push({
-                            priority: item.itemType === ItemTypes.WEAPON ? 4 : 3,
+                            priority: item.itemType === ItemTypes.WEAPON ? 5 : 3,
                             inInventory: false,
+                            goal: item,
+                            path: calculatePathToCell(model.position, cell, levelModel),
+                            type: EntityState.DESIRE,
                             cell,
-                            item,
                         });
                     } else {
                         // Entity already have similiar item equipped, should check if item in fov isn't better
@@ -97,6 +173,15 @@ export class HumanoidAi extends MonsterAi {
             });
         });
 
-        return result;
+        return result.sort((a: IEntityGoal, b: IEntityGoal) => b.priority - a.priority);
+    }
+    private calculatePriorityForEntity(entity: EntityModel, distance: number): number {
+        if (distance > 1 && distance < 5) {
+            return 5;
+        } else if (distance >= 5 && distance < 8) {
+            return 3;
+        } else if (distance >= 8) {
+            return 2;
+        }
     }
 }

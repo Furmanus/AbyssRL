@@ -11,6 +11,7 @@ import {doCombatAction, ICombatResult} from '../../helper/combat_helper';
 import {globalMessagesController} from '../../global/messages';
 import {ItemModel} from '../../model/items/item_model';
 import {ItemsCollection} from '../../collections/items_collection';
+import {WearableModel} from '../../model/items/wearable_model';
 
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
@@ -159,6 +160,12 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     public changeLevel(level: LevelModel, position: Cell): void {
         this.model.changeLevel(level);
         this.move(position);
+    }
+    public equipItem(item: WearableModel): void {
+        this.model.equipItem(item);
+    }
+    public removeItem(item: WearableModel): void {
+        this.model.removeItem(item);
     }
     /**
      * Returns object with entity statistics (key is stats name).

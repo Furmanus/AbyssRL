@@ -2,8 +2,13 @@ import {EntityModel} from './entity_model';
 import {IEntity} from '../../interfaces/entity_interfaces';
 import {IAnyObject} from '../../interfaces/common';
 import {monstersData} from './monsters/data/monsters';
+import {Cell} from '../dungeon/cells/cell_model';
 
 export class MonsterModel extends EntityModel {
+    /**
+     * Place where entity will want to go, if there is nothing interesting in his FOV
+     */
+    public currentIdleTarget: Cell = null;
     public isHostile: boolean = true;
 
     public constructor(config: IAnyObject) {
@@ -17,5 +22,11 @@ export class MonsterModel extends EntityModel {
                 this[attr] = entityConfig[attr];
             }
         }
+    }
+    public getSerializedData(): object {
+        return {
+            ...super.getSerializedData(),
+            currentIdleTarget: this.currentIdleTarget.id,
+        };
     }
 }

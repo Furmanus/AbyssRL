@@ -4,6 +4,7 @@ import {MonsterAi} from '../../strategy/ai/monster_ai';
 import {MonstersTypes} from '../../constants/monsters';
 import {AnimalAi} from '../../strategy/ai/animal_ai';
 import {HumanoidAi} from '../../strategy/ai/humanoid_ai';
+import {Cell} from '../../model/dungeon/cells/cell_model';
 
 interface IMonsterControllerConfig {
     model: MonsterModel;
@@ -40,5 +41,11 @@ export class MonsterController extends EntityController<MonsterModel> {
     public act(): void {
         this.calculateFov();
         this.ai.performNextMove();
+    }
+    public getCurrentIdleTarget(): Cell {
+        return this.model.currentIdleTarget;
+    }
+    public setCurrentIdleTarget(target: Cell): void {
+        this.model.currentIdleTarget = target;
     }
 }
