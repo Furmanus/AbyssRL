@@ -96,7 +96,11 @@ export class HumanoidAi extends MonsterAi {
         if (currentTarget.goal && currentTarget.priority > 0) {
             if (currentTarget.type === EntityState.DESIRE) {
                 if (currentTarget.inInventory && isWearableItem(currentTarget.goal)) {
-                    this.controller.equipItem(currentTarget.goal);
+                    if (model.bodySlots[currentTarget.goal.bodyPart[0]]) {
+                        this.controller.removeItem(model.bodySlots[currentTarget.goal.bodyPart[0]] as WearableModel);
+                    } else {
+                        this.controller.equipItem(currentTarget.goal);
+                    }
                 } else {
                     if (currentTarget.path.length === 1 && isItemModel(currentTarget.goal)) {
                         this.controller.pickUp(currentTarget.goal);
@@ -125,12 +129,16 @@ export class HumanoidAi extends MonsterAi {
     }
     /**
      * Examines items in entity FOV. This is divided into two steps. In first step items in entity inventory are
-     * examined, in second step items in entity FOV.
+     * examined, in second step items in entity FOV. Before examining each collection, collections are filtered to
+     * to remove worse items of the same type (for example if entity has two weapons in inventory, it shouldn't consider
+     * equipping worse one).
      */
     public examineItemsInFov(inventory: ItemsCollection, fov: Cell[], entityNeeds: EntityNeedsType): IEntityGoal[] {
         const model: EntityModel = this.controller.getModel();
         const levelModel: LevelModel = this.controller.getLevelModel();
         const result: IEntityGoal[] = [];
+
+        inventory = this.filterItemsOfSameTypeFromCollection(inventory);
 
         inventory.forEach((item: ItemModel) => {
             if (isWearableItem(item)) {
@@ -147,7 +155,24 @@ export class HumanoidAi extends MonsterAi {
                         path: null,
                     });
                 } else {
-                    // Entity already have similiar item equipped, should check if item in fov isn't better
+                    const wornItem: ItemModel = model.bodySlots[item.bodyPart[0]];
+
+                    if (wornItem === item) {
+                        return;
+                    }
+
+                    const prefferedItem: ItemModel = this.compareTwoItems(wornItem, item);
+
+                    if (prefferedItem === item) {
+                        result.push({
+                            priority: 3,
+                            inInventory: true,
+                            goal: item,
+                            path: null,
+                            type: EntityState.DESIRE,
+                            cell: null,
+                        });
+                    }
                 }
             }
         });
@@ -167,7 +192,19 @@ export class HumanoidAi extends MonsterAi {
                             cell,
                         });
                     } else {
-                        // Entity already have similiar item equipped, should check if item in fov isn't better
+                        const wornItem: ItemModel = model.bodySlots[item.bodyPart[0]];
+                        const prefferedItem: ItemModel = this.compareTwoItems(wornItem, item);
+
+                        if (prefferedItem === item) {
+                            result.push({
+                                priority: 3,
+                                inInventory: false,
+                                goal: item,
+                                path: calculatePathToCell(model.position, cell, levelModel),
+                                type: EntityState.DESIRE,
+                                cell,
+                            });
+                        }
                     }
                 }
             });

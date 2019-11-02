@@ -48,6 +48,7 @@ export class MainDungeonLevelGenerationStrategy {
 
                 if (process.env.test) {
                     testLevelGenerator.generateLevel(levelModel);
+                    this.fillLevelWithItems(levelModel);
                     return;
                 }
 
