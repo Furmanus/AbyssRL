@@ -13,6 +13,7 @@ import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
 import {RingModelFactory} from '../../factory/item/ring_model_factory';
 import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
 import {WeaponModel} from '../items/weapon_model';
+import {isWearableItem} from '../../interfaces/type_guards';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -239,6 +240,11 @@ export class EntityModel extends BaseModel {
 
         items.forEach((item: ItemModel) => {
             if (this.inventory.has(item)) {
+
+                if (isWearableItem(item)) {
+                    item.isEquipped = false;
+                }
+
                 this.inventory.remove(item);
                 currentCellInventory.add(item);
 
@@ -260,11 +266,14 @@ export class EntityModel extends BaseModel {
     public removeItem(item: WearableModel): void {
         const itemBodySlot = item.bodyPart;
 
-        if (this.bodySlots[itemBodySlot[0]]) {
+        if (this.isItemWorn(item)) {
             this.bodySlots[itemBodySlot[0]] = null;
             item.isEquipped = false;
             this.notify(EntityEvents.ENTITY_REMOVED_ITEM, item);
         }
+    }
+    public isItemWorn(item: WearableModel): boolean {
+        return this.bodySlots[item.bodyPart[0]] === item;
     }
     /**
      * Returns speed of entity.

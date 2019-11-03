@@ -64,6 +64,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      */
     @boundMethod
     private onEntityDeath(): void {
+        this.dropInventory();
         this.notify(EntityEvents.ENTITY_DEATH, {entityController: this});
     }
     /**
@@ -97,9 +98,16 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      * Attempts to drop items on ground (remove from entity inventory and push to cell inventory).
      *
      * @param items     Array of items to drop
+     * @param silent    If dropping items should be notified as event
      */
-    public dropItems(items: ItemModel[]): void {
+    public dropItems(items: ItemModel[], silent?: boolean): void {
         this.model.dropItems(items);
+    }
+    /**
+     * Removes whole entity inventory and pushes it into cell inventory.
+     */
+    public dropInventory(): void {
+        this.dropItems([...this.model.inventory.get()], true);
     }
     protected onEntityPickUp(item: ItemModel): void {
         globalMessagesController.showMessageInView(`${this.model.getDescription()} picks up ${item.fullDescription}.`);

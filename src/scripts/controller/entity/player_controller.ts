@@ -79,10 +79,12 @@ export class PlayerController extends EntityController<PlayerModel> {
             this.globalInventoryController.closeModal();
         }
     }
-    public dropItems(items: ItemModel[]): void {
+    public dropItems(items: ItemModel[], silent?: boolean): void {
         super.dropItems(items);
 
-        this.notify(PlayerActions.END_PLAYER_TURN);
+        if (!silent) {
+            this.notify(PlayerActions.END_PLAYER_TURN);
+        }
     }
     /**
      * Method triggered at beginning of each player turn.

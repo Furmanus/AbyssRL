@@ -142,7 +142,7 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
      * @param collection    Collection to examine and filter
      */
     protected filterItemsOfSameTypeFromCollection(collection: ItemsCollection): ItemsCollection {
-        const collectionCopy: ItemModel[] = collection.get();
+        const collectionCopy: ItemModel[] = [...collection.get()];
 
         collectionCopy.forEach((item: ItemModel, index: number) => {
             if (item === undefined) {
