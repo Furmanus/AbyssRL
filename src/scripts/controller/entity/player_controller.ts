@@ -249,8 +249,10 @@ export class PlayerController extends EntityController<PlayerModel> {
         if (canPlayerMove) {
             entityMoveFunction(cellModel);
 
-            if (cellModel.inventory.size) {
+            if (cellModel.inventory.size === 1) {
                 moveAttemptMessage = `There is ${getStringWithAnOrAPrefix(cellModel.inventory.getFirstItem().fullDescription)} lying here.`;
+            } else if (cellModel.inventory.size > 1) {
+                moveAttemptMessage = 'Several items are laying here.';
             } else if (cellModel.walkMessage) {
                 moveAttemptMessage = cellModel.walkMessage;
             }
