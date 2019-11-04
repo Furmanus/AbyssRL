@@ -14,6 +14,7 @@ import {RingModelFactory} from '../../factory/item/ring_model_factory';
 import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
 import {WeaponModel} from '../items/weapon_model';
 import {isWearableItem} from '../../interfaces/type_guards';
+import {EntityGroupModel} from './entity_group_model';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -100,6 +101,10 @@ export class EntityModel extends BaseModel {
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
     public naturalWeapon: NaturalWeaponModel = null;
+    /**
+     * Group to which entity can belong
+     */
+    public entityGroup: EntityGroupModel = null;
     /**
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
@@ -310,5 +315,8 @@ export class EntityModel extends BaseModel {
         delete serializedEntityModel.naturalWeapon;
 
         return serializedEntityModel;
+    }
+    public setEntityGroup(group: EntityGroupModel): void {
+        this.entityGroup = group;
     }
 }

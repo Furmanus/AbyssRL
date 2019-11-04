@@ -12,6 +12,7 @@ import {globalMessagesController} from '../../global/messages';
 import {ItemModel} from '../../model/items/item_model';
 import {ItemsCollection} from '../../collections/items_collection';
 import {WearableModel} from '../../model/items/wearable_model';
+import {EntityGroupModel} from '../../model/entity/entity_group_model';
 
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
@@ -200,5 +201,8 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
             throw new TypeError(`Uknown property ${propertyName}`);
         }
         return this.model[propertyName];
+    }
+    public setEntityGroupInModel(group: EntityGroupModel): void {
+        this.model.setEntityGroup(group);
     }
 }

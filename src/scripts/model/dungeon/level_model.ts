@@ -15,7 +15,9 @@ import {DungeonEvents, DungeonModelEvents} from '../../constants/dungeon_events'
 import {EntityModel} from '../entity/entity_model';
 import { globalLevelCollection } from '../../global/collections';
 import {DungeonTypes} from '../../constants/dungeon_types';
-import {MonsterController} from '../../controller/entity/monster_controller';
+import {getDistanceBetweenPoints} from '../../helper/utility';
+import {EntityGroupModel} from '../entity/entity_group_model';
+import {EntityController} from '../../controller/entity/entity_controller';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
 
@@ -260,18 +262,41 @@ export class LevelModel extends BaseModel {
 
         return result;
     }
+    public getRandomUnocuppiedCellsWithinRangeFromCell(cell: Cell, amount: number, range: number): Cell[] {
+        const cells: Cell[] = Array.from(this.cells.values());
+        const unocuppiedCellsInRange: Cell[] = cells.filter((examinedCell: Cell) => {
+            if (examinedCell.entity || examinedCell.blockMovement) {
+                return false;
+            }
+            return getDistanceBetweenPoints(new Position(cell.x, cell.y), new Position(examinedCell.x, examinedCell.y)) <= range;
+        });
+        const result: Cell[] = [];
+
+        for (let i = 0; i < amount; i++) {
+            const randomCell: Cell = unocuppiedCellsInRange.random();
+
+            result.push(unocuppiedCellsInRange.splice(unocuppiedCellsInRange.indexOf(randomCell), 1)[0]);
+        }
+
+        return result;
+    }
     /**
      * Creates new monster on given cell coordinates and emits event that new monster was spawned (which is needed
      * in order to add monster controller to time engine).
      *
-     * @param monsterController   Monster controller
+     * @param entityController   Monster controller
      * @param cell                Monster spawn cell
      */
-    public spawnMonster(monsterController: MonsterController, cell: Cell): void {
+    public spawnMonster(entityController: EntityController, cell: Cell): void {
         if (Array.from(this.cells.values()).includes(cell)) {
-            cell.setEntity(monsterController.getModel());
-            this.notify(DungeonEvents.NEW_CREATURE_SPAWNED, monsterController);
+            cell.setEntity(entityController.getModel());
+            this.notify(DungeonEvents.NEW_CREATURE_SPAWNED, entityController);
         }
+    }
+    public spawnEntityGroup(entityGroup: EntityGroupModel): void {
+        entityGroup.getMembers().forEach((controller: EntityController) => {
+            this.spawnMonster(controller, controller.getEntityPosition());
+        });
     }
     public getSerializedData(): object {
         return {
