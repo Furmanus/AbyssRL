@@ -8,7 +8,6 @@ export class PlayerModel extends EntityModel {
         super(config);
 
         this.description = config.name || 'Anonymous brave hero';
-        this.type = MonstersTypes.PLAYER;
         this.baseStrength = config.strength;
         this.baseDexterity = config.dexterity;
         this.baseIntelligence = config.intelligence;

@@ -14,6 +14,7 @@ import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
 import {WeaponModel} from '../items/weapon_model';
 import {isWearableItem} from '../../interfaces/type_guards';
 import {EntityGroupModel} from './entity_group_model';
+import {EntityStrategy} from '../../strategy/entity';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -74,13 +75,7 @@ export class EntityModel extends BaseModel {
     public maxHitPoints: number = null;
     public size: MonsterSizes = null;
     // TODO remove content of collection
-    public inventory: ItemsCollection = new ItemsCollection(
-        [weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            RingModelFactory.getRandomRingModel(),
-            AmuletModelFactory.getRandomAmuletModel(),
-        ],
-    );
+    public inventory: ItemsCollection;
     public bodySlots: IBodySlots = {
         [EntityBodySlots.HEAD]: null,
         [EntityBodySlots.NECK]: null,
@@ -137,7 +132,7 @@ export class EntityModel extends BaseModel {
         this.baseSpeed = config.speed;
         this.basePerception = config.perception;
         this.type = config.type;
-        // TODO add initialization of inventory
+        this.inventory = EntityStrategy.getMonsterEquipment(this.type);
         if (animalTypes.includes(this.type)) {
             this.bodySlots = {};
         }

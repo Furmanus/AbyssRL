@@ -28,6 +28,7 @@ import {EntityModel, IEntityStatsObject} from '../model/entity/entity_model';
 import {boundMethod} from 'autobind-decorator';
 import {EntityEvents} from '../constants/entity_events';
 import {ItemsCollection} from '../collections/items_collection';
+import {MonstersTypes} from '../constants/monsters';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -112,6 +113,7 @@ export class GameController extends Controller {
         this.playerController = new PlayerController({
             level: playerLevel.getModel(),
             display: entities.AVATAR,
+            type: MonstersTypes.PLAYER,
             position: inititalPlayerCell,
             speed: 15,
             perception: 6,
