@@ -3,6 +3,7 @@ import {IEntity} from '../../interfaces/entity_interfaces';
 import {IAnyObject} from '../../interfaces/common';
 import {monstersData} from './monsters/data/monsters';
 import {Cell} from '../dungeon/cells/cell_model';
+import {ItemsCollection} from '../../collections/items_collection';
 
 export class MonsterModel extends EntityModel {
     /**
@@ -20,6 +21,10 @@ export class MonsterModel extends EntityModel {
             if (this.hasOwnProperty(attr)) {
                 // @ts-ignore
                 this[attr] = entityConfig[attr];
+
+                if (attr === 'inventory') {
+                    this.inventory = new ItemsCollection([...entityConfig[attr]]);
+                }
             }
         }
     }

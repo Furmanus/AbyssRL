@@ -9,7 +9,6 @@ import {ItemModel} from '../items/item_model';
 import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {NaturalWeaponModel} from '../items/natural_weapon_model';
 import {WearableModel} from '../items/wearable_model';
-import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
 import {RingModelFactory} from '../../factory/item/ring_model_factory';
 import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
 import {WeaponModel} from '../items/weapon_model';
@@ -78,13 +77,6 @@ export class EntityModel extends BaseModel {
     public inventory: ItemsCollection = new ItemsCollection(
         [weaponModelFactory.getRandomWeaponModel(),
             weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            ArmourModelFactory.getRandomArmourModel(),
-            ArmourModelFactory.getRandomArmourModel(),
-            ArmourModelFactory.getRandomArmourModel(),
-            ArmourModelFactory.getRandomArmourModel(),
             RingModelFactory.getRandomRingModel(),
             AmuletModelFactory.getRandomAmuletModel(),
         ],

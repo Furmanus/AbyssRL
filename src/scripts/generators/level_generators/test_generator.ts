@@ -36,11 +36,13 @@ export class TestLevelGenerator extends AbstractLevelGenerator {
     public generateTestLevelMonsters(levelModel: LevelModel): void {
         const cell1: Cell = levelModel.getRandomUnoccupiedCell();
         const cell2: Cell = levelModel.getRandomUnoccupiedCell();
+        const controller1 = monsterFactory.getOrcController(levelModel, cell1);
+        const controller2 = monsterFactory.getOrcController(levelModel, cell2);
         const group: EntityGroupModel = monsterGroupsFactory.getOrcPack(levelModel, cell1);
 
         levelModel.spawnEntityGroup(group);
 
-        // levelModel.spawnMonster(monsterFactory.getOrcController(levelModel, cell1), cell1);
-        // levelModel.spawnMonster(monsterFactory.getGiantRatController(levelModel, cell2), cell2);
+        // levelModel.spawnMonster(controller1, cell1);
+        // levelModel.spawnMonster(controller2, cell2);
     }
 }

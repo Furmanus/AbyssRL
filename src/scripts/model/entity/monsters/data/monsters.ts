@@ -1,7 +1,6 @@
 import {IEntity} from '../../../../interfaces/entity_interfaces';
 import {MonsterSizes, MonstersTypes} from '../../../../constants/monsters';
 import {entities} from '../../../../constants/sprites';
-import {ItemsCollection} from '../../../../collections/items_collection';
 import {getMonsterNaturalWeapon} from '../../../../factory/natural_weapon_factory';
 
 interface IMonsterDataObject {
@@ -23,7 +22,7 @@ export const monstersData: IMonsterDataObject =  {
         hitPoints: 10,
         maxHitPoints: 10,
         size: MonsterSizes.SMALL,
-        inventory: new ItemsCollection(),
+        inventory: [],
         naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.GIANT_RAT),
     },
     [MonstersTypes.ORC]: {
@@ -40,7 +39,7 @@ export const monstersData: IMonsterDataObject =  {
         hitPoints: 18,
         maxHitPoints: 18,
         size: MonsterSizes.MEDIUM,
-        inventory: new ItemsCollection(),
+        inventory: [],
         naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.ORC),
     },
 };
