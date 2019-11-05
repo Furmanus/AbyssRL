@@ -15,6 +15,7 @@ import {WeaponModel} from '../items/weapon_model';
 import {isWearableItem} from '../../interfaces/type_guards';
 import {EntityGroupModel} from './entity_group_model';
 import {EntityStrategy} from '../../strategy/entity';
+import {getMonsterNaturalWeapon} from '../../factory/natural_weapon_factory';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -133,6 +134,8 @@ export class EntityModel extends BaseModel {
         this.basePerception = config.perception;
         this.type = config.type;
         this.inventory = EntityStrategy.getMonsterEquipment(this.type);
+        this.naturalWeapon = getMonsterNaturalWeapon(this.type);
+
         if (animalTypes.includes(this.type)) {
             this.bodySlots = {};
         }

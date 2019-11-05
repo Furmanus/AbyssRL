@@ -15,6 +15,5 @@ export class PlayerModel extends EntityModel {
         this.hitPoints = config.hitPoints;
         this.maxHitPoints = config.maxHitPoints;
         this.size = MonsterSizes.MEDIUM;
-        this.naturalWeapon = getMonsterNaturalWeapon(MonstersTypes.PLAYER);
     }
 }

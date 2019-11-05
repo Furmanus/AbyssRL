@@ -22,8 +22,6 @@ export const monstersData: IMonsterDataObject =  {
         hitPoints: 10,
         maxHitPoints: 10,
         size: MonsterSizes.SMALL,
-        inventory: [],
-        naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.GIANT_RAT),
     },
     [MonstersTypes.ORC]: {
         baseStrength: 10,
@@ -39,7 +37,5 @@ export const monstersData: IMonsterDataObject =  {
         hitPoints: 18,
         maxHitPoints: 18,
         size: MonsterSizes.MEDIUM,
-        inventory: [],
-        naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.ORC),
     },
 };
