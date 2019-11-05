@@ -105,7 +105,17 @@ export class HumanoidAi extends MonsterAi {
                     if (currentTarget.path.length === 1 && isItemModel(currentTarget.goal)) {
                         this.controller.pickUp(currentTarget.goal);
                     } else if (currentTarget.path.length > 1) {
-                        this.controller.move(levelModel.getCell(currentTarget.path[1].x, currentTarget.path[1].y));
+                        const targetCell: Cell = levelModel.getCell(currentTarget.path[1].x, currentTarget.path[1].y);
+
+                        if (targetCell.entity) {
+                            /**
+                             * Monster wants to pick up item, but it is blocked by other entity (non hostile). Temporary
+                             * solution, think how entity should behave in such situation.
+                             */
+                            this.makeMoveInRandomDirection();
+                        } else {
+                            this.controller.move(targetCell);
+                        }
                     }
                 }
             } else if (currentTarget.type === EntityState.AGGRESIVE) {

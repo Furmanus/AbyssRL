@@ -70,7 +70,7 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
         const levelModel: LevelModel = this.controller.getLevelModel();
         const currentPosition: Cell = this.controller.getEntityPosition();
         const nextCell: Cell = levelModel.getRandomNeighbourCallback(currentPosition, (candidate: Cell) => {
-            return (!candidate.blockMovement && ! candidate.entity);
+            return (!candidate.blockMovement && !candidate.entity);
         });
 
         if (nextCell) {
