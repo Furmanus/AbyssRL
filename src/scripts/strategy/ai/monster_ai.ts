@@ -45,6 +45,21 @@ export class MonsterAi extends Ai<MonsterController> {
             this.makeMoveInRandomDirection();
         }
     }
+    protected performGroupAiIdleMove(): void {
+        const model = this.controller.getModel();
+        const levelModel = this.controller.getLevelModel();
+        const leader = this.controller.getEntityGroupInModel().getLeader();
+        const leaderModel = leader.getModel();
+
+        if (this.controller === leader) {
+            this.performIdleTargetMove();
+        } else {
+            const targetCell: Cell[] = levelModel.getRandomUnocuppiedCellsWithinRangeFromCell(leaderModel.position, 1, 3);
+            const path = calculatePathToCell(model.position, targetCell[0], levelModel);
+
+            this.controller.move(levelModel.getCell(path[1].x, path[1].y));
+        }
+    }
     private getNewIdleTarget(): Cell {
         const model: MonsterModel = this.controller.getModel() as MonsterModel;
         const levelModel: LevelModel = this.controller.getLevelModel();

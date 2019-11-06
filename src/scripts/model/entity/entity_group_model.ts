@@ -10,6 +10,10 @@ export class EntityGroupModel extends BaseModel {
 
         this.members = members;
         this.leader = leader;
+
+        members.forEach((controller: EntityController) => {
+            controller.setEntityGroupInModel(this);
+        });
     }
     public getMembers(): EntityController[] {
         return this.members;
@@ -22,6 +26,12 @@ export class EntityGroupModel extends BaseModel {
     }
     public isLeader(entity: EntityController): boolean {
         return this.leader === entity;
+    }
+    public addMember(entity: EntityController): void {
+        this.members.push(entity);
+    }
+    public setLeader(entity: EntityController): void {
+        this.leader = entity;
     }
     public getSerializedData(): object {
         return {

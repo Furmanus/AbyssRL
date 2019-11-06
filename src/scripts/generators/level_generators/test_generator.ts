@@ -15,14 +15,19 @@ export class TestLevelGenerator extends AbstractLevelGenerator {
         level.initialize();
         generator.create(generatorCallback);
 
-        for (let i = 1; i < 15; i++) {
+        for (let i = 1; i < 25; i++) {
             for (let j = 1; j < 15; j++) {
-                level.changeCellType(i, j, CellTypes.RED_FLOOR);
+                if (j !== 8) {
+                    level.changeCellType(i, j, CellTypes.RED_FLOOR);
+                } else {
+                    if (i === 2 || i === 3 || i === 23 || i === 24) {
+                        level.changeCellType(i, j, CellTypes.RED_FLOOR);
+                    }
+                }
             }
         }
 
         this.generateRandomStairsUp(level);
-
         this.generateTestLevelMonsters(level);
 
         function generatorCallback(x: number, y: number, value: number): void {

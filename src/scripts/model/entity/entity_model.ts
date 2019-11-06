@@ -6,11 +6,8 @@ import {EntityEvents} from '../../constants/entity_events';
 import {EntityActualStats, EntityBodySlots, EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
 import {ItemModel} from '../items/item_model';
-import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {NaturalWeaponModel} from '../items/natural_weapon_model';
 import {WearableModel} from '../items/wearable_model';
-import {RingModelFactory} from '../../factory/item/ring_model_factory';
-import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
 import {WeaponModel} from '../items/weapon_model';
 import {isWearableItem} from '../../interfaces/type_guards';
 import {EntityGroupModel} from './entity_group_model';
@@ -308,5 +305,8 @@ export class EntityModel extends BaseModel {
     }
     public setEntityGroup(group: EntityGroupModel): void {
         this.entityGroup = group;
+    }
+    public getEntityGroup(): EntityGroupModel {
+        return this.entityGroup;
     }
 }

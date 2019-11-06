@@ -179,4 +179,14 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
 
         return allowedTypes.includes(item1.itemType);
     }
+    /**
+     * Check if given entity is in field of vision.
+     *
+     * @param entity    Entity model to check
+     */
+    protected isEntityInFov(entity: EntityModel): boolean {
+        const fov: Cell[] = this.controller.getFov();
+
+        return fov.some((cell: Cell) => cell.entity === entity);
+    }
 }

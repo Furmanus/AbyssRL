@@ -122,7 +122,11 @@ export class HumanoidAi extends MonsterAi {
                 this.controller.move(levelModel.getCell(currentTarget.path[1].x, currentTarget.path[1].y));
             }
         } else {
-            this.performIdleTargetMove();
+            if (this.controller.getEntityGroupInModel()) {
+                this.performGroupAiIdleMove();
+            } else {
+                this.performIdleTargetMove();
+            }
         }
     }
     /**

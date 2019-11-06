@@ -205,4 +205,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     public setEntityGroupInModel(group: EntityGroupModel): void {
         this.model.setEntityGroup(group);
     }
+    public getEntityGroupInModel(): EntityGroupModel {
+        return this.model.getEntityGroup();
+    }
 }
