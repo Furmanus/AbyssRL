@@ -6,7 +6,7 @@ import {Controller} from '../controller';
 import {LevelModel} from '../../model/dungeon/level_model';
 import {EntityEvents} from '../../constants/entity_events';
 import {boundMethod} from 'autobind-decorator';
-import {EntityStats} from '../../constants/monsters';
+import {EntityStats, MonstersTypes} from '../../constants/monsters';
 import {doCombatAction, ICombatResult} from '../../helper/combat_helper';
 import {globalMessagesController} from '../../global/messages';
 import {ItemModel} from '../../model/items/item_model';
@@ -65,8 +65,11 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
      */
     @boundMethod
     private onEntityDeath(): void {
-        this.dropInventory();
         this.notify(EntityEvents.ENTITY_DEATH, {entityController: this});
+
+        if (this.model.type !== MonstersTypes.PLAYER) {
+            this.dropInventory();
+        }
     }
     /**
      * Method triggered after entity takes hit.
