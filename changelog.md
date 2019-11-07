@@ -1,4 +1,7 @@
 ### 0.0.5 (currently developed)
+* (Feature)  More advanced monster AI: monsters can be now generated in packs, and pack members will try to stay close
+             to leader
+* (Feature)  More advanced monster AI: they can recognize weapons and armours, pick up and equip them
 * (Feature)  Armours, rings, amulets and weapons can be worn now, giving appropriate modifiers for stats and in combat
 * (Feature)  Added armours, rings and amulets
 * (Refactor) Refactored game models so game data can be now easily serialized
@@ -25,3 +28,5 @@ one basic random room (empty room with bed and chest of drawers)
 ### 0.0.1 (09.03.2019)
 * Rewrite existing code to TypeScript
 * Write unit tests for utility helper and position, rectangle and vector classes
+
+Game development started in early 2017, but changelog has started here.
