@@ -1,4 +1,4 @@
-import {EntityController} from './entity_controller';
+import {EntityController, IItemAction} from './entity_controller';
 import * as Utility from '../../helper/utility';
 import {config} from '../../global/config';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../constants/player_actions';
 import {PlayerModel} from '../../model/entity/player_model';
 import {globalMessagesController} from '../../global/messages';
-import {IAnyFunction, IAnyObject} from '../../interfaces/common';
+import {IAnyFunction, IAnyObject, ICoordinates} from '../../interfaces/common';
 import {Cell} from '../../model/dungeon/cells/cell_model';
 import {UseAttemptResult} from '../../model/dungeon/cells/effects/use_attempt_result';
 import {UseEffectResult} from '../../model/dungeon/cells/effects/use_effect_result';
@@ -24,6 +24,7 @@ import {EntityEvents, EntityInventoryActions, InventoryModalEvents} from '../../
 import {boundMethod} from 'autobind-decorator';
 import {getStringWithAnOrAPrefix} from '../../helper/utility';
 import {isWearableItem} from '../../interfaces/type_guards';
+import {GlobalPlayerData} from '../../global/player';
 
 export interface IMoveResolve {
     canMove: boolean;
@@ -54,10 +55,14 @@ export class PlayerController extends EntityController<PlayerModel> {
         });
         this.model.on(this, EntityEvents.ENTITY_EQUIPPED_ITEM, this.onItemEquippedInModel);
         this.model.on(this, EntityEvents.ENTITY_REMOVED_ITEM, this.onItemUnequippedInModel);
+        this.model.on(this, 'property:fov:change', this.onFovChangeInModel);
 
         this.globalInventoryController.on(this, InventoryModalEvents.INVENTORY_ACTION_CONFIRMED, this.onInventoryActionConfirmed);
         this.globalInventoryController.on(this, InventoryModalEvents.ENTITY_EQUIPPED_ITEM, this.onInventoryItemEquippedInView);
         this.globalInventoryController.on(this, InventoryModalEvents.ENTITY_REMOVED_ITEM, this.onInventoryItemUnquippedInView);
+    }
+    private onFovChangeInModel(fov: ICoordinates[]): void {
+        GlobalPlayerData.setFov(fov);
     }
     @boundMethod
     private onInventoryActionConfirmed(data: IInventoryActionConfirmData): void {
@@ -202,8 +207,8 @@ export class PlayerController extends EntityController<PlayerModel> {
             this.model.pickUp(item);
         });
     }
-    public onEntityPickUp(item: ItemModel): void {
-        super.onEntityPickUp(item);
+    public onEntityPickUp(data: IItemAction): void {
+        super.onEntityPickUp(data);
 
         this.notify(PlayerActions.END_PLAYER_TURN);
     }

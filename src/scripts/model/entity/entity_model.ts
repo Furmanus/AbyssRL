@@ -218,7 +218,10 @@ export class EntityModel extends BaseModel {
             currentCellInventory.remove(item);
             this.inventory.add(item);
 
-            this.notify(EntityEvents.ENTITY_PICKED_ITEM, item);
+            this.notify(EntityEvents.ENTITY_PICKED_ITEM, {
+                position: this.position,
+                item,
+            });
         }
     }
     /**
@@ -240,7 +243,10 @@ export class EntityModel extends BaseModel {
                 this.inventory.remove(item);
                 currentCellInventory.add(item);
 
-                this.notify(EntityEvents.ENTITY_DROPPED_ITEM, item);
+                this.notify(EntityEvents.ENTITY_DROPPED_ITEM, {
+                    position: this.position,
+                    item,
+                });
             }
         });
     }
@@ -252,7 +258,10 @@ export class EntityModel extends BaseModel {
             }
             this.bodySlots[item.bodyPart[0]] = item;
             item.isEquipped = true;
-            this.notify(EntityEvents.ENTITY_EQUIPPED_ITEM, item);
+            this.notify(EntityEvents.ENTITY_EQUIPPED_ITEM, {
+                position: this.position,
+                item,
+            });
         }
     }
     public removeItem(item: WearableModel): void {
@@ -261,7 +270,10 @@ export class EntityModel extends BaseModel {
         if (this.isItemWorn(item)) {
             this.bodySlots[itemBodySlot[0]] = null;
             item.isEquipped = false;
-            this.notify(EntityEvents.ENTITY_REMOVED_ITEM, item);
+            this.notify(EntityEvents.ENTITY_REMOVED_ITEM, {
+                position: this.position,
+                item,
+            });
         }
     }
     public isItemWorn(item: WearableModel): boolean {

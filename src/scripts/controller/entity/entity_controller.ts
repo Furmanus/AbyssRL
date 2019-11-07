@@ -14,6 +14,11 @@ import {ItemsCollection} from '../../collections/items_collection';
 import {WearableModel} from '../../model/items/wearable_model';
 import {EntityGroupModel} from '../../model/entity/entity_group_model';
 
+export interface IItemAction {
+    item: ItemModel;
+    position: Cell;
+}
+
 export class EntityController<M extends EntityModel = EntityModel> extends Controller {
     protected model: M;
     /**
@@ -41,7 +46,7 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
         if (newCell.entity && newCell.entity !== this.getModel()) {
             const attackResult: ICombatResult = this.attack(newCell.entity);
 
-            globalMessagesController.showMessageInView(attackResult.message);
+            globalMessagesController.showMessageInView(attackResult.message, newCell);
         } else {
             this.model.move(newCell);
         }
@@ -113,17 +118,37 @@ export class EntityController<M extends EntityModel = EntityModel> extends Contr
     public dropInventory(): void {
         this.dropItems([...this.model.inventory.get()], true);
     }
-    protected onEntityPickUp(item: ItemModel): void {
-        globalMessagesController.showMessageInView(`${this.model.getDescription()} picks up ${item.fullDescription}.`);
+    protected onEntityPickUp(data: IItemAction): void {
+        const {
+            item,
+            position,
+        } = data;
+
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} picks up ${item.fullDescription}.`, position);
     }
-    protected onEntityDropItem(item: ItemModel): void {
-        globalMessagesController.showMessageInView(`${this.model.getDescription()} drops ${item.description}.`);
+    protected onEntityDropItem(data: IItemAction): void {
+        const {
+            item,
+            position,
+        } = data;
+
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} drops ${item.description}.`, position);
     }
-    protected onEntityEquipItem(item: ItemModel): void {
-        globalMessagesController.showMessageInView(`${this.model.getDescription()} equips ${item.fullDescription}`);
+    protected onEntityEquipItem(data: IItemAction): void {
+        const {
+            item,
+            position,
+        } = data;
+
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} equips ${item.fullDescription}`, position);
     }
-    protected onEntityUnequipItem(item: ItemModel): void {
-        globalMessagesController.showMessageInView(`${this.model.getDescription()} removes ${item.fullDescription}`);
+    protected onEntityUnequipItem(data: IItemAction): void {
+        const {
+            item,
+            position,
+        } = data;
+
+        globalMessagesController.showMessageInView(`${this.model.getDescription()} removes ${item.fullDescription}`, position);
     }
     /**
      * Returns speed of entity (how fast it can take action in time engine).
