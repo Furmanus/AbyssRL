@@ -85,8 +85,12 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
                 return [MonstersTypes.PLAYER, MonstersTypes.ORC];
             case MonstersTypes.ORC:
                 return [MonstersTypes.PLAYER, MonstersTypes.GIANT_RAT];
+            case MonstersTypes.GIANT_BAT:
+                return [MonstersTypes.PLAYER, MonstersTypes.GIANT_SPIDER];
+            case MonstersTypes.GIANT_SPIDER:
+                return [MonstersTypes.PLAYER, MonstersTypes.GIANT_BAT];
             default:
-                return [];
+                return [MonstersTypes.PLAYER];
         }
     }
     public getHostilesWithDistance(entities: EntityModel[]): IHostilesWithDistance[] {

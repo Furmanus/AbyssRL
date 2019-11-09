@@ -19,8 +19,6 @@ export const entities = {
     SEA_SERPENT: 'sea_serpent',
     SHARK: 'shark',
     GIANT_RAT: 'giant_rat',
-    BAT: 'bat',
-    SPIDER: 'spider',
     GHOST: 'ghost',
     SLIME: 'slime',
     GREMLIN: 'gremlin',
@@ -43,6 +41,8 @@ export const entities = {
     CORPSER: 'corpser',
     WORMS: 'worms',
     SHADOWLORD: 'shadowlord',
+    GIANT_BAT: 'giant_bat',
+    GIANT_SPIDER: 'giant_spider',
 };
 export enum TerrainSprites {
     RED_FLOOR = 'red_brick_floor',

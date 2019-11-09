@@ -13,7 +13,13 @@ type monstersAi = typeof MonsterAi | typeof AnimalAi;
 function getEntityAiStrategy(type: MonstersTypes): monstersAi {
     switch (type) {
         case MonstersTypes.GIANT_RAT:
+        case MonstersTypes.GIANT_BAT:
+        case MonstersTypes.GIANT_SPIDER:
             return AnimalAi;
+        case MonstersTypes.ETTIN:
+        case MonstersTypes.HEADLESS:
+        case MonstersTypes.TROLL:
+        case MonstersTypes.SKELETON:
         case MonstersTypes.ORC:
             return HumanoidAi;
         default:

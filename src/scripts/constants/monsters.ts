@@ -2,6 +2,13 @@ export enum MonstersTypes {
     PLAYER = 'player',
     UNKNOWN = 'unknown_entity',
     GIANT_RAT = 'giant_rat',
+    GIANT_SPIDER = 'giant_spider',
+    GIANT_BAT = 'giant_bat',
+    PYTHON = 'python',
+    SKELETON = 'skeleton',
+    HEADLESS = 'headless',
+    ETTIN = 'ettin',
+    TROLL = 'troll',
     ORC = 'orc',
 }
 export enum MonsterSizes {

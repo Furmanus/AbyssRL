@@ -1,7 +1,6 @@
 import {EntityModel} from './entity_model';
 import {IAnyObject} from '../../interfaces/common';
-import {MonsterSizes, MonstersTypes} from '../../constants/monsters';
-import {getMonsterNaturalWeapon} from '../../factory/natural_weapon_factory';
+import {MonsterSizes} from '../../constants/monsters';
 
 export class PlayerModel extends EntityModel {
     constructor(config: IAnyObject = {}) {

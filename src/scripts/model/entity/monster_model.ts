@@ -1,9 +1,15 @@
 import {EntityModel} from './entity_model';
 import {IEntity} from '../../interfaces/entity_interfaces';
-import {IAnyObject} from '../../interfaces/common';
-import {monstersData} from './monsters/data/monsters';
+import {monstersData, MonsterTypesData} from './monsters/data/monsters';
 import {Cell} from '../dungeon/cells/cell_model';
 import {ItemsCollection} from '../../collections/items_collection';
+import {LevelModel} from '../dungeon/level_model';
+
+interface IMonsterModelConfig {
+    type: MonsterTypesData;
+    position: Cell;
+    level: LevelModel;
+}
 
 export class MonsterModel extends EntityModel {
     /**
@@ -12,7 +18,7 @@ export class MonsterModel extends EntityModel {
     public currentIdleTarget: Cell = null;
     public isHostile: boolean = true;
 
-    public constructor(config: IAnyObject) {
+    public constructor(config: IMonsterModelConfig) {
         super(config);
 
         const entityConfig: Partial<IEntity> = monstersData[config.type];
