@@ -2,6 +2,7 @@
 * (Feature)  More advanced monster AI: monsters can be now generated in packs, and pack members will try to stay close
              to leader
 * (Feature)  More advanced monster AI: they can recognize weapons and armours, pick up and equip them
+* (Feature)  Added more monsters
 * (Feature)  Armours, rings, amulets and weapons can be worn now, giving appropriate modifiers for stats and in combat
 * (Feature)  Added armours, rings and amulets
 * (Refactor) Refactored game models so game data can be now easily serialized

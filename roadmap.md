@@ -11,7 +11,7 @@
 - [R.0.1.C1] Improve random combat messages generation
 - [R.0.1.C2] Combat system should respect armours/various modifiers
 ### Entities and AI
-- [R.0.1.E1] Add various different monsters (humanoids included) PARTIALLY DONE
+- [R.0.1.E1] ~~Add various different monsters~~ (humanoids included) DONE
 - [R.0.1.E2] ~~Create more advanced monsters AI: idling monsters shouldn't just wander around randomly~~ DONE
 - [R.0.1.E3] ~~Humanoid monsters should recognize items, pick up them and use/wear them~~ DONE
 - [R.0.1.E4] Basic combat and non combat abilities for player/entities
