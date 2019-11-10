@@ -11,10 +11,13 @@ import {Cell} from './cells/cell_model';
 import {DungeonAreaModel} from './dungeon_area_model';
 import {RoomModel} from './room_model';
 import {RoomConnectionModel} from './room_connection_model';
-import {DungeonModelEvents} from '../../constants/dungeon_events';
+import {DungeonEvents, DungeonModelEvents} from '../../constants/dungeon_events';
 import {EntityModel} from '../entity/entity_model';
 import { globalLevelCollection } from '../../global/collections';
 import {DungeonTypes} from '../../constants/dungeon_types';
+import {getDistanceBetweenPoints} from '../../helper/utility';
+import {EntityGroupModel} from '../entity/entity_group_model';
+import {EntityController} from '../../controller/entity/entity_controller';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
 
@@ -66,7 +69,7 @@ export class LevelModel extends BaseModel {
             }
         }
     }
-    public changeCellType(x: number, y: number, type: string): void {
+    public changeCellType(x: number, y: number, type: CellTypes): void {
         this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type, {
             dungeonType: this.branch,
             levelNumber: this.levelNumber,
@@ -226,7 +229,10 @@ export class LevelModel extends BaseModel {
      * Returns random cell without any entity and without blocked movement.
      */
     public getRandomUnoccupiedCell(): Cell {
-        let cell: Cell = Array.from(this.cells.values()).random();
+        const unocuppiedCells: Cell[] = Array.from(this.cells.values()).filter(
+            (cellCandidate: Cell) => !cellCandidate.blockMovement && !cellCandidate.entity)
+        ;
+        let cell: Cell = unocuppiedCells.random();
         let attempt: number = 0;
 
         while (cell.blockMovement || cell.entity) {
@@ -255,6 +261,42 @@ export class LevelModel extends BaseModel {
         }
 
         return result;
+    }
+    public getRandomUnocuppiedCellsWithinRangeFromCell(cell: Cell, amount: number, range: number): Cell[] {
+        const cells: Cell[] = Array.from(this.cells.values());
+        const unocuppiedCellsInRange: Cell[] = cells.filter((examinedCell: Cell) => {
+            if (examinedCell.entity || examinedCell.blockMovement) {
+                return false;
+            }
+            return getDistanceBetweenPoints(new Position(cell.x, cell.y), new Position(examinedCell.x, examinedCell.y)) <= range;
+        });
+        const result: Cell[] = [];
+
+        for (let i = 0; i < amount; i++) {
+            const randomCell: Cell = unocuppiedCellsInRange.random();
+
+            result.push(unocuppiedCellsInRange.splice(unocuppiedCellsInRange.indexOf(randomCell), 1)[0]);
+        }
+
+        return result;
+    }
+    /**
+     * Creates new monster on given cell coordinates and emits event that new monster was spawned (which is needed
+     * in order to add monster controller to time engine).
+     *
+     * @param entityController   Monster controller
+     * @param cell                Monster spawn cell
+     */
+    public spawnMonster(entityController: EntityController, cell: Cell): void {
+        if (Array.from(this.cells.values()).includes(cell)) {
+            cell.setEntity(entityController.getModel());
+            this.notify(DungeonEvents.NEW_CREATURE_SPAWNED, entityController);
+        }
+    }
+    public spawnEntityGroup(entityGroup: EntityGroupModel): void {
+        entityGroup.getMembers().forEach((controller: EntityController) => {
+            this.spawnMonster(controller, controller.getEntityPosition());
+        });
     }
     public getSerializedData(): object {
         return {

@@ -207,16 +207,16 @@ export class InfoView {
             description,
             hitPoints,
             maxHitPoints,
-            naturalWeapon,
+            weapon,
         } = entity;
 
         return {
             description,
             hitPoints,
             maxHitPoints,
-            weaponType: naturalWeapon.naturalType,
-            weaponDamage: naturalWeapon.damage.getSerializedData(),
-            weaponDmgType: naturalWeapon.type,
+            weaponType: weapon.description,
+            weaponDamage: weapon.damage.getSerializedData(),
+            weaponDmgType: weapon.type,
         };
     }
     private prepareCellDisplayVariables(cell: Cell): ITemplateVariables {

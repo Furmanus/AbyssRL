@@ -6,13 +6,13 @@ import {EntityEvents} from '../../constants/entity_events';
 import {EntityActualStats, EntityBodySlots, EntityStats, MonsterSizes, MonstersTypes} from '../../constants/monsters';
 import {ItemsCollection} from '../../collections/items_collection';
 import {ItemModel} from '../items/item_model';
-import {weaponModelFactory} from '../../factory/item/weapon_model_factory';
 import {NaturalWeaponModel} from '../items/natural_weapon_model';
 import {WearableModel} from '../items/wearable_model';
-import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
-import {RingModelFactory} from '../../factory/item/ring_model_factory';
-import {AmuletModelFactory} from '../../factory/item/amulet_model_factory';
 import {WeaponModel} from '../items/weapon_model';
+import {isWearableItem} from '../../interfaces/type_guards';
+import {EntityGroupModel} from './entity_group_model';
+import {EntityStrategy} from '../../strategy/entity';
+import {getMonsterNaturalWeapon} from '../../factory/natural_weapon_factory';
 
 export interface IEntityStatsObject {
     [EntityStats.STRENGTH]: number;
@@ -73,20 +73,7 @@ export class EntityModel extends BaseModel {
     public maxHitPoints: number = null;
     public size: MonsterSizes = null;
     // TODO remove content of collection
-    public inventory: ItemsCollection = new ItemsCollection(
-        [weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            weaponModelFactory.getRandomWeaponModel(),
-            ArmourModelFactory.getRandomArmourModel(),
-            ArmourModelFactory.getRandomArmourModel(),
-            ArmourModelFactory.getRandomArmourModel(),
-            ArmourModelFactory.getRandomArmourModel(),
-            RingModelFactory.getRandomRingModel(),
-            AmuletModelFactory.getRandomAmuletModel(),
-        ],
-    );
+    public inventory: ItemsCollection;
     public bodySlots: IBodySlots = {
         [EntityBodySlots.HEAD]: null,
         [EntityBodySlots.NECK]: null,
@@ -99,6 +86,10 @@ export class EntityModel extends BaseModel {
      * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
      */
     public naturalWeapon: NaturalWeaponModel = null;
+    /**
+     * Group to which entity can belong
+     */
+    public entityGroup: EntityGroupModel = null;
     /**
      * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
      */
@@ -139,7 +130,9 @@ export class EntityModel extends BaseModel {
         this.baseSpeed = config.speed;
         this.basePerception = config.perception;
         this.type = config.type;
-        // TODO add initialization of inventory
+        this.inventory = EntityStrategy.getMonsterEquipment(this.type);
+        this.naturalWeapon = getMonsterNaturalWeapon(this.type);
+
         if (animalTypes.includes(this.type)) {
             this.bodySlots = {};
         }
@@ -225,7 +218,10 @@ export class EntityModel extends BaseModel {
             currentCellInventory.remove(item);
             this.inventory.add(item);
 
-            this.notify(EntityEvents.ENTITY_PICKED_ITEM, item);
+            this.notify(EntityEvents.ENTITY_PICKED_ITEM, {
+                position: this.position,
+                item,
+            });
         }
     }
     /**
@@ -239,10 +235,18 @@ export class EntityModel extends BaseModel {
 
         items.forEach((item: ItemModel) => {
             if (this.inventory.has(item)) {
+
+                if (isWearableItem(item)) {
+                    item.isEquipped = false;
+                }
+
                 this.inventory.remove(item);
                 currentCellInventory.add(item);
 
-                this.notify(EntityEvents.ENTITY_DROPPED_ITEM, item);
+                this.notify(EntityEvents.ENTITY_DROPPED_ITEM, {
+                    position: this.position,
+                    item,
+                });
             }
         });
     }
@@ -250,21 +254,33 @@ export class EntityModel extends BaseModel {
         if (this.inventory.has(item)) {
             if (this.bodySlots[item.bodyPart[0]]) {
                 this.bodySlots[item.bodyPart[0]].isEquipped = false;
-                this.notify(EntityEvents.ENTITY_REMOVED_ITEM, this.bodySlots[item.bodyPart[0]]);
+                this.notify(EntityEvents.ENTITY_REMOVED_ITEM, {
+                    position: this.position,
+                    item: this.bodySlots[item.bodyPart[0]],
+                });
             }
             this.bodySlots[item.bodyPart[0]] = item;
             item.isEquipped = true;
-            this.notify(EntityEvents.ENTITY_EQUIPPED_ITEM, item);
+            this.notify(EntityEvents.ENTITY_EQUIPPED_ITEM, {
+                position: this.position,
+                item,
+            });
         }
     }
     public removeItem(item: WearableModel): void {
         const itemBodySlot = item.bodyPart;
 
-        if (this.bodySlots[itemBodySlot[0]]) {
+        if (this.isItemWorn(item)) {
             this.bodySlots[itemBodySlot[0]] = null;
             item.isEquipped = false;
-            this.notify(EntityEvents.ENTITY_REMOVED_ITEM, item);
+            this.notify(EntityEvents.ENTITY_REMOVED_ITEM, {
+                position: this.position,
+                item,
+            });
         }
+    }
+    public isItemWorn(item: WearableModel): boolean {
+        return this.bodySlots[item.bodyPart[0]] === item;
     }
     /**
      * Returns speed of entity.
@@ -301,5 +317,11 @@ export class EntityModel extends BaseModel {
         delete serializedEntityModel.naturalWeapon;
 
         return serializedEntityModel;
+    }
+    public setEntityGroup(group: EntityGroupModel): void {
+        this.entityGroup = group;
+    }
+    public getEntityGroup(): EntityGroupModel {
+        return this.entityGroup;
     }
 }

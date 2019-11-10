@@ -1,6 +1,8 @@
 import {MessagesView} from '../view/messages_view';
 import {config} from '../global/config';
 import {Controller} from './controller';
+import {GlobalPlayerData} from '../global/player';
+import {ICoordinates} from '../interfaces/common';
 
 let instance: MessagesController;
 
@@ -27,8 +29,12 @@ export class MessagesController extends Controller {
     /**
      * Displays given message in view.
      * @param    message     Message to display.
+     * @param    position    Position (coordinates) where action has taken place
      */
-    public showMessageInView(message: string): void {
+    public showMessageInView(message: string, position?: ICoordinates): void {
+        if  (position && !GlobalPlayerData.getFov().some((coord: ICoordinates) => coord.x === position.x && coord.y === position.y)) {
+            return;
+        }
         if (message) {
             this.view.addMessage(message);
         }

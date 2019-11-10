@@ -3,6 +3,8 @@ import {config} from '../global/config';
 import {getDistance} from './utility';
 import {EntityModel} from '../model/entity/entity_model';
 import {Cell} from '../model/dungeon/cells/cell_model';
+import {MonstersTypes} from '../constants/monsters';
+
 /**
  * Calculates field of view for given entity.
  * @param   entity      Model of entity
@@ -27,7 +29,9 @@ export function calculateFov(entity: EntityModel): Cell[] {
         if (position.x === x && position.y === y) {
             return true;
         }
-
+        if (process.env.test && entity.type === MonstersTypes.PLAYER) {
+            return true;
+        }
         return !cell.blocksLos;
     });
 

@@ -6,6 +6,7 @@ import {BaseModel} from '../../core/base_model';
 import {IAnyFunction} from '../../interfaces/common';
 import {LevelModel} from './level_model';
 import {Cell} from './cells/cell_model';
+import {CellTypes} from '../../constants/cell_types';
 
 export interface IRoomConfig {
     iteration?: number;
@@ -145,7 +146,7 @@ export class RoomModel extends BaseModel {
 
         return cells;
     }
-    public changeCellType(x: number, y: number, type: string): void {
+    public changeCellType(x: number, y: number, type: CellTypes): void {
         const cell: Cell = this.levelModel.getCell(x, y);
 
         if (cell) {

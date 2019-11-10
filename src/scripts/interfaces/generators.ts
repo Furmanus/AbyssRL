@@ -1,13 +1,14 @@
 import {IDirection} from './common';
+import {CellTypes} from '../constants/cell_types';
 
 export interface ISmoothLevelConfig {
-    cellsToSmooth: string[];
-    cellsToChange: string[];
-    cellsAfterChange: string[];
+    cellsToSmooth: CellTypes[];
+    cellsToChange: CellTypes[];
+    cellsAfterChange: CellTypes[];
 }
 export interface IChangeEveryCellInLevelConfig {
-    cellsToChange: string[];
-    cellsAfterChange: string[];
+    cellsToChange: CellTypes[];
+    cellsAfterChange: CellTypes[];
     probability: number;
 }
 export interface ISearchCellSurroundingResult {
@@ -19,7 +20,7 @@ export interface IFillLevelWithVoronoiPointConfig {
 }
 export interface IExaminedCellsClosestVoronoiPointType {
     distance: number;
-    type: string;
+    type: CellTypes;
 }
 export interface ICavernGenerateLevelConfig extends IDungeonStrategyGenerateLevelConfig {
     solidCellProbability?: number;

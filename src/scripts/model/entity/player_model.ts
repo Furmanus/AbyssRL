@@ -1,14 +1,12 @@
 import {EntityModel} from './entity_model';
 import {IAnyObject} from '../../interfaces/common';
-import {MonsterSizes, MonstersTypes} from '../../constants/monsters';
-import {getMonsterNaturalWeapon} from '../../factory/natural_weapon_factory';
+import {MonsterSizes} from '../../constants/monsters';
 
 export class PlayerModel extends EntityModel {
     constructor(config: IAnyObject = {}) {
         super(config);
 
         this.description = config.name || 'Anonymous brave hero';
-        this.type = MonstersTypes.PLAYER;
         this.baseStrength = config.strength;
         this.baseDexterity = config.dexterity;
         this.baseIntelligence = config.intelligence;
@@ -16,6 +14,5 @@ export class PlayerModel extends EntityModel {
         this.hitPoints = config.hitPoints;
         this.maxHitPoints = config.maxHitPoints;
         this.size = MonsterSizes.MEDIUM;
-        this.naturalWeapon = getMonsterNaturalWeapon(MonstersTypes.PLAYER);
     }
 }

@@ -43,6 +43,12 @@ export class Dice {
     public getAdditional(): number {
         return this.additional;
     }
+    public getMinimalValue(): number {
+        return this.multiplier + this.additional;
+    }
+    public getMaximumValue(): number {
+        return this.multiplier * this.sides + this.additional;
+    }
     public getSerializedData(): string {
         let desc: string = `${this.multiplier}d${this.sides}`;
 
@@ -52,5 +58,4 @@ export class Dice {
 
         return desc;
     }
-
 }

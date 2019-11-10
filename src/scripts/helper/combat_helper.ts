@@ -63,6 +63,8 @@ export function doCombatAction(attacker: EntityModel, defender: EntityModel): IC
 
     if (isDefenderHit) {
         damageDealt = attackerWeapon.damage.roll() - defenderProtection;
+        damageDealt = (damageDealt < 0) ? 0 : damageDealt;
+        defender.takeHit(damageDealt);
 
         if (damageDealt > 0) {
             const message: string = generateCombatMessage({

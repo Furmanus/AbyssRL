@@ -12,6 +12,7 @@ import {ArmourModel} from '../../model/items/armour_model';
 import {ArmourModelFactory} from '../../factory/item/armour_model_factory';
 import {RingModelFactory} from '../../factory/item/ring_model_factory';
 import {RingModel} from '../../model/items/ring_model';
+import {TestLevelGenerator} from '../../generators/level_generators/test_generator';
 
 type AllGeneratorsTypes = ArenaLevelGenerator | CavernLevelGenerator | DungeonLevelGenerator;
 
@@ -22,6 +23,7 @@ interface ITypeToGenerator {
 const arenaLevelGenerator: ArenaLevelGenerator = ArenaLevelGenerator.getInstance();
 const cavernLevelGenerator: CavernLevelGenerator = CavernLevelGenerator.getInstance();
 const dungeonLevelGenerator: DungeonLevelGenerator = DungeonLevelGenerator.getInstance();
+const testLevelGenerator: TestLevelGenerator = new TestLevelGenerator();
 
 const typeToGenerator: ITypeToGenerator = {
     dungeon: dungeonLevelGenerator,
@@ -44,6 +46,12 @@ export class MainDungeonLevelGenerationStrategy {
             default:
                 const percentDieRoll: number = Rng.getPercentage();
 
+                if (process.env.test) {
+                    testLevelGenerator.generateLevel(levelModel);
+                    // this.fillLevelWithItems(levelModel);
+                    return;
+                }
+
                 if (percentDieRoll < 33) {
                     arenaLevelGenerator.generateLevel(levelModel, generateConfig);
                 } else if (percentDieRoll < 66) {
@@ -62,10 +70,15 @@ export class MainDungeonLevelGenerationStrategy {
             const armourModel: ArmourModel = ArmourModelFactory.getRandomArmourModel();
             const ringModel: RingModel = RingModelFactory.getRandomRingModel();
 
-            if (Rng.getPercentage() < 33) {
-                randomCell.inventory.add(ringModel);
+            if (randomCell) {
+                if (Rng.getPercentage() < 33) {
+                    randomCell.inventory.add(ringModel);
+                } else {
+                    randomCell.inventory.add(Rng.getPercentage() < 50 ? weaponModel : armourModel);
+                }
             } else {
-                randomCell.inventory.add(Rng.getPercentage() < 50 ? weaponModel : armourModel);
+                // tslint:disable-next-line:no-console
+                console.warn('Failed to get random unocuppied cell');
             }
         }
     }
