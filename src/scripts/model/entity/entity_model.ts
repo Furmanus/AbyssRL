@@ -254,7 +254,10 @@ export class EntityModel extends BaseModel {
         if (this.inventory.has(item)) {
             if (this.bodySlots[item.bodyPart[0]]) {
                 this.bodySlots[item.bodyPart[0]].isEquipped = false;
-                this.notify(EntityEvents.ENTITY_REMOVED_ITEM, this.bodySlots[item.bodyPart[0]]);
+                this.notify(EntityEvents.ENTITY_REMOVED_ITEM, {
+                    position: this.position,
+                    item: this.bodySlots[item.bodyPart[0]],
+                });
             }
             this.bodySlots[item.bodyPart[0]] = item;
             item.isEquipped = true;
