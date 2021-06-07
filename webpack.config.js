@@ -16,7 +16,7 @@ const plugins = [
         filename: 'index.html',
     }),
     new MiniCssExtractPlugin({
-        filename: '[name].[chunkhash].css',
+        filename: '[name].[hash].css',
     }),
 ];
 
@@ -32,7 +32,7 @@ module.exports = env => {
         },
         output: {
             path: path.join(__dirname, '/dist'),
-            filename: '[name].[chunkhash].bundle.js',
+            filename: '[name].[hash].bundle.js',
         },
         resolve: {
             extensions: ['.ts', '.tsx', '.js', '.json'],
