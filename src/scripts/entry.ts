@@ -5,7 +5,6 @@
 import {MainController} from './controller/main_controller';
 // @ts-ignore
 import * as u5tiles from './assets/u5tiles.png';
-import '@babel/polyfill';
 import '../styles/app.less';
 import {tilesetObject} from './global/tileset';
 // tslint:disable

@@ -35,7 +35,7 @@ module.exports = env => {
             filename: '[name].[hash].bundle.js',
         },
         resolve: {
-            extensions: ['.ts', '.tsx', '.js', '.json'],
+            extensions: ['.ts', '.tsx', '.json'],
         },
         optimization: {
             splitChunks: {
@@ -54,11 +54,6 @@ module.exports = env => {
         },
         module: {
             rules: [
-                {
-                    test: /\.js|jsx/,
-                    exclude: /node_modules/,
-                    use: 'babel-loader',
-                },
                 {
                     test: /\.ts|tsx/,
                     loader: 'awesome-typescript-loader',
