@@ -1,10 +1,10 @@
-import {IAnyObject} from './common';
-import {EntityModel} from '../model/entity/entity_model';
-import {EntityController} from '../controller/entity/entity_controller';
-import {PlayerController} from '../controller/entity/player_controller';
-import {WalkAttemptResult} from '../model/dungeon/cells/effects/walk_attempt_result';
-import {UseAttemptResult} from '../model/dungeon/cells/effects/use_attempt_result';
-import {ItemsCollection} from '../collections/items_collection';
+import { IAnyObject } from './common';
+import { EntityModel } from '../model/entity/entity_model';
+import { EntityController } from '../controller/entity/entity_controller';
+import { PlayerController } from '../controller/entity/player_controller';
+import { WalkAttemptResult } from '../model/dungeon/cells/effects/walk_attempt_result';
+import { UseAttemptResult } from '../model/dungeon/cells/effects/use_attempt_result';
+import { ItemsCollection } from '../collections/items_collection';
 
 export interface ICellModel {
     x: number;

@@ -1,10 +1,10 @@
 /**
  * Created by Docent Furman on 16.07.2017.
  */
-import {BaseModel} from '../../core/base_model';
-import {DungeonEvents} from '../../constants/dungeon_events';
-import {IActionAttempt} from '../../interfaces/common';
-import {ASCEND, DESCEND} from '../../constants/directions';
+import { BaseModel } from '../../core/base_model';
+import { DungeonEvents } from '../../constants/dungeon_events';
+import { IActionAttempt } from '../../interfaces/common';
+import { ASCEND, DESCEND } from '../../constants/directions';
 
 export class DungeonModel extends BaseModel {
     private currentLevelNumber: number = null;
@@ -17,12 +17,13 @@ export class DungeonModel extends BaseModel {
      * @param   levelNumber      Current level number (default to 1)
      */
     constructor(type: string, maxLevelNumber: number, levelNumber?: number) {
-        super();
+      super();
 
-        this.currentLevelNumber = levelNumber || 1;
-        this.type = type; // string determining type of dungeon
-        this.maxLevelNumber = maxLevelNumber; // number determining number of dungeon levels (how deep it is)
+      this.currentLevelNumber = levelNumber || 1;
+      this.type = type; // string determining type of dungeon
+      this.maxLevelNumber = maxLevelNumber; // number determining number of dungeon levels (how deep it is)
     }
+
     /**
      * Sets currentLevelNumber property in model. Action is notified with event CHANGE_CURRENT_LEVEL from dungeon events
      * enum.
@@ -30,46 +31,48 @@ export class DungeonModel extends BaseModel {
      * @param num   New level number
      */
     public setCurrentLevelNumber(num: number): void {
-        const oldLevelNumber: number = this.currentLevelNumber;
-        let direction: string;
+      const oldLevelNumber: number = this.currentLevelNumber;
+      let direction: string;
 
-        if (num <= this.maxLevelNumber) {
-            direction = Math.sign(oldLevelNumber - num) > 0 ? ASCEND : DESCEND;
+      if (num <= this.maxLevelNumber) {
+        direction = Math.sign(oldLevelNumber - num) > 0 ? ASCEND : DESCEND;
 
-            this.currentLevelNumber = num;
-            this.notify(DungeonEvents.CHANGE_CURRENT_LEVEL, {
-                levelNumber: num,
-                direction,
-            });
-        }
+        this.currentLevelNumber = num;
+        this.notify(DungeonEvents.CHANGE_CURRENT_LEVEL, {
+          levelNumber: num,
+          direction,
+        });
+      }
     }
+
     /**
      * Returns number of level in dungeon where player currently is.
      *
      * @returns     Number of current dungeon level
      */
     public getCurrentLevelNumber(): number {
-        return this.currentLevelNumber;
+      return this.currentLevelNumber;
     }
+
     /**
      * Verifies whether player can go to level of given number in dungeon.
      *
      * @param num   Level number
      */
     public canChangeLevel(num: number): IActionAttempt {
-        let result: boolean;
-        let message: string;
+      let result: boolean;
+      let message: string;
 
-        if (num < 1 && !this.parentDungeonBranch) {
-            result = false;
-            message = 'Passage is blocked, you can\'t go up here.';
-        } else if (num >= 1) {
-            result = true;
-        }
+      if (num < 1 && !this.parentDungeonBranch) {
+        result = false;
+        message = 'Passage is blocked, you can\'t go up here.';
+      } else if (num >= 1) {
+        result = true;
+      }
 
-        return {
-            result,
-            message,
-        };
+      return {
+        result,
+        message,
+      };
     }
 }

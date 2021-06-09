@@ -4,8 +4,8 @@ export class UseEffectResult {
     public endTurn: boolean;
 
     constructor(useSuccessful: boolean = false, message: string = '', endTurn: boolean = false) {
-        this.useSuccessful = useSuccessful;
-        this.message = message;
-        this.endTurn = endTurn;
+      this.useSuccessful = useSuccessful;
+      this.message = message;
+      this.endTurn = endTurn;
     }
 }

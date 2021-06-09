@@ -1,12 +1,12 @@
-import {LevelModel} from '../model/dungeon/level_model';
-import {Cell} from '../model/dungeon/cells/cell_model';
-import {EntityController} from '../controller/entity/entity_controller';
+import { LevelModel } from '../model/dungeon/level_model';
+import { Cell } from '../model/dungeon/cells/cell_model';
+import { EntityController } from '../controller/entity/entity_controller';
 import {
-    MonstersTypes,
-    MonsterSizes,
+  MonstersTypes,
+  MonsterSizes,
 } from '../constants/monsters';
-import {ItemsCollection} from '../collections/items_collection';
-import {INaturalWeapon} from './combat';
+import { ItemsCollection } from '../collections/items_collection';
+import { INaturalWeapon } from './combat';
 
 export interface IEntity {
     display: string;

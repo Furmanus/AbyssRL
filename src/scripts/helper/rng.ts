@@ -6,12 +6,12 @@ import * as ROT from 'rot-js';
  * @param max     Max value
  */
 export function getRandomNumber(min: number, max: number): number {
-    return Math.floor((ROT.RNG.getUniform() * (max - min + 1)) + min);
+  return Math.floor((ROT.RNG.getUniform() * (max - min + 1)) + min);
 }
 
 /**
  * Method responsible for returning random number between 1 and 100.
  */
 export function getPercentage(): number {
-    return ROT.RNG.getPercentage();
+  return ROT.RNG.getPercentage();
 }

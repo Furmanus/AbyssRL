@@ -1,6 +1,6 @@
-import {Dice} from '../model/dice';
-import {MonsterAttackTypes} from '../constants/monsters';
-import {DamageTypes} from '../constants/combat_enums';
+import { Dice } from '../model/dice';
+import { MonsterAttackTypes } from '../constants/monsters';
+import { DamageTypes } from '../constants/combat_enums';
 
 export interface IWeapon {
     toHit: Dice;

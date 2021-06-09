@@ -1,5 +1,5 @@
-import {Constructor} from '../core/constructor';
+import { Constructor } from '../core/constructor';
 
 export class Controller extends Constructor {
-    // placeholder
+  // placeholder
 }

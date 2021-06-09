@@ -5,10 +5,10 @@ interface ITilesObject {
 }
 
 export const tilesetObject: ITilesObject = {
-    get tileset(): HTMLImageElement {
-        return tileset;
-    },
-    set tileset(tilesImage: HTMLImageElement) {
-        tileset = tilesImage;
-    },
+  get tileset(): HTMLImageElement {
+    return tileset;
+  },
+  set tileset(tilesImage: HTMLImageElement) {
+    tileset = tilesImage;
+  },
 };

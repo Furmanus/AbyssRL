@@ -1,11 +1,11 @@
-import {Rectangle} from '../position/rectangle';
+import { Rectangle } from '../position/rectangle';
 import * as Utility from '../../helper/utility';
-import {Position} from '../position/position';
+import { Position } from '../position/position';
 import * as Rng from '../../helper/rng';
-import {BaseModel} from '../../core/base_model';
-import {IAnyFunction, ICoordinates} from '../../interfaces/common';
-import {LevelModel} from './level_model';
-import {Cell} from './cells/cell_model';
+import { BaseModel } from '../../core/base_model';
+import { IAnyFunction, ICoordinates } from '../../interfaces/common';
+import { LevelModel } from './level_model';
+import { Cell } from './cells/cell_model';
 
 export interface IRoomConfig {
     iteration?: number;
@@ -20,195 +20,216 @@ export class RoomModel extends BaseModel {
     private levelModel: LevelModel;
 
     constructor(rectangle: Rectangle, roomConfig: IRoomConfig) {
-        super();
+      super();
 
-        this.rectangle = rectangle;
-        this.iteration = roomConfig.iteration;
-        this.levelModel = roomConfig.levelModel;
-        this.cells = this.createCells();
-        /**
+      this.rectangle = rectangle;
+      this.iteration = roomConfig.iteration;
+      this.levelModel = roomConfig.levelModel;
+      this.cells = this.createCells();
+      /**
          * Set of door positions in room.
          */
-        this.doorSpots = new Set<Position>();
+      this.doorSpots = new Set<Position>();
     }
+
     get left(): number {
-        return this.rectangle.leftTop.x;
+      return this.rectangle.leftTop.x;
     }
+
     get top(): number {
-        return this.rectangle.leftTop.y;
+      return this.rectangle.leftTop.y;
     }
+
     get bottom(): number {
-        return this.rectangle.leftBottom.y;
+      return this.rectangle.leftBottom.y;
     }
+
     get right(): number {
-        return this.rectangle.rightBottom.x;
+      return this.rectangle.rightBottom.x;
     }
+
     get width(): number {
-        return this.rectangle.width;
+      return this.rectangle.width;
     }
+
     get height(): number {
-        return this.rectangle.height;
+      return this.rectangle.height;
     }
+
     get hasStairsUp(): boolean {
-        return !!this.getCells().find((cell: Cell) => cell.type.includes('stairs_up'));
+      return !!this.getCells().find((cell: Cell) => cell.type.includes('stairs_up'));
     }
+
     get hasStairsDown(): boolean {
-        return !!this.getCells().find((cell: Cell) => cell.type.includes('stairs_down'));
+      return !!this.getCells().find((cell: Cell) => cell.type.includes('stairs_down'));
     }
 
     public createCells(): Position[] {
-        const {
-            left,
-            top,
-            right,
-            bottom,
-        } = this;
-        const cells: Position[] = [];
+      const {
+        left,
+        top,
+        right,
+        bottom,
+      } = this;
+      const cells: Position[] = [];
 
-        for (let i = left; i < right; i++) {
-            for (let j = top; j < bottom; j++) {
-                cells.push(new Position(i, j));
-            }
+      for (let i = left; i < right; i++) {
+        for (let j = top; j < bottom; j++) {
+          cells.push(new Position(i, j));
         }
+      }
 
-        return cells;
+      return cells;
     }
+
     /**
      * Returns randomly chosen cell which passes boolean test provided by callback function given as argument.
      *
      * @param callback  Callback function which returns boolean value indicating whether chosen cell should be returned
      */
     public getRandomCallbackCell(callback: (cell: Cell) => boolean): Cell {
-        let cell: Cell;
-        let attemptNumber: number = 0;
+      let cell: Cell;
+      let attemptNumber: number = 0;
 
-        while (!cell) {
-            if (attemptNumber > 200) {
-                break;
-            } else {
-                const cellCandidate: Cell = this.getCells().random();
+      while (!cell) {
+        if (attemptNumber > 200) {
+          break;
+        } else {
+          const cellCandidate: Cell = this.getCells().random();
 
-                if (callback(cellCandidate)) {
-                    cell = cellCandidate;
-                }
+          if (callback(cellCandidate)) {
+            cell = cellCandidate;
+          }
 
-                attemptNumber += 1;
-            }
+          attemptNumber += 1;
         }
+      }
 
-        return cell;
+      return cell;
     }
+
     /**
      * Returns randomly chosen floor type of cell from room.
      */
     public getRandomInteriorCell(): Cell {
-        let cell: Cell;
+      let cell: Cell;
 
-        while (!cell) {
-            const cellCandidate: Cell = this.getCells().random();
+      while (!cell) {
+        const cellCandidate: Cell = this.getCells().random();
 
-            if (!cellCandidate.blockMovement) {
-                cell = cellCandidate;
-            }
+        if (!cellCandidate.blockMovement) {
+          cell = cellCandidate;
         }
+      }
 
-        return cell;
+      return cell;
     }
+
     /**
      * Returns randomly chosen wall type of cell from room.
      */
     public getRandomWallCell(): Cell {
-        let cell: Cell;
+      let cell: Cell;
 
-        while (!cell) {
-            const cellCandidate: Cell = this.getCells().random();
+      while (!cell) {
+        const cellCandidate: Cell = this.getCells().random();
 
-            if (cellCandidate.blockMovement) {
-                cell = cellCandidate;
-            }
+        if (cellCandidate.blockMovement) {
+          cell = cellCandidate;
         }
+      }
 
-        return cell;
+      return cell;
     }
+
     public recalculateCells(): void {
-        this.cells = this.createCells();
+      this.cells = this.createCells();
     }
+
     public getCell(x: number, y: number): Cell {
-        return this.levelModel.getCell(x, y);
+      return this.levelModel.getCell(x, y);
     }
+
     public getCells(): Cell[] {
-        const cells: Cell[] = [];
+      const cells: Cell[] = [];
 
-        this.cells.forEach((pos: Position) => {
-            cells.push(this.getCell(pos.x, pos.y));
-        });
+      this.cells.forEach((pos: Position) => {
+        cells.push(this.getCell(pos.x, pos.y));
+      });
 
-        return cells;
+      return cells;
     }
+
     public changeCellType(x: number, y: number, type: string): void {
-        const cell: Cell = this.levelModel.getCell(x, y);
+      const cell: Cell = this.levelModel.getCell(x, y);
 
-        if (cell) {
-            this.levelModel.changeCellType(x, y, type);
-        }
+      if (cell) {
+        this.levelModel.changeCellType(x, y, type);
+      }
     }
+
     public transform(callback: IAnyFunction): this {
-        this.cells.forEach((pos: Position) => {
-            const isWall: boolean = pos.y === this.top || pos.y === this.bottom || pos.x === this.right || pos.x === this.left;
+      this.cells.forEach((pos: Position) => {
+        const isWall: boolean = pos.y === this.top || pos.y === this.bottom || pos.x === this.right || pos.x === this.left;
 
-            callback(pos.x, pos.y, isWall ? 1 : 0);
-        });
+        callback(pos.x, pos.y, isWall ? 1 : 0);
+      });
 
-        return this;
+      return this;
     }
+
     public scale(ratio: number): this {
-        this.rectangle.scale(ratio);
-        this.recalculateCells();
+      this.rectangle.scale(ratio);
+      this.recalculateCells();
 
-        return this;
+      return this;
     }
+
     public addDoorSpot(position: Position): this {
-        this.doorSpots.add(position);
+      this.doorSpots.add(position);
 
-        return this;
+      return this;
     }
+
     public getDistanceFromRoom(room: RoomModel): number {
-        const rect = this.rectangle;
-        const thisLeftTop = rect.leftTop;
-        const thisLeftBottom = rect.rightBottom;
-        const thisRightTop = rect.rightTop;
-        const thisRightBottom = rect.rightBottom;
-        const examinedRect = room.rectangle;
-        const examinedLeftTop = examinedRect.leftTop;
-        const examinedLeftBottom = examinedRect.leftBottom;
-        const examinedRightTop = examinedRect.rightTop;
-        const examinedRightBottom = examinedRect.rightBottom;
-        const thisHorizontalBefore = Math.sign(room.left - this.right) < 0;
-        const thisVerticalBefore = Math.sign(room.top - this.bottom) < 0;
-        let distance;
+      const rect = this.rectangle;
+      const thisLeftTop = rect.leftTop;
+      const thisLeftBottom = rect.rightBottom;
+      const thisRightTop = rect.rightTop;
+      const thisRightBottom = rect.rightBottom;
+      const examinedRect = room.rectangle;
+      const examinedLeftTop = examinedRect.leftTop;
+      const examinedLeftBottom = examinedRect.leftBottom;
+      const examinedRightTop = examinedRect.rightTop;
+      const examinedRightBottom = examinedRect.rightBottom;
+      const thisHorizontalBefore = Math.sign(room.left - this.right) < 0;
+      const thisVerticalBefore = Math.sign(room.top - this.bottom) < 0;
+      let distance;
 
-        if (thisHorizontalBefore && thisVerticalBefore) {
-            distance = Utility.getDistanceBetweenPoints(thisRightBottom, examinedLeftTop);
-        } else if (thisHorizontalBefore && !thisVerticalBefore) {
-            distance = Utility.getDistanceBetweenPoints(thisRightTop, examinedLeftBottom);
-        } else if (!thisHorizontalBefore && thisVerticalBefore) {
-            distance = Utility.getDistanceBetweenPoints(thisLeftBottom, examinedRightTop);
-        } else if (!thisHorizontalBefore && !thisVerticalBefore) {
-            distance = Utility.getDistanceBetweenPoints(thisLeftTop, examinedRightBottom);
-        }
+      if (thisHorizontalBefore && thisVerticalBefore) {
+        distance = Utility.getDistanceBetweenPoints(thisRightBottom, examinedLeftTop);
+      } else if (thisHorizontalBefore && !thisVerticalBefore) {
+        distance = Utility.getDistanceBetweenPoints(thisRightTop, examinedLeftBottom);
+      } else if (!thisHorizontalBefore && thisVerticalBefore) {
+        distance = Utility.getDistanceBetweenPoints(thisLeftBottom, examinedRightTop);
+      } else if (!thisHorizontalBefore && !thisVerticalBefore) {
+        distance = Utility.getDistanceBetweenPoints(thisLeftTop, examinedRightBottom);
+      }
 
-        return distance;
+      return distance;
     }
+
     public getRandomRoomCellPosition(): Position {
-        return new Position(
-            Rng.getRandomNumber(this.left + 1, this.right - 1),
-            Rng.getRandomNumber(this.top + 1, this.bottom - 1),
-        );
+      return new Position(
+        Rng.getRandomNumber(this.left + 1, this.right - 1),
+        Rng.getRandomNumber(this.top + 1, this.bottom - 1),
+      );
     }
+
     /**
      * Returns model of level which contains this room.
      */
     public getLevelModel(): LevelModel {
-        return this.levelModel;
+      return this.levelModel;
     }
 }

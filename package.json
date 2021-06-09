@@ -8,6 +8,7 @@
     "build:prod": "rm -rf dist && webpack --mode=production --config webpack.config.js",
     "build:dev": "rm -rf dist && webpack --mode=development --watch --config webpack.config.js",
     "lint:ts": "eslint src/scripts/**/*.ts",
+    "lint:fix": "eslint src/scripts/**/*ts --fix",
     "test": "jest",
     "test:coverage": "jest --coverage"
   },

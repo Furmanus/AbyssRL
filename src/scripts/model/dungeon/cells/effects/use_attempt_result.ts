@@ -10,8 +10,8 @@ export class UseAttemptResult {
      * @param   endTurn     Variable indicating if attempt should result in used entity (player) turn
      */
     constructor(canUse: boolean = true, message: string = '', endTurn: boolean = false) {
-        this.canUse = canUse;
-        this.message = message;
-        this.endTurn = endTurn;
+      this.canUse = canUse;
+      this.message = message;
+      this.endTurn = endTurn;
     }
 }

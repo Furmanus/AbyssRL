@@ -1,4 +1,4 @@
-import {IDirection} from './common';
+import { IDirection } from './common';
 
 export interface ISmoothLevelConfig {
     cellsToSmooth: string[];

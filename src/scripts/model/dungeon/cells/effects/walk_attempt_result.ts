@@ -8,7 +8,7 @@ export class WalkAttemptResult {
      * @param   message     Message when entity tries to walk on cell
      */
     constructor(canMove: boolean = true, message: string = '') {
-        this.canMove = canMove;
-        this.message = message;
+      this.canMove = canMove;
+      this.message = message;
     }
 }
