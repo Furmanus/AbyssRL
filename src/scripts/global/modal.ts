@@ -1,3 +1,4 @@
-import {InventoryController} from '../controller/inventory_controller';
+import { InventoryController } from '../controller/inventory_controller';
 
-export const globalInventoryController: InventoryController = new InventoryController();
+export const globalInventoryController: InventoryController =
+  new InventoryController();
