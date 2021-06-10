@@ -20,6 +20,7 @@
         "semi": "off",
         "multiline-ternary": "off",
         "no-useless-constructor": "off"
-    }
+    },
+    "ignorePatterns": ["*.d.ts"]
 }
 

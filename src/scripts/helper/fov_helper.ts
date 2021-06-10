@@ -1,4 +1,4 @@
-import * as ROT from 'rot-js';
+import ROT from 'rot-js';
 import { config } from '../global/config';
 import { getDistance } from './utility';
 import { EntityModel } from '../model/entity/entity_model';
@@ -8,14 +8,11 @@ import { Cell } from '../model/dungeon/cells/cell_model';
  * @param   entity      Model of entity
  */
 export function calculateFov(entity: EntityModel): Cell[] {
-  const {
-    level,
-    position,
-  } = entity;
+  const { level, position } = entity;
   const calculatedFov: Cell[] = [];
   /**
-     * Function used to determine whether certain cell allows to fov pass through.
-     */
+   * Function used to determine whether certain cell allows to fov pass through.
+   */
   const fov = new ROT.FOV.PreciseShadowcasting((x, y): boolean => {
     const levelWidth: number = config.LEVEL_WIDTH;
     const levelHeight: number = config.LEVEL_HEIGHT;
