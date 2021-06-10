@@ -28,8 +28,9 @@ module.exports = (env) => {
       filename: '[name].[hash].bundle.js',
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.json'],
+      extensions: ['.ts', '.js', '.json'],
     },
+    target: 'web',
     optimization: {
       splitChunks: {
         cacheGroups: {
