@@ -5,11 +5,11 @@ import { ItemsCollection } from '../../../../collections/items_collection';
 import { getMonsterNaturalWeapon } from '../../../../factory/natural_weapon_factory';
 
 interface IMonsterDataObject {
-    [key: string]: Partial<IEntity>;
+  [key: string]: Partial<IEntity>;
 }
 
 export const monstersData: IMonsterDataObject = {
-  [MonstersTypes.GIANT_RAT]: {
+  [MonstersTypes.GiantRat]: {
     strength: 2,
     dexterity: 10,
     intelligence: 5,
@@ -17,13 +17,13 @@ export const monstersData: IMonsterDataObject = {
     speed: 15,
     perception: 6,
     description: 'giant rat',
-    type: MonstersTypes.GIANT_RAT,
+    type: MonstersTypes.GiantRat,
     display: entities.GIANT_RAT,
     protection: 0,
     hitPoints: 10,
     maxHitPoints: 10,
-    size: MonsterSizes.SMALL,
+    size: MonsterSizes.Small,
     inventory: new ItemsCollection(),
-    naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.GIANT_RAT),
+    naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.GiantRat),
   },
 };

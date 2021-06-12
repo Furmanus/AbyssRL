@@ -1,7 +1,7 @@
 import { config as globalConfig } from '../../global/config';
 import { AbstractLevelGenerator } from './abstract_generator';
 import { cellTypes } from '../../constants/cell_types';
-import ROT from 'rot-js';
+import { Map } from 'rot-js';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { IAnyFunction } from '../../interfaces/common';
 import { ICavernGenerateLevelConfig } from '../../interfaces/generators';
@@ -46,7 +46,7 @@ export class CavernLevelGenerator extends AbstractLevelGenerator {
     const born = (config && config.born) || [5, 6, 7, 8];
     const survive = (config && config.survive) || [4, 5, 6, 7, 8];
 
-    const generator: Cellular = new ROT.Map.Cellular(
+    const generator: Cellular = new Map.Cellular(
       globalConfig.LEVEL_WIDTH - 2,
       globalConfig.LEVEL_HEIGHT - 2,
       {

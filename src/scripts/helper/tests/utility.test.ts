@@ -1,7 +1,4 @@
-import {
-  getDistance,
-  capitalizeString,
-} from '../utility';
+import { getDistance, capitalizeString } from '../utility';
 
 describe('Test getDistance method', () => {
   it('should return correct value for two points', () => {

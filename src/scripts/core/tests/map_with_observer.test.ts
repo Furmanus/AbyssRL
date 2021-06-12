@@ -13,6 +13,7 @@ describe('Test MapWithObserver class', () => {
   let cell3: WallModel;
   let map: MapWithObserver<string, WallModel>;
   let callback: IAnyFunction;
+  // eslint-disable-next-line no-unused-vars
   let callback2: IAnyFunction;
 
   beforeAll(() => {
@@ -24,7 +25,10 @@ describe('Test MapWithObserver class', () => {
     cell1 = CellModelFactory.getGrayWallModel(2, 2);
     cell2 = CellModelFactory.getGrayWallModel(3, 3);
     cell3 = CellModelFactory.getGrayWallModel(4, 4);
-    map = new MapWithObserver([['2x2', cell1], ['3x3', cell2]]);
+    map = new MapWithObserver([
+      ['2x2', cell1],
+      ['3x3', cell2],
+    ]);
     callback = jest.fn();
     callback2 = jest.fn();
   });

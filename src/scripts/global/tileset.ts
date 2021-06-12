@@ -1,7 +1,7 @@
 let tileset: HTMLImageElement;
 
 interface ITilesObject {
-    tileset: HTMLImageElement;
+  tileset: HTMLImageElement;
 }
 
 export const tilesetObject: ITilesObject = {

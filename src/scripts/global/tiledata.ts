@@ -4,11 +4,11 @@
  * Created by Docent Furman on 2017-04-28.
  */
 export interface ITileset {
-    [prop: string]: {
-        x: number;
-        y: number;
-        frames: number;
-    };
+  [prop: string]: {
+    x: number;
+    y: number;
+    frames: number;
+  };
 }
 export const tileset: ITileset = {
   explosion: { x: 0, y: 0, frames: 1 },

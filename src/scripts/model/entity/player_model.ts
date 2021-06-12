@@ -8,14 +8,14 @@ export class PlayerModel extends EntityModel {
     super(config);
 
     this.description = config.name || 'Anonymous brave hero';
-    this.type = MonstersTypes.PLAYER;
+    this.type = MonstersTypes.Player;
     this.strength = config.strength;
     this.dexterity = config.dexterity;
     this.intelligence = config.intelligence;
     this.toughness = config.toughness;
     this.hitPoints = config.hitPoints;
     this.maxHitPoints = config.maxHitPoints;
-    this.size = MonsterSizes.MEDIUM;
-    this.naturalWeapon = getMonsterNaturalWeapon(MonstersTypes.PLAYER);
+    this.size = MonsterSizes.Medium;
+    this.naturalWeapon = getMonsterNaturalWeapon(MonstersTypes.Player);
   }
 }

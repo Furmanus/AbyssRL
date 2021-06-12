@@ -1,4 +1,4 @@
 export enum CollectionEvents {
-    ADD = 'collection_item_added',
-    REMOVE = 'collection_item_removed',
+  Add = 'collection_item_added',
+  Remove = 'collection_item_removed',
 }

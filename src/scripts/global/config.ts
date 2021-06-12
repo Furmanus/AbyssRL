@@ -1,20 +1,20 @@
 interface IConfig {
-    LEVEL_WIDTH: number;
-    LEVEL_HEIGHT: number;
-    debugMode: boolean;
-    defaultLevelType: string;
-    SCREEN_WIDTH: number;
-    SCREEN_HEIGHT: number;
-    TILE_SIZE: number;
-    ROWS: number;
-    COLUMNS: number;
+  LEVEL_WIDTH: number;
+  LEVEL_HEIGHT: number;
+  debugMode: boolean;
+  defaultLevelType: string;
+  SCREEN_WIDTH: number;
+  SCREEN_HEIGHT: number;
+  TILE_SIZE: number;
+  ROWS: number;
+  COLUMNS: number;
 }
 interface IExtendedConfig {
-    SCREEN_WIDTH: number;
-    SCREEN_HEIGHT: number;
-    TILE_SIZE: number;
-    ROWS: number;
-    COLUMNS: number;
+  SCREEN_WIDTH: number;
+  SCREEN_HEIGHT: number;
+  TILE_SIZE: number;
+  ROWS: number;
+  COLUMNS: number;
 }
 
 const config: IConfig = {
@@ -34,8 +34,8 @@ const config: IConfig = {
 function getScreenProperties(): IExtendedConfig {
   const tileSize = 32;
   // we calculate game window size. Game window should be approximately 3/4 of view size
-  let x = Math.floor(window.innerWidth * 2 / 3);
-  let y = Math.floor(window.innerHeight * 3 / 4);
+  let x = Math.floor((window.innerWidth * 2) / 3);
+  let y = Math.floor((window.innerHeight * 3) / 4);
 
   // we make sure that game window size dimensions are multiplication of tile size
   x = x - (x % tileSize);

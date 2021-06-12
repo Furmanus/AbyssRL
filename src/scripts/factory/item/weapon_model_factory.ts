@@ -14,8 +14,9 @@ export const weaponModelFactory = {
     const weaponsDataKeys: string[] = Object.keys(weaponsData);
     const { length } = weaponsDataKeys;
     const randomKey: string = weaponsDataKeys[getRandomNumber(0, length - 1)];
-    const weaponConstructorConfig: IWeaponConstructorConfig = weaponsData[randomKey];
+    const weaponConstructorConfig: IWeaponConstructorConfig =
+      weaponsData[randomKey];
 
-    return new WeaponModel((weaponConstructorConfig));
+    return new WeaponModel(weaponConstructorConfig);
   },
 };

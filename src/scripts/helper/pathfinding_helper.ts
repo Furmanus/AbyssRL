@@ -1,5 +1,5 @@
 import { Cell } from '../model/dungeon/cells/cell_model';
-import ROT from 'rot-js';
+import { Path } from 'rot-js';
 import { LevelModel } from '../model/dungeon/level_model';
 import { ICoordinates } from '../interfaces/common';
 
@@ -12,7 +12,7 @@ export function calculatePathToCell(
   const { x: targetX, y: targetY } = target;
   const { x: startX, y: startY } = start;
 
-  const astar = new ROT.Path.AStar(
+  const astar = new Path.AStar(
     targetX,
     targetY,
     (examinedX: number, examinedY: number) => {

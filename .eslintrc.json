@@ -19,7 +19,12 @@
         "lines-between-class-members": "warn",
         "semi": "off",
         "multiline-ternary": "off",
-        "no-useless-constructor": "off"
+        "no-useless-constructor": "off",
+        "no-dupe-class-members": "off",
+        "no-use-before-define": "off",
+        "no-prototype-builtins": "off",
+        "no-new": "off",
+        "no-unused-vars": "off"
     },
     "ignorePatterns": ["*.d.ts"]
 }

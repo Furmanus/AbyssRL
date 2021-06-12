@@ -10,7 +10,11 @@ import { Position } from '../model/position/position';
  * @param    radius  Radius.
  * @returns          Returns array of level cells which are inside circle.
  */
-export function getCircleFromLevelCells(x: number, y: number, radius: number): Position[] {
+export function getCircleFromLevelCells(
+  x: number,
+  y: number,
+  radius: number,
+): Position[] {
   const circle: Position[] = [];
   const maxWidth: number = globalConfig.LEVEL_WIDTH - 2;
   const maxHeight: number = globalConfig.LEVEL_HEIGHT - 2;
@@ -21,7 +25,12 @@ export function getCircleFromLevelCells(x: number, y: number, radius: number): P
     for (let j = -2; j <= 2; j++) {
       examinedX = x + i;
       examinedY = y + j;
-      if (examinedX < 1 || examinedX > maxWidth || examinedY < 1 || examinedY > maxHeight) {
+      if (
+        examinedX < 1 ||
+        examinedX > maxWidth ||
+        examinedY < 1 ||
+        examinedY > maxHeight
+      ) {
         continue;
       }
       if (i === 0 && j === 0) {

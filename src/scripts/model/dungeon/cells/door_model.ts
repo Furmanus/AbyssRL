@@ -33,11 +33,19 @@ export class DoorModel extends Cell implements ICellModel {
   public useEffect(entityController: EntityController): UseEffectResult {
     if (this.areOpen) {
       this.close();
-      return new UseEffectResult(true, `${entityController.getProperty('description')} closes doors`, true);
+      return new UseEffectResult(
+        true,
+        `${entityController.getProperty('description')} closes doors`,
+        true,
+      );
     }
 
     this.open();
-    return new UseEffectResult(true, `${entityController.getProperty('description')} opens doors`, true);
+    return new UseEffectResult(
+      true,
+      `${entityController.getProperty('description')} opens doors`,
+      true,
+    );
   }
 
   public useAttempt(entity: EntityController): UseAttemptResult {
@@ -46,33 +54,40 @@ export class DoorModel extends Cell implements ICellModel {
       const occupyingEntityDescription: string = this.entity.description;
       const cellDescription: string = this.description;
 
-      return new UseAttemptResult(false, `${entityDescription} tries to close ${cellDescription}
-             but it is blocked by ${occupyingEntityDescription}.`, true);
+      return new UseAttemptResult(
+        false,
+        `${entityDescription} tries to close ${cellDescription}
+             but it is blocked by ${occupyingEntityDescription}.`,
+        true,
+      );
     }
 
     return new UseAttemptResult(true);
   }
 
   /**
-     * Method triggered when entity attempts to walk on doors.
-     */
+   * Method triggered when entity attempts to walk on doors.
+   */
   public walkAttempt(entityController: EntityController): WalkAttemptResult {
     if (!this.areOpen) {
       this.open();
 
-      return new WalkAttemptResult(false, `${entityController.getProperty('description')} opens doors.`);
+      return new WalkAttemptResult(
+        false,
+        `${entityController.getProperty('description')} opens doors.`,
+      );
     } else {
       return new WalkAttemptResult(true);
     }
   }
 
   /**
-     * Method responsible for opening doors. Triggers custom event.
-     */
+   * Method responsible for opening doors. Triggers custom event.
+   */
   public open(): void {
     if (!this.areOpen) {
       this.areOpen = true;
-      this.notify(DungeonEvents.DOORS_OPEN, {
+      this.notify(DungeonEvents.DoorsOpen, {
         x: this.x,
         y: this.y,
       });
@@ -80,12 +95,12 @@ export class DoorModel extends Cell implements ICellModel {
   }
 
   /**
-     * Method responsible for closing doors. Triggers custom event.
-     */
+   * Method responsible for closing doors. Triggers custom event.
+   */
   public close(): void {
     if (this.areOpen) {
       this.areOpen = false;
-      this.notify(DungeonEvents.DOORS_CLOSED, {
+      this.notify(DungeonEvents.DoorsClosed, {
         x: this.x,
         y: this.y,
       });

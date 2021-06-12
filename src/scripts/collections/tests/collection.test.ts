@@ -33,13 +33,19 @@ describe('Test collection class', () => {
     collection.add(element1);
 
     expect(collection.has(element1)).toBe(true);
-    expect(collection.notify).toHaveBeenCalledWith(CollectionEvents.ADD, element1);
+    expect(collection.notify).toHaveBeenCalledWith(
+      CollectionEvents.Add,
+      element1,
+    );
   });
   it('Remove method should remove element and call notify', () => {
     collection.remove(element2);
 
     expect(collection.has(element2)).toBe(false);
-    expect(collection.notify).toHaveBeenCalledWith(CollectionEvents.REMOVE, element2);
+    expect(collection.notify).toHaveBeenCalledWith(
+      CollectionEvents.Remove,
+      element2,
+    );
   });
   it('forEach method should call callback proper number of times', () => {
     collection.add(element1);

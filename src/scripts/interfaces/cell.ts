@@ -7,26 +7,26 @@ import { UseAttemptResult } from '../model/dungeon/cells/effects/use_attempt_res
 import { ItemsCollection } from '../collections/items_collection';
 
 export interface ICellModel {
-    x: number;
-    y: number;
-    entity: EntityModel;
-    inventory: ItemsCollection;
-    preventDisplayChange: boolean;
-    wasDiscoveredByPlayer: boolean;
-    confirmMovement: boolean;
-    displaySet: string;
-    // implemented as getters and setters
-    readonly blockMovement: boolean;
-    readonly blocksLos: boolean;
-    readonly walkMessage: string;
-    readonly modifiers: IAnyObject;
-    display: string;
-    // methods
-    enableDisplayChange: () => void;
-    disableDisplayChange: () => void;
-    changeDisplay: (tiles: string[]) => void;
-    walkEffect: (entity?: EntityController) => void;
-    walkAttempt: (entity: PlayerController) => WalkAttemptResult;
-    useEffect: (entity: EntityController) => void;
-    useAttempt: (entity: PlayerController) => UseAttemptResult;
+  x: number;
+  y: number;
+  entity: EntityModel;
+  inventory: ItemsCollection;
+  preventDisplayChange: boolean;
+  wasDiscoveredByPlayer: boolean;
+  confirmMovement: boolean;
+  displaySet: string;
+  // implemented as getters and setters
+  readonly blockMovement: boolean;
+  readonly blocksLos: boolean;
+  readonly walkMessage: string;
+  readonly modifiers: IAnyObject;
+  display: string;
+  // methods
+  enableDisplayChange: () => void;
+  disableDisplayChange: () => void;
+  changeDisplay: (tiles: string[]) => void;
+  walkEffect: (entity?: EntityController) => void;
+  walkAttempt: (entity: PlayerController) => WalkAttemptResult;
+  useEffect: (entity: EntityController) => void;
+  useAttempt: (entity: PlayerController) => UseAttemptResult;
 }

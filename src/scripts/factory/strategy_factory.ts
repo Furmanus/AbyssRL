@@ -6,7 +6,8 @@ const dungeonTypeToStrategy: IAnyObject = {
   [MAIN_DUNGEON]: MainDungeonLevelGenerationStrategy,
 };
 
-export function getDungeonStrategyInstance<M = MainDungeonLevelGenerationStrategy>(dungeonType: string): M {
-  // tslint:disable-next-line:new-parens
+export function getDungeonStrategyInstance<
+  M = MainDungeonLevelGenerationStrategy,
+>(dungeonType: string): M {
   return new dungeonTypeToStrategy[dungeonType]();
 }

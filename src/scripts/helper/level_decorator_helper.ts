@@ -10,20 +10,34 @@ export function isCellAdjacentToDoorsTest(cell: Cell): boolean {
 export function isCellAdjacentToWallTest(cell: Cell): boolean {
   return cell.type.includes('wall');
 }
-export function getRandomInteriorFloorCellAdjacentToWall(room: RoomModel): Cell {
+export function getRandomInteriorFloorCellAdjacentToWall(
+  room: RoomModel,
+): Cell {
   const roomLevelModel: LevelModel = room.getLevelModel();
 
   return room.getRandomCallbackCell((cellCandidate: Cell) => {
-    if (!roomLevelModel.isCellAdjacentToCell(cellCandidate, isCellAdjacentToWallTest)) {
+    if (
+      !roomLevelModel.isCellAdjacentToCell(
+        cellCandidate,
+        isCellAdjacentToWallTest,
+      )
+    ) {
       return false;
     }
-    if (roomLevelModel.isCellAdjacentToCell(cellCandidate, isCellAdjacentToDoorsTest)) {
+    if (
+      roomLevelModel.isCellAdjacentToCell(
+        cellCandidate,
+        isCellAdjacentToDoorsTest,
+      )
+    ) {
       return false;
     }
     return cellCandidate.type.includes('floor');
   });
 }
-export function getTwoRandomCellsAdjacentToWallsNotAdjacentToDoors(room: RoomModel): twoCellsArray {
+export function getTwoRandomCellsAdjacentToWallsNotAdjacentToDoors(
+  room: RoomModel,
+): twoCellsArray {
   const roomLevelModel: LevelModel = room.getLevelModel();
   let secondCell: Cell;
   const firstCell: Cell = room.getRandomCallbackCell((cellCandidate: Cell) => {
@@ -31,17 +45,32 @@ export function getTwoRandomCellsAdjacentToWallsNotAdjacentToDoors(room: RoomMod
       return false;
     }
 
-    const cellCandidateNeighbour: Cell = roomLevelModel.getCell(cellCandidate.x + 1, cellCandidate.y);
+    const cellCandidateNeighbour: Cell = roomLevelModel.getCell(
+      cellCandidate.x + 1,
+      cellCandidate.y,
+    );
 
     if (cellCandidateNeighbour.blockMovement) {
       return false;
     }
     // check if cell and its neighbour are not adjacent to doors and adjacent to wall
     return (
-      (!roomLevelModel.isCellAdjacentToCell(cellCandidate, isCellAdjacentToDoorsTest) ||
-                !roomLevelModel.isCellAdjacentToCell(cellCandidateNeighbour, isCellAdjacentToDoorsTest)) &&
-            roomLevelModel.isCellAdjacentToCell(cellCandidate, isCellAdjacentToWallTest) &&
-            roomLevelModel.isCellAdjacentToCell(cellCandidateNeighbour, isCellAdjacentToWallTest)
+      (!roomLevelModel.isCellAdjacentToCell(
+        cellCandidate,
+        isCellAdjacentToDoorsTest,
+      ) ||
+        !roomLevelModel.isCellAdjacentToCell(
+          cellCandidateNeighbour,
+          isCellAdjacentToDoorsTest,
+        )) &&
+      roomLevelModel.isCellAdjacentToCell(
+        cellCandidate,
+        isCellAdjacentToWallTest,
+      ) &&
+      roomLevelModel.isCellAdjacentToCell(
+        cellCandidateNeighbour,
+        isCellAdjacentToWallTest,
+      )
     );
   });
   if (firstCell) {

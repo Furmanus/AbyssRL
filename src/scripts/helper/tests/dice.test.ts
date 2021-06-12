@@ -10,7 +10,7 @@ describe('Test dice class', () => {
   });
   it('Invalid constructor description should throw error', () => {
     expect(() => {
-      const dice = new Dice('sdfsfsf');
+      new Dice('sdfsfsf');
     }).toThrowError();
   });
   it('Should calculate roll correctly', () => {

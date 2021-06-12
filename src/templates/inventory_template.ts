@@ -1,122 +1,138 @@
-import {ItemsCollection} from '../scripts/collections/items_collection';
-import {ItemModel} from '../scripts/model/items/item_model';
-import {drawSpriteOnCanvas} from '../scripts/helper/canvas_helper';
-import {EntityInventoryActions} from '../scripts/constants/entity_events';
-import {getLetterFromNumber} from '../scripts/helper/utility';
-import {actionNameToModalHeaderMap} from '../scripts/constants/inventory';
+import { ItemsCollection } from '../scripts/collections/items_collection';
+import { ItemModel } from '../scripts/model/items/item_model';
+import { drawSpriteOnCanvas } from '../scripts/helper/canvas_helper';
+import { EntityInventoryActions } from '../scripts/constants/entity_events';
+import { getLetterFromNumber } from '../scripts/helper/utility';
+import { actionNameToModalHeaderMap } from '../scripts/constants/inventory';
 
 interface IGroups {
-    [groupName: string]: DocumentFragment;
+  [groupName: string]: DocumentFragment;
 }
 
 export function getPreparedInventoryElement(
-    items: ItemsCollection,
-    mode: EntityInventoryActions = EntityInventoryActions.LOOK,
+  items: ItemsCollection,
+  mode: EntityInventoryActions = EntityInventoryActions.Look,
 ): HTMLDivElement {
-    const wrapper: DocumentFragment = getInventoryWrapper().content;
-    const wrapperElement: HTMLDivElement = wrapper.querySelector('div[class="modal-inventory-wrapper"]');
-    const groupContainer: HTMLDivElement = wrapper.querySelector('div[class="modal-inventory-group-container"]');
-    const groups: IGroups = {};
+  const wrapper: DocumentFragment = getInventoryWrapper().content;
+  const wrapperElement: HTMLDivElement = wrapper.querySelector(
+    'div[class="modal-inventory-wrapper"]',
+  );
+  const groupContainer: HTMLDivElement = wrapper.querySelector(
+    'div[class="modal-inventory-group-container"]',
+  );
+  const groups: IGroups = {};
 
-    if (items.size) {
-        const header: HTMLHeadingElement = document.createElement('h4');
-        header.classList.add('modal-inventory-header');
-        header.innerText = actionNameToModalHeaderMap[mode];
+  if (items.size) {
+    const header: HTMLHeadingElement = document.createElement('h4');
+    header.classList.add('modal-inventory-header');
+    header.innerText = actionNameToModalHeaderMap[mode];
 
-        wrapperElement.insertAdjacentElement('afterbegin', header);
+    wrapperElement.insertAdjacentElement('afterbegin', header);
 
-        items.forEach((item: ItemModel, index: number) => {
-            const itemType: string = item.itemType;
-            let list: HTMLUListElement;
+    items.forEach((item: ItemModel, index: number) => {
+      const { itemType } = item;
+      let list: HTMLUListElement;
 
-            if (!groups[itemType]) {
-                groups[itemType] = generateItemGroup(itemType).content;
-            }
+      if (!groups[itemType]) {
+        groups[itemType] = generateItemGroup(itemType).content;
+      }
 
-            list = groups[itemType].querySelector('ul');
-            list.appendChild(generateItemListElement(item, mode, index).content);
-        });
+      list = groups[itemType].querySelector('ul');
+      list.appendChild(generateItemListElement(item, mode, index).content);
+    });
 
-        Object.values(groups).forEach((groupElement: DocumentFragment) => {
-            groupContainer.appendChild(groupElement);
-        });
+    Object.values(groups).forEach((groupElement: DocumentFragment) => {
+      groupContainer.appendChild(groupElement);
+    });
 
-        if (mode !== EntityInventoryActions.PICK_UP) {
-            wrapperElement.appendChild(generateFooter(mode).content);
-        }
-    } else {
-        const noItemsMessage: HTMLParagraphElement = document.createElement('p');
-
-        noItemsMessage.textContent = 'Your inventory is empty';
-        noItemsMessage.classList.add('empty-content');
-        groupContainer.appendChild(noItemsMessage);
+    if (mode !== EntityInventoryActions.PickUp) {
+      wrapperElement.appendChild(generateFooter(mode).content);
     }
+  } else {
+    const noItemsMessage: HTMLParagraphElement = document.createElement('p');
 
-    return wrapperElement;
+    noItemsMessage.textContent = 'Your inventory is empty';
+    noItemsMessage.classList.add('empty-content');
+    groupContainer.appendChild(noItemsMessage);
+  }
+
+  return wrapperElement;
 }
 
 function getInventoryWrapper(): HTMLTemplateElement {
-    const wrapper: HTMLTemplateElement = document.createElement('template');
-    wrapper.innerHTML = `
+  const wrapper: HTMLTemplateElement = document.createElement('template');
+  wrapper.innerHTML = `
         <div class="modal-inventory-wrapper">
             <div class="modal-inventory-group-container"></div>
         </div>
     `;
 
-    return wrapper;
+  return wrapper;
 }
 
 function generateItemGroup(groupName: string): HTMLTemplateElement {
-    const group: HTMLTemplateElement = document.createElement('template');
-    group.innerHTML = `
+  const group: HTMLTemplateElement = document.createElement('template');
+  group.innerHTML = `
         <div class="modal-inventory-group">
             <h4 class="modal-inventory-group-header">${groupName}</h4>
             <ul class="modal-inventory-group-list" id="modal-inventory-list"/>
         </div>
     `;
 
-    return group;
+  return group;
 }
 function generateItemListElement(
-    item: ItemModel,
-    mode: EntityInventoryActions,
-    index: number,
+  item: ItemModel,
+  mode: EntityInventoryActions,
+  index: number,
 ): HTMLTemplateElement {
-    const template: HTMLTemplateElement = document.createElement('template');
-    const shouldRenderMultiSelectBoxes: boolean = mode === EntityInventoryActions.DROP || mode === EntityInventoryActions.PICK_UP;
+  const template: HTMLTemplateElement = document.createElement('template');
+  const shouldRenderMultiSelectBoxes: boolean =
+    mode === EntityInventoryActions.Drop ||
+    mode === EntityInventoryActions.PickUp;
 
-    template.innerHTML = `
+  template.innerHTML = `
         <li class="modal-inventory-group-item" data-index="${index}">
             <span class="identifier">[${getLetterFromNumber(index)}]</span>
             <canvas width="32" height="32"></canvas>
             <span>${item.fullDescription}</span>
-            ${shouldRenderMultiSelectBoxes ? '<div class="checkbox" data-element="inventory-checkbox"/>' : ''}
+            ${
+              shouldRenderMultiSelectBoxes
+                ? '<div class="checkbox" data-element="inventory-checkbox"/>'
+                : ''
+            }
         </li>
     `;
-    drawSpriteOnCanvas(template.content.querySelector('canvas'), item.display);
+  drawSpriteOnCanvas(template.content.querySelector('canvas'), item.display);
 
-    return template;
+  return template;
 }
 
 function generateFooter(mode: EntityInventoryActions): HTMLTemplateElement {
-    const template: HTMLTemplateElement = document.createElement('template');
-    const isDropAction: boolean = mode === EntityInventoryActions.DROP;
-    const isEquipAction: boolean = mode === EntityInventoryActions.EQUIP;
-    const isUseAction: boolean = mode === EntityInventoryActions.USE;
+  const template: HTMLTemplateElement = document.createElement('template');
+  const isDropAction: boolean = mode === EntityInventoryActions.Drop;
+  const isEquipAction: boolean = mode === EntityInventoryActions.Equip;
+  const isUseAction: boolean = mode === EntityInventoryActions.Use;
 
-    template.innerHTML = `
+  template.innerHTML = `
         <div class="modal-inventory-footer">
-            <button class="inventory-action ${isDropAction ? 'active' : ''}" id="inventory-drop">
+            <button class="inventory-action ${
+              isDropAction ? 'active' : ''
+            }" id="inventory-drop">
                 ${isDropAction ? 'confirm [D]' : 'drop [D]'}
             </button>
-            <button class="inventory-action ${isEquipAction ? 'active' : ''}" id="inventory-equip">
+            <button class="inventory-action ${
+              isEquipAction ? 'active' : ''
+            }" id="inventory-equip">
                 equip [E]
             </button>
-            <button class="inventory-action ${isUseAction ? 'active' : ''}" id="inventory-use">
+            <button class="inventory-action ${
+              isUseAction ? 'active' : ''
+            }" id="inventory-use">
                 use [U]
             </button>
         </div>
     `;
 
-    return template;
+  return template;
 }

@@ -1,6 +1,10 @@
-import { IDirections, IStringDictionary } from '../interfaces/common';
+import { KeyboardWhichDirections } from '../interfaces/directions';
+import { IDirection } from '../interfaces/common';
 
-export const KEYBOARD_DIRECTIONS: IDirections = {
+export const keyboardKeyToDirectionMap: Record<
+  KeyboardWhichDirections,
+  IDirection
+> = {
   103: { x: -1, y: -1 },
   104: { x: 0, y: -1 },
   105: { x: 1, y: -1 },
@@ -20,7 +24,7 @@ export const KEYBOARD_DIRECTIONS: IDirections = {
   37: { x: -1, y: 0 },
   190: { x: 0, y: 0 },
 };
-export const DIRECTIONS: IStringDictionary = {
+export const directionToStringMap = {
   '-1x-1': 'north_west',
   '1x-1': 'north_east',
   '0x-1': 'north',
@@ -30,7 +34,7 @@ export const DIRECTIONS: IStringDictionary = {
   '1x1': 'south_east',
   '0x1': 'south',
 };
-export const DIRECTIONS_SHORT = {
+export const directionShortToStringMap = {
   NW: 'north_west',
   NE: 'north_east',
   N: 'north',

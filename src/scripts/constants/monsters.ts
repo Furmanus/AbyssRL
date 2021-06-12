@@ -1,31 +1,31 @@
 export enum MonstersTypes {
-    PLAYER = 'player',
-    UNKNOWN = 'unknown_entity',
-    GIANT_RAT = 'giant_rat',
+  Player = 'player',
+  Unknown = 'unknown_entity',
+  GiantRat = 'giant_rat',
 }
 export enum MonsterSizes {
-    SMALL = 'small',
-    MEDIUM = 'medium',
-    LARGE = 'large',
+  Small = 'small',
+  Medium = 'medium',
+  Large = 'large',
 }
 export enum MonsterAttackTypes {
-    BITE = 'bite',
-    FIST = 'fist',
+  Bite = 'bite',
+  Fist = 'fist',
 }
 export enum EntityBodyParts {
-    HEAD = 'head',
-    TORSO = 'torso',
-    ARMS = 'arms',
-    LEGS = 'legs',
+  Head = 'head',
+  Torso = 'torso',
+  Arms = 'arms',
+  Legs = 'legs',
 }
 export enum EntityStats {
-    STRENGTH = 'strength',
-    DEXTERITY = 'dexterity',
-    INTELLIGENCE = 'intelligence',
-    TOUGHNESS = 'toughness',
-    PERCEPTION = 'perception',
-    SPEED = 'speed',
-    HIT_POINTS = 'hitpoints',
-    MAX_HIT_POINTS = 'maxHitpoints',
+  Strength = 'strength',
+  Dexterity = 'dexterity',
+  Intelligence = 'intelligence',
+  Toughness = 'toughness',
+  Perception = 'perception',
+  Speed = 'speed',
+  HitPoints = 'hitpoints',
+  MaxHitPoints = 'maxHitpoints',
 }
 export const ENTITY_MAX_INVENTORY_LENGTH = 24;

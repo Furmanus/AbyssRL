@@ -4,13 +4,13 @@ import { ICellModel } from '../../../interfaces/cell';
 
 export class WallModel extends Cell implements ICellModel {
   /**
-     * @param   x                   Horizontal position on level grid.
-     * @param   y                   Vertical position on level grid.
-     * @param   config              Configuration object with additional data.
-     * @param   config.type         Type of cell.
-     * @param   config.description  Description of cell (visible for example while looking at it).
-     * @param   config.display      Array with cell types name. They must be equal to keys global tiledata.
-     */
+   * @param   x                   Horizontal position on level grid.
+   * @param   y                   Vertical position on level grid.
+   * @param   config              Configuration object with additional data.
+   * @param   config.type         Type of cell.
+   * @param   config.description  Description of cell (visible for example while looking at it).
+   * @param   config.display      Array with cell types name. They must be equal to keys global tiledata.
+   */
   constructor(x: number, y: number, config: IAnyObject) {
     super(x, y);
 

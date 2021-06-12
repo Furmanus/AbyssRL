@@ -70,103 +70,67 @@ export const CellModelFactory = {
     }
   },
   getRedFloorCell(x: number, y: number): FloorModel {
-    return new FloorModel(
-      x,
-      y,
-      {
-        type: cellTypes.RED_FLOOR,
-        description: cellsDescriptions[cellTypes.RED_FLOOR],
-        display: [terrain.RED_FLOOR],
-      },
-    );
+    return new FloorModel(x, y, {
+      type: cellTypes.RED_FLOOR,
+      description: cellsDescriptions[cellTypes.RED_FLOOR],
+      display: [terrain.RED_FLOOR],
+    });
   },
   getWoodenFloor(x: number, y: number): FloorModel {
-    return new FloorModel(
-      x,
-      y,
-      {
-        type: cellTypes.WOODEN_FLOOR,
-        description: cellsDescriptions[cellTypes.WOODEN_FLOOR],
-        display: [terrain.WOODEN_FLOOR_1, terrain.WOODEN_FLOOR_2],
-      },
-    );
+    return new FloorModel(x, y, {
+      type: cellTypes.WOODEN_FLOOR,
+      description: cellsDescriptions[cellTypes.WOODEN_FLOOR],
+      display: [terrain.WOODEN_FLOOR_1, terrain.WOODEN_FLOOR_2],
+    });
   },
   getGrassFloor(x: number, y: number): FloorModel {
-    return new FloorModel(
-      x,
-      y,
-      {
-        type: cellTypes.GRASS,
-        description: cellsDescriptions[cellTypes.GRASS],
-        display: [terrain.GRASS_2],
-      },
-    );
+    return new FloorModel(x, y, {
+      type: cellTypes.GRASS,
+      description: cellsDescriptions[cellTypes.GRASS],
+      display: [terrain.GRASS_2],
+    });
   },
   getGrayWallModel(x: number, y: number): WallModel {
-    return new WallModel(
-      x,
-      y,
-      {
-        type: cellTypes.GRAY_WALL,
-        description: cellsDescriptions[cellTypes.GRAY_WALL],
-        display: [terrain.GRAY_WALL],
-      },
-    );
+    return new WallModel(x, y, {
+      type: cellTypes.GRAY_WALL,
+      description: cellsDescriptions[cellTypes.GRAY_WALL],
+      display: [terrain.GRAY_WALL],
+    });
   },
   getHighPeaksWallModel(x: number, y: number): WallModel {
-    return new WallModel(
-      x,
-      y,
-      {
-        type: cellTypes.HIGH_PEAKS,
-        description: cellsDescriptions[cellTypes.HIGH_PEAKS],
-        display: [terrain.HIGH_PEAKS],
-      },
-    );
+    return new WallModel(x, y, {
+      type: cellTypes.HIGH_PEAKS,
+      description: cellsDescriptions[cellTypes.HIGH_PEAKS],
+      display: [terrain.HIGH_PEAKS],
+    });
   },
   getMountainWallModel(x: number, y: number): WallModel {
-    return new WallModel(
-      x,
-      y,
-      {
-        type: cellTypes.MOUNTAIN,
-        description: cellsDescriptions[cellTypes.MOUNTAIN],
-        display: [terrain.MOUNTAIN],
-      },
-    );
+    return new WallModel(x, y, {
+      type: cellTypes.MOUNTAIN,
+      description: cellsDescriptions[cellTypes.MOUNTAIN],
+      display: [terrain.MOUNTAIN],
+    });
   },
   getHillsFloorModel(x: number, y: number): FloorModel {
-    return new FloorModel(
-      x,
-      y,
-      {
-        type: cellTypes.HILLS,
-        description: cellsDescriptions[cellTypes.HILLS],
-        display: [terrain.HILLS],
-      },
-    );
+    return new FloorModel(x, y, {
+      type: cellTypes.HILLS,
+      description: cellsDescriptions[cellTypes.HILLS],
+      display: [terrain.HILLS],
+    });
   },
   getRightHillsFloorModel(x: number, y: number): FloorModel {
-    return new FloorModel(
-      x,
-      y,
-      {
-        type: cellTypes.RIGHT_HILLS,
-        description: cellsDescriptions[cellTypes.HILLS],
-        display: [terrain.RIGHT_HILLS],
-      },
-    );
+    return new FloorModel(x, y, {
+      type: cellTypes.RIGHT_HILLS,
+      description: cellsDescriptions[cellTypes.HILLS],
+      display: [terrain.RIGHT_HILLS],
+    });
   },
   getLefttHillsFloorModel(x: number, y: number): FloorModel {
-    return new FloorModel(
-      x,
-      y,
-      {
-        type: cellTypes.LEFT_HILLS,
-        description: cellsDescriptions[cellTypes.HILLS],
-        display: [terrain.LEFT_HILLS],
-      },
-    );
+    return new FloorModel(x, y, {
+      type: cellTypes.LEFT_HILLS,
+      description: cellsDescriptions[cellTypes.HILLS],
+      display: [terrain.LEFT_HILLS],
+    });
   },
   getWoodenSolidDoors(x: number, y: number): WoodenSolidDoorModel {
     return new WoodenSolidDoorModel(x, y);

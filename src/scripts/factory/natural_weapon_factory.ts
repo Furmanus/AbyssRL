@@ -3,21 +3,23 @@ import { NaturalWeaponModel } from '../model/items/weapons/natural_weapon_model'
 import { Dice } from '../model/dice';
 import { DamageTypes } from '../constants/combat_enums';
 
-export function getMonsterNaturalWeapon(type: MonstersTypes): NaturalWeaponModel {
+export function getMonsterNaturalWeapon(
+  type: MonstersTypes,
+): NaturalWeaponModel {
   switch (type) {
-    case MonstersTypes.GIANT_RAT:
+    case MonstersTypes.GiantRat:
       return new NaturalWeaponModel({
         damage: new Dice('1d2+1'),
         toHit: new Dice('1d2'),
-        type: DamageTypes.PIERCING,
-        naturalType: MonsterAttackTypes.BITE,
+        type: DamageTypes.Piercing,
+        naturalType: MonsterAttackTypes.Bite,
       });
-    case MonstersTypes.PLAYER:
+    case MonstersTypes.Player:
       return new NaturalWeaponModel({
         damage: new Dice('1d5'),
         toHit: new Dice('2d2'),
-        type: DamageTypes.BLUDGEONING,
-        naturalType: MonsterAttackTypes.FIST,
+        type: DamageTypes.Bludgeoning,
+        naturalType: MonsterAttackTypes.Fist,
       });
     default:
       return null;

@@ -1,4 +1,4 @@
-import ROT from 'rot-js';
+import { Scheduler, Engine } from 'rot-js';
 import { EntityController } from '../entity/entity_controller';
 import scheduler from 'rot-js/lib/scheduler/scheduler';
 import engine from 'rot-js/lib/engine';
@@ -9,8 +9,8 @@ import { Controller } from '../controller';
  * fields, provided by rot.js library.
  */
 export class EngineController extends Controller {
-  private scheduler: scheduler = new ROT.Scheduler.Speed();
-  private engine: engine = new ROT.Engine(this.scheduler);
+  private scheduler: scheduler = new Scheduler.Speed();
+  private engine: engine = new Engine(this.scheduler);
   private wasEngineStarted: boolean = false;
 
   /**

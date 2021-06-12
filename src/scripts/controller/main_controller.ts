@@ -6,7 +6,7 @@ import { GameController } from './game_controller';
 import { InfoController } from './info_controller';
 import { MiniMapController } from './minimap_controller';
 import { MessagesController } from './messages_controller';
-import { KEYBOARD_DIRECTIONS } from '../constants/keyboard_directions';
+import { keyboardKeyToDirectionMap } from '../constants/keyboard_directions';
 import { config } from '../global/config';
 import {
   PLAYER_ACTION_ACTIVATE_OBJECT,
@@ -42,15 +42,19 @@ import {
   EntityInventoryActions,
   InventoryModalEvents,
 } from '../constants/entity_events';
+import {
+  isKeyboardKeyDirection,
+  KeyboardWhichDirections,
+} from '../interfaces/directions';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
-  188: PlayerActions.PICK_UP,
+  188: PlayerActions.PickUp,
 };
 const keyCodeToInventoryMode: { [keycode: number]: EntityInventoryActions } = {
-  68: EntityInventoryActions.DROP,
-  69: EntityInventoryActions.EQUIP,
-  73: EntityInventoryActions.LOOK,
-  85: EntityInventoryActions.USE,
+  68: EntityInventoryActions.Drop,
+  69: EntityInventoryActions.Equip,
+  73: EntityInventoryActions.Look,
+  85: EntityInventoryActions.Use,
 };
 
 export class MainController extends Controller {
@@ -102,7 +106,7 @@ export class MainController extends Controller {
     this.gameController.on(this, STOP_EXAMINE_CELL, this.onStopExamineCell);
     this.gameController.on(
       this,
-      PlayerActions.PICK_UP,
+      PlayerActions.PickUp,
       this.onGameControllerPlayerPickUp,
     );
 
@@ -136,12 +140,12 @@ export class MainController extends Controller {
   private attachModalEvents(): void {
     globalInventoryController.on(
       this,
-      ModalActions.OPEN_MODAL,
+      ModalActions.OpenModal,
       this.onModalOpen,
     );
     globalInventoryController.on(
       this,
-      InventoryModalEvents.INVENTORY_MODAL_CLOSED,
+      InventoryModalEvents.InventoryModalClosed,
       this.onInventoryModalClose,
     );
   }
@@ -169,7 +173,7 @@ export class MainController extends Controller {
     );
     this.gameController.on(
       this,
-      DungeonEvents.CHANGE_CURRENT_LEVEL,
+      DungeonEvents.ChangeCurrentLevel,
       this.onChangeDungeonLevel,
     );
     this.gameController.on(this, START_PLAYER_TURN, this.onPlayerTurnStarted);
@@ -185,7 +189,7 @@ export class MainController extends Controller {
 
     this.gameController.off(this, SHOW_MESSAGE_IN_VIEW);
     this.gameController.off(this, PLAYER_WALK_CONFIRM_NEEDED);
-    this.gameController.off(this, DungeonEvents.CHANGE_CURRENT_LEVEL);
+    this.gameController.off(this, DungeonEvents.ChangeCurrentLevel);
     this.gameController.off(this, START_PLAYER_TURN);
   }
 
@@ -236,7 +240,7 @@ export class MainController extends Controller {
   private async takeAction(keycode: number): Promise<void> {
     let choosenDirection: IDirection | false;
     if (this.shiftPressed) {
-      if (KEYBOARD_DIRECTIONS[keycode] && keycode !== 190) {
+      if (isKeyboardKeyDirection(keycode) && keycode !== 190) {
         this.moveCamera(keycode); // shift + numpad direction, move camera around
       } else if (keycode === 188) {
         this.gameController.takePlayerAction(PLAYER_ACTION_GO_UP);
@@ -248,10 +252,10 @@ export class MainController extends Controller {
     } else if (this.altPressed) {
       // placeholder
     } else {
-      if (KEYBOARD_DIRECTIONS[keycode]) {
+      if (isKeyboardKeyDirection(keycode)) {
         this.gameController.takePlayerAction(
           PLAYER_ACTION_MOVE_PLAYER,
-          KEYBOARD_DIRECTIONS[keycode],
+          keyboardKeyToDirectionMap[keycode],
         );
       } else if (keycode === 65) {
         // ACTIVATE COMMAND
@@ -286,9 +290,9 @@ export class MainController extends Controller {
    * @param   keycode     Keycode of key pressed by user. Method accepts only arror keys or numpad keys
    *                      (with exception of '5').
    */
-  private moveCamera(keycode: number): void {
-    const deltaX = KEYBOARD_DIRECTIONS[keycode].x * 4;
-    const deltaY = KEYBOARD_DIRECTIONS[keycode].y * 4;
+  private moveCamera(keycode: KeyboardWhichDirections): void {
+    const deltaX = keyboardKeyToDirectionMap[keycode].x * 4;
+    const deltaY = keyboardKeyToDirectionMap[keycode].y * 4;
 
     this.gameController.moveCameraInView(deltaX, deltaY);
   }
@@ -330,7 +334,7 @@ export class MainController extends Controller {
    */
   @boundMethod
   private onGameControllerPlayerPickUp(cellItems: ItemsCollection): void {
-    this.openInventory(EntityInventoryActions.PICK_UP, cellItems);
+    this.openInventory(EntityInventoryActions.PickUp, cellItems);
   }
 
   /**
@@ -414,8 +418,10 @@ export class MainController extends Controller {
         'keydown',
         this.examinedModeEventListenerCallback,
       );
-    } else if (KEYBOARD_DIRECTIONS[e.which]) {
-      this.gameController.examineCellInDirection(KEYBOARD_DIRECTIONS[e.which]);
+    } else if (isKeyboardKeyDirection(e.which)) {
+      this.gameController.examineCellInDirection(
+        keyboardKeyToDirectionMap[e.which],
+      );
     }
   }
 
@@ -517,9 +523,13 @@ export class MainController extends Controller {
    * @returns   Returns promise which resolves to direction object or false, if confirmation was rejected
    */
   private getPlayerConfirmationDirection(): Promise<IDirection | false> {
-    const extendedKeyboardDirection = Object.assign({}, KEYBOARD_DIRECTIONS, {
-      101: { x: 0, y: 0 },
-    });
+    const extendedKeyboardDirection = Object.assign(
+      {},
+      keyboardKeyToDirectionMap,
+      {
+        101: { x: 0, y: 0 },
+      },
+    );
     const that: this = this;
 
     this.detachEvents();
@@ -531,8 +541,9 @@ export class MainController extends Controller {
       );
 
       function userActionConfirmDirectionEventListener(e: KeyboardEvent): void {
-        const keycode: number = e.which;
-        const directionObject: IDirection = extendedKeyboardDirection[keycode];
+        const keycode = e.which;
+        const directionObject: IDirection =
+          extendedKeyboardDirection[keycode as KeyboardWhichDirections];
 
         if (directionObject) {
           resolve(directionObject);

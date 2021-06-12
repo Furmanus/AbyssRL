@@ -9,15 +9,21 @@ import { Cell } from '../../model/dungeon/cells/cell_model';
 import { weaponModelFactory } from '../../factory/item/weapon_model_factory';
 import { WeaponModel } from '../../model/items/weapons/weapon_model';
 
-type AllGeneratorsTypes = ArenaLevelGenerator | CavernLevelGenerator | DungeonLevelGenerator;
+type AllGeneratorsTypes =
+  | ArenaLevelGenerator
+  | CavernLevelGenerator
+  | DungeonLevelGenerator;
 
 interface ITypeToGenerator {
-    [prop: string]: AllGeneratorsTypes;
+  [prop: string]: AllGeneratorsTypes;
 }
 
-const arenaLevelGenerator: ArenaLevelGenerator = ArenaLevelGenerator.getInstance();
-const cavernLevelGenerator: CavernLevelGenerator = CavernLevelGenerator.getInstance();
-const dungeonLevelGenerator: DungeonLevelGenerator = DungeonLevelGenerator.getInstance();
+const arenaLevelGenerator: ArenaLevelGenerator =
+  ArenaLevelGenerator.getInstance();
+const cavernLevelGenerator: CavernLevelGenerator =
+  CavernLevelGenerator.getInstance();
+const dungeonLevelGenerator: DungeonLevelGenerator =
+  DungeonLevelGenerator.getInstance();
 
 const typeToGenerator: ITypeToGenerator = {
   dungeon: dungeonLevelGenerator,
@@ -26,11 +32,13 @@ const typeToGenerator: ITypeToGenerator = {
 };
 
 export class MainDungeonLevelGenerationStrategy {
-  public generateRandomLevel(levelModel: LevelModel, generateConfig: IDungeonStrategyGenerateLevelConfig): void {
-    const {
-      levelNumber,
-    } = levelModel;
-    const defaultLevelTypeGenerator = config.defaultLevelType && typeToGenerator[config.defaultLevelType];
+  public generateRandomLevel(
+    levelModel: LevelModel,
+    generateConfig: IDungeonStrategyGenerateLevelConfig,
+  ): void {
+    const { levelNumber } = levelModel;
+    const defaultLevelTypeGenerator =
+      config.defaultLevelType && typeToGenerator[config.defaultLevelType];
 
     if (config.defaultLevelType && defaultLevelTypeGenerator) {
       defaultLevelTypeGenerator.generateLevel(levelModel, generateConfig);
@@ -55,7 +63,8 @@ export class MainDungeonLevelGenerationStrategy {
   public fillLevelWithItems(levelModel: LevelModel): void {
     for (let i = 0; i < 10; i++) {
       const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
-      const weaponModel: WeaponModel = weaponModelFactory.getRandomWeaponModel();
+      const weaponModel: WeaponModel =
+        weaponModelFactory.getRandomWeaponModel();
 
       randomCell.inventory.add(weaponModel);
     }

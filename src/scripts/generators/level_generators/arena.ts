@@ -2,7 +2,7 @@ import { AbstractLevelGenerator } from './abstract_generator';
 import { config as globalConfig } from '../../global/config';
 import { cellTypes } from '../../constants/cell_types';
 import * as Utility from '../../helper/utility';
-import ROT from 'rot-js';
+import { Map } from 'rot-js';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { IAnyFunction } from '../../interfaces/common';
 import Arena from 'rot-js/lib/map/arena';
@@ -49,7 +49,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
     config?: IDungeonStrategyGenerateLevelConfig,
     debugCallback?: IAnyFunction,
   ): void {
-    const generator: Arena = new ROT.Map.Arena(
+    const generator: Arena = new Map.Arena(
       globalConfig.LEVEL_WIDTH,
       globalConfig.LEVEL_HEIGHT,
     );
