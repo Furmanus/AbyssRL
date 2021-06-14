@@ -277,7 +277,7 @@ export class MainController extends Controller {
         // EXAMINE OR LOOK COMMAND
         this.enableExamineMode();
       } else if (keyCodeToInventoryMode[keycode]) {
-        this.openInventory(keyCodeToInventoryMode[keycode]);
+        this.openPlayerInventory(keyCodeToInventoryMode[keycode]);
       } else {
         this.gameController.takePlayerAction(keyCodeToActionMap[keycode]);
       }
@@ -334,7 +334,7 @@ export class MainController extends Controller {
    */
   @boundMethod
   private onGameControllerPlayerPickUp(cellItems: ItemsCollection): void {
-    this.openInventory(EntityInventoryActions.PickUp, cellItems);
+    this.openCellInventory(EntityInventoryActions.PickUp, cellItems);
   }
 
   /**
@@ -392,14 +392,25 @@ export class MainController extends Controller {
   /**
    * Opens player directory
    */
-  private openInventory(
-    mode?: EntityInventoryActions,
-    items?: ItemsCollection,
-  ): void {
-    const playerInventory: ItemsCollection =
-      this.gameController.getPlayerInventory();
+  private openPlayerInventory(mode: EntityInventoryActions): void {
+    const playerModel = this.gameController.getPlayerModel();
+    const { inventory } = playerModel;
 
-    globalInventoryController.openModal(items || playerInventory, mode);
+    globalInventoryController.openModal(inventory, mode, playerModel);
+    this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
+  }
+
+  /**
+   * Opens specific cell inventory
+   * @param mode  Inventory mode, whether items are picked up, etc.
+   * @param items Items collection
+   * @private
+   */
+  private openCellInventory(
+    mode: EntityInventoryActions,
+    items: ItemsCollection,
+  ): void {
+    globalInventoryController.openModal(items, mode);
     this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
   }
 

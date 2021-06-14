@@ -7,6 +7,7 @@ export interface IWeapon {
   damage: Dice;
   type: DamageTypes;
   naturalType?: MonsterAttackTypes;
+  description: string;
 }
 export interface INaturalWeapon extends IWeapon {
   naturalType: MonsterAttackTypes;
@@ -14,6 +15,6 @@ export interface INaturalWeapon extends IWeapon {
 export interface IWeaponConstructorConfig {
   toHit: string;
   damage: string;
-  type: string;
+  type: DamageTypes;
   name: string;
 }

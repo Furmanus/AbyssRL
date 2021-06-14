@@ -5,8 +5,8 @@
   "main": "src/index.html",
   "scripts": {
     "start": "npm run build:dev",
-    "build:prod": "rm -rf dist && webpack --mode=production --config webpack.config.js",
-    "build:dev": "rm -rf dist && webpack --mode=development --watch --config webpack.config.js",
+    "build:prod": "rm -rf dist && webpack --config webpack.config.js  --env mode=production",
+    "build:dev": "rm -rf dist && webpack --watch --config webpack.config.js  --env mode=development",
     "lint:ts": "eslint src/scripts/**/*.ts",
     "lint:fix": "eslint src/scripts/**/*ts --fix",
     "test": "jest",

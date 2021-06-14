@@ -3,7 +3,8 @@ import { Cell } from '../model/dungeon/cells/cell_model';
 import { EntityController } from '../controller/entity/entity_controller';
 import { MonstersTypes, MonsterSizes } from '../constants/monsters';
 import { ItemsCollection } from '../collections/items_collection';
-import { INaturalWeapon } from './combat';
+import { INaturalWeapon, IWeapon } from './combat';
+import { WeaponModel } from '../model/items/weapons/weapon_model';
 
 export interface IEntity {
   display: string;
@@ -25,7 +26,8 @@ export interface IEntity {
   maxHitPoints: number;
   size: MonsterSizes;
   inventory: ItemsCollection;
-  naturalWeapon: INaturalWeapon;
+  equippedWeapon: IWeapon;
+  naturalWeapon: IWeapon;
 }
 export interface IEntityController {
   model: EntityController;

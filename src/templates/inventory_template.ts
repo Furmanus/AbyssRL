@@ -4,6 +4,8 @@ import { drawSpriteOnCanvas } from '../scripts/helper/canvas_helper';
 import { EntityInventoryActions } from '../scripts/constants/entity_events';
 import { getLetterFromNumber } from '../scripts/helper/utility';
 import { actionNameToModalHeaderMap } from '../scripts/constants/inventory';
+import { EntityModel } from '../scripts/model/entity/entity_model';
+import { WeaponModel } from '../scripts/model/items/weapons/weapon_model';
 
 interface IGroups {
   [groupName: string]: DocumentFragment;
@@ -12,6 +14,7 @@ interface IGroups {
 export function getPreparedInventoryElement(
   items: ItemsCollection,
   mode: EntityInventoryActions = EntityInventoryActions.Look,
+  inventoryOwner?: EntityModel,
 ): HTMLDivElement {
   const wrapper: DocumentFragment = getInventoryWrapper().content;
   const wrapperElement: HTMLDivElement = wrapper.querySelector(
@@ -31,14 +34,16 @@ export function getPreparedInventoryElement(
 
     items.forEach((item: ItemModel, index: number) => {
       const { itemType } = item;
-      let list: HTMLUListElement;
 
       if (!groups[itemType]) {
         groups[itemType] = generateItemGroup(itemType).content;
       }
 
-      list = groups[itemType].querySelector('ul');
-      list.appendChild(generateItemListElement(item, mode, index).content);
+      const list = groups[itemType].querySelector('ul');
+      list.appendChild(
+        generateItemListElement(item, mode, inventoryOwner || null, index)
+          .content,
+      );
     });
 
     Object.values(groups).forEach((groupElement: DocumentFragment) => {
@@ -84,18 +89,23 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
 function generateItemListElement(
   item: ItemModel,
   mode: EntityInventoryActions,
+  inventoryOwner: EntityModel,
   index: number,
 ): HTMLTemplateElement {
   const template: HTMLTemplateElement = document.createElement('template');
   const shouldRenderMultiSelectBoxes: boolean =
     mode === EntityInventoryActions.Drop ||
     mode === EntityInventoryActions.PickUp;
+  const isItemEquipped =
+    !!inventoryOwner && item === (inventoryOwner.equippedWeapon as WeaponModel);
 
   template.innerHTML = `
         <li class="modal-inventory-group-item" data-index="${index}">
             <span class="identifier">[${getLetterFromNumber(index)}]</span>
             <canvas width="32" height="32"></canvas>
-            <span>${item.fullDescription}</span>
+            <span>${item.fullDescription} ${
+    isItemEquipped ? '[equipped]' : ''
+  }</span>
             ${
               shouldRenderMultiSelectBoxes
                 ? '<div class="checkbox" data-element="inventory-checkbox"/>'

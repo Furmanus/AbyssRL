@@ -14,6 +14,8 @@ import { doCombatAction, ICombatResult } from '../../helper/combat_helper';
 import { globalMessagesController } from '../../global/messages';
 import { ItemModel } from '../../model/items/item_model';
 import { ItemsCollection } from '../../collections/items_collection';
+import { EntityWeaponChangeData } from './entiry_controller.interfaces';
+import { NaturalWeaponModel } from '../../model/items/weapons/natural_weapon_model';
 
 export class EntityController<
   M extends EntityModel = EntityModel,
@@ -35,6 +37,11 @@ export class EntityController<
     this.model.on(this, EntityEvents.EntityHit, this.onEntityHit);
     this.model.on(this, EntityEvents.EntityPickedItem, this.onEntityPickUp);
     this.model.on(this, EntityEvents.EntityDroppedItem, this.onEntityDropItem);
+    this.model.on(
+      this,
+      EntityEvents.EntityEquippedWeaponChange,
+      this.onEntityEquippedWeaponChange,
+    );
   }
 
   /**
@@ -89,7 +96,6 @@ export class EntityController<
     let useEffect;
 
     if (useAttemptResult.canUse) {
-      // eslint-disable-next-line no-unused-vars
       useEffect = cell.useEffect(this);
     }
   }
@@ -126,6 +132,22 @@ export class EntityController<
     globalMessagesController.showMessageInView(
       `${this.model.getDescription()} drops ${item.description}.`,
     );
+  }
+
+  protected onEntityEquippedWeaponChange(data: EntityWeaponChangeData): void {
+    const { currentWeapon, previousWeapon, reason } = data;
+
+    const removePart =
+      previousWeapon && !(previousWeapon instanceof NaturalWeaponModel)
+        ? `${this.model.getDescription()} removes ${
+            previousWeapon.description
+          }. `
+        : '';
+    const equipPart = currentWeapon
+      ? `${this.model.getDescription()} equips ${currentWeapon.description}.`
+      : '';
+
+    globalMessagesController.showMessageInView(`${removePart}${equipPart}`);
   }
 
   /**

@@ -10,6 +10,7 @@ import { boundMethod } from 'autobind-decorator';
 import { SetWithObserver } from '../core/set_with_observer';
 import { ENTITY_MAX_INVENTORY_LENGTH } from '../constants/monsters';
 import { ItemModel } from '../model/items/item_model';
+import { EntityModel } from '../model/entity/entity_model';
 
 export class InventoryController extends ModalController<
   ItemsCollection,
@@ -26,11 +27,15 @@ export class InventoryController extends ModalController<
   public openModal(
     content: ItemsCollection,
     mode: EntityInventoryActions = EntityInventoryActions.Look,
+    inventoryOwner?: EntityModel,
   ): void {
     this.view = new InventoryView();
     this.selectedItems = new SetWithObserver<number>();
     this.inventoryContent = content;
-    this.drawContentInView(getPreparedInventoryElement(content, mode));
+
+    this.drawContentInView(
+      getPreparedInventoryElement(content, mode, inventoryOwner),
+    );
     this.attachEventsInView();
 
     super.openModal(content);
@@ -96,7 +101,11 @@ export class InventoryController extends ModalController<
 
   @boundMethod
   private onInventorySelectedItemsChange(): void {
-    this.view.markItemsAsSelected(this.selectedItems);
+    if (this.inventoryMode === EntityInventoryActions.Equip) {
+      this.onInventoryActionConfirmed();
+    } else {
+      this.view.markItemsAsSelected(this.selectedItems);
+    }
   }
 
   @boundMethod

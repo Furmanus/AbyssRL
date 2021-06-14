@@ -13,6 +13,8 @@ import { ItemsCollection } from '../../collections/items_collection';
 import { INaturalWeapon, IWeapon } from '../../interfaces/combat';
 import { ItemModel } from '../items/item_model';
 import { weaponModelFactory } from '../../factory/item/weapon_model_factory';
+import { WeaponModel } from '../items/weapons/weapon_model';
+import { NaturalWeaponModel } from '../items/weapons/natural_weapon_model';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -79,14 +81,15 @@ export class EntityModel extends BaseModel implements IEntity {
   /**
    * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
    */
-  public naturalWeapon: INaturalWeapon = null;
+  public naturalWeapon: IWeapon = null;
+  public equippedWeapon: IWeapon = null;
   /**
    * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
    */
   public protection: number = 0;
 
   get weapon(): IWeapon {
-    return this.naturalWeapon;
+    return this.equippedWeapon || this.naturalWeapon;
   }
 
   constructor(config: IAnyObject) {
@@ -178,6 +181,19 @@ export class EntityModel extends BaseModel implements IEntity {
       this.inventory.add(item);
 
       this.notify(EntityEvents.EntityPickedItem, item);
+    }
+  }
+
+  public equipWeapon(weapon: IWeapon): void {
+    const previousWeapon = this.weapon;
+
+    if (weapon !== previousWeapon && !(weapon instanceof NaturalWeaponModel)) {
+      this.equippedWeapon = weapon;
+      this.notify(EntityEvents.EntityEquippedWeaponChange, {
+        reason: 'equip',
+        currentWeapon: weapon,
+        previousWeapon,
+      });
     }
   }
 

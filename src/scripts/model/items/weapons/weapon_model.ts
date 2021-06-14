@@ -3,11 +3,12 @@ import { Dice } from '../../dice';
 import { IWeaponConstructorConfig } from '../../../interfaces/combat';
 import { ItemSprites } from '../../../constants/sprites';
 import { ItemTypes } from '../../../constants/item';
+import { DamageTypes } from '../../../constants/combat_enums';
 
 export class WeaponModel extends WearableModel {
   public damage: Dice;
   public toHit: Dice;
-  public readonly type: string;
+  public readonly type: DamageTypes;
   public readonly name: string;
   public display: string;
   public itemType: ItemTypes = ItemTypes.Weapon;

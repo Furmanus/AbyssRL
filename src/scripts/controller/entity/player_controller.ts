@@ -26,6 +26,7 @@ import {
   InventoryModalEvents,
 } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
+import { WeaponModel } from '../../model/items/weapons/weapon_model';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -81,11 +82,13 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     if (action === EntityInventoryActions.Drop) {
       this.dropItems(selectedItems);
-      this.globalInventoryController.closeModal();
     } else if (action === EntityInventoryActions.PickUp) {
       this.pickUpItems(selectedItems);
-      this.globalInventoryController.closeModal();
+    } else if (action === EntityInventoryActions.Equip) {
+      this.equipItem(selectedItems[0]);
     }
+
+    this.globalInventoryController.closeModal();
   }
 
   public dropItems(items: ItemModel[]): void {
@@ -224,6 +227,12 @@ export class PlayerController extends EntityController<PlayerModel> {
     super.onEntityPickUp(item);
 
     this.notify(PlayerActions.EndPlayerTurn);
+  }
+
+  public equipItem(item: ItemModel): void {
+    if (item instanceof WeaponModel) {
+      this.model.equipWeapon(item);
+    }
   }
 
   /**
