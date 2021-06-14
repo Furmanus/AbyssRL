@@ -10,7 +10,7 @@ interface IObserverEntry {
 }
 
 export class Observer {
-  private observers: Set<IObserverEntry> = new Set();
+  #observers: Set<IObserverEntry> = new Set();
 
   constructor() {
     if (new.target === Observer) {
@@ -29,7 +29,7 @@ export class Observer {
    * @param callback  Callback function called after event is notified
    */
   public on(observer: Observer, event: string, callback: IAnyFunction): void {
-    this.observers.add({
+    this.#observers.add({
       observer,
       event,
       callback,
@@ -43,12 +43,11 @@ export class Observer {
    * @param event     Event name
    */
   public off(observer: Observer, event?: string): void {
-    const { observers } = this;
-    const observerEntries = observers.values();
+    const observerEntries = this.#observers.values();
 
     for (const entry of observerEntries) {
       if (entry.observer === observer && (!event || entry.event === event)) {
-        observers.delete(entry);
+        this.#observers.delete(entry);
       }
     }
   }
@@ -60,9 +59,8 @@ export class Observer {
    * @param event     Name of event
    * @param data      Additional data passed along with notification
    */
-  // tslint:disable-next-line:no-any
   public notify(event: string, data?: any): void {
-    const observerEntries = this.observers.values();
+    const observerEntries = this.#observers.values();
 
     for (const entry of observerEntries) {
       if (entry.event === event) {
