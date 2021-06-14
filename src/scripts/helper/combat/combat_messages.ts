@@ -1,6 +1,7 @@
 import { EntityModel } from '../../model/entity/entity_model';
 import { MonsterAttackTypes } from '../../constants/monsters';
 import { capitalizeString } from '../utility';
+import { DamageTypes } from '../../constants/combat_enums';
 
 export interface ICombatData {
   attacker: EntityModel;
@@ -8,17 +9,11 @@ export interface ICombatData {
   wasDefenderHit: boolean;
   damageAmount: number;
 }
-// tslint:disable-next-line:interface-over-type-literal
+
 type MessagePartType = {
-  hit: {
-    [prop: string]: string[];
-  };
-  miss: {
-    [prop: string]: string[];
-  };
-  fail: {
-    [prop: string]: string[];
-  };
+  hit: Record<string, string[]>;
+  miss: Record<string, string[]>;
+  fail: Record<string, string[]>;
 };
 
 const attackerPart: MessagePartType = {
@@ -34,6 +29,9 @@ const attackerPart: MessagePartType = {
       '{attacker} bites',
       '{attacker} hits',
     ],
+    [DamageTypes.Bludgeoning]: [' {attacker} hits'],
+    [DamageTypes.Slashing]: [' {attacker} cuts'],
+    [DamageTypes.Piercing]: [' {attacker} pierces'],
   },
   miss: {
     [MonsterAttackTypes.Fist]: [
@@ -50,6 +48,9 @@ const attackerPart: MessagePartType = {
       '{attacker} tries to bite',
       '{attacker} tries to hit',
     ],
+    [DamageTypes.Bludgeoning]: [' {attacker} tries to hit'],
+    [DamageTypes.Slashing]: [' {attacker} tries to hit'],
+    [DamageTypes.Piercing]: [' {attacker} tries to hit'],
   },
   fail: {
     [MonsterAttackTypes.Fist]: [
@@ -62,6 +63,9 @@ const attackerPart: MessagePartType = {
       '{attacker} bites',
       '{attacker} hits',
     ],
+    [DamageTypes.Bludgeoning]: [' {attacker} tries to hit'],
+    [DamageTypes.Slashing]: [' {attacker} tries to hit'],
+    [DamageTypes.Piercing]: [' {attacker} tries to hit'],
   },
 };
 const defenderPart: MessagePartType = {
@@ -76,6 +80,9 @@ const defenderPart: MessagePartType = {
       ' {defender} {state} wounding him.',
       ' {defender} makes poor attempt to dodge. Sharp teeths cuts {defender} body {state} wounding him.',
     ],
+    [DamageTypes.Bludgeoning]: [' {defender} {state} wounding him'],
+    [DamageTypes.Slashing]: [' {defender} {state} wounding him'],
+    [DamageTypes.Piercing]: [' {defender} {state} wounding him'],
   },
   miss: {
     [MonsterAttackTypes.Fist]: [
@@ -87,6 +94,13 @@ const defenderPart: MessagePartType = {
       ' {defender}. {defender} makes excellent attempt to dodge. Attack misses',
       ' {defender}, but {defender} makes good attempt to dodge.',
     ],
+    [DamageTypes.Bludgeoning]: [
+      ' {defender}. {defender} makes excellent attempt to dodge. Attack misses',
+    ],
+    [DamageTypes.Slashing]: [
+      ' {defender}, but {defender} makes good attempt to dodge.',
+    ],
+    [DamageTypes.Piercing]: [" {defender} ducks under {attacker}'s strike."],
   },
   fail: {
     [MonsterAttackTypes.Fist]: [
@@ -97,6 +111,13 @@ const defenderPart: MessagePartType = {
     [MonsterAttackTypes.Bite]: [
       " {defender}. {defender} makes poor attempt to dodge, but attack doesn't penetrate {defender} armour.",
       " {defender}. {defender} fails to dodge attack, but attack doesn't penetrate {defender} armour.",
+    ],
+    [DamageTypes.Bludgeoning]: [
+      " {defender}. {defender} makes poor attempt to dodge, but attack doesn't penetrate {defender} armour.",
+    ],
+    [DamageTypes.Slashing]: [' {defender}, but fails to hurt {defender}.'],
+    [DamageTypes.Piercing]: [
+      " {defender} fails to dodge incoming strike, but attack doesn't penetrate {defender} armour",
     ],
   },
 };
