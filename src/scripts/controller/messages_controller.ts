@@ -6,6 +6,7 @@ let instance: MessagesController;
 
 export class MessagesController extends Controller {
   private view: MessagesView;
+
   constructor() {
     super();
 

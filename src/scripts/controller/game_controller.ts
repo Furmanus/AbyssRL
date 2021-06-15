@@ -92,7 +92,7 @@ export class GameController extends Controller {
    * Attaches events to view and models.
    */
   private attachEvents(): void {
-    this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick.bind(this));
+    this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick);
     this.playerController.on(
       this,
       PlayerActions.PickUp,
@@ -405,9 +405,9 @@ export class GameController extends Controller {
   /**
    * Method triggered when user clicks on game screen.
    */
-  private onCanvasCellClick(): void {
+  private onCanvasCellClick = (): void => {
     this.refreshGameScreen();
-  }
+  };
 
   /**
    * Method triggered after player model notifies about needed movement confirm from player.

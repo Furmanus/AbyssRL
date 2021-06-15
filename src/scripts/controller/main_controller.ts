@@ -46,6 +46,7 @@ import {
   isKeyboardKeyDirection,
   KeyboardWhichDirections,
 } from '../interfaces/directions';
+import { globalInfoController } from '../global/info_controller';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
   188: PlayerActions.PickUp,
@@ -59,7 +60,6 @@ const keyCodeToInventoryMode: { [keycode: number]: EntityInventoryActions } = {
 
 export class MainController extends Controller {
   private readonly gameController: GameController;
-  private readonly infoController: InfoController;
   private readonly miniMapController: MiniMapController;
   private readonly messagesController: MessagesController;
   private shiftPressed: boolean;
@@ -78,7 +78,6 @@ export class MainController extends Controller {
     super();
 
     this.gameController = new GameController(tileset);
-    this.infoController = new InfoController(tileset);
     this.miniMapController = new MiniMapController();
     this.messagesController = globalMessagesController;
 
@@ -87,6 +86,8 @@ export class MainController extends Controller {
     this.altPressed = false;
 
     this.controllerInitialized = false;
+
+    globalInfoController.initialize(tileset);
 
     this.initialize();
   }
@@ -110,10 +111,10 @@ export class MainController extends Controller {
       this.onGameControllerPlayerPickUp,
     );
 
-    this.infoController.changePlayerNameMessageInView(
+    globalInfoController.changePlayerNameMessageInView(
       this.gameController.getPlayerName(),
     );
-    this.infoController.setPlayerStatsInView(
+    globalInfoController.setPlayerStatsInView(
       this.gameController.getPlayerStats(),
     );
 
@@ -323,7 +324,7 @@ export class MainController extends Controller {
    */
   @boundMethod
   private onChangeDungeonLevel(data: ILevelInfo): void {
-    this.infoController.changeLevelInfoMessage(data);
+    globalInfoController.changeLevelInfoMessage(data);
   }
 
   /**
@@ -347,8 +348,8 @@ export class MainController extends Controller {
     /**
      * Clear drawn information about previous cell
      */
-    this.infoController.hideCellInformation();
-    this.infoController.displayCellInformation(cell);
+    globalInfoController.hideCellInformation();
+    globalInfoController.displayCellInformation(cell);
   }
 
   /**
@@ -356,7 +357,7 @@ export class MainController extends Controller {
    */
   @boundMethod
   private onStopExamineCell(): void {
-    this.infoController.hideCellInformation();
+    globalInfoController.hideCellInformation();
     this.messagesController.removeLastMessage();
   }
 
@@ -372,7 +373,7 @@ export class MainController extends Controller {
    * Takes actual player stats from game controller and sets them in info view.
    */
   private setPlayerStats(): void {
-    this.infoController.setPlayerStatsInView(
+    globalInfoController.setPlayerStatsInView(
       this.gameController.getPlayerStats(),
     );
   }
@@ -476,7 +477,7 @@ export class MainController extends Controller {
     y = y - (y % config.TILE_SIZE);
 
     this.gameController.changeGameScreenInView(x, y);
-    this.infoController.changeInfoScreenSize(windowInnerWidth - x - 30, y);
+    globalInfoController.changeInfoScreenSize(windowInnerWidth - x - 30, y);
     this.messagesController.changeMessageScreenSize(
       x,
       windowInnerHeight - y - 40,

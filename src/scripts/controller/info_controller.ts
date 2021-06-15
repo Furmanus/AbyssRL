@@ -6,20 +6,39 @@ import { ILevelInfo } from '../interfaces/level';
 import { IEntityStatsObject } from '../model/entity/entity_model';
 import { Cell } from '../model/dungeon/cells/cell_model';
 
+const constructorToken = Symbol('Info controller');
+let instance: InfoController = null;
+
 /**
  * Controller of info data visible to player (player character info like HP, stats...).
  */
 export class InfoController extends Controller {
   private view: InfoView;
 
-  constructor(tileset: HTMLImageElement) {
-    super();
+  constructor(token: symbol) {
+    if (token !== constructorToken) {
+      throw new Error('Invalid constructor');
+    }
 
-    this.view = new InfoView(
-      config.SCREEN_WIDTH - config.TILE_SIZE * config.ROWS - 30,
-      config.TILE_SIZE * config.COLUMNS,
-      tileset,
-    );
+    super();
+  }
+
+  public static getInstance(): InfoController {
+    if (!instance) {
+      instance = new InfoController(constructorToken);
+    }
+
+    return instance;
+  }
+
+  public initialize(tileset: HTMLImageElement): void {
+    if (!this.view) {
+      this.view = new InfoView(
+        config.SCREEN_WIDTH - config.TILE_SIZE * config.ROWS - 30,
+        config.TILE_SIZE * config.COLUMNS,
+        tileset,
+      );
+    }
   }
 
   /**
