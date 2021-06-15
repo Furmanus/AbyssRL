@@ -5,18 +5,23 @@ import { BaseModel } from '../../core/base_model';
 import { DungeonEvents } from '../../constants/dungeon_events';
 import { IActionAttempt } from '../../interfaces/common';
 import { ASCEND, DESCEND } from '../../constants/directions';
+import { DungeonBranches } from '../../constants/dungeon_types';
 
 export class DungeonModel extends BaseModel {
   private currentLevelNumber: number = null;
   private parentDungeonBranch: DungeonModel = null;
-  public readonly type: string;
+  public readonly type: DungeonBranches;
   public readonly maxLevelNumber: number;
   /**
    * @param   type             DungeonModel type (main dungeon or some branches)
    * @param   maxLevelNumber   How many levels this dungeon or branch contains
    * @param   levelNumber      Current level number (default to 1)
    */
-  constructor(type: string, maxLevelNumber: number, levelNumber?: number) {
+  constructor(
+    type: DungeonBranches,
+    maxLevelNumber: number,
+    levelNumber?: number,
+  ) {
     super();
 
     this.currentLevelNumber = levelNumber || 1;
