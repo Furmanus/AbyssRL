@@ -61,7 +61,6 @@ const keyCodeToInventoryMode: { [keycode: number]: EntityInventoryActions } = {
 export class MainController extends Controller {
   private readonly gameController: GameController;
   private readonly miniMapController: MiniMapController;
-  private readonly messagesController: MessagesController;
   private shiftPressed: boolean;
   private controlPressed: boolean;
   private altPressed: boolean;
@@ -79,7 +78,6 @@ export class MainController extends Controller {
 
     this.gameController = new GameController(tileset);
     this.miniMapController = new MiniMapController();
-    this.messagesController = globalMessagesController;
 
     this.shiftPressed = false;
     this.controlPressed = false;
@@ -260,7 +258,7 @@ export class MainController extends Controller {
         );
       } else if (keycode === 65) {
         // ACTIVATE COMMAND
-        this.messagesController.showMessageInView(
+        globalMessagesController.showMessageInView(
           'Activate object in which direction [1234567890]:',
         );
 
@@ -272,7 +270,7 @@ export class MainController extends Controller {
             choosenDirection,
           );
         } else {
-          this.messagesController.showMessageInView('You abort your attempt.');
+          globalMessagesController.showMessageInView('You abort your attempt.');
         }
       } else if (keycode === 88) {
         // EXAMINE OR LOOK COMMAND
@@ -358,7 +356,7 @@ export class MainController extends Controller {
   @boundMethod
   private onStopExamineCell(): void {
     globalInfoController.hideCellInformation();
-    this.messagesController.removeLastMessage();
+    globalMessagesController.removeLastMessage();
   }
 
   /**
@@ -383,7 +381,7 @@ export class MainController extends Controller {
    */
   @boundMethod
   private enableExamineMode(): void {
-    this.messagesController.showMessageInView('Look at...(pick direction):');
+    globalMessagesController.showMessageInView('Look at...(pick direction):');
     this.gameController.enableExamineMode();
     this.examineMode = true;
 
@@ -478,7 +476,7 @@ export class MainController extends Controller {
 
     this.gameController.changeGameScreenInView(x, y);
     globalInfoController.changeInfoScreenSize(windowInnerWidth - x - 30, y);
-    this.messagesController.changeMessageScreenSize(
+    globalMessagesController.changeMessageScreenSize(
       x,
       windowInnerHeight - y - 40,
     );
@@ -494,7 +492,7 @@ export class MainController extends Controller {
    * @param   data     Message to display.
    */
   private onShowMessageInView(data: IMessageData): void {
-    this.messagesController.showMessageInView(data.message);
+    globalMessagesController.showMessageInView(data.message);
   }
 
   /**
@@ -509,7 +507,7 @@ export class MainController extends Controller {
 
     this.detachEvents();
 
-    this.messagesController.showMessageInView(data.message);
+    globalMessagesController.showMessageInView(data.message);
     window.addEventListener('keydown', userActionConfirmEventListener);
 
     function userActionConfirmEventListener(e: KeyboardEvent): void {
