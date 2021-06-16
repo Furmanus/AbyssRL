@@ -47,6 +47,7 @@ import {
   KeyboardWhichDirections,
 } from '../interfaces/directions';
 import { globalInfoController } from '../global/info_controller';
+import { globalMiniMapController } from '../global/minimap_controller';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
   188: PlayerActions.PickUp,
@@ -60,7 +61,6 @@ const keyCodeToInventoryMode: { [keycode: number]: EntityInventoryActions } = {
 
 export class MainController extends Controller {
   private readonly gameController: GameController;
-  private readonly miniMapController: MiniMapController;
   private shiftPressed: boolean;
   private controlPressed: boolean;
   private altPressed: boolean;
@@ -77,7 +77,6 @@ export class MainController extends Controller {
     super();
 
     this.gameController = new GameController(tileset);
-    this.miniMapController = new MiniMapController();
 
     this.shiftPressed = false;
     this.controlPressed = false;
@@ -480,7 +479,7 @@ export class MainController extends Controller {
       x,
       windowInnerHeight - y - 40,
     );
-    this.miniMapController.changeMinimapSize(
+    globalMiniMapController.changeMinimapSize(
       windowInnerWidth - x - 30,
       windowInnerHeight - y - 40,
     );
