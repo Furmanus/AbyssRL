@@ -8,10 +8,6 @@ import { DungeonEvents } from '../../constants/dungeon_events';
 import { IActionAttempt } from '../../interfaces/common';
 import { globalMessagesController } from '../../global/messages';
 
-export interface ILevelControllersMap {
-  [prop: string]: LevelController;
-}
-
 /**
  * Controller of single dungeon.
  */
@@ -27,7 +23,7 @@ export class DungeonController extends Controller {
   /**
    * Object with level controllers. Key is equal to level number.
    */
-  private readonly levels: ILevelControllersMap;
+  private readonly levels: Record<string, LevelController>;
   private readonly strategy: MainDungeonLevelGenerationStrategy;
 
   constructor(
@@ -87,9 +83,7 @@ export class DungeonController extends Controller {
     try {
       return this.levels[levelNumber];
     } catch (e) {
-      // tslint:disable-next-line:no-console
       console.error("Can't find dungeon level");
-      // tslint:disable-next-line:no-console
       console.error(e.stack);
     }
   }
