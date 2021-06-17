@@ -1,3 +1,3 @@
-export enum dungeonVaults {
+export enum DungeonVaults {
   RoomWithBed = 'roomWithBed',
 }
