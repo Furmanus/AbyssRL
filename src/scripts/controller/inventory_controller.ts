@@ -23,13 +23,13 @@ export class InventoryController extends ModalController<
    */
   private selectedItems: SetWithObserver<number>;
   private inventoryContent: ItemsCollection;
+  protected view: InventoryView = new InventoryView();
 
   public openModal(
     content: ItemsCollection,
     mode: EntityInventoryActions = EntityInventoryActions.Look,
     inventoryOwner?: EntityModel,
   ): void {
-    this.view = new InventoryView();
     this.selectedItems = new SetWithObserver<number>();
     this.inventoryContent = content;
 
@@ -49,7 +49,7 @@ export class InventoryController extends ModalController<
 
     this.view.clearContent();
     this.inventoryContent = null;
-    this.view = null;
+    this.detachEvents();
 
     this.notify(InventoryModalEvents.InventoryModalClosed);
   }
@@ -75,6 +75,17 @@ export class InventoryController extends ModalController<
 
     this.selectedItems.on(this, 'add', this.onInventorySelectedItemsChange);
     this.selectedItems.on(this, 'delete', this.onInventorySelectedItemsChange);
+  }
+
+  protected detachEvents(): void {
+    super.detachEvents();
+
+    this.view.off(this, InventoryModalEvents.ChangeInventoryAction);
+    this.view.off(this, InventoryModalEvents.InventoryItemSelected);
+    this.view.off(this, InventoryModalEvents.InventoryActionConfirmed);
+
+    this.selectedItems.off(this, 'add');
+    this.selectedItems.off(this, 'delete');
   }
 
   private setMode(mode: EntityInventoryActions): void {
