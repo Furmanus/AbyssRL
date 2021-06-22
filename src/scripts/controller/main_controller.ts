@@ -48,6 +48,7 @@ import {
 } from '../interfaces/directions';
 import { globalInfoController } from '../global/info_controller';
 import { globalMiniMapController } from '../global/minimap_controller';
+import { DevFeaturesModalController } from './dev_features_modal_controller';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
   188: PlayerActions.PickUp,
@@ -61,6 +62,7 @@ const keyCodeToInventoryMode: { [keycode: number]: EntityInventoryActions } = {
 
 export class MainController extends Controller {
   private readonly gameController: GameController;
+  private readonly devFeaturesModalController: DevFeaturesModalController;
   private shiftPressed: boolean;
   private controlPressed: boolean;
   private altPressed: boolean;
@@ -77,6 +79,7 @@ export class MainController extends Controller {
     super();
 
     this.gameController = new GameController(tileset);
+    this.devFeaturesModalController = new DevFeaturesModalController();
 
     this.shiftPressed = false;
     this.controlPressed = false;
@@ -120,7 +123,7 @@ export class MainController extends Controller {
 
   /**
    * Method responsible for binding methods to main controller object. Methods has to be bound here, because in
-   * certain circumstances event listeners to which those function are callbacks are removed from appriopiate objects.
+   * certain circumstances event listeners to which those function are callbacks are removed from appropriate objects.
    * TODO refactor to use boundMethod decorator and remove this method
    */
   private bindMethods(): void {
@@ -146,6 +149,16 @@ export class MainController extends Controller {
       InventoryModalEvents.InventoryModalClosed,
       this.onInventoryModalClose,
     );
+    this.devFeaturesModalController.on(
+      this,
+      ModalActions.CloseModal,
+      this.onDevFeaturesModalClose,
+    );
+    this.devFeaturesModalController.on(
+      this,
+      ModalActions.OpenModal,
+      this.onDevFeaturesModalOpen,
+    );
   }
 
   /**
@@ -154,6 +167,10 @@ export class MainController extends Controller {
   private attachEvents(): void {
     window.addEventListener('keydown', this.registerKeyPressed);
     window.addEventListener('keyup', this.registerKeyReleased);
+
+    this.shiftPressed = false;
+    this.controlPressed = false;
+    this.altPressed = false;
 
     if (!this.controllerInitialized) {
       window.addEventListener('resize', this.onResizeWindow);
@@ -237,7 +254,13 @@ export class MainController extends Controller {
    */
   private async takeAction(keycode: number): Promise<void> {
     let choosenDirection: IDirection | false;
-    if (this.shiftPressed) {
+
+    if (this.altPressed && this.controlPressed && this.shiftPressed) {
+      if (keycode === 84) {
+        // open test menu
+        this.devFeaturesModalController.openModal();
+      }
+    } else if (this.shiftPressed) {
       if (isKeyboardKeyDirection(keycode) && keycode !== 190) {
         this.moveCamera(keycode); // shift + numpad direction, move camera around
       } else if (keycode === 188) {
@@ -446,17 +469,36 @@ export class MainController extends Controller {
     }
   }
 
+  private devFeaturesModeEventListenerCallback = (e: KeyboardEvent): void => {
+    if (e.key.toLowerCase() === 'escape') {
+      this.devFeaturesModalController.closeModal();
+    }
+  };
+
   /**
    * Callback method triggered after inventory modal is being closed. Attaches back main event listeners.
    */
-  @boundMethod
-  private onInventoryModalClose(): void {
+  private onInventoryModalClose = (): void => {
     this.attachEvents();
     window.removeEventListener(
       'keydown',
       this.inventoryModeEventListenerCallback,
     );
-  }
+  };
+
+  private onDevFeaturesModalClose = (): void => {
+    this.attachEvents();
+    window.removeEventListener(
+      'keydown',
+      this.devFeaturesModeEventListenerCallback,
+    );
+  };
+
+  private onDevFeaturesModalOpen = (): void => {
+    this.attachTemporaryEventListener(
+      this.devFeaturesModeEventListenerCallback,
+    );
+  };
 
   /**
    * Function responsible for resizing game window size and all other canvas/divs(messages, info and map) whenever

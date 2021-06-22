@@ -2,16 +2,24 @@ import { Constructor } from '../core/constructor';
 import { ModalActions } from '../constants/game_actions';
 import { clearElement } from '../helper/dom_helper';
 import autobind from 'autobind-decorator';
+import { PreparedViewTemplate, TemplateObject } from '../interfaces/templates';
+import { ViewElementsBuilder } from '../core/viewElementsBuilder';
 
 /**
  * Class describing view of global application modal.
  */
-export abstract class ModalView extends Constructor {
+export abstract class ModalView<
+  TemplateElements extends Record<string, HTMLElement> = {},
+> extends Constructor {
   protected modalWrapper: HTMLDivElement;
   protected modalContent: HTMLDivElement;
   protected modalOverlay: HTMLDivElement;
+  protected template?: PreparedViewTemplate<TemplateElements>;
 
-  public constructor() {
+  public constructor(
+    template?: TemplateObject,
+    variables: Record<string, string> = {},
+  ) {
     super();
     this.modalWrapper = document.getElementById(
       'modal-wrapper',
@@ -22,6 +30,15 @@ export abstract class ModalView extends Constructor {
     this.modalOverlay = document.getElementById(
       'modal-wrapper',
     ) as HTMLDivElement;
+
+    if (template) {
+      this.template = ViewElementsBuilder.getInstance<TemplateElements>(
+        template,
+        variables,
+      ).build();
+
+      this.modalContent.appendChild(this.template.content);
+    }
   }
 
   public open(): void {
@@ -57,10 +74,9 @@ export abstract class ModalView extends Constructor {
     window.removeEventListener('keydown', this.onWindowKeydownCallback);
   }
 
-  @autobind
-  private onOverlayClick(e: MouseEvent): void {
+  private onOverlayClick = (e: MouseEvent): void => {
     this.notify(ModalActions.OverlayClick);
-  }
+  };
 
   private onContentClick(e: MouseEvent): void {
     e.stopPropagation();

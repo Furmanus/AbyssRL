@@ -7,14 +7,14 @@
     "noImplicitAny": true,
     "removeComments": true,
     "module": "commonjs",
-    "target": "es2020",
+    "target": "esnext",
     "jsx": "react",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "include": [
     "./src/scripts/**/*"

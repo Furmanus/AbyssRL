@@ -10,7 +10,7 @@ export class ModalController<
   protected view: V;
   protected isModalOpen: boolean = false;
 
-  public openModal(content: M): void {
+  public openModal(content?: M): void {
     this.currentContent = content;
     this.isModalOpen = true;
     this.view.open();
