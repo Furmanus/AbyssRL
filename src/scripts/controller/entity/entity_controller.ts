@@ -16,6 +16,7 @@ import { ItemModel } from '../../model/items/item_model';
 import { ItemsCollection } from '../../collections/items_collection';
 import { EntityWeaponChangeData } from './entiry_controller.interfaces';
 import { NaturalWeaponModel } from '../../model/items/weapons/natural_weapon_model';
+import { WeaponModel } from '../../model/items/weapons/weapon_model';
 
 export class EntityController<
   M extends EntityModel = EntityModel,
@@ -119,6 +120,15 @@ export class EntityController<
    * @param items     Array of items to drop
    */
   public dropItems(items: ItemModel[]): void {
+    const equippedWeapon = items.find(
+      (item) =>
+        item instanceof WeaponModel && this.model.isWeaponEquipped(item),
+    );
+
+    if (equippedWeapon && equippedWeapon instanceof WeaponModel) {
+      this.model.removeWeapon(equippedWeapon);
+    }
+
     this.model.dropItems(items);
   }
 

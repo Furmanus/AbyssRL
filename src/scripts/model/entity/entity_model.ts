@@ -197,6 +197,20 @@ export class EntityModel extends BaseModel implements IEntity {
     }
   }
 
+  public removeWeapon(weapon: IWeapon): void {
+    if (
+      !(weapon instanceof NaturalWeaponModel) &&
+      this.isWeaponEquipped(weapon)
+    ) {
+      this.equippedWeapon = null;
+      this.notify(EntityEvents.EntityEquippedWeaponChange, {
+        reason: 'remove',
+        currentWeapon: null,
+        previousWeapon: weapon,
+      });
+    }
+  }
+
   /**
    * Attempts to drop on ground group of items (remove them from entity inventory and push to cell where entity is
    * inventory).
@@ -239,5 +253,9 @@ export class EntityModel extends BaseModel implements IEntity {
    */
   public getDescription(): string {
     return this.description;
+  }
+
+  public isWeaponEquipped(weapon: IWeapon): boolean {
+    return this.equippedWeapon === weapon;
   }
 }
