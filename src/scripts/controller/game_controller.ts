@@ -533,4 +533,8 @@ export class GameController extends Controller {
 
     this.notify(STOP_EXAMINE_CELL);
   }
+
+  private onDevDungeonModalRefresh(): void {
+    console.log('dungeon size change');
+  }
 }

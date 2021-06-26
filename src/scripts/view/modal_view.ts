@@ -36,12 +36,14 @@ export abstract class ModalView<
         template,
         variables,
       ).build();
-
-      this.modalContent.appendChild(this.template.content);
     }
   }
 
   public open(): void {
+    if (this.template) {
+      this.modalContent.appendChild(this.template.content.cloneNode(true));
+    }
+
     this.modalWrapper.classList.remove('hidden');
     this.notify(ModalActions.OpenModal);
   }
@@ -49,6 +51,7 @@ export abstract class ModalView<
   public close(): void {
     this.modalWrapper.classList.add('hidden');
     this.detachEvents();
+    this.clearContent();
   }
 
   public drawContent<E extends HTMLElement = HTMLElement>(content: E): void {

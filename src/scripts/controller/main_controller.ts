@@ -79,7 +79,7 @@ export class MainController extends Controller {
     super();
 
     this.gameController = new GameController(tileset);
-    this.devFeaturesModalController = new DevFeaturesModalController();
+    this.devFeaturesModalController = DevFeaturesModalController.getInstance();
 
     this.shiftPressed = false;
     this.controlPressed = false;
