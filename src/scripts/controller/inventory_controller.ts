@@ -40,7 +40,6 @@ export class InventoryController extends ModalController<
 
     super.openModal(content);
 
-    this.attachEvents();
     this.setMode(mode);
   }
 

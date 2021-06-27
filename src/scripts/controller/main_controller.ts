@@ -470,7 +470,7 @@ export class MainController extends Controller {
   }
 
   private devFeaturesModeEventListenerCallback = (e: KeyboardEvent): void => {
-    if (e.key.toLowerCase() === 'escape') {
+    if (e.which === 27) {
       this.devFeaturesModalController.closeModal();
     }
   };

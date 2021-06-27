@@ -5,12 +5,9 @@ const constructorToken = Symbol('View Elements Builder');
 export class ViewElementsBuilder<
   TemplateElements extends Record<string, HTMLElement>,
 > {
-  #fragment = document.createDocumentFragment();
+  #content: HTMLDivElement;
   #template: TemplateObject;
   #variables?: object;
-
-  public content: DocumentFragment;
-  public elements: TemplateElements;
 
   public constructor(
     token: symbol,
@@ -51,14 +48,21 @@ export class ViewElementsBuilder<
     }
 
     temporaryDiv.innerHTML = preparedTemplateString;
+    this.#content = temporaryDiv;
 
-    while (temporaryDiv.firstChild) {
-      this.#fragment.appendChild(
-        temporaryDiv.removeChild(temporaryDiv.firstChild),
-      );
-    }
+    return {
+      content: temporaryDiv,
+      elements: this.getElementsFromContainer(temporaryDiv),
+      insert: (targetElement: HTMLElement): void => {
+        targetElement.appendChild(this.#content);
+      },
+    };
+  }
 
-    Array.from(this.#fragment.querySelectorAll('[data-element]')).forEach(
+  private getElementsFromContainer(container: HTMLElement): TemplateElements {
+    const elements: Record<string, HTMLElement> = {};
+
+    Array.from(this.#content.querySelectorAll('[data-element]')).forEach(
       (element: HTMLElement) => {
         const elementAttributeValue = element.getAttribute('data-element');
 
@@ -68,9 +72,6 @@ export class ViewElementsBuilder<
       },
     );
 
-    return {
-      content: this.#fragment,
-      elements: elements as TemplateElements,
-    };
+    return elements as TemplateElements;
   }
 }

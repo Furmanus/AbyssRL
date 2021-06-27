@@ -14,11 +14,15 @@ export class ModalController<
     this.currentContent = content;
     this.isModalOpen = true;
     this.view.open();
+
+    this.attachEvents();
   }
 
   public closeModal(): void {
     this.isModalOpen = false;
     this.view.close();
+
+    this.detachEvents();
   }
 
   public drawContentInView<E extends HTMLElement = HTMLElement>(

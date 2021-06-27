@@ -42,6 +42,8 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
 
     this.view.attachEvents();
     this.initializeView();
+
+    this.notify(ModalActions.OpenModal);
   }
 
   public closeModal(): void {

@@ -4,6 +4,7 @@ export type TemplateObject = {
 
 export type PreparedViewTemplate<Elements extends Record<string, HTMLElement>> =
   {
-    content: DocumentFragment;
+    content: HTMLDivElement;
     elements: Elements;
+    insert: (targetElement: HTMLElement) => void;
   };
