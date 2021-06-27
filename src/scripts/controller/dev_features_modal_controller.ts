@@ -20,9 +20,6 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     if (token !== constructorToken) {
       throw new Error('Invalid constructor');
     }
-
-    this.attachEvents();
-    this.initializeView();
   }
 
   public static getInstance(): DevFeaturesModalController {
@@ -44,6 +41,7 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     super.openModal();
 
     this.view.attachEvents();
+    this.initializeView();
   }
 
   public closeModal(): void {
@@ -76,6 +74,6 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     config.LEVEL_WIDTH = parseInt(devDungeonWidth, 10);
     config.LEVEL_HEIGHT = parseInt(devDungeonHeight, 10);
 
-    this.notify(DevDungeonModalEvents.ConfigLevelSizeChange);
+    this.notify(DevDungeonModalEvents.RecreateCurrentLevel);
   }
 }

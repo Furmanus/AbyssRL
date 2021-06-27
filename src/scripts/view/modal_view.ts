@@ -36,6 +36,8 @@ export abstract class ModalView<
         template,
         variables,
       ).build();
+
+      this.modalContent.appendChild(this.template.content);
     }
   }
 

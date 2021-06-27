@@ -7,6 +7,8 @@ import { Controller } from '../controller';
 import { DungeonEvents } from '../../constants/dungeon_events';
 import { IActionAttempt } from '../../interfaces/common';
 import { globalMessagesController } from '../../global/messages';
+import { DevFeaturesModalController } from '../dev_features_modal_controller';
+import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEvents';
 
 /**
  * Controller of single dungeon.
@@ -49,10 +51,18 @@ export class DungeonController extends Controller {
   }
 
   protected attachEvents(): void {
+    const devFeaturesModalController = DevFeaturesModalController.getInstance();
+
     this.model.on(
       this,
       DungeonEvents.ChangeCurrentLevel,
       this.onChangeCurrentLevelProperty.bind(this),
+    );
+
+    devFeaturesModalController.on(
+      this,
+      DevDungeonModalEvents.RecreateCurrentLevel,
+      this.recreateCurrentLevel,
     );
   }
 
@@ -139,5 +149,9 @@ export class DungeonController extends Controller {
    */
   public getCurrentLevelNumber(): number {
     return this.model.getCurrentLevelNumber();
+  }
+
+  private recreateCurrentLevel(): void {
+    console.log('regenerate current level');
   }
 }

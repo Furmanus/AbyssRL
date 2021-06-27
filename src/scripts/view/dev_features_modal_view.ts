@@ -23,6 +23,14 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
     devForm.addEventListener('submit', this.onDevFormSubmit);
   }
 
+  public detachEvents() {
+    super.detachEvents();
+
+    const { devForm } = this.template.elements;
+
+    devForm.removeEventListener('submit', this.onDevFormSubmit);
+  }
+
   public setDungeonWidth(width: string): void {
     const { dungeonWidthInput } = this.template.elements;
 
