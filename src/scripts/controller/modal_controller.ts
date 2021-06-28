@@ -42,6 +42,7 @@ export class ModalController<
   protected attachEvents(): void {
     this.view.on(this, ModalActions.OverlayClick, this.onOverlayClick);
     this.view.on(this, ModalActions.OpenModal, this.onModalOpen);
+    this.view.on(this, ModalActions.CloseModal, this.onModalClose);
   }
 
   protected detachEvents(): void {
@@ -49,12 +50,16 @@ export class ModalController<
     this.view.off(this, ModalActions.OpenModal);
   }
 
-  private onOverlayClick = (): void => {
+  private onOverlayClick(): void {
     this.closeModal();
     this.notify(ModalActions.CloseModal);
-  };
+  }
 
-  private onModalOpen = (): void => {
+  private onModalOpen(): void {
     this.notify(ModalActions.OpenModal);
-  };
+  }
+
+  private onModalClose(): void {
+    this.notify(ModalActions.CloseModal);
+  }
 }

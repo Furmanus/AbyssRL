@@ -53,6 +53,7 @@ export abstract class ModalView<
     this.modalWrapper.classList.add('hidden');
     this.detachEvents();
     this.clearContent();
+    this.notify(ModalActions.CloseModal);
   }
 
   public drawContent<E extends HTMLElement = HTMLElement>(content: E): void {

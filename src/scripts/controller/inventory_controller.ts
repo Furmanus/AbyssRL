@@ -46,9 +46,7 @@ export class InventoryController extends ModalController<
   public closeModal(): void {
     super.closeModal();
 
-    this.view.clearContent();
     this.inventoryContent = null;
-    this.detachEvents();
 
     this.notify(InventoryModalEvents.InventoryModalClosed);
   }
