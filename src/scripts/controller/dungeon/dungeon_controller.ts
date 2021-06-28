@@ -9,6 +9,7 @@ import { IActionAttempt } from '../../interfaces/common';
 import { globalMessagesController } from '../../global/messages';
 import { DevFeaturesModalController } from '../dev_features_modal_controller';
 import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEvents';
+import { config } from '../../global/config';
 
 /**
  * Controller of single dungeon.
@@ -83,6 +84,19 @@ export class DungeonController extends Controller {
     }
   }
 
+  private generateNewLevelAtNumber(num: number): void {
+    const { maxLevelNumber } = this.model;
+
+    this.levels[num] = new LevelController({
+      branch: this.type,
+      levelNumber: num,
+    });
+
+    this.strategy.generateRandomLevel(this.levels[num].getModel(), {
+      generateStairsDown: !(num === maxLevelNumber),
+    });
+  }
+
   /**
    * Returns certain level controller from dungeon.
    *
@@ -151,7 +165,22 @@ export class DungeonController extends Controller {
     return this.model.getCurrentLevelNumber();
   }
 
+  /**
+   * Returns controller of level on which player currently is.
+   * @private
+   */
+  private getCurrentLevelController(): LevelController {
+    return this.levels[this.model.getCurrentLevelNumber()];
+  }
+
+  /**
+   * Generates new level controller with model in place of current level. Current level number is model is changed in this process.
+   * @private
+   */
   private recreateCurrentLevel(): void {
-    console.log('regenerate current level');
+    const currentLevel = this.model.getCurrentLevelNumber();
+
+    this.generateNewLevelAtNumber(currentLevel);
+    this.model.setCurrentLevelNumber(currentLevel);
   }
 }
