@@ -71,10 +71,11 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
   }
 
   private onDevDungeonFormSubmitInView(data: DevFormValues): void {
-    const { devDungeonHeight, devDungeonWidth } = data;
+    const { devDungeonHeight, devDungeonWidth, devDungeonLevelType } = data;
 
     config.LEVEL_WIDTH = parseInt(devDungeonWidth, 10);
     config.LEVEL_HEIGHT = parseInt(devDungeonHeight, 10);
+    config.defaultLevelType = devDungeonLevelType || null;
 
     this.notify(DevDungeonModalEvents.RecreateCurrentLevel);
   }

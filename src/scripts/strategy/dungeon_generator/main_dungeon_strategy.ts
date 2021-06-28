@@ -42,19 +42,19 @@ export class MainDungeonLevelGenerationStrategy {
 
     if (config.defaultLevelType && defaultLevelTypeGenerator) {
       defaultLevelTypeGenerator.generateLevel(levelModel, generateConfig);
-    }
+    } else {
+      switch (levelNumber) {
+        default:
+          const percentDieRoll: number = Rng.getPercentage();
 
-    switch (levelNumber) {
-      default:
-        const percentDieRoll: number = Rng.getPercentage();
-
-        if (percentDieRoll < 33) {
-          arenaLevelGenerator.generateLevel(levelModel, generateConfig);
-        } else if (percentDieRoll < 66) {
-          cavernLevelGenerator.generateLevel(levelModel, generateConfig);
-        } else {
-          dungeonLevelGenerator.generateLevel(levelModel, generateConfig);
-        }
+          if (percentDieRoll < 33) {
+            arenaLevelGenerator.generateLevel(levelModel, generateConfig);
+          } else if (percentDieRoll < 66) {
+            cavernLevelGenerator.generateLevel(levelModel, generateConfig);
+          } else {
+            dungeonLevelGenerator.generateLevel(levelModel, generateConfig);
+          }
+      }
     }
 
     this.fillLevelWithItems(levelModel);

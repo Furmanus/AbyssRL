@@ -5,11 +5,13 @@ export type DevFeaturesModalViewElements = {
   dungeonWidthInput: HTMLInputElement;
   dungeonHeightInput: HTMLInputElement;
   devForm: HTMLFormElement;
+  levelTypeSelect: HTMLSelectElement;
 };
 
 export type DevFormValues = {
   devDungeonWidth: string;
   devDungeonHeight: string;
+  devDungeonLevelType: string;
 } & Record<string, string>;
 
 export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements> {
