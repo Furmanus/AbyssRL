@@ -910,6 +910,15 @@ export class GameView extends Observer {
           continue;
         }
         examinedCell = level.getCell(cameraX + i, cameraY + j);
+
+        if (!examinedCell) {
+          console.warn(
+            `Could not draw cell ${cameraX + i}x${cameraY + j}`,
+            config,
+          );
+          continue;
+        }
+
         if (playerFov.includes(examinedCell) || config.debugMode) {
           this.drawAnimatedImage(i, j, examinedCell, null);
           /**

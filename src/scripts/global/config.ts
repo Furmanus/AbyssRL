@@ -2,6 +2,10 @@ interface IConfig {
   LEVEL_WIDTH: number;
   LEVEL_HEIGHT: number;
   debugMode: boolean;
+  debugOptions: {
+    dungeonRooms: string[];
+    noMonsters: boolean;
+  };
   defaultLevelType: string;
   SCREEN_WIDTH: number;
   SCREEN_HEIGHT: number;
@@ -21,6 +25,10 @@ const config: IConfig = {
   LEVEL_WIDTH: 50,
   LEVEL_HEIGHT: 50,
   debugMode: false,
+  debugOptions: {
+    dungeonRooms: [],
+    noMonsters: false,
+  },
   defaultLevelType: null,
   SCREEN_WIDTH: undefined,
   SCREEN_HEIGHT: undefined,

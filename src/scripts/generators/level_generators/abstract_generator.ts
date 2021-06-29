@@ -1,5 +1,5 @@
 import { cellTypes } from '../../constants/cell_types';
-import { config as globalConfig } from '../../global/config';
+import { config, config as globalConfig } from '../../global/config';
 import * as Rng from '../../helper/rng';
 import * as Utility from '../../helper/utility';
 import {
@@ -810,14 +810,19 @@ export abstract class AbstractLevelGenerator {
    * @param levelModel Model of dungeon level
    */
   public generateMonsters(levelModel: LevelModel): void {
-    for (let i = 0; i < MONSTERS_LIMIT_PER_LEVEL; i++) {
-      const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
+    if (!config.debugOptions.noMonsters) {
+      for (let i = 0; i < MONSTERS_LIMIT_PER_LEVEL; i++) {
+        const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
 
-      if (randomCell) {
-        const monsterController: MonsterController =
-          monsterFactory.getGiantRatController(levelModel, randomCell);
-        randomCell.setEntity(monsterController.getModel());
-        levelModel.notify(DungeonEvents.NewCreatureSpawned, monsterController);
+        if (randomCell) {
+          const monsterController: MonsterController =
+            monsterFactory.getGiantRatController(levelModel, randomCell);
+          randomCell.setEntity(monsterController.getModel());
+          levelModel.notify(
+            DungeonEvents.NewCreatureSpawned,
+            monsterController,
+          );
+        }
       }
     }
   }

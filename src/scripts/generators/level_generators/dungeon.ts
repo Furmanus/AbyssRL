@@ -86,6 +86,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
     this.generateDoors(level);
     this.generateRandomStairsUp(level);
+
     if (config && config.generateStairsDown) {
       this.generateRandomStairsDown(level);
     }

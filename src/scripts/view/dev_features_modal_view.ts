@@ -4,14 +4,18 @@ import { ModalView } from './modal_view';
 export type DevFeaturesModalViewElements = {
   dungeonWidthInput: HTMLInputElement;
   dungeonHeightInput: HTMLInputElement;
+  dungeonRoomTypesSelect: HTMLSelectElement;
   devForm: HTMLFormElement;
   levelTypeSelect: HTMLSelectElement;
+  noMonstersCheckbox: HTMLInputElement;
 };
 
 export type DevFormValues = {
   devDungeonWidth: string;
   devDungeonHeight: string;
   devDungeonLevelType: string;
+  dungeonRoomTypes: string[];
+  noMonsters: boolean;
 } & Record<string, string>;
 
 export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements> {
