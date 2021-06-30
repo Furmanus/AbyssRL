@@ -29,3 +29,6 @@ export enum EntityStats {
   MaxHitPoints = 'maxHitpoints',
 }
 export const ENTITY_MAX_INVENTORY_LENGTH = 24;
+export enum Monsters {
+  GiantRat = 'giant_rat',
+}

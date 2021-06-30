@@ -11,9 +11,13 @@ import { Cell } from './cells/cell_model';
 import { DungeonAreaModel } from './dungeon_area_model';
 import { RoomModel } from './room_model';
 import { RoomConnectionModel } from './room_connection_model';
-import { DungeonModelEvents } from '../../constants/dungeon_events';
+import {
+  DungeonEvents,
+  DungeonModelEvents,
+} from '../../constants/dungeon_events';
 import { MapWithObserver } from '../../core/map_with_observer';
 import { EntityModel } from '../entity/entity_model';
+import { MonsterController } from '../../controller/entity/monster_controller';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
 
@@ -279,5 +283,11 @@ export class LevelModel extends BaseModel {
     }
 
     return result;
+  }
+
+  public addMonster(monsterController: MonsterController, cell: Cell): void {
+    cell.setEntity(monsterController.getModel());
+
+    this.notify(DungeonEvents.NewCreatureSpawned, monsterController);
   }
 }

@@ -9,8 +9,9 @@ import { IAnyObject } from '../../interfaces/common';
 import { EntityEvents } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
 import { EntityModel } from '../../model/entity/entity_model';
-import { MonstersTypes } from '../../constants/monsters';
+import { Monsters, MonstersTypes } from '../../constants/monsters';
 import { PLAYER_DEATH } from '../../constants/player_actions';
+import { MonsterFactory } from '../../factory/monster_factory';
 
 interface ILevelControllerConstructorConfig {
   readonly branch: string;
@@ -122,6 +123,16 @@ export class LevelController extends Controller {
   ): void {
     this.engine.addActor(actor, repeat);
     this.attachEventsToMonsterController(actor);
+  }
+
+  public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
+    const monsterController = MonsterFactory.getMonsterControllerByType(
+      monster,
+      this.model,
+      cell,
+    );
+
+    this.model.addMonster(monsterController, cell);
   }
 
   /**

@@ -20,7 +20,7 @@ import { Cell } from '../../model/dungeon/cells/cell_model';
 import { Direction } from '../../model/position/direction';
 import { DirectionType } from '../../interfaces/common';
 import { MapWithObserver } from '../../core/map_with_observer';
-import { monsterFactory } from '../../factory/monster_factory';
+import { MonsterFactory } from '../../factory/monster_factory';
 import { DungeonEvents } from '../../constants/dungeon_events';
 import { MonsterController } from '../../controller/entity/monster_controller';
 import { Directions } from '../../interfaces/directions';
@@ -816,7 +816,7 @@ export abstract class AbstractLevelGenerator {
 
         if (randomCell) {
           const monsterController: MonsterController =
-            monsterFactory.getGiantRatController(levelModel, randomCell);
+            MonsterFactory.getGiantRatController(levelModel, randomCell);
           randomCell.setEntity(monsterController.getModel());
           levelModel.notify(
             DungeonEvents.NewCreatureSpawned,

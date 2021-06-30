@@ -10,6 +10,10 @@ import { globalMessagesController } from '../../global/messages';
 import { DevFeaturesModalController } from '../dev_features_modal_controller';
 import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEvents';
 import { config } from '../../global/config';
+import { Monsters } from '../../constants/monsters';
+import { PlayerController } from '../entity/player_controller';
+import { Cell } from '../../model/dungeon/cells/cell_model';
+import { MonsterFactory } from '../../factory/monster_factory';
 
 /**
  * Controller of single dungeon.
@@ -64,6 +68,12 @@ export class DungeonController extends Controller {
       this,
       DevDungeonModalEvents.RecreateCurrentLevel,
       this.recreateCurrentLevel,
+    );
+
+    devFeaturesModalController.on(
+      this,
+      DevDungeonModalEvents.SpawnMonster,
+      this.onDevModalMonsterSpawn,
     );
   }
 
@@ -182,5 +192,17 @@ export class DungeonController extends Controller {
 
     this.generateNewLevelAtNumber(currentLevel);
     this.model.setCurrentLevelNumber(currentLevel);
+  }
+
+  private onDevModalMonsterSpawn(monster: Monsters): void {
+    const currentLevel = this.getCurrentLevelController();
+    const playerController = PlayerController.getInstance();
+    const playerFov = playerController.getPlayerFov();
+    const unOccupiedCell = playerFov.find(
+      (cell: Cell) => !cell.blockMovement && !cell.entity,
+    );
+
+    currentLevel.spawnMonsterInSpecificCell(unOccupiedCell, monster);
+    playerController.endTurn();
   }
 }

@@ -37,6 +37,9 @@ interface IInventoryActionConfirmData {
   selectedItems: ItemModel[];
 }
 
+const constructorToken = Symbol('Player controller');
+let instance: PlayerController;
+
 export class PlayerController extends EntityController<PlayerModel> {
   private globalMessageController: MessagesController =
     globalMessagesController;
@@ -44,11 +47,27 @@ export class PlayerController extends EntityController<PlayerModel> {
   private globalInventoryController: InventoryController =
     globalInventoryController;
 
-  constructor(constructorConfig: IAnyObject) {
+  constructor(token: symbol, constructorConfig: IAnyObject) {
     super(constructorConfig);
+
+    if (token !== constructorToken) {
+      throw new Error('Invalid constructor');
+    }
 
     this.model = new PlayerModel(constructorConfig);
     this.attachEvents();
+  }
+
+  public static getInstance(constructorConfig?: IAnyObject): PlayerController {
+    if (!constructorConfig && !instance) {
+      throw new Error('Controller not initialized yet');
+    }
+
+    if (!instance) {
+      instance = new PlayerController(constructorToken, constructorConfig);
+    }
+
+    return instance;
   }
 
   protected attachEvents(): void {
@@ -316,5 +335,9 @@ export class PlayerController extends EntityController<PlayerModel> {
    */
   public getPlayerInventory(): ItemsCollection {
     return this.model.inventory;
+  }
+
+  public endTurn(): void {
+    this.notify(END_PLAYER_TURN);
   }
 }

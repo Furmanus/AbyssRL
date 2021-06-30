@@ -7,6 +7,7 @@ import { ModalActions } from '../constants/game_actions';
 import { devFeatureModalTemplate } from '../../templates/dev_features_modal_template';
 import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents';
 import { config } from '../global/config';
+import { Monsters } from '../constants/monsters';
 
 const constructorToken = Symbol('Dev features modal controller');
 let instance: DevFeaturesModalController;
@@ -62,12 +63,18 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
       DevDungeonModalEvents.FormSubmitInView,
       this.onDevDungeonFormSubmitInView,
     );
+    this.view.on(
+      this,
+      DevDungeonModalEvents.SpawnMonster,
+      this.onMonsterSpawnInView,
+    );
   }
 
   protected detachEvents(): void {
     super.detachEvents();
 
     this.view.off(this, DevDungeonModalEvents.FormSubmitInView);
+    this.view.off(this, DevDungeonModalEvents.SpawnMonster);
   }
 
   private onDevDungeonFormSubmitInView(data: DevFormValues): void {
@@ -88,5 +95,14 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     config.defaultLevelType = devDungeonLevelType || null;
 
     this.notify(DevDungeonModalEvents.RecreateCurrentLevel);
+
+    this.closeModal();
+  }
+
+  private onMonsterSpawnInView(monster: Monsters): void {
+    this.notify(DevDungeonModalEvents.SpawnMonster, monster);
+
+    this.view.resetMonsterSpawnSelect();
+    this.closeModal();
   }
 }

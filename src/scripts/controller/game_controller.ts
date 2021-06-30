@@ -143,7 +143,7 @@ export class GameController extends Controller {
     const inititalPlayerCell: Cell = this.currentLevel.getStairsUpCell();
     const playerLevel: LevelController = this.currentLevel;
 
-    this.playerController = new PlayerController({
+    this.playerController = PlayerController.getInstance({
       level: playerLevel,
       display: entities.AVATAR,
       position: inititalPlayerCell,

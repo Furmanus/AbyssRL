@@ -35,7 +35,12 @@ export const devFeatureModalTemplate = {
           </div>
         </div>
         <div class="dungeon-options-container">
-            <p>WiP</p>
+          <div class="space-down">
+            <label for="monsterSpawn">Spawn monster</label>
+            <select id="monsterSpawn" name="monsterSpawn" data-element="monsterSpawnSelect">
+              <option value="" selected>Select monster</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="dungeon-options-submit-container">

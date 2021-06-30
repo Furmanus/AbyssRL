@@ -1,5 +1,6 @@
 import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents';
 import { ModalView } from './modal_view';
+import { Monsters } from '../constants/monsters';
 
 export type DevFeaturesModalViewElements = {
   dungeonWidthInput: HTMLInputElement;
@@ -8,6 +9,7 @@ export type DevFeaturesModalViewElements = {
   devForm: HTMLFormElement;
   levelTypeSelect: HTMLSelectElement;
   noMonstersCheckbox: HTMLInputElement;
+  monsterSpawnSelect: HTMLSelectElement;
 };
 
 export type DevFormValues = {
@@ -21,20 +23,38 @@ export type DevFormValues = {
 export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements> {
   protected onWindowKeydownCallback = (e: KeyboardEvent): void => {};
 
+  public constructor(...args: any[]) {
+    super(...args);
+
+    this.buildLists();
+  }
+
+  public buildLists(): void {
+    this.buildSpawnMonsterList();
+  }
+
   public attachEvents(): void {
     super.attachEvents();
 
-    const { devForm } = this.template.elements;
+    const { devForm, monsterSpawnSelect } = this.template.elements;
 
     devForm.addEventListener('submit', this.onDevFormSubmit);
+    monsterSpawnSelect.addEventListener(
+      'change',
+      this.onMonsterSpawnSelectChange,
+    );
   }
 
   public detachEvents() {
     super.detachEvents();
 
-    const { devForm } = this.template.elements;
+    const { devForm, monsterSpawnSelect } = this.template.elements;
 
     devForm.removeEventListener('submit', this.onDevFormSubmit);
+    monsterSpawnSelect.removeEventListener(
+      'change',
+      this.onMonsterSpawnSelectChange,
+    );
   }
 
   public setDungeonWidth(width: string): void {
@@ -53,6 +73,12 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
     }
   }
 
+  public resetMonsterSpawnSelect(): void {
+    const { monsterSpawnSelect } = this.template.elements;
+
+    monsterSpawnSelect.value = '';
+  }
+
   private onDevFormSubmit = (e: Event): void => {
     e.preventDefault();
 
@@ -67,5 +93,24 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
     );
 
     this.notify(DevDungeonModalEvents.FormSubmitInView, parsedFormData);
+  };
+
+  private buildSpawnMonsterList(): void {
+    const { monsterSpawnSelect } = this.template.elements;
+    const temporaryFragment = document.createDocumentFragment();
+
+    for (const [type, description] of Object.entries(Monsters)) {
+      temporaryFragment.appendChild(new Option(type, description));
+    }
+
+    monsterSpawnSelect.appendChild(temporaryFragment);
+  }
+
+  private onMonsterSpawnSelectChange = (e: Event): void => {
+    const { value } = e.target as HTMLSelectElement;
+
+    if (value) {
+      this.notify(DevDungeonModalEvents.SpawnMonster, value);
+    }
   };
 }
