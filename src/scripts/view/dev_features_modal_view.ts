@@ -10,6 +10,7 @@ export type DevFeaturesModalViewElements = {
   levelTypeSelect: HTMLSelectElement;
   noMonstersCheckbox: HTMLInputElement;
   monsterSpawnSelect: HTMLSelectElement;
+  healPlayerButton: HTMLButtonElement;
 };
 
 export type DevFormValues = {
@@ -36,25 +37,29 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
   public attachEvents(): void {
     super.attachEvents();
 
-    const { devForm, monsterSpawnSelect } = this.template.elements;
+    const { devForm, monsterSpawnSelect, healPlayerButton } =
+      this.template.elements;
 
     devForm.addEventListener('submit', this.onDevFormSubmit);
     monsterSpawnSelect.addEventListener(
       'change',
       this.onMonsterSpawnSelectChange,
     );
+    healPlayerButton.addEventListener('click', this.onHealButtonClick);
   }
 
   public detachEvents() {
     super.detachEvents();
 
-    const { devForm, monsterSpawnSelect } = this.template.elements;
+    const { devForm, monsterSpawnSelect, healPlayerButton } =
+      this.template.elements;
 
     devForm.removeEventListener('submit', this.onDevFormSubmit);
     monsterSpawnSelect.removeEventListener(
       'change',
       this.onMonsterSpawnSelectChange,
     );
+    healPlayerButton.removeEventListener('click', this.onHealButtonClick);
   }
 
   public setDungeonWidth(width: string): void {
@@ -112,5 +117,9 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
     if (value) {
       this.notify(DevDungeonModalEvents.SpawnMonster, value);
     }
+  };
+
+  private onHealButtonClick = (): void => {
+    this.notify(DevDungeonModalEvents.HealPlayer);
   };
 }

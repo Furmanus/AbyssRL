@@ -258,4 +258,8 @@ export class EntityModel extends BaseModel implements IEntity {
   public isWeaponEquipped(weapon: IWeapon): boolean {
     return this.equippedWeapon === weapon;
   }
+
+  public setCurrentHpToMax(): void {
+    this.setProperty('hitPoints', this.maxHitPoints);
+  }
 }

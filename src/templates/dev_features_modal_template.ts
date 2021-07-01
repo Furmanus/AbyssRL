@@ -41,6 +41,9 @@ export const devFeatureModalTemplate = {
               <option value="" selected>Select monster</option>
             </select>
           </div>
+          <div class="space-down">
+            <button type="button" data-element="healPlayerButton">Heal player</button>
+          </div>
         </div>
       </div>
       <div class="dungeon-options-submit-container">

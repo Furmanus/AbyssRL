@@ -340,4 +340,10 @@ export class PlayerController extends EntityController<PlayerModel> {
   public endTurn(): void {
     this.notify(END_PLAYER_TURN);
   }
+
+  public healPlayer(): void {
+    this.model.setCurrentHpToMax();
+
+    this.endTurn();
+  }
 }

@@ -8,6 +8,7 @@ import { devFeatureModalTemplate } from '../../templates/dev_features_modal_temp
 import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents';
 import { config } from '../global/config';
 import { Monsters } from '../constants/monsters';
+import { PlayerController } from './entity/player_controller';
 
 const constructorToken = Symbol('Dev features modal controller');
 let instance: DevFeaturesModalController;
@@ -68,6 +69,11 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
       DevDungeonModalEvents.SpawnMonster,
       this.onMonsterSpawnInView,
     );
+    this.view.on(
+      this,
+      DevDungeonModalEvents.HealPlayer,
+      this.onHealPlayerClickInView,
+    );
   }
 
   protected detachEvents(): void {
@@ -75,6 +81,7 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
 
     this.view.off(this, DevDungeonModalEvents.FormSubmitInView);
     this.view.off(this, DevDungeonModalEvents.SpawnMonster);
+    this.view.off(this, DevDungeonModalEvents.HealPlayer);
   }
 
   private onDevDungeonFormSubmitInView(data: DevFormValues): void {
@@ -103,6 +110,14 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     this.notify(DevDungeonModalEvents.SpawnMonster, monster);
 
     this.view.resetMonsterSpawnSelect();
+    this.closeModal();
+  }
+
+  private onHealPlayerClickInView(): void {
+    const playerController = PlayerController.getInstance();
+
+    playerController.healPlayer();
+
     this.closeModal();
   }
 }
