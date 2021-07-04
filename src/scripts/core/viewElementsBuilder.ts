@@ -38,12 +38,9 @@ export class ViewElementsBuilder<
 
     if (this.#variables) {
       for (const [key, value] of Object.entries(this.#variables)) {
-        const regex = new RegExp(`{{${key}}}`);
+        const regex = new RegExp(`{{${key}}}`, 'g');
 
-        preparedTemplateString = preparedTemplateString.replaceAll(
-          regex,
-          value,
-        );
+        preparedTemplateString = preparedTemplateString.replace(regex, value);
       }
     }
 
@@ -53,10 +50,26 @@ export class ViewElementsBuilder<
     return {
       content: temporaryDiv,
       elements: this.getElementsFromContainer(temporaryDiv),
-      insert: (targetElement: HTMLElement): void => {
-        targetElement.appendChild(this.#content);
+      insert: (
+        targetElement: HTMLElement | DocumentFragment,
+        referenceNode?: HTMLElement,
+      ): void => {
+        this.insertContent(targetElement, referenceNode);
       },
     };
+  }
+
+  private insertContent(
+    targetElement: Element | DocumentFragment,
+    referenceNode?: HTMLElement,
+  ): void {
+    Array.from(this.#content.children).forEach((element) => {
+      if (referenceNode) {
+        targetElement.insertBefore(element, referenceNode);
+      } else {
+        targetElement.appendChild(element);
+      }
+    });
   }
 
   private getElementsFromContainer(container: HTMLElement): TemplateElements {

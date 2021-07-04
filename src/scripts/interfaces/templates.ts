@@ -6,5 +6,8 @@ export type PreparedViewTemplate<Elements extends Record<string, HTMLElement>> =
   {
     content: HTMLDivElement;
     elements: Elements;
-    insert: (targetElement: HTMLElement) => void;
+    insert: (
+      targetElement: HTMLElement | DocumentFragment,
+      referenceNode?: HTMLElement,
+    ) => void;
   };

@@ -1,0 +1,86 @@
+.select {
+  &-wrapper {
+    position: relative;
+    width: 220px;
+    height: 24px;
+    background: @formInputBackgroundColor;
+    cursor: pointer;
+    color: @formInputsColor;
+    font-size: 12px;
+
+    &.expanded {
+      border-bottom: none;
+    }
+  }
+  &-box {
+    width: calc(100% - 20px);
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 3px;
+    font-size: @formInputsFontSize;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: calc(50% - 3.5px);
+      right: 4px;
+      height: 0;
+      width: 0;
+      border-top: 7px solid @formInputsBorderColor;
+      border-right: 7px solid transparent;
+      border-left: 7px solid transparent;
+    }
+  }
+
+  &-list {
+    position: absolute;
+    left: 0;
+    top: 23px;
+    width: 100%;
+    max-height: 0;
+    border-top: none;
+    background: @formInputBackgroundColor;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+
+    &.expanded {
+      max-height: 192px;
+    }
+
+    li {
+      position: relative;
+      list-style-type: none;
+      height: 20px;
+      line-height: 20px;
+      padding: 0 18px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: calc(50% - 3px);
+        left: 4px;
+        width: 6px;
+        height: 6px;
+        border: 1px solid @formInputsBorderColor;
+      }
+
+      &.selected {
+        &::after {
+          content: '';
+          position: absolute;
+          top: calc(50% - 2px);
+          left: 6.5px;
+          width: 2px;
+          height: 4px;
+          border-bottom: 1px solid @formInputsBorderColor;
+          border-right: 1px solid @formInputsBorderColor;
+          transform: rotate(45deg);
+        }
+      }
+    }
+  }
+}

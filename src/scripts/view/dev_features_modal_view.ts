@@ -1,6 +1,7 @@
 import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents';
 import { ModalView } from './modal_view';
 import { Monsters } from '../constants/monsters';
+import { buildFormElements } from '../core/form_elements/form_elements';
 
 export type DevFeaturesModalViewElements = {
   dungeonWidthInput: HTMLInputElement;
@@ -28,6 +29,8 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
     super(...args);
 
     this.buildLists();
+
+    buildFormElements(this.template.elements.devForm);
   }
 
   public buildLists(): void {
