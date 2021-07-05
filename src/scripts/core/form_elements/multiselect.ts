@@ -42,7 +42,7 @@ export class MultiSelect extends Observer {
   private prepareTemplate(): void {
     const { parentElement } = this.#selectElement;
     const { options } = this.#selectElement;
-    const description = this.prepareBoxDescription(Array.from(options));
+    const description = this.prepareBoxDescription();
     const optionsFragment = this.buildOptions(options);
 
     this.#template =
@@ -57,11 +57,15 @@ export class MultiSelect extends Observer {
     this.attachEvents();
   }
 
-  private prepareBoxDescription(options: HTMLOptionElement[]): string {
-    return options
-      .filter((option) => option.selected)
-      .map((option) => option.text)
-      .join(', ');
+  private prepareBoxDescription(): string {
+    const { selectedOptions } = this.#selectElement;
+    const placeholder = this.#selectElement?.dataset.placeholder;
+
+    return (
+      Array.from(selectedOptions)
+        .map((option) => option.text)
+        .join(', ') || placeholder
+    );
   }
 
   private buildOptions(options: HTMLOptionsCollection): DocumentFragment {
@@ -88,6 +92,7 @@ export class MultiSelect extends Observer {
     this.#selectedOptions.on(this, 'delete', this.onSelectedItemRemoved);
 
     this.#selectElement.addEventListener('click', this.onNativeSelectClick);
+    this.#selectElement.addEventListener('change', this.onNativeSelectChange);
     selectWrapper.addEventListener('click', this.onSelectWrapperClick);
     selectList.addEventListener('click', this.onSelectListClick);
     selectWrapper.addEventListener('blur', this.onWrapperBlur);
@@ -115,10 +120,10 @@ export class MultiSelect extends Observer {
   }
 
   private hideList(): void {
-    // this.#template.elements.selectWrapper.classList.remove('expanded');
-    // this.#template.elements.selectList.classList.remove('expanded');
-    //
-    // this.#itemsListExpanded = false;
+    this.#template.elements.selectWrapper.classList.remove('expanded');
+    this.#template.elements.selectList.classList.remove('expanded');
+
+    this.#itemsListExpanded = false;
   }
 
   private toggleListVisibility(): void {
@@ -134,6 +139,8 @@ export class MultiSelect extends Observer {
 
     if (target instanceof HTMLLIElement) {
       const { value } = target.dataset;
+
+      e.stopPropagation();
 
       if (this.#selectedOptions.has(value)) {
         this.#selectedOptions.delete(value);
@@ -195,7 +202,30 @@ export class MultiSelect extends Observer {
     }
   }
 
+  private drawDescription(): void {
+    const { selectBox } = this.#template.elements;
+
+    if (selectBox) {
+      selectBox.innerText = this.prepareBoxDescription();
+    }
+  }
+
   private onWrapperBlur = (): void => {
     this.hideList();
   };
+
+  private onNativeSelectChange = (): void => {
+    this.drawDescription();
+    this.adjustNativeSelectBoxStyles();
+  };
+
+  private adjustNativeSelectBoxStyles(): void {
+    const { selectedOptions } = this.#selectElement;
+
+    if (selectedOptions.length) {
+      this.#selectElement.classList.remove('empty');
+    } else {
+      this.#selectElement.classList.add('empty');
+    }
+  }
 }

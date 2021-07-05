@@ -25,7 +25,7 @@ export const devFeatureModalTemplate = {
           </div>
           <div class="space-down">
             <label for="dungeonRoomTypes">Dungeon special rooms types</label>
-            <select id="dungeonRoomTypes" name="dungeonRoomTypes" data-element="dungeonRoomTypesSelect" multiple>
+            <select id="dungeonRoomTypes" name="dungeonRoomTypes" data-placeholder="None" data-element="dungeonRoomTypesSelect" multiple>
               <option value="${DungeonVaults.RoomWithBed}">Room with bed</option>
             </select>
           </div>
