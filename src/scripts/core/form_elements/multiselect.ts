@@ -54,6 +54,8 @@ export class MultiSelect extends Observer {
     this.#template.elements.selectList.appendChild(optionsFragment);
     this.#template.insert(parentElement, this.#selectElement);
 
+    this.adjustNativeSelectBoxStyles();
+
     this.attachEvents();
   }
 
@@ -221,11 +223,12 @@ export class MultiSelect extends Observer {
 
   private adjustNativeSelectBoxStyles(): void {
     const { selectedOptions } = this.#selectElement;
+    const { selectBox } = this.#template.elements;
 
     if (selectedOptions.length) {
-      this.#selectElement.classList.remove('empty');
+      selectBox.classList.remove('empty');
     } else {
-      this.#selectElement.classList.add('empty');
+      selectBox.classList.add('empty');
     }
   }
 }
