@@ -25,9 +25,7 @@ export type DevFormValues = {
 export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements> {
   protected onWindowKeydownCallback = (e: KeyboardEvent): void => {};
 
-  public constructor(...args: any[]) {
-    super(...args);
-
+  protected initialize(): void {
     this.buildLists();
 
     buildFormElements(this.template.elements.devForm);

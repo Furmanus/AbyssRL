@@ -15,6 +15,10 @@ export abstract class ModalView<
   protected modalContent: HTMLDivElement;
   protected modalOverlay: HTMLDivElement;
   protected template?: PreparedViewTemplate<TemplateElements>;
+  private rawTemplate: {
+    template: TemplateObject;
+    variables: Record<string, string>;
+  };
 
   public constructor(
     template?: TemplateObject,
@@ -30,24 +34,34 @@ export abstract class ModalView<
     this.modalOverlay = document.getElementById(
       'modal-wrapper',
     ) as HTMLDivElement;
-
+    /* Inventory modal view is constructed in different way without passing templateObject to constructor */
     if (template) {
-      this.template = ViewElementsBuilder.getInstance<TemplateElements>(
+      this.rawTemplate = {
         template,
         variables,
-      ).build();
+      };
     }
   }
 
   public open(): void {
-    if (this.template) {
+    if (this.rawTemplate) {
+      const { template, variables } = this.rawTemplate;
+
+      this.template = ViewElementsBuilder.getInstance<TemplateElements>(
+        template,
+        variables,
+      ).build();
       this.template.insert(this.modalContent);
     }
 
     this.modalWrapper.classList.remove('hidden');
     this.attachEvents();
     this.notify(ModalActions.OpenModal);
+
+    this.initialize();
   }
+
+  protected initialize(): void {}
 
   public close(): void {
     this.modalWrapper.classList.add('hidden');
