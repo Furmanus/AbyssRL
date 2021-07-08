@@ -40,11 +40,22 @@ export class SetWithObserver<E> extends Observer {
     return this;
   }
 
+  public setItems(values: E[]): this {
+    this.set = new Set(Array.isArray(values) ? values : [values]);
+    this.notify('change');
+
+    return this;
+  }
+
   public has(value: E): boolean {
     return this.set.has(value);
   }
 
   public forEach(callback: (element: E) => void, thisArg?: IAnyObject): void {
     this.set.forEach(callback, thisArg);
+  }
+
+  public getArrayItems(): E[] {
+    return Array.from(this.set);
   }
 }

@@ -55,6 +55,7 @@ export class MultiSelect extends Observer {
     this.#template.insert(parentElement, this.#selectElement);
 
     this.adjustNativeSelectBoxStyles();
+    this.defineValueInNativeSelect();
 
     this.attachEvents();
   }
@@ -68,6 +69,19 @@ export class MultiSelect extends Observer {
         .map((option) => option.text)
         .join(', ') || placeholder
     );
+  }
+
+  private defineValueInNativeSelect(): void {
+    Object.defineProperty<HTMLSelectElement>(this.#selectElement, 'value', {
+      enumerable: true,
+      configurable: true,
+      get: (): string[] => {
+        return this.#selectedOptions.getArrayItems();
+      },
+      set: (values: string[]): void => {
+        this.#selectedOptions.setItems(values);
+      },
+    });
   }
 
   private buildOptions(options: HTMLOptionsCollection): DocumentFragment {
@@ -92,6 +106,7 @@ export class MultiSelect extends Observer {
 
     this.#selectedOptions.on(this, 'add', this.onSelectedItemAdded);
     this.#selectedOptions.on(this, 'delete', this.onSelectedItemRemoved);
+    this.#selectedOptions.on(this, 'change', this.onSelectedItemsChange);
 
     this.#selectElement.addEventListener('click', this.onNativeSelectClick);
     this.#selectElement.addEventListener('change', this.onNativeSelectChange);
@@ -166,6 +181,25 @@ export class MultiSelect extends Observer {
     this.markNativeOptionAsSelected(item);
   }
 
+  private onSelectedItemsChange = (): void => {
+    const { selectList } = this.#template.elements;
+    const { children } = selectList;
+
+    Array.from(children).forEach((listItem: HTMLLIElement) => {
+      if (this.#selectedOptions.has(listItem.dataset.value)) {
+        listItem.classList.add('selected');
+
+        this.markNativeOptionAsSelected(listItem.dataset.value, false);
+      } else {
+        listItem.classList.remove('selected');
+
+        this.markNativeOptionAsUnselected(listItem.dataset.value, false);
+      }
+    });
+
+    dispatchChangeEvent(this.#selectElement);
+  };
+
   private onSelectedItemRemoved(item: string): void {
     const { selectList } = this.#template.elements;
     const { children } = selectList;
@@ -180,7 +214,10 @@ export class MultiSelect extends Observer {
     this.markNativeOptionAsUnselected(item);
   }
 
-  private markNativeOptionAsSelected(value: string): void {
+  private markNativeOptionAsSelected(
+    value: string,
+    shouldDispatchEvent = true,
+  ): void {
     const nativeSelectedItem = Array.from(this.#selectElement.options).find(
       (option) => option.value === value,
     );
@@ -188,11 +225,16 @@ export class MultiSelect extends Observer {
     if (nativeSelectedItem) {
       nativeSelectedItem.setAttribute('selected', 'true');
 
-      dispatchChangeEvent(this.#selectElement);
+      if (shouldDispatchEvent) {
+        dispatchChangeEvent(this.#selectElement);
+      }
     }
   }
 
-  private markNativeOptionAsUnselected(value: string): void {
+  private markNativeOptionAsUnselected(
+    value: string,
+    shouldDispatchEvent = true,
+  ): void {
     const nativeSelectedItem = Array.from(this.#selectElement.options).find(
       (option) => option.value === value,
     );
@@ -200,7 +242,9 @@ export class MultiSelect extends Observer {
     if (nativeSelectedItem) {
       nativeSelectedItem.removeAttribute('selected');
 
-      dispatchChangeEvent(this.#selectElement);
+      if (shouldDispatchEvent) {
+        dispatchChangeEvent(this.#selectElement);
+      }
     }
   }
 

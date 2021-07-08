@@ -1,3 +1,7 @@
+import { getDataFromSessionStorage } from '../helper/storage_helper';
+import { DevFormValues } from '../view/dev_features_modal_view';
+import { SessionStorageKeys } from '../constants/storage';
+
 interface IConfig {
   LEVEL_WIDTH: number;
   LEVEL_HEIGHT: number;
@@ -59,5 +63,25 @@ function getScreenProperties(): IExtendedConfig {
 }
 
 Object.assign(config, getScreenProperties());
+
+const storageData = getDataFromSessionStorage<DevFormValues>(
+  SessionStorageKeys.DevFeatures,
+);
+
+if (storageData) {
+  const {
+    devDungeonLevelType,
+    devDungeonHeight,
+    devDungeonWidth,
+    noMonsters,
+    dungeonRoomTypes,
+  } = storageData;
+
+  devDungeonLevelType && (config.defaultLevelType = devDungeonLevelType);
+  devDungeonWidth && (config.LEVEL_WIDTH = parseInt(devDungeonWidth, 10));
+  devDungeonHeight && (config.LEVEL_HEIGHT = parseInt(devDungeonHeight, 10));
+  noMonsters && (config.debugOptions.noMonsters = noMonsters);
+  dungeonRoomTypes && (config.debugOptions.dungeonRooms = dungeonRoomTypes);
+}
 
 export { config };

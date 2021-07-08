@@ -2,6 +2,8 @@ import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents
 import { ModalView } from './modal_view';
 import { Monsters } from '../constants/monsters';
 import { buildFormElements } from '../core/form_elements/form_elements';
+import { getDataFromSessionStorage } from '../helper/storage_helper';
+import { SessionStorageKeys } from '../constants/storage';
 
 export type DevFeaturesModalViewElements = {
   dungeonWidthInput: HTMLInputElement;
@@ -29,6 +31,8 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
     this.buildLists();
 
     buildFormElements(this.template.elements.devForm);
+
+    this.setDataFromStorage();
   }
 
   public buildLists(): void {
@@ -123,4 +127,47 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
   private onHealButtonClick = (): void => {
     this.notify(DevDungeonModalEvents.HealPlayer);
   };
+
+  private setDataFromStorage(): void {
+    const data = getDataFromSessionStorage<DevFormValues>(
+      SessionStorageKeys.DevFeatures,
+    );
+
+    if (data) {
+      const {
+        devDungeonHeight,
+        devDungeonWidth,
+        devDungeonLevelType,
+        dungeonRoomTypes,
+        noMonsters,
+      } = data;
+      const {
+        dungeonWidthInput,
+        dungeonHeightInput,
+        levelTypeSelect,
+        dungeonRoomTypesSelect,
+        noMonstersCheckbox,
+      } = this.template.elements;
+
+      if (devDungeonWidth) {
+        dungeonWidthInput.value = devDungeonWidth;
+      }
+
+      if (devDungeonHeight) {
+        dungeonHeightInput.value = devDungeonHeight;
+      }
+
+      if (devDungeonLevelType) {
+        levelTypeSelect.value = devDungeonLevelType;
+      }
+
+      if (dungeonRoomTypes) {
+        dungeonRoomTypesSelect.value = dungeonRoomTypes as any; // TODO fix htmlselectelement typings
+      }
+
+      if (noMonsters) {
+        noMonstersCheckbox.checked = noMonsters;
+      }
+    }
+  }
 }

@@ -9,6 +9,8 @@ import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents
 import { config } from '../global/config';
 import { Monsters } from '../constants/monsters';
 import { PlayerController } from './entity/player_controller';
+import { storeDataInSessionStorage } from '../helper/storage_helper';
+import { SessionStorageKeys } from '../constants/storage';
 
 const constructorToken = Symbol('Dev features modal controller');
 let instance: DevFeaturesModalController;
@@ -92,6 +94,8 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
       dungeonRoomTypes,
       noMonsters,
     } = data;
+
+    storeDataInSessionStorage(SessionStorageKeys.DevFeatures, data);
 
     config.LEVEL_WIDTH = parseInt(devDungeonWidth, 10);
     config.LEVEL_HEIGHT = parseInt(devDungeonHeight, 10);
