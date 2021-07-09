@@ -4,11 +4,12 @@ import { Monsters } from '../constants/monsters';
 import { buildFormElements } from '../core/form_elements/form_elements';
 import { getDataFromSessionStorage } from '../helper/storage_helper';
 import { SessionStorageKeys } from '../constants/storage';
+import { HTMLMultiSelectElement } from '../core/form_elements/form_elements_interfaces';
 
 export type DevFeaturesModalViewElements = {
   dungeonWidthInput: HTMLInputElement;
   dungeonHeightInput: HTMLInputElement;
-  dungeonRoomTypesSelect: HTMLSelectElement;
+  dungeonRoomTypesSelect: HTMLMultiSelectElement;
   devForm: HTMLFormElement;
   levelTypeSelect: HTMLSelectElement;
   noMonstersCheckbox: HTMLInputElement;
@@ -162,7 +163,7 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
       }
 
       if (dungeonRoomTypes) {
-        dungeonRoomTypesSelect.value = dungeonRoomTypes as any; // TODO fix htmlselectelement typings
+        dungeonRoomTypesSelect.value = dungeonRoomTypes;
       }
 
       if (noMonsters) {
