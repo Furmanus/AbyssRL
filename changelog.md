@@ -1,3 +1,5 @@
+###0.0.5 (14.06.2021)
+* (Feature) Player can equip weapons and use them in combat
 ###0.0.4 (01.09.2019)
 * (Feature) Basic implementation of items (four weapons). Player is able to pick up, drop items and display inventory 
 * (Fix)     Webpack application build fixes and improvements

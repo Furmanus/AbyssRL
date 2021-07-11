@@ -1,49 +1,47 @@
-import {ItemTypes} from '../constants/item';
+import { ItemTypes } from '../constants/item';
 
-/* tslint:disable-next-line:no-any*/
+/* tslint:disable-next-line:no-any */
 export type IAnyFunction = (...args: any[]) => any;
 export interface IAnyObject {
-    /* tslint:disable-next-line:no-any*/
-    [propName: string]: any;
+  /* tslint:disable-next-line:no-any */
+  [propName: string]: any;
 }
 export interface IStringDictionary {
-    [propName: string]: string;
+  [propName: string]: string;
 }
 export interface IBooleanDictionary {
-    [propName: string]: boolean;
+  [propName: string]: boolean;
 }
 export interface ICoordinates {
-    x: number;
-    y: number;
+  x: number;
+  y: number;
 }
 export interface IDirection {
-    x: directionType;
-    y: directionType;
+  x: DirectionType;
+  y: DirectionType;
 }
-export type directionType = -1 | 0 | 1;
+export type DirectionType = -1 | 0 | 1;
 export interface IDirections {
-    [prop: number]: IDirection;
+  [prop: number]: IDirection;
 }
 export interface IMessageData {
-    message: string;
+  message: string;
 }
 export interface IPlayerConfirmationObject {
-    message: string;
-    confirm: IAnyFunction;
-    decline: IAnyFunction;
+  message: string;
+  confirm: IAnyFunction;
+  decline: IAnyFunction;
 }
 export interface IActionAttempt {
-    result: boolean;
-    message?: string;
+  result: boolean;
+  message?: string;
 }
 export interface ITemplate {
-    [templateName: string]: string;
+  [templateName: string]: string;
 }
-export type TemplateType = {
-    [P in ItemTypes]: string;
-};
+export type TemplateType = Record<ItemTypes, string>;
 export interface ITemplateVariables {
-    // tslint:disable-next-line:no-any
-    [propName: string]: string | number;
+  // tslint:disable-next-line:no-any
+  [propName: string]: string | number;
 }
 export type ValueOf<T> = T[keyof T];

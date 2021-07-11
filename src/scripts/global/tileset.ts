@@ -1,14 +1,14 @@
 let tileset: HTMLImageElement;
 
 interface ITilesObject {
-    tileset: HTMLImageElement;
+  tileset: HTMLImageElement;
 }
 
 export const tilesetObject: ITilesObject = {
-    get tileset(): HTMLImageElement {
-        return tileset;
-    },
-    set tileset(tilesImage: HTMLImageElement) {
-        tileset = tilesImage;
-    },
+  get tileset(): HTMLImageElement {
+    return tileset;
+  },
+  set tileset(tilesImage: HTMLImageElement) {
+    tileset = tilesImage;
+  },
 };

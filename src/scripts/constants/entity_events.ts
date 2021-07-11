@@ -1,21 +1,22 @@
 export enum EntityEvents {
-    ENTITY_MOVE = 'entity:move',
-    ENTITY_DEATH = 'entity:death',
-    ENTITY_HIT = 'entity:hit',
-    ENTITY_PICKED_ITEM = 'ENTITY_PICKED_ITEM',
-    ENTITY_DROPPED_ITEM = 'ENTITY_DROPPED_ITEM',
+  EntityMove = 'entity:move',
+  EntityDeath = 'entity:death',
+  EntityHit = 'entity:hit',
+  EntityPickedItem = 'entity:pick:item',
+  EntityDroppedItem = 'entity:drop:item',
+  EntityEquippedWeaponChange = 'entity:equippedWeapon:change',
 }
 
 export enum EntityInventoryActions {
-    PICK_UP = 'PICK_UP',
-    EQUIP = 'EQUIP',
-    DROP = 'DROP',
-    USE = 'USE',
-    LOOK = 'LOOK',
+  PickUp = 'PickUp',
+  Equip = 'Equip',
+  Drop = 'Drop',
+  Use = 'Use',
+  Look = 'Look',
 }
 export enum InventoryModalEvents {
-    CHANGE_INVENTORY_ACTION = 'CHANGE_INVENTORY_ACTION',
-    INVENTORY_ITEM_SELECTED = 'INVENTORY_ITEM_SELECTED',
-    INVENTORY_ACTION_CONFIRMED = 'INVENTORY_ACTION_CONFIRMED',
-    INVENTORY_MODAL_CLOSED = 'INVENTORY_MODAL_CLOSED',
+  ChangeInventoryAction = 'ChangeInventoryAction',
+  InventoryItemSelected = 'InventoryItemSelected',
+  InventoryActionConfirmed = 'InventoryActionConfirmed',
+  InventoryModalClosed = 'InventoryModalClosed',
 }

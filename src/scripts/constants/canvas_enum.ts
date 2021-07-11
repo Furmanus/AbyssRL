@@ -1,4 +1,3 @@
-export enum CanvasFonts {
-    RUNIC = 'runic',
-    AVATAR = 'avatar',
+export const enum CanvasFonts {
+  Avatar = 'avatar',
 }

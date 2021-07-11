@@ -1,0 +1,105 @@
+.select {
+  &-wrapper {
+    position: relative;
+    width: 220px;
+    height: 24px;
+    background: @formInputBackgroundColor;
+    cursor: pointer;
+    color: @formInputsColor;
+    font-size: 12px;
+
+    &.expanded {
+      border-bottom: none;
+      z-index: @activeSelectWrapper;
+    }
+  }
+  &-box {
+    width: calc(100% - 20px);
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 3px;
+    font-size: @formInputsFontSize;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: calc(50% - 3.5px);
+      right: 4px;
+      height: 0;
+      width: 0;
+      border-top: 7px solid @formInputsBorderColor;
+      border-right: 7px solid transparent;
+      border-left: 7px solid transparent;
+    }
+
+    &.empty {
+      color: @appearancePlaceholderColor;
+    }
+  }
+
+  &-list {
+    .select_list();
+
+    li {
+      .select_list_item();
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: calc(50% - 3px);
+        left: 4px;
+        width: 6px;
+        height: 6px;
+        border: 1px solid @formInputsBorderColor;
+      }
+
+      &.selected {
+        &::after {
+          content: '';
+          position: absolute;
+          top: calc(50% - 2px);
+          left: 6.5px;
+          width: 2px;
+          height: 4px;
+          border-bottom: 1px solid @formInputsBorderColor;
+          border-right: 1px solid @formInputsBorderColor;
+          transform: rotate(45deg);
+        }
+      }
+    }
+  }
+
+  &-list-single {
+    .select_list();
+
+    li {
+      .select_list_item();
+
+      padding-left: 3px;
+    }
+  }
+}
+
+input[type=number] {
+  width: 220px;
+  height: 24px;
+  line-height: 24px;
+  padding: 3px;
+  background: @formInputBackgroundColor;
+  border: none;
+  box-sizing: border-box;
+  font-family: Monospace, serif;
+  font-size: 14px;
+}
+
+button {
+  width: 220px;
+  height: 24px;
+  border: none;
+  background: #e3e3e3;
+  font-family: Monospace, serif;
+  font-size: 14px;
+  cursor: pointer;
+}

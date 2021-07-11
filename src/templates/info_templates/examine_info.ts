@@ -1,9 +1,16 @@
-import {ITemplate, ITemplateVariables, TemplateType} from '../../scripts/interfaces/common';
-import {ItemTypes} from '../../scripts/constants/item';
+import {
+  ITemplate,
+  ITemplateVariables,
+  TemplateType,
+} from '../../scripts/interfaces/common';
+import { ItemTypes } from '../../scripts/constants/item';
 
-export function getEntityInfoTemplate(variables: ITemplateVariables, itemType?: ItemTypes): ITemplate {
-    const baseTemplate: ITemplate = {
-        wrapper: `
+export function getEntityInfoTemplate(
+  variables: ITemplateVariables,
+  itemType?: ItemTypes,
+): ITemplate {
+  const baseTemplate: ITemplate = {
+    wrapper: `
             <div class="examine-wrapper">
                 <canvas width="32" height="32" id="image"></canvas>
                 <div class="examine-description">
@@ -17,7 +24,7 @@ export function getEntityInfoTemplate(variables: ITemplateVariables, itemType?: 
                 </div>
             </div>
         `,
-        cell: `
+    cell: `
             <div class="examine-wrapper">
                 <canvas width="32" height="32" id="image"></canvas>
                 <div class="examine-description">
@@ -25,9 +32,9 @@ export function getEntityInfoTemplate(variables: ITemplateVariables, itemType?: 
                 </div>
             </div>
         `,
-    };
-    const itemTemplate: TemplateType = {
-        [ItemTypes.WEAPON]: `
+  };
+  const itemTemplate: TemplateType = {
+    [ItemTypes.Weapon]: `
             <div class="examine-wrapper">
                 <canvas width="32" height="32" id="image"></canvas>
                 <div class="examine-description">
@@ -41,10 +48,10 @@ export function getEntityInfoTemplate(variables: ITemplateVariables, itemType?: 
                 </div>
             </div>
         `,
-    };
+  };
 
-    return {
-        ...baseTemplate,
-        item: itemTemplate[itemType] || '',
-    };
+  return {
+    ...baseTemplate,
+    item: itemTemplate[itemType] || '',
+  };
 }

@@ -1,0 +1,31 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "rules": {
+        "comma-dangle": "off",
+        "no-undef": "off",
+        "space-before-function-paren": "off",
+        "prefer-destructuring": "warn",
+        "lines-between-class-members": "warn",
+        "semi": "off",
+        "multiline-ternary": "off",
+        "no-useless-constructor": "off",
+        "no-dupe-class-members": "off",
+        "no-use-before-define": "off",
+        "no-prototype-builtins": "off",
+        "no-new": "off",
+        "no-unused-vars": "off"
+    },
+    "ignorePatterns": ["*.d.ts"]
+}
+

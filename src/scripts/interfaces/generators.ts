@@ -1,31 +1,32 @@
-import {IDirection} from './common';
+import { IDirection } from './common';
 
 export interface ISmoothLevelConfig {
-    cellsToSmooth: string[];
-    cellsToChange: string[];
-    cellsAfterChange: string[];
+  cellsToSmooth: string[];
+  cellsToChange: string[];
+  cellsAfterChange: string[];
 }
 export interface IChangeEveryCellInLevelConfig {
-    cellsToChange: string[];
-    cellsAfterChange: string[];
-    probability: number;
+  cellsToChange: string[];
+  cellsAfterChange: string[];
+  probability: number;
 }
 export interface ISearchCellSurroundingResult {
-    directions: IDirection[];
+  directions: IDirection[];
 }
 export interface IFillLevelWithVoronoiPointConfig {
-    targetCellType: string;
-    cellAllowedToChange: string;
+  targetCellType: string;
+  cellAllowedToChange: string;
 }
 export interface IExaminedCellsClosestVoronoiPointType {
-    distance: number;
-    type: string;
+  distance: number;
+  type: string;
 }
-export interface ICavernGenerateLevelConfig extends IDungeonStrategyGenerateLevelConfig {
-    solidCellProbability?: number;
-    born?: number[];
-    survive?: number[];
+export interface ICavernGenerateLevelConfig
+  extends IDungeonStrategyGenerateLevelConfig {
+  solidCellProbability?: number;
+  born?: number[];
+  survive?: number[];
 }
 export interface IDungeonStrategyGenerateLevelConfig {
-    generateStairsDown?: boolean;
+  generateStairsDown?: boolean;
 }

@@ -1,4 +1,6 @@
+import { DungeonBranches } from '../constants/dungeon_types';
+
 export interface ILevelInfo {
-    branch: string;
-    levelNumber: number;
+  branch: DungeonBranches;
+  levelNumber: number;
 }
