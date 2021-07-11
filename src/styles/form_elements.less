@@ -10,6 +10,7 @@
 
     &.expanded {
       border-bottom: none;
+      z-index: @activeSelectWrapper;
     }
   }
   &-box {
@@ -39,28 +40,10 @@
   }
 
   &-list {
-    position: absolute;
-    left: 0;
-    top: 23px;
-    width: 100%;
-    max-height: 0;
-    border-top: none;
-    background: @formInputBackgroundColor;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    transition: all 0.3s ease-in-out;
-
-    &.expanded {
-      max-height: 192px;
-    }
+    .select_list();
 
     li {
-      position: relative;
-      list-style-type: none;
-      height: 20px;
-      line-height: 20px;
-      padding: 0 18px;
+      .select_list_item();
 
       &::before {
         content: '';
@@ -85,6 +68,16 @@
           transform: rotate(45deg);
         }
       }
+    }
+  }
+
+  &-list-single {
+    .select_list();
+
+    li {
+      .select_list_item();
+
+      padding-left: 3px;
     }
   }
 }

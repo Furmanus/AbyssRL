@@ -1,13 +1,13 @@
-import { ITemplate } from '../../interfaces/common';
-import { PreparedViewTemplate } from '../../interfaces/templates';
-import { ViewElementsBuilder } from '../viewElementsBuilder';
+import { ITemplate } from '../../../interfaces/common';
+import { PreparedViewTemplate } from '../../../interfaces/templates';
+import { ViewElementsBuilder } from '../../viewElementsBuilder';
 import {
   multiSelectOptionTemplate,
   multiSelectTemplate,
 } from './multiselect_template';
-import { SetWithObserver } from '../set_with_observer';
-import { Observer } from '../observer';
-import { dispatchChangeEvent } from './utils/utils';
+import { SetWithObserver } from '../../set_with_observer';
+import { Observer } from '../../observer';
+import { dispatchChangeEvent } from '../utils/utils';
 
 type MultiSelectTemplateElements = {
   selectBox: HTMLDivElement;
