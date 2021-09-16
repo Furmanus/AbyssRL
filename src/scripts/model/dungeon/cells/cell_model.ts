@@ -12,6 +12,7 @@ import { EntityController } from '../../../controller/entity/entity_controller';
 import { PlayerController } from '../../../controller/entity/player_controller';
 import { ICellModel } from '../../../interfaces/cell';
 import { ItemsCollection } from '../../../collections/items_collection';
+import { ItemModel } from '../../items/item_model';
 
 /**
  * Class representing single map square(field).
@@ -54,6 +55,18 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Type of cell.
    */
   public type: string = '';
+  /**
+   * Inventory of cell container, difference between container inventory and inventory is that items in inventory are
+   * seen as laying on ground and containerInventory must be activated to display modal with inventory.
+   */
+  public containerInventory: ItemsCollection = null;
+  /**
+   * Whether cell is container, so it can be activated to display its inventory in separate modal
+   */
+  public get isContainer(): boolean {
+    return Array.isArray(this.containerInventory);
+  }
+
   /**
    * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
    *

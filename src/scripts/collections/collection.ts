@@ -3,6 +3,7 @@ import { BaseModel } from '../core/base_model';
 import { CollectionEvents } from '../constants/collection_events';
 import { IAnyFunction } from '../interfaces/common';
 import { Controller } from '../controller/controller';
+import { ItemModel } from '../model/items/item_model';
 
 /**
  * Collection of generic type models (they have to extend BaseModel).
@@ -37,8 +38,15 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
    *
    * @param item  New collection element to add
    */
-  public add(item: M): this {
-    this.collection.push(item);
+  public add(item: M): this;
+  public add(item: M[]): this;
+  public add(item: M | M[]): this {
+    if (Array.isArray(item)) {
+      this.collection = [...this.collection, ...item];
+    } else {
+      this.collection.push(item);
+    }
+
     this.notify(CollectionEvents.Add, item);
 
     return this;
@@ -67,12 +75,17 @@ export class Collection<M extends BaseModel = BaseModel> extends Constructor {
    *
    * @param item  Element to remove from collection
    */
-  public remove(item: M): this {
+  public remove(item: M): M {
     if (this.has(item)) {
       this.collection.splice(this.collection.indexOf(item), 1);
       this.notify(CollectionEvents.Remove, item);
+
+      return item;
     }
-    return this;
+  }
+
+  public removeByIndexes(...indexes: number[]): M[] {
+    return indexes.map((num) => this.get(num)).map((item) => this.remove(item));
   }
 
   /**

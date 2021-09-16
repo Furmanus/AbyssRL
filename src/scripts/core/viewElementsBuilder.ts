@@ -56,6 +56,9 @@ export class ViewElementsBuilder<
       ): void => {
         this.insertContent(targetElement, referenceNode);
       },
+      getContentWithoutWrapper(): HTMLCollection {
+        return this.content.children;
+      },
     };
   }
 

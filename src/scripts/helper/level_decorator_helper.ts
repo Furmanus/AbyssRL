@@ -1,14 +1,21 @@
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { RoomModel } from '../model/dungeon/room_model';
 import { LevelModel } from '../model/dungeon/level_model';
+import { cellTypes } from '../constants/cell_types';
 
 export type twoCellsArray = [Cell, Cell];
 
-export function isCellAdjacentToDoorsTest(cell: Cell): boolean {
+function isCellAdjacentToDoorsTest(cell: Cell): boolean {
   return cell.type.includes('doors');
 }
-export function isCellAdjacentToWallTest(cell: Cell): boolean {
+function isCellAdjacentToWallTest(cell: Cell): boolean {
   return cell.type.includes('wall');
+}
+function isCellAdjacentToStairsTest(cell: Cell): boolean {
+  return (
+    cell.type.includes(cellTypes.STAIRS_DOWN) ||
+    cell.type.includes(cellTypes.STAIRS_UP)
+  );
 }
 export function getRandomInteriorFloorCellAdjacentToWall(
   room: RoomModel,
@@ -78,4 +85,29 @@ export function getTwoRandomCellsAdjacentToWallsNotAdjacentToDoors(
 
     return [firstCell, secondCell];
   }
+}
+
+export function getRandomUnoccupiedCellAwayFromStairsAndDoors(
+  room: RoomModel,
+): Cell {
+  const levelModel = room.getLevelModel();
+  const targetCell = room.getRandomCallbackCell((cellCandidate) => {
+    const isFloor = cellCandidate.type.match(/floor/);
+    const isAdjacentToDoors = levelModel.isCellAdjacentToCell(
+      cellCandidate,
+      isCellAdjacentToDoorsTest,
+    );
+    const isAdjacentToStairs = levelModel.isCellAdjacentToCell(
+      cellCandidate,
+      isCellAdjacentToStairsTest,
+    );
+
+    if (!isFloor || isAdjacentToDoors || isAdjacentToStairs) {
+      return false;
+    }
+
+    return true;
+  });
+
+  return targetCell;
 }

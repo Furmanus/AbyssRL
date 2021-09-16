@@ -10,4 +10,5 @@ export type PreparedViewTemplate<Elements extends Record<string, HTMLElement>> =
       targetElement: HTMLElement | DocumentFragment,
       referenceNode?: HTMLElement,
     ) => void;
+    getContentWithoutWrapper: () => HTMLCollection;
   };

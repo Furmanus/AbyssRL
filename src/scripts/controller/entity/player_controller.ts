@@ -20,13 +20,21 @@ import { ItemsCollection } from '../../collections/items_collection';
 import { MessagesController } from '../messages_controller';
 import { ItemModel } from '../../model/items/item_model';
 import { InventoryController } from '../inventory_controller';
-import { globalInventoryController } from '../../global/modal';
+import {
+  globalContainerInventoryController,
+  globalInventoryController,
+} from '../../global/modal';
 import {
   EntityInventoryActions,
   InventoryModalEvents,
 } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
 import { WeaponModel } from '../../model/items/weapons/weapon_model';
+import {
+  ContainerInventoryModalController,
+  ContainerInventoryTransferData,
+} from '../container_inventory_modal_controller';
+import { ContainerInventoryModalEvents } from '../../constants/events/containerInventoryModalEvents';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -46,6 +54,8 @@ export class PlayerController extends EntityController<PlayerModel> {
 
   private globalInventoryController: InventoryController =
     globalInventoryController;
+
+  private containerInventoryController = globalContainerInventoryController;
 
   constructor(token: symbol, constructorConfig: IAnyObject) {
     super(constructorConfig);
@@ -88,6 +98,12 @@ export class PlayerController extends EntityController<PlayerModel> {
       InventoryModalEvents.InventoryActionConfirmed,
       this.onInventoryActionConfirmed,
     );
+
+    this.containerInventoryController.on(
+      this,
+      ContainerInventoryModalEvents.ItemsTransferred,
+      this.onContainerInventoryModalItemsTransferred,
+    );
   }
 
   @boundMethod
@@ -108,6 +124,41 @@ export class PlayerController extends EntityController<PlayerModel> {
     }
 
     this.globalInventoryController.closeModal();
+  }
+
+  private onContainerInventoryModalItemsTransferred(
+    data: ContainerInventoryTransferData,
+  ): void {
+    const { mode, items } = data;
+
+    switch (mode) {
+      case 'put':
+        if (items.length === 1) {
+          this.globalMessageController.showMessageInView(
+            `You put ${items[0].fullDescription} into container.`,
+          );
+        } else if (items.length > 1) {
+          this.globalMessageController.showMessageInView(
+            `You put ${items.length} items into container.`,
+          );
+        }
+        break;
+      case 'withdraw':
+        if (items.length === 1) {
+          this.globalMessageController.showMessageInView(
+            `You take ${items[0].fullDescription} from container.`,
+          );
+        } else if (items.length > 1) {
+          this.globalMessageController.showMessageInView(
+            `You take ${items.length} items from container.`,
+          );
+        }
+        break;
+    }
+
+    if (items.length > 0) {
+      this.endTurn();
+    }
   }
 
   public dropItems(items: ItemModel[]): void {
@@ -345,5 +396,13 @@ export class PlayerController extends EntityController<PlayerModel> {
     this.model.setCurrentHpToMax();
 
     this.endTurn();
+  }
+
+  public openContainer(containerInventory: ItemsCollection): void {
+    this.containerInventoryController.openModal();
+    this.containerInventoryController.init(
+      containerInventory,
+      this.getPlayerInventory(),
+    );
   }
 }

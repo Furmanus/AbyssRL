@@ -37,7 +37,10 @@ import {
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { globalMessagesController } from '../global/messages';
 import { ItemsCollection } from '../collections/items_collection';
-import { globalInventoryController } from '../global/modal';
+import {
+  globalContainerInventoryController,
+  globalInventoryController,
+} from '../global/modal';
 import {
   EntityInventoryActions,
   InventoryModalEvents,
@@ -148,6 +151,16 @@ export class MainController extends Controller {
       this,
       InventoryModalEvents.InventoryModalClosed,
       this.onInventoryModalClose,
+    );
+    globalContainerInventoryController.on(
+      this,
+      ModalActions.OpenModal,
+      this.onContainerInventoryModalOpen,
+    );
+    globalContainerInventoryController.on(
+      this,
+      ModalActions.CloseModal,
+      this.onContainerInventoryModalClose,
     );
     this.devFeaturesModalController.on(
       this,
@@ -475,6 +488,14 @@ export class MainController extends Controller {
     }
   };
 
+  private containerInventoryEventListenerCallback = (
+    e: KeyboardEvent,
+  ): void => {
+    if (e.which === 27) {
+      globalContainerInventoryController.closeModal();
+    }
+  };
+
   /**
    * Callback method triggered after inventory modal is being closed. Attaches back main event listeners.
    */
@@ -497,6 +518,20 @@ export class MainController extends Controller {
   private onDevFeaturesModalOpen = (): void => {
     this.attachTemporaryEventListener(
       this.devFeaturesModeEventListenerCallback,
+    );
+  };
+
+  private onContainerInventoryModalOpen = (): void => {
+    this.attachTemporaryEventListener(
+      this.containerInventoryEventListenerCallback,
+    );
+  };
+
+  private onContainerInventoryModalClose = (): void => {
+    this.attachEvents();
+    window.removeEventListener(
+      'keydown',
+      this.containerInventoryEventListenerCallback,
     );
   };
 
