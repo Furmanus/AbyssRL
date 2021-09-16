@@ -5,7 +5,7 @@
 - [R.0.1.D2] Add random special levels (orc castle for example), at least three different
 - [R.0.1.D3] Add special vaults for starting level
 - [R.0.1.D4] ~~Add containers dungeon cell type, where various items can be stored and withdrawn from~~
-- [R.0.1.D5] Add vaults for level type different than dungeon
+- [R.0.1.D5] Add vaults for level type different from dungeon
 ###Player
 - [R.0.1.P1] ~~Create new modal to display worn/equipped items~~
 - [R.0.1.P2] ~~Equipable weapons and armours~~
