@@ -5,7 +5,7 @@ import { MonsterAttackTypes } from '../../../constants/monsters';
 import { IAnyObject } from '../../../interfaces/common';
 import { WearableModel } from '../wearable_model';
 import { EntityModel } from '../../entity/entity_model';
-import { ItemTypes } from '../../../constants/item';
+import { ItemTypes } from '../../../constants/items/item';
 
 export class NaturalWeaponModel
   extends WearableModel

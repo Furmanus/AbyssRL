@@ -1,6 +1,6 @@
 import { BaseModel } from '../../core/base_model';
 import { EntityModel } from '../entity/entity_model';
-import { ItemTypes } from '../../constants/item';
+import { ItemTypes } from '../../constants/items/item';
 
 export abstract class ItemModel extends BaseModel {
   /**

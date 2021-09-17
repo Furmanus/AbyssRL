@@ -1,4 +1,4 @@
-import { ItemTypes } from '../constants/item';
+import { ItemTypes } from '../constants/items/item';
 
 /* tslint:disable-next-line:no-any */
 export type IAnyFunction = (...args: any[]) => any;

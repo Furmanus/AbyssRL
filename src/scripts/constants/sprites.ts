@@ -79,11 +79,12 @@ export const miscTiles = {
   explosion: 'explosion',
 };
 export enum dungeonFeaturesEnum {
-    BED_HEAD = 'left_bed',
-    BED_FOOT = 'right_bed',
-    BARREL = 'barrel',
-    CHEST_OF_DRAWERS = 'chest_drawers',
+  BED_HEAD = 'left_bed',
+  BED_FOOT = 'right_bed',
+  BARREL = 'barrel',
+  CHEST_OF_DRAWERS = 'chest_drawers',
 }
 export enum ItemSprites {
-    WEAPON = 'weapon',
+  WEAPON = 'weapon',
+  Armour = 'armour',
 }
