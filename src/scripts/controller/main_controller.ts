@@ -18,7 +18,7 @@ import {
   PlayerActions,
   SHOW_MESSAGE_IN_VIEW,
   START_PLAYER_TURN,
-} from '../constants/player_actions';
+} from '../constants/entity/player_actions';
 import {
   IAnyFunction,
   IDirection,

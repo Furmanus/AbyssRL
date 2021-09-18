@@ -9,8 +9,8 @@ import { IAnyObject } from '../../interfaces/common';
 import { EntityEvents } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
 import { EntityModel } from '../../model/entity/entity_model';
-import { Monsters, MonstersTypes } from '../../constants/monsters';
-import { PLAYER_DEATH } from '../../constants/player_actions';
+import { Monsters, MonstersTypes } from '../../constants/entity/monsters';
+import { PLAYER_DEATH } from '../../constants/entity/player_actions';
 import { MonsterFactory } from '../../factory/monster_factory';
 
 interface ILevelControllerConstructorConfig {

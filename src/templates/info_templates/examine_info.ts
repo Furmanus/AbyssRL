@@ -3,7 +3,7 @@ import {
   ITemplateVariables,
   TemplateType,
 } from '../../scripts/interfaces/common';
-import { ItemTypes } from '../../scripts/constants/item';
+import { ItemTypes } from '../../scripts/constants/items/item';
 
 export function getEntityInfoTemplate(
   variables: ITemplateVariables,
@@ -45,6 +45,20 @@ export function getEntityInfoTemplate(
                 </div>
                 <div class="examine-stats">
                     <span>toHit: ${variables.toHit}</span>
+                </div>
+            </div>
+        `,
+    [ItemTypes.Armour]: `
+            <div class="examine-wrapper">
+                <canvas width="32" height="32" id="image"></canvas>
+                <div class="examine-description">
+                    <span>${variables.description}</span>
+                </div>
+                <div class="examine-stats">
+                    <span>Dodge Modifier: ${variables.dodgeModifier}</span>
+                </div>
+                <div class="examine-stats">
+                    <span>Protection Modifier: ${variables.protectionModifier}</span>
                 </div>
             </div>
         `,

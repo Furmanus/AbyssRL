@@ -1,6 +1,6 @@
 import { weaponsData } from '../../model/items/weapons/data/weapons';
 import { WeaponModel } from '../../model/items/weapons/weapon_model';
-import { WeaponNames } from '../../constants/weapons';
+import { WeaponNames } from '../../constants/items/weapons';
 import { IWeaponConstructorConfig } from '../../interfaces/combat';
 import { getRandomNumber } from '../../helper/rng';
 

@@ -10,7 +10,7 @@ import { ICoordinates, IStringDictionary } from '../interfaces/common';
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { LevelModel } from '../model/dungeon/level_model';
 import { boundMethod } from 'autobind-decorator';
-import { MonstersTypes } from '../constants/monsters';
+import { MonstersTypes } from '../constants/entity/monsters';
 import { miscTiles } from '../constants/sprites';
 import { CanvasFonts } from '../constants/canvas_enum';
 import Timeout = NodeJS.Timeout;

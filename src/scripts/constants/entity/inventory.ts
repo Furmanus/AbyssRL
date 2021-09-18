@@ -1,4 +1,4 @@
-import { EntityInventoryActions } from './entity_events';
+import { EntityInventoryActions } from '../entity_events';
 
 type ActionNameToModalMapType = Record<EntityInventoryActions, string>;
 
@@ -9,3 +9,10 @@ export const actionNameToModalHeaderMap: ActionNameToModalMapType = {
   [EntityInventoryActions.Use]: 'Select single item to use',
   [EntityInventoryActions.Equip]: 'Select single item to equip',
 };
+
+export enum PlayerEquipSlots {
+  RightHand = 'right hand',
+  Body = 'body',
+}
+
+export enum MonsterEquipSlots {}

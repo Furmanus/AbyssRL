@@ -10,7 +10,7 @@ import { globalMessagesController } from '../../global/messages';
 import { DevFeaturesModalController } from '../dev_features_modal_controller';
 import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEvents';
 import { config } from '../../global/config';
-import { Monsters } from '../../constants/monsters';
+import { Monsters } from '../../constants/entity/monsters';
 import { PlayerController } from '../entity/player_controller';
 import { Cell } from '../../model/dungeon/cells/cell_model';
 import { MonsterFactory } from '../../factory/monster_factory';

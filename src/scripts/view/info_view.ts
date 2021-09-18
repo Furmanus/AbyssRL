@@ -1,4 +1,4 @@
-import { EntityStats } from '../constants/monsters';
+import { EntityStats } from '../constants/entity/monsters';
 import { EntityModel, IEntityStatsObject } from '../model/entity/entity_model';
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { ITemplate, ITemplateVariables } from '../interfaces/common';
@@ -8,6 +8,7 @@ import { tileset } from '../global/tiledata';
 import Timeout = NodeJS.Timeout;
 import { ItemModel } from '../model/items/item_model';
 import { WeaponModel } from '../model/items/weapons/weapon_model';
+import { ArmourModel } from '../model/items/armours/armour_model';
 
 interface IStatsObject {
   [EntityStats.Strength]: HTMLSpanElement;
@@ -264,6 +265,12 @@ export class InfoView {
         ...baseVariables,
         damage: `${item.damage.getSerializedData()} (${item.type})`,
         toHit: `${item.toHit.getSerializedData()}`,
+      };
+    } else if (item instanceof ArmourModel) {
+      return {
+        ...baseVariables,
+        dodgeModifier: `${item.dodgeModifier}`,
+        protectionModifier: `${item.protectionModifier}`,
       };
     }
   }

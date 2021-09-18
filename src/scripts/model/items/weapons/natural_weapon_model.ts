@@ -1,11 +1,11 @@
 import { INaturalWeapon } from '../../../interfaces/combat';
 import { Dice } from '../../dice';
 import { DamageTypes } from '../../../constants/combat_enums';
-import { MonsterAttackTypes } from '../../../constants/monsters';
+import { MonsterAttackTypes } from '../../../constants/entity/monsters';
 import { IAnyObject } from '../../../interfaces/common';
 import { WearableModel } from '../wearable_model';
 import { EntityModel } from '../../entity/entity_model';
-import { ItemTypes } from '../../../constants/item';
+import { ItemTypes } from '../../../constants/items/item';
 
 export class NaturalWeaponModel
   extends WearableModel
@@ -14,6 +14,7 @@ export class NaturalWeaponModel
   public damage: Dice;
   public toHit: Dice;
   public type: DamageTypes;
+  public name: string = null;
   public display: string = null;
   public itemType: ItemTypes = null;
   public naturalType: MonsterAttackTypes;

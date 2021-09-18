@@ -1,3 +1,5 @@
+###0.0.7 (18.09.2021)
+* (Feature) Added armour item type and possibility to wear it
 ###0.0.6 (17.09.2021)
 * (Feature) Added containers, where player can put items and withdraw
 ###0.0.5 (14.06.2021)

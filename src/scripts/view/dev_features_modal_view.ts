@@ -1,6 +1,6 @@
 import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents';
 import { ModalView } from './modal_view';
-import { Monsters } from '../constants/monsters';
+import { Monsters } from '../constants/entity/monsters';
 import { buildFormElements } from '../core/form_elements/form_elements';
 import { getDataFromSessionStorage } from '../helper/storage_helper';
 import { SessionStorageKeys } from '../constants/storage';

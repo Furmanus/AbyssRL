@@ -17,7 +17,7 @@ import {
   PLAYER_ACTION_GO_DOWN,
   PLAYER_DEATH,
   PlayerActions,
-} from '../constants/player_actions';
+} from '../constants/entity/player_actions';
 import { PlayerController } from './entity/player_controller';
 import { DungeonController } from './dungeon/dungeon_controller';
 import { Cell } from '../model/dungeon/cells/cell_model';

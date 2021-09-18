@@ -2,7 +2,7 @@ import { WearableModel } from '../wearable_model';
 import { Dice } from '../../dice';
 import { IWeaponConstructorConfig } from '../../../interfaces/combat';
 import { ItemSprites } from '../../../constants/sprites';
-import { ItemTypes } from '../../../constants/item';
+import { ItemTypes } from '../../../constants/items/item';
 import { DamageTypes } from '../../../constants/combat_enums';
 
 export class WeaponModel extends WearableModel {

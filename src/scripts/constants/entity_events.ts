@@ -5,6 +5,7 @@ export enum EntityEvents {
   EntityPickedItem = 'entity:pick:item',
   EntityDroppedItem = 'entity:drop:item',
   EntityEquippedWeaponChange = 'entity:equippedWeapon:change',
+  EntityEquippedArmourChange = 'entity:equippedArmour:change',
 }
 
 export enum EntityInventoryActions {

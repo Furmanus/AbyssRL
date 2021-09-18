@@ -8,7 +8,7 @@ import { getPreparedInventoryElement } from '../../templates/inventory_template'
 import { InventoryView } from '../view/inventory_view';
 import { boundMethod } from 'autobind-decorator';
 import { SetWithObserver } from '../core/set_with_observer';
-import { ENTITY_MAX_INVENTORY_LENGTH } from '../constants/monsters';
+import { ENTITY_MAX_INVENTORY_LENGTH } from '../constants/entity/monsters';
 import { ItemModel } from '../model/items/item_model';
 import { EntityModel } from '../model/entity/entity_model';
 

@@ -8,13 +8,15 @@ import {
   EntityStats,
   MonsterSizes,
   MonstersTypes,
-} from '../../constants/monsters';
+} from '../../constants/entity/monsters';
 import { ItemsCollection } from '../../collections/items_collection';
 import { INaturalWeapon, IWeapon } from '../../interfaces/combat';
 import { ItemModel } from '../items/item_model';
 import { weaponModelFactory } from '../../factory/item/weapon_model_factory';
 import { WeaponModel } from '../items/weapons/weapon_model';
 import { NaturalWeaponModel } from '../items/weapons/natural_weapon_model';
+import { ArmourModel } from '../items/armours/armour_model';
+import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -76,20 +78,36 @@ export class EntityModel extends BaseModel implements IEntity {
   public inventory: ItemsCollection = new ItemsCollection([
     weaponModelFactory.getRandomWeaponModel(),
     weaponModelFactory.getRandomWeaponModel(),
+    ArmourModelFactory.getRandomArmourModel(),
+    ArmourModelFactory.getRandomArmourModel(),
   ]);
 
   /**
    * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
    */
-  public naturalWeapon: IWeapon = null;
-  public equippedWeapon: IWeapon = null;
+  public naturalWeapon: NaturalWeaponModel = null;
+  public equippedWeapon: WeaponModel = null;
+  public equippedArmour: ArmourModel = null;
   /**
    * Value of entity armour protection. Used to calculate how much of damage dealt will be absorbed by armor.
    */
-  public protection: number = 0;
+  private naturalProtection: number = 0;
+  public get protection(): number {
+    return (
+      this.naturalProtection + this.equippedArmour?.protectionModifier || 0
+    );
+  }
 
-  get weapon(): IWeapon {
+  public get evasion(): number {
+    return this.equippedArmour?.dodgeModifier || 0;
+  }
+
+  get weapon(): WeaponModel {
     return this.equippedWeapon || this.naturalWeapon;
+  }
+
+  public get equipSlots() {
+    return {};
   }
 
   constructor(config: IAnyObject) {
@@ -184,7 +202,7 @@ export class EntityModel extends BaseModel implements IEntity {
     }
   }
 
-  public equipWeapon(weapon: IWeapon): void {
+  public equipWeapon(weapon: WeaponModel): void {
     const previousWeapon = this.weapon;
 
     if (weapon !== previousWeapon && !(weapon instanceof NaturalWeaponModel)) {
@@ -209,6 +227,34 @@ export class EntityModel extends BaseModel implements IEntity {
         previousWeapon: weapon,
       });
     }
+  }
+
+  public equipArmour(armour: ArmourModel): void {
+    if (this.equippedArmour) {
+      this.unequipArmour();
+
+      this.equippedArmour = armour;
+      this.notify(EntityEvents.EntityEquippedArmourChange, {
+        reason: 'equip',
+        currentArmour: armour,
+      });
+    } else {
+      this.equippedArmour = armour;
+      this.notify(EntityEvents.EntityEquippedArmourChange, {
+        reason: 'equip',
+        currentArmour: armour,
+      });
+    }
+  }
+
+  public unequipArmour(): void {
+    const removedArmour = this.equippedArmour;
+
+    this.equippedArmour = null;
+    this.notify(EntityEvents.EntityEquippedArmourChange, {
+      reason: 'remove',
+      previousArmour: removedArmour,
+    });
   }
 
   /**

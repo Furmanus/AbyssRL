@@ -7,7 +7,7 @@ import { ModalActions } from '../constants/game_actions';
 import { devFeatureModalTemplate } from '../../templates/dev_features_modal_template';
 import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents';
 import { config } from '../global/config';
-import { Monsters } from '../constants/monsters';
+import { Monsters } from '../constants/entity/monsters';
 import { PlayerController } from './entity/player_controller';
 import { storeDataInSessionStorage } from '../helper/storage_helper';
 import { SessionStorageKeys } from '../constants/storage';

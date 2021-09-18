@@ -6,7 +6,7 @@ import { ICellModel } from '../../../../interfaces/cell';
 import { ItemModel } from '../../../items/item_model';
 import { EntityController } from '../../../../controller/entity/entity_controller';
 import { UseEffectResult } from '../effects/use_effect_result';
-import { MonstersTypes } from '../../../../constants/monsters';
+import { MonstersTypes } from '../../../../constants/entity/monsters';
 import { isPlayerController } from '../../../../interfaces/type_guards';
 import { ItemsCollection } from '../../../../collections/items_collection';
 

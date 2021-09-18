@@ -1,5 +1,5 @@
 import { EntityModel } from '../model/entity/entity_model';
-import { MonsterSizes } from '../constants/monsters';
+import { MonsterSizes } from '../constants/entity/monsters';
 import { Dice } from '../model/dice';
 import { capitalizeString } from './utility';
 import { generateCombatMessage } from './combat/combat_messages';
@@ -25,13 +25,15 @@ export function doCombatAction(
     speed: defenderSpeed,
     protection: defenderProtection,
     size: defenderSize,
+    evasion,
   } = defender;
   const { dexterity: attackerDexterity, weapon: attackerWeapon } = attacker;
   const { toHit: attackerToHit } = attackerWeapon;
   let defenderDefenseRate: number =
     defenderDexterity +
     Math.floor(defenderSpeed / 2) +
-    sizeToDodgeModifierMap[defenderSize].roll();
+    sizeToDodgeModifierMap[defenderSize].roll() +
+    evasion;
   /**
    * Array of numbers (maximum value is 15) all of which d20 rolls have to be passed in order of successful attack
    */
