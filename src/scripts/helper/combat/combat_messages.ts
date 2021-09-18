@@ -1,5 +1,5 @@
 import { EntityModel } from '../../model/entity/entity_model';
-import { MonsterAttackTypes } from '../../constants/monsters';
+import { MonsterAttackTypes } from '../../constants/entity/monsters';
 import { capitalizeString } from '../utility';
 import { DamageTypes } from '../../constants/combat_enums';
 

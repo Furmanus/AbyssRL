@@ -3,7 +3,7 @@ import { ItemModel } from '../scripts/model/items/item_model';
 import { drawSpriteOnCanvas } from '../scripts/helper/canvas_helper';
 import { EntityInventoryActions } from '../scripts/constants/entity_events';
 import { getLetterFromNumber } from '../scripts/helper/utility';
-import { actionNameToModalHeaderMap } from '../scripts/constants/inventory';
+import { actionNameToModalHeaderMap } from '../scripts/constants/entity/inventory';
 import { EntityModel } from '../scripts/model/entity/entity_model';
 import { WeaponModel } from '../scripts/model/items/weapons/weapon_model';
 
@@ -97,7 +97,7 @@ function generateItemListElement(
     mode === EntityInventoryActions.Drop ||
     mode === EntityInventoryActions.PickUp;
   const isItemEquipped =
-    !!inventoryOwner && item === (inventoryOwner.equippedWeapon as WeaponModel);
+    !!inventoryOwner && Object.values(inventoryOwner.equipSlots).includes(item);
 
   template.innerHTML = `
         <li class="modal-inventory-group-item" data-index="${index}">

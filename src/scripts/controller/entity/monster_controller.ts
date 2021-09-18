@@ -1,7 +1,7 @@
 import { EntityController } from './entity_controller';
 import { MonsterModel } from '../../model/entity/monster_model';
 import { MonsterAi } from '../../strategy/ai/monster_ai';
-import { MonstersTypes } from '../../constants/monsters';
+import { MonstersTypes } from '../../constants/entity/monsters';
 import { AnimalAi } from '../../strategy/ai/animal_ai';
 
 interface IMonsterControllerConfig {

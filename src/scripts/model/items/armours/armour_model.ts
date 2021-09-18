@@ -1,4 +1,5 @@
 import { ItemTypes } from '../../../constants/items/item';
+import { EntityModel } from '../../entity/entity_model';
 import { WearableModel } from '../wearable_model';
 import { IArmourConfig } from './armour_model_data';
 
@@ -26,6 +27,14 @@ export class ArmourModel extends WearableModel {
     this.name = name;
     this.protectionModifier = protectionModifier;
     this.dodgeModifier = dodgeModifier;
+  }
+
+  public wear(entity: EntityModel) {
+    entity.equipArmour(this);
+  }
+
+  public takeoff(entity: EntityModel) {
+    entity.unequipArmour();
   }
 
   /**

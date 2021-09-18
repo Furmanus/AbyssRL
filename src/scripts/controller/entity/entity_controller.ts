@@ -9,12 +9,15 @@ import { Controller } from '../controller';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { EntityEvents } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
-import { EntityStats } from '../../constants/monsters';
+import { EntityStats } from '../../constants/entity/monsters';
 import { doCombatAction, ICombatResult } from '../../helper/combat_helper';
 import { globalMessagesController } from '../../global/messages';
 import { ItemModel } from '../../model/items/item_model';
 import { ItemsCollection } from '../../collections/items_collection';
-import { EntityWeaponChangeData } from './entiry_controller.interfaces';
+import {
+  EntityArmourChangeData,
+  EntityWeaponChangeData,
+} from './entiry_controller.interfaces';
 import { NaturalWeaponModel } from '../../model/items/weapons/natural_weapon_model';
 import { WeaponModel } from '../../model/items/weapons/weapon_model';
 
@@ -42,6 +45,11 @@ export class EntityController<
       this,
       EntityEvents.EntityEquippedWeaponChange,
       this.onEntityEquippedWeaponChange,
+    );
+    this.model.on(
+      this,
+      EntityEvents.EntityEquippedArmourChange,
+      this.onEntityEquippedArmourChange,
     );
   }
 
@@ -160,6 +168,25 @@ export class EntityController<
     globalMessagesController.showMessageInView(`${removePart}${equipPart}`);
   }
 
+  protected onEntityEquippedArmourChange(data: EntityArmourChangeData): void {
+    let message: string;
+
+    switch (data.reason) {
+      case 'equip':
+        message = `${this.model.getDescription()} puts on ${
+          data.currentArmour.description
+        }.`;
+        break;
+      case 'remove':
+        message = `${this.model.getDescription()} takes off ${
+          data.previousArmour.description
+        }.`;
+        break;
+    }
+
+    globalMessagesController.showMessageInView(message);
+  }
+
   /**
    * Returns speed of entity (how fast it can take action in time engine).
    */
@@ -170,7 +197,7 @@ export class EntityController<
   /**
    * Returns entity model.
    */
-  public getModel(): EntityModel {
+  public getModel(): M {
     return this.model;
   }
 

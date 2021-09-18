@@ -6,7 +6,7 @@ import {
   PLAYER_WALK_CONFIRM_NEEDED,
   PlayerActions,
   START_PLAYER_TURN,
-} from '../../constants/player_actions';
+} from '../../constants/entity/player_actions';
 import { PlayerModel } from '../../model/entity/player_model';
 import { globalMessagesController } from '../../global/messages';
 import { IAnyFunction, IAnyObject } from '../../interfaces/common';
@@ -35,6 +35,7 @@ import {
   ContainerInventoryTransferData,
 } from '../container_inventory_modal_controller';
 import { ContainerInventoryModalEvents } from '../../constants/events/containerInventoryModalEvents';
+import { ArmourModel } from '../../model/items/armours/armour_model';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -302,6 +303,8 @@ export class PlayerController extends EntityController<PlayerModel> {
   public equipItem(item: ItemModel): void {
     if (item instanceof WeaponModel) {
       this.model.equipWeapon(item);
+    } else if (item instanceof ArmourModel) {
+      item.wear(this.model);
     }
   }
 

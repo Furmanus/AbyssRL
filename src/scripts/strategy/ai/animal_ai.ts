@@ -1,7 +1,7 @@
 import { MonsterAi } from './monster_ai';
 import { Cell } from '../../model/dungeon/cells/cell_model';
 import { IFilteredFov } from './ai';
-import { MonstersTypes } from '../../constants/monsters';
+import { MonstersTypes } from '../../constants/entity/monsters';
 import { ICoordinates } from '../../interfaces/common';
 import { calculatePathToCell } from '../../helper/pathfinding_helper';
 import { LevelModel } from '../../model/dungeon/level_model';

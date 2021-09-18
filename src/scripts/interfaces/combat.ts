@@ -1,5 +1,5 @@
 import { Dice } from '../model/dice';
-import { MonsterAttackTypes } from '../constants/monsters';
+import { MonsterAttackTypes } from '../constants/entity/monsters';
 import { DamageTypes } from '../constants/combat_enums';
 
 export interface IWeapon {

@@ -1,4 +1,4 @@
-import { EntityStats } from '../constants/monsters';
+import { EntityStats } from '../constants/entity/monsters';
 import { EntityModel, IEntityStatsObject } from '../model/entity/entity_model';
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { ITemplate, ITemplateVariables } from '../interfaces/common';
