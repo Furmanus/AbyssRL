@@ -75,9 +75,10 @@ export const terrain = {
   STAIRS_UP: 'stairs_up',
   STAIRS_DOWN: 'stairs_down',
 };
-export const miscTiles = {
-  explosion: 'explosion',
-};
+export enum MiscTiles {
+  Explosion = 'explosion',
+  PoolOfBlood = 'pool_of_blood',
+}
 export enum dungeonFeaturesEnum {
   BED_HEAD = 'left_bed',
   BED_FOOT = 'right_bed',

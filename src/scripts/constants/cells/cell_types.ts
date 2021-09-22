@@ -24,3 +24,7 @@ export const cellTypes = {
   BARREL: 'barrel',
   CHEST_OF_DRAWERS: 'chest_drawers',
 };
+
+export const enum CellSpecialConditions {
+  Bloody = 'blood',
+}

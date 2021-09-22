@@ -5,7 +5,7 @@ import {
   EXAMINE_CELL,
   STOP_EXAMINE_CELL,
 } from '../constants/game_actions';
-import { entities } from '../constants/sprites';
+import { entities } from '../constants/cells/sprites';
 import {
   SHOW_MESSAGE_IN_VIEW,
   PLAYER_ACTION_MOVE_PLAYER,
@@ -24,7 +24,7 @@ import { Cell } from '../model/dungeon/cells/cell_model';
 import { IAnyObject, IDirection } from '../interfaces/common';
 import { LevelController } from './dungeon/level_controller';
 import { Controller } from './controller';
-import { cellTypes } from '../constants/cell_types';
+import { cellTypes } from '../constants/cells/cell_types';
 import { globalMessagesController } from '../global/messages';
 import { DungeonEvents } from '../constants/dungeon_events';
 import { ASCEND } from '../constants/directions';
@@ -144,7 +144,8 @@ export class GameController extends Controller {
     const playerLevel: LevelController = this.currentLevel;
 
     this.playerController = PlayerController.getInstance({
-      level: playerLevel,
+      level: playerLevel.model,
+      levelController: playerLevel,
       display: entities.AVATAR,
       position: inititalPlayerCell,
       speed: 15,

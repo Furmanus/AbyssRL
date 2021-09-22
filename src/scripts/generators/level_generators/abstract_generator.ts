@@ -1,4 +1,4 @@
-import { cellTypes } from '../../constants/cell_types';
+import { cellTypes } from '../../constants/cells/cell_types';
 import { config, config as globalConfig } from '../../global/config';
 import * as Rng from '../../helper/rng';
 import * as Utility from '../../helper/utility';
@@ -6,7 +6,7 @@ import {
   directionToStringMap,
   directionShortToStringMap,
 } from '../../constants/keyboard_directions';
-import { terrain } from '../../constants/sprites';
+import { terrain } from '../../constants/cells/sprites';
 import { getCircleFromLevelCells } from '../../helper/level_cells_helper';
 import { DIRECTION_HORIZONTAL } from '../../constants/directions';
 import { Position } from '../../model/position/position';

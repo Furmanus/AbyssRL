@@ -1,6 +1,7 @@
 import { Cell } from './cell_model';
 import { IAnyObject } from '../../../interfaces/common';
 import { ICellModel } from '../../../interfaces/cell';
+import { CellSpecialConditions } from '../../../constants/cells/cell_types';
 
 export class FloorModel extends Cell implements ICellModel {
   /**
@@ -25,5 +26,15 @@ export class FloorModel extends Cell implements ICellModel {
 
   set display(tiles: string) {
     this.displaySet = tiles;
+  }
+
+  get walkMessage(): string {
+    if (this.specialConditions.has(CellSpecialConditions.Bloody)) {
+      return `You walk through a little pool of blood. It is slippery here. ${
+        super.walkMessage
+      }`;
+    }
+
+    return super.walkMessage;
   }
 }

@@ -3,7 +3,7 @@
  */
 
 import { config as globalConfig } from '../../global/config';
-import { cellTypes } from '../../constants/cell_types';
+import { cellTypes } from '../../constants/cells/cell_types';
 import { CellModelFactory } from '../../factory/cell_model_factory';
 import { BaseModel } from '../../core/base_model';
 import { Position } from '../position/position';
@@ -18,6 +18,7 @@ import {
 import { MapWithObserver } from '../../core/map_with_observer';
 import { EntityModel } from '../entity/entity_model';
 import { MonsterController } from '../../controller/entity/monster_controller';
+import { EntityController } from '../../controller/entity/entity_controller';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
 

@@ -1,6 +1,6 @@
 import { RoomModel } from '../../../model/dungeon/room_model';
 import { DungeonVaults } from '../../../constants/vaults';
-import { cellTypes } from '../../../constants/cell_types';
+import { cellTypes } from '../../../constants/cells/cell_types';
 import { LevelModel } from '../../../model/dungeon/level_model';
 import * as levelDecoratorHelper from '../../../helper/level_decorator_helper';
 import { twoCellsArray } from '../../../helper/level_decorator_helper';

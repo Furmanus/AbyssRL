@@ -3,7 +3,7 @@ import { IAnyObject } from '../../interfaces/common';
 import { Cell } from '../dungeon/cells/cell_model';
 import { LevelModel } from '../dungeon/level_model';
 import { EntityEvents } from '../../constants/entity_events';
-import { IEntity } from '../../interfaces/entity_interfaces';
+import { IEntity } from '../../interfaces/entity/entity_interfaces';
 import {
   EntityStats,
   MonsterSizes,
@@ -17,6 +17,10 @@ import { WeaponModel } from '../items/weapons/weapon_model';
 import { NaturalWeaponModel } from '../items/weapons/natural_weapon_model';
 import { ArmourModel } from '../items/armours/armour_model';
 import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
+import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
+import { EntityStatusCommonController } from '../../controller/entity/entity_statuses/entity_status_common_controller';
+import { EntityStatuses } from '../../constants/entity/statuses';
+import { LevelController } from '../../controller/dungeon/level_controller';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -82,6 +86,8 @@ export class EntityModel extends BaseModel implements IEntity {
     ArmourModelFactory.getRandomArmourModel(),
   ]);
 
+  public entityStatuses = EntityStatusFactory.getCollection();
+
   /**
    * Natural weapon (for example fist, bite) used when entity is attacking without any weapon.
    */
@@ -146,6 +152,14 @@ export class EntityModel extends BaseModel implements IEntity {
    */
   public setFov(fovArray: Cell[]): void {
     this.setProperty('fov', fovArray);
+  }
+
+  public addStatus(entityStatus: EntityStatusCommonController): void {
+    this.entityStatuses.addStatus(entityStatus);
+  }
+
+  public removeStatus(entityStatus: EntityStatusCommonController): void {
+    this.entityStatuses.removeStatus(entityStatus);
   }
 
   /**

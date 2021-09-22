@@ -67,6 +67,8 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     this.model = new PlayerModel(constructorConfig);
     this.attachEvents();
+
+    this.inflictBleeding();
   }
 
   public static getInstance(constructorConfig?: IAnyObject): PlayerController {
@@ -172,6 +174,7 @@ export class PlayerController extends EntityController<PlayerModel> {
    * Method triggered at beginning of each player turn.
    */
   public act(): void {
+    this.activateStatuses();
     this.notify(START_PLAYER_TURN);
   }
 

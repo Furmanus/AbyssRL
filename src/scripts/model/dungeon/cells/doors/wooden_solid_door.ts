@@ -1,6 +1,6 @@
 import { DoorModel } from '../door_model';
-import { cellTypes } from '../../../../constants/cell_types';
-import { terrain } from '../../../../constants/sprites';
+import { cellTypes } from '../../../../constants/cells/cell_types';
+import { terrain } from '../../../../constants/cells/sprites';
 import { cellsDescriptions } from '../../../../helper/cells_description';
 import { IAnyObject } from '../../../../interfaces/common';
 import { ICellModel } from '../../../../interfaces/cell';

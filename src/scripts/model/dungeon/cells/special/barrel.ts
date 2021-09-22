@@ -1,7 +1,7 @@
 import { Cell } from '../cell_model';
-import { cellTypes } from '../../../../constants/cell_types';
+import { cellTypes } from '../../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../../helper/cells_description';
-import { dungeonFeaturesEnum } from '../../../../constants/sprites';
+import { dungeonFeaturesEnum } from '../../../../constants/cells/sprites';
 import { ICellModel } from '../../../../interfaces/cell';
 import { ItemModel } from '../../../items/item_model';
 import { EntityController } from '../../../../controller/entity/entity_controller';

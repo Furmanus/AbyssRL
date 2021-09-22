@@ -1,6 +1,6 @@
 import { config as globalConfig } from '../../global/config';
 import { AbstractLevelGenerator } from './abstract_generator';
-import { cellTypes } from '../../constants/cell_types';
+import { cellTypes } from '../../constants/cells/cell_types';
 import { Position } from '../../model/position/position';
 import { RoomModel } from '../../model/dungeon/room_model';
 import {

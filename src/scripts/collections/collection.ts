@@ -8,7 +8,9 @@ import { ItemModel } from '../model/items/item_model';
 /**
  * Collection of generic type models (they have to extend BaseModel).
  */
-export class Collection<M extends BaseModel = BaseModel> extends Constructor {
+export class Collection<
+  M extends Constructor = Constructor,
+> extends Constructor {
   private collection: M[];
   private listeners: Map<
     Controller,

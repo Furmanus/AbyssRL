@@ -1,7 +1,7 @@
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { RoomModel } from '../model/dungeon/room_model';
 import { LevelModel } from '../model/dungeon/level_model';
-import { cellTypes } from '../constants/cell_types';
+import { cellTypes } from '../constants/cells/cell_types';
 
 export type twoCellsArray = [Cell, Cell];
 

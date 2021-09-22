@@ -1,4 +1,4 @@
-import { cellTypes } from '../constants/cell_types';
+import { cellTypes } from '../constants/cells/cell_types';
 
 export const cellsDescriptions = {
   [cellTypes.RED_FLOOR]: 'a brick floor',

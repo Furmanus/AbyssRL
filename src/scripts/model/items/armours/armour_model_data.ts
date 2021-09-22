@@ -1,5 +1,5 @@
 import { ArmourNames } from '../../../constants/items/armour_names';
-import { ItemSprites } from '../../../constants/sprites';
+import { ItemSprites } from '../../../constants/cells/sprites';
 
 export interface IArmourConfig {
   dodgeModifier: number;

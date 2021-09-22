@@ -20,11 +20,20 @@ import {
 } from './entiry_controller.interfaces';
 import { NaturalWeaponModel } from '../../model/items/weapons/natural_weapon_model';
 import { WeaponModel } from '../../model/items/weapons/weapon_model';
+import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
+import { EntityBleedingStatusController } from './entity_statuses/entity_bleeding_status_controller';
+import {
+  EntityStatuses,
+  entityStatusToDamageText,
+} from '../../constants/entity/statuses';
+import { EntityStatusCommonController } from './entity_statuses/entity_status_common_controller';
+import { LevelController } from '../dungeon/level_controller';
 
 export class EntityController<
   M extends EntityModel = EntityModel,
 > extends Controller {
   protected model: M;
+  protected currentLevelController: LevelController;
   /**
    * Constructor for entity controller.
    * @param   config              Object with data for creating model and controller.
@@ -33,6 +42,8 @@ export class EntityController<
    */
   constructor(config: IAnyObject) {
     super();
+
+    this.currentLevelController = config.levelController;
   }
 
   protected attachEvents(): void {
@@ -215,6 +226,18 @@ export class EntityController<
     return this.model.fov;
   }
 
+  public act(): void {
+    this.activateStatuses();
+  }
+
+  public activateStatuses(): void {
+    this.model.entityStatuses.forEach(
+      (status: EntityStatusCommonController) => {
+        status.act();
+      },
+    );
+  }
+
   /**
    * Returns entity current position (Cell model).
    */
@@ -258,6 +281,34 @@ export class EntityController<
     };
   }
 
+  public inflictBleeding(): void {
+    this.model.addStatus(EntityStatusFactory.getEntityBleedingStatus(this));
+  }
+
+  public stopBleeding(bleedingStatus: EntityBleedingStatusController): void {
+    this.model.removeStatus(bleedingStatus);
+
+    globalMessagesController.showMessageInView(
+      `${this.model.description} blood loss stops.`,
+    );
+  }
+
+  public inflictNonCombatHit(
+    damage: number,
+    source?: keyof typeof entityStatusToDamageText,
+  ): void {
+    this.model.takeHit(damage);
+
+    if (source in entityStatusToDamageText) {
+      globalMessagesController.showMessageInView(
+        entityStatusToDamageText[source].replace(
+          '{{description}}',
+          this.model.description,
+        ),
+      );
+    }
+  }
+
   /**
    * Return property value from model.
    */
@@ -266,5 +317,9 @@ export class EntityController<
       throw new TypeError(`Uknown property ${propertyName}`);
     }
     return this.model[propertyName];
+  }
+
+  public dropBlood(): void {
+    this.notify(EntityEvents.EntityBloodLoss, this.model);
   }
 }

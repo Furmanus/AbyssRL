@@ -12,7 +12,8 @@ import { EntityController } from '../../../controller/entity/entity_controller';
 import { PlayerController } from '../../../controller/entity/player_controller';
 import { ICellModel } from '../../../interfaces/cell';
 import { ItemsCollection } from '../../../collections/items_collection';
-import { ItemModel } from '../../items/item_model';
+import { MiscTiles } from '../../../constants/cells/sprites';
+import { CellSpecialConditions } from '../../../constants/cells/cell_types';
 
 /**
  * Class representing single map square(field).
@@ -51,6 +52,14 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * // TODO write description later
    */
   public displaySet: string = null;
+  /**
+   * Display of cell to draw only if it is visible by player, otherwise displaySet is used
+   */
+  public displayWhenVisible: string = null;
+  /**
+   * Array of strings describing cell special conditions, for example pool of blood which might be slippery
+   */
+  public specialConditions = new Set<CellSpecialConditions>();
   /**
    * Type of cell.
    */
@@ -99,13 +108,9 @@ export abstract class Cell extends BaseModel implements ICellModel {
   /**
    * String pointing which sprite should be used as cell display. Must be implemented in sub classes.
    */
-  get display(): string {
-    throw new Error('Lack of implementation of display property');
-  }
+  abstract get display(): string;
 
-  set display(display: string) {
-    throw new Error('Lack of implementation of display property');
-  }
+  abstract set display(display: string);
 
   /**
    * Message displayed when player walks over cell.
@@ -192,5 +197,15 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   public useAttempt(entity: EntityController): UseAttemptResult {
     return new UseAttemptResult();
+  }
+
+  public createPoolOfBlood(): void {
+    this.displayWhenVisible = MiscTiles.PoolOfBlood;
+    this.specialConditions.add(CellSpecialConditions.Bloody);
+  }
+
+  public clearPoolOfBlood(): void {
+    this.displayWhenVisible = null;
+    this.specialConditions.delete(CellSpecialConditions.Bloody);
   }
 }

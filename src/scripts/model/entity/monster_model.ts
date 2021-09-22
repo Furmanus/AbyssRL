@@ -1,5 +1,5 @@
 import { EntityModel } from './entity_model';
-import { IEntity } from '../../interfaces/entity_interfaces';
+import { IEntity } from '../../interfaces/entity/entity_interfaces';
 import { IAnyObject } from '../../interfaces/common';
 import { monstersData } from './monsters/data/monsters';
 

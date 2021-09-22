@@ -36,6 +36,8 @@ export class MonsterController extends EntityController<MonsterModel> {
   }
 
   public act(): void {
+    super.act();
+
     this.calculateFov();
     this.ai.performNextMove();
   }

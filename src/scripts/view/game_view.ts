@@ -11,11 +11,12 @@ import { Cell } from '../model/dungeon/cells/cell_model';
 import { LevelModel } from '../model/dungeon/level_model';
 import { boundMethod } from 'autobind-decorator';
 import { MonstersTypes } from '../constants/entity/monsters';
-import { miscTiles } from '../constants/sprites';
+import { MiscTiles } from '../constants/cells/sprites';
 import { CanvasFonts } from '../constants/canvas_enum';
 import Timeout = NodeJS.Timeout;
 import { Vector } from '../model/position/vector';
 import { getPositionFromString } from '../helper/utility';
+import { TileDecorator } from './game_view_decorators/tile_decorator';
 
 interface IMousePosition {
   x: number;
@@ -110,6 +111,8 @@ export class GameView extends Observer {
     HTMLSpanElement
   >();
 
+  #tileDecorator: TileDecorator;
+
   /**
    *
    * @param width     Width of view(in pixels).
@@ -130,6 +133,7 @@ export class GameView extends Observer {
     this.columns = height / this.TILE_SIZE;
     this.tileset = tileSet;
     this.camera = new Camera(0, 0, this.rows, this.columns);
+    this.#tileDecorator = new TileDecorator(this.context, this.camera);
     /*
         Object holding coordinates of current mouse position on canvas. Used to draw rectangle in mouseMoveEventListener
          */
@@ -314,7 +318,7 @@ export class GameView extends Observer {
       } else if (cell.inventory.size) {
         tile = cell.inventory.get(0).display;
       } else {
-        tile = cell.display;
+        tile = cell.displayWhenVisible || cell.display;
       }
     } else {
       tile = cell.display;
@@ -341,6 +345,7 @@ export class GameView extends Observer {
           this.globalCompositeOperation[light],
         );
       }
+
       return null;
     } else {
       this.drawImage(
@@ -1007,7 +1012,7 @@ export class GameView extends Observer {
     if (convertedPosition) {
       this.setTemporaryImageWithTimeout(
         convertedPosition,
-        miscTiles.explosion,
+        MiscTiles.Explosion,
         ALTERNATIVE_TILE_SPRITE_TIMEOUT,
       );
     }

@@ -1,7 +1,7 @@
-import { cellTypes } from '../constants/cell_types';
+import { cellTypes } from '../constants/cells/cell_types';
 import { FloorModel } from '../model/dungeon/cells/floor_model';
 import { cellsDescriptions } from '../helper/cells_description';
-import { terrain } from '../constants/sprites';
+import { terrain } from '../constants/cells/sprites';
 import { WallModel } from '../model/dungeon/cells/wall_model';
 import { WoodenSolidDoorModel } from '../model/dungeon/cells/doors/wooden_solid_door';
 import { LavaCellModel } from '../model/dungeon/cells/lava_model';
@@ -11,7 +11,7 @@ import { DeepWater } from '../model/dungeon/cells/deep_water';
 import { BushModel } from '../model/dungeon/cells/floors/bush_model';
 import { TreeModel } from '../model/dungeon/cells/tree_model';
 import { StairsModel } from '../model/dungeon/cells/floors/stairs';
-import { DOWN, UP } from '../constants/stairs_directions';
+import { DOWN, UP } from '../constants/cells/stairs_directions';
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { BedHead } from '../model/dungeon/cells/special/bed_head';
 import { BedFoot } from '../model/dungeon/cells/special/bed_foot';

@@ -2,7 +2,7 @@ import { RoomModel } from '../../../../model/dungeon/room_model';
 import { LevelModel } from '../../../../model/dungeon/level_model';
 import { twoCellsArray } from '../../../../helper/level_decorator_helper';
 import * as levelDecoratorHelper from '../../../../helper/level_decorator_helper';
-import { cellTypes } from '../../../../constants/cell_types';
+import { cellTypes } from '../../../../constants/cells/cell_types';
 
 export function generateRoomWithBed(room: RoomModel): boolean {
   if (room.hasStairsUp || room.hasStairsDown) {

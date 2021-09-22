@@ -1,5 +1,5 @@
-import { terrain } from '../../../constants/sprites';
-import { cellTypes } from '../../../constants/cell_types';
+import { terrain } from '../../../constants/cells/sprites';
+import { cellTypes } from '../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../helper/cells_description';
 import { Cell } from './cell_model';
 import { ICellModel } from '../../../interfaces/cell';

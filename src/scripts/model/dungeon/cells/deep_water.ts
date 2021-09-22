@@ -1,7 +1,7 @@
 import { Cell } from './cell_model';
 import { cellsDescriptions } from '../../../helper/cells_description';
-import { terrain } from '../../../constants/sprites';
-import { cellTypes } from '../../../constants/cell_types';
+import { terrain } from '../../../constants/cells/sprites';
+import { cellTypes } from '../../../constants/cells/cell_types';
 import { ICellModel } from '../../../interfaces/cell';
 
 export class DeepWater extends Cell implements ICellModel {

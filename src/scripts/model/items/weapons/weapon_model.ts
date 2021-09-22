@@ -1,7 +1,7 @@
 import { WearableModel } from '../wearable_model';
 import { Dice } from '../../dice';
 import { IWeaponConstructorConfig } from '../../../interfaces/combat';
-import { ItemSprites } from '../../../constants/sprites';
+import { ItemSprites } from '../../../constants/cells/sprites';
 import { ItemTypes } from '../../../constants/items/item';
 import { DamageTypes } from '../../../constants/combat_enums';
 

@@ -12,6 +12,8 @@ import { EntityModel } from '../../model/entity/entity_model';
 import { Monsters, MonstersTypes } from '../../constants/entity/monsters';
 import { PLAYER_DEATH } from '../../constants/entity/player_actions';
 import { MonsterFactory } from '../../factory/monster_factory';
+import { IActor } from '../../interfaces/entity/entity_interfaces';
+import { MiscTiles } from '../../constants/cells/sprites';
 
 interface ILevelControllerConstructorConfig {
   readonly branch: string;
@@ -64,6 +66,7 @@ export class LevelController extends Controller {
   private attachEventsToMonsterController(controller: EntityController): void {
     controller.on(this, EntityEvents.EntityDeath, this.onMonsterDeath);
     controller.on(this, EntityEvents.EntityHit, this.onEntityHit);
+    controller.on(this, EntityEvents.EntityBloodLoss, this.onEntityBloodLoss);
   }
 
   /**
@@ -77,6 +80,7 @@ export class LevelController extends Controller {
   ): void {
     controller.off(this, EntityEvents.EntityDeath);
     controller.off(this, EntityEvents.EntityHit);
+    controller.off(this, EntityEvents.EntityBloodLoss);
   }
 
   /**
@@ -117,12 +121,12 @@ export class LevelController extends Controller {
    * @param   actor   Actor, instance of entity class (or subclass).
    * @param   repeat  Boolean variable indicating whether actor should act more than once.
    */
-  public addActorToTimeEngine(
-    actor: EntityController,
-    repeat: boolean = true,
-  ): void {
+  public addActorToTimeEngine(actor: IActor, repeat: boolean = true): void {
     this.engine.addActor(actor, repeat);
-    this.attachEventsToMonsterController(actor);
+
+    if (actor instanceof EntityController) {
+      this.attachEventsToMonsterController(actor);
+    }
   }
 
   public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
@@ -140,9 +144,12 @@ export class LevelController extends Controller {
    *
    * @param  actor   Actor, instance of entity controller (or subclass).
    */
-  public removeActorFromTimeEngine(actor: EntityController): void {
+  public removeActorFromTimeEngine(actor: IActor | EntityController): void {
     this.engine.removeActor(actor);
-    this.detachEventsFromMonsterController(actor);
+
+    if (actor instanceof EntityController) {
+      this.detachEventsFromMonsterController(actor);
+    }
   }
 
   /**
@@ -228,5 +235,13 @@ export class LevelController extends Controller {
    */
   private removeEntityFromLevel(entity: EntityModel): void {
     this.model.removeEntity(entity);
+  }
+
+  private onEntityBloodLoss(entity: EntityModel): void {
+    const cell = this.getCell(entity.position.x, entity.position.y);
+
+    if (cell) {
+      cell.createPoolOfBlood();
+    }
   }
 }

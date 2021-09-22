@@ -2,6 +2,7 @@ export enum EntityEvents {
   EntityMove = 'entity:move',
   EntityDeath = 'entity:death',
   EntityHit = 'entity:hit',
+  EntityBloodLoss = 'entity:blood:loss',
   EntityPickedItem = 'entity:pick:item',
   EntityDroppedItem = 'entity:drop:item',
   EntityEquippedWeaponChange = 'entity:equippedWeapon:change',

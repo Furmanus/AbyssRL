@@ -1,7 +1,7 @@
 import { Cell } from '../cell_model';
-import { cellTypes } from '../../../../constants/cell_types';
+import { cellTypes } from '../../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../../helper/cells_description';
-import { terrain } from '../../../../constants/sprites';
+import { terrain } from '../../../../constants/cells/sprites';
 import { ICellModel } from '../../../../interfaces/cell';
 
 export class BushModel extends Cell implements ICellModel {

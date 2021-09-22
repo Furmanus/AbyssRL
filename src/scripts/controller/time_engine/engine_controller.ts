@@ -1,8 +1,8 @@
 import { Scheduler, Engine } from 'rot-js';
-import { EntityController } from '../entity/entity_controller';
 import scheduler from 'rot-js/lib/scheduler/scheduler';
 import engine from 'rot-js/lib/engine';
 import { Controller } from '../controller';
+import { IActor } from '../../interfaces/entity/entity_interfaces';
 
 /**
  * Controller of time engine of game. Doesn't have explicit, separate model, models are scheduler and engine
@@ -19,7 +19,7 @@ export class EngineController extends Controller {
    * @param   actor   Actor, instance of entity class (or subclass).
    * @param   repeat  Boolean variable indicating whether actor should act more than once.
    */
-  public addActor(actor: EntityController, repeat: boolean = true): void {
+  public addActor(actor: IActor, repeat: boolean = true): void {
     this.scheduler.add(actor, repeat);
   }
 
@@ -28,7 +28,7 @@ export class EngineController extends Controller {
    *
    * @param  actor   Actor, instance of entity controller (or subclass).
    */
-  public removeActor(actor: EntityController): void {
+  public removeActor(actor: IActor): void {
     this.scheduler.remove(actor);
   }
 
