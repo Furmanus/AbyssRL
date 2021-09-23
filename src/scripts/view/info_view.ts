@@ -9,6 +9,8 @@ import Timeout = NodeJS.Timeout;
 import { ItemModel } from '../model/items/item_model';
 import { WeaponModel } from '../model/items/weapons/weapon_model';
 import { ArmourModel } from '../model/items/armours/armour_model';
+import { EntityStatusesCollection } from '../collections/entity_statuses_collection';
+import { EntityStatusCommonController } from '../controller/entity/entity_statuses/entity_status_common_controller';
 
 interface IStatsObject {
   [EntityStats.Strength]: HTMLSpanElement;
@@ -36,6 +38,10 @@ export class InfoView {
 
   private levelInfo: HTMLParagraphElement = document.querySelector(
     '[data-element="level_info.element"]',
+  );
+
+  private statusContainer: HTMLDivElement = document.querySelector(
+    '[data-element="info-status-container"]',
   );
 
   private examineDisplay: HTMLElement = document.getElementById('object_info');
@@ -136,6 +142,21 @@ export class InfoView {
     this.setSpeed(stats[EntityStats.Speed]);
     this.setHitpoints(stats[EntityStats.HitPoints]);
     this.setMaxHitpoints(stats[EntityStats.MaxHitPoints]);
+  }
+
+  public setEntityStatuses(statuses: EntityStatusesCollection): void {
+    if (this.statusContainer) {
+      this.statusContainer.innerHTML = '';
+
+      statuses.forEach((status: EntityStatusCommonController) => {
+        const span = document.createElement('span');
+        span.classList.add('info-statuses-item');
+
+        span.innerText = status.type;
+
+        this.statusContainer.appendChild(span);
+      });
+    }
   }
 
   public displayCellDescriptionInView(cell: Cell): void {

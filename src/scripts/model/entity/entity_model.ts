@@ -21,6 +21,7 @@ import { EntityStatusFactory } from '../../factory/entity/entity_status_factory'
 import { EntityStatusCommonController } from '../../controller/entity/entity_statuses/entity_status_common_controller';
 import { EntityStatuses } from '../../constants/entity/statuses';
 import { LevelController } from '../../controller/dungeon/level_controller';
+import { CollectionEvents } from '../../constants/collection_events';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -78,6 +79,11 @@ export class EntityModel extends BaseModel implements IEntity {
   public hitPoints: number = null;
   public maxHitPoints: number = null;
   public size: MonsterSizes = null;
+  /**
+   * Temporary entity stats modifiers, for example bleeding might cause temporary lose of strength. Not used anywhere
+   * yet! TODO finish implementation and usages
+   */
+  public temporaryStatsModifiers: Partial<IEntityStatsObject> = {};
   // TODO remove content of collection
   public inventory: ItemsCollection = new ItemsCollection([
     weaponModelFactory.getRandomWeaponModel(),
@@ -127,6 +133,21 @@ export class EntityModel extends BaseModel implements IEntity {
     this.perception = config.perception;
     this.type = config.type;
     // TODO add initialization of inventory
+
+    this.attachEventsToCollections();
+  }
+
+  private attachEventsToCollections(): void {
+    this.entityStatuses.on(
+      this,
+      CollectionEvents.Add,
+      this.onStatusesCollectionChange,
+    );
+    this.entityStatuses.on(
+      this,
+      CollectionEvents.Remove,
+      this.onStatusesCollectionChange,
+    );
   }
 
   /**
@@ -160,6 +181,10 @@ export class EntityModel extends BaseModel implements IEntity {
 
   public removeStatus(entityStatus: EntityStatusCommonController): void {
     this.entityStatuses.removeStatus(entityStatus);
+  }
+
+  private onStatusesCollectionChange(): void {
+    this.notify(EntityEvents.EntityModelStatusChange, this.entityStatuses);
   }
 
   /**

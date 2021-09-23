@@ -4,7 +4,7 @@ import { EntityStatuses } from '../../../constants/entity/statuses';
 
 export class EntityBleedingStatusController extends EntityStatusCommonController {
   public type = EntityStatuses.Bleeding;
-  private maxBleedingCount = getRandomNumber(3, 10);
+  private maxBleedingCount = getRandomNumber(3, 12);
   private bleedingCount = 0;
 
   public act() {

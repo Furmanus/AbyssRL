@@ -81,6 +81,7 @@ export class MainController extends Controller {
   constructor(tileset: HTMLImageElement) {
     super();
 
+    globalInfoController.initialize(tileset);
     this.gameController = new GameController(tileset);
     this.devFeaturesModalController = DevFeaturesModalController.getInstance();
 
@@ -89,8 +90,6 @@ export class MainController extends Controller {
     this.altPressed = false;
 
     this.controllerInitialized = false;
-
-    globalInfoController.initialize(tileset);
 
     this.initialize();
   }

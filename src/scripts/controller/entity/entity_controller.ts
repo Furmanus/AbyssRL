@@ -28,6 +28,8 @@ import {
 } from '../../constants/entity/statuses';
 import { EntityStatusCommonController } from './entity_statuses/entity_status_common_controller';
 import { LevelController } from '../dungeon/level_controller';
+import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
+import { globalInfoController } from '../../global/info_controller';
 
 export class EntityController<
   M extends EntityModel = EntityModel,
@@ -61,6 +63,11 @@ export class EntityController<
       this,
       EntityEvents.EntityEquippedArmourChange,
       this.onEntityEquippedArmourChange,
+    );
+    this.model.on(
+      this,
+      EntityEvents.EntityModelStatusChange,
+      this.onEntityStatusChange,
     );
   }
 
@@ -321,5 +328,17 @@ export class EntityController<
 
   public dropBlood(): void {
     this.notify(EntityEvents.EntityBloodLoss, this.model);
+  }
+
+  public addTemporaryStatsModifier(stat: EntityStats, value: number): void {
+    if (this.model.temporaryStatsModifiers[stat]) {
+      this.model.temporaryStatsModifiers[stat] += value;
+    } else {
+      this.model.temporaryStatsModifiers[stat] = value;
+    }
+  }
+
+  private onEntityStatusChange(statuses: EntityStatusesCollection): void {
+    globalInfoController.setEntityStatusesInView(statuses);
   }
 }

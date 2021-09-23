@@ -5,6 +5,8 @@ import { dungeonTypeToName } from '../constants/dungeon_types';
 import { ILevelInfo } from '../interfaces/level';
 import { IEntityStatsObject } from '../model/entity/entity_model';
 import { Cell } from '../model/dungeon/cells/cell_model';
+import { EntityStatuses } from '../constants/entity/statuses';
+import { EntityStatusesCollection } from '../collections/entity_statuses_collection';
 
 const constructorToken = Symbol('Info controller');
 let instance: InfoController = null;
@@ -79,6 +81,10 @@ export class InfoController extends Controller {
    */
   public setPlayerStatsInView(stats: IEntityStatsObject): void {
     this.view.setPlayerStats(stats);
+  }
+
+  public setEntityStatusesInView(statuses: EntityStatusesCollection): void {
+    this.view.setEntityStatuses(statuses);
   }
 
   /**

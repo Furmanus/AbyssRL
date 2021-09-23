@@ -52,6 +52,25 @@
       width: 100%;
     }
   }
+  &-statuses {
+    &-container {
+      .flex-row();
+      flex-grow: 1;
+      width: 100%;
+      padding: 10px 20px;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 20px;
+      font-size: 13px;
+      color: @infoStatusColor;
+    }
+    &-item {
+      display: inline-block;
+      width: 70px;
+      height: 20px;
+      text-transform: uppercase;
+    }
+  }
 }
 .examine {
   &-wrapper {
