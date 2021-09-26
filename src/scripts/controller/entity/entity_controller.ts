@@ -2,8 +2,10 @@ import { calculateFov } from '../../helper/fov_helper';
 import { IAnyObject } from '../../interfaces/common';
 import { Cell } from '../../model/dungeon/cells/cell_model';
 import {
+  AddTemporaryStatModifierData,
   EntityModel,
   IEntityStatsObject,
+  IStatsSingleModifier,
 } from '../../model/entity/entity_model';
 import { Controller } from '../controller';
 import { LevelModel } from '../../model/dungeon/level_model';
@@ -30,6 +32,7 @@ import { EntityStatusCommonController } from './entity_statuses/entity_status_co
 import { LevelController } from '../dungeon/level_controller';
 import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
 import { globalInfoController } from '../../global/info_controller';
+import { statusModifierToMessage } from '../../constants/entity/stats';
 
 export class EntityController<
   M extends EntityModel = EntityModel,
@@ -235,6 +238,7 @@ export class EntityController<
 
   public act(): void {
     this.activateStatuses();
+    this.updateEntityStatsModifiers();
   }
 
   public activateStatuses(): void {
@@ -276,16 +280,11 @@ export class EntityController<
    * Returns object with entity statistics (key is stats name).
    */
   public getStatsObject(): IEntityStatsObject {
-    return {
-      [EntityStats.Strength]: this.model.strength,
-      [EntityStats.Dexterity]: this.model.dexterity,
-      [EntityStats.Intelligence]: this.model.intelligence,
-      [EntityStats.Toughness]: this.model.toughness,
-      [EntityStats.Perception]: this.model.perception,
-      [EntityStats.Speed]: this.model.speed,
-      [EntityStats.HitPoints]: this.model.hitPoints,
-      [EntityStats.MaxHitPoints]: this.model.maxHitPoints,
-    };
+    return this.model.getBaseStats();
+  }
+
+  public getStatsModifiers(): Partial<IEntityStatsObject> {
+    return this.model.getAccumulatedAllTemporaryStats();
   }
 
   public inflictBleeding(): void {
@@ -330,15 +329,48 @@ export class EntityController<
     this.notify(EntityEvents.EntityBloodLoss, this.model);
   }
 
-  public addTemporaryStatsModifier(stat: EntityStats, value: number): void {
-    if (this.model.temporaryStatsModifiers[stat]) {
-      this.model.temporaryStatsModifiers[stat] += value;
-    } else {
-      this.model.temporaryStatsModifiers[stat] = value;
+  public addTemporaryStatsModifiers(
+    modifiers: AddTemporaryStatModifierData,
+  ): void {
+    const message = modifiers.reduce((text: string, modifierData: any) => {
+      const { stat, modifier: modifierObject } = modifierData;
+      const type = modifierObject.modifier < 0 ? 'negative' : 'positive';
+      // @ts-ignore
+      const addedText = statusModifierToMessage[type]?.[stat] || '';
+
+      if (addedText) {
+        return `${text} ${addedText}`;
+      }
+
+      return text;
+    }, '');
+
+    this.model.addTemporaryStatModifier(modifiers);
+
+    if (message) {
+      globalMessagesController.showMessageInView(
+        message.replace('{{entity}}', this.model.getDescription()),
+      );
     }
   }
 
   private onEntityStatusChange(statuses: EntityStatusesCollection): void {
     globalInfoController.setEntityStatusesInView(statuses);
+  }
+
+  private updateEntityStatsModifiers(): void {
+    const modifiedStats = this.model.updateTemporaryStatsModifiers();
+    let message = '';
+
+    for (const [stat, textKey] of Object.entries(modifiedStats)) {
+      // @ts-ignore
+      message += `${statusModifierToMessage[textKey][stat]} `;
+    }
+
+    if (message) {
+      globalMessagesController.showMessageInView(
+        message.replaceAll('{{entity}}', this.model.getDescription()),
+      );
+    }
   }
 }

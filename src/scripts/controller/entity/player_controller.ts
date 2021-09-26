@@ -174,7 +174,8 @@ export class PlayerController extends EntityController<PlayerModel> {
    * Method triggered at beginning of each player turn.
    */
   public act(): void {
-    this.activateStatuses();
+    super.act();
+
     this.notify(START_PLAYER_TURN);
   }
 

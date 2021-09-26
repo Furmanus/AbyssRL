@@ -10,7 +10,7 @@ import {
   MonstersTypes,
 } from '../../constants/entity/monsters';
 import { ItemsCollection } from '../../collections/items_collection';
-import { INaturalWeapon, IWeapon } from '../../interfaces/combat';
+import { IWeapon } from '../../interfaces/combat';
 import { ItemModel } from '../items/item_model';
 import { weaponModelFactory } from '../../factory/item/weapon_model_factory';
 import { WeaponModel } from '../items/weapons/weapon_model';
@@ -19,8 +19,6 @@ import { ArmourModel } from '../items/armours/armour_model';
 import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
 import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
 import { EntityStatusCommonController } from '../../controller/entity/entity_statuses/entity_status_common_controller';
-import { EntityStatuses } from '../../constants/entity/statuses';
-import { LevelController } from '../../controller/dungeon/level_controller';
 import { CollectionEvents } from '../../constants/collection_events';
 
 export interface IEntityStatsObject {
@@ -33,6 +31,28 @@ export interface IEntityStatsObject {
   [EntityStats.HitPoints]: number;
   [EntityStats.MaxHitPoints]: number;
 }
+
+type EntityStatsModifiers = Omit<
+  IEntityStatsObject,
+  'hitpoints' | 'maxHitpoints'
+>;
+
+export interface IStatsSingleModifier {
+  modifier: number;
+  count: number;
+  currentCount: number;
+}
+
+type EntityTemporaryStatsModifiersType = {
+  [K in keyof EntityStatsModifiers]: Set<IStatsSingleModifier>;
+};
+
+type EntityStatModifierSource = EntityStatusCommonController;
+export type AddTemporaryStatModifierData = Array<{
+  stat: Omit<EntityStats, 'HitPoints' | 'MaxHitPoints'>;
+  source: EntityStatModifierSource;
+  modifier: IStatsSingleModifier;
+}>;
 
 export class EntityModel extends BaseModel implements IEntity {
   /**
@@ -51,15 +71,69 @@ export class EntityModel extends BaseModel implements IEntity {
    * Cell model where entity was in last turn.
    */
   public lastVisitedCell: Cell = null;
-  public strength: number = null;
-  public dexterity: number = null;
-  public toughness: number = null;
-  public intelligence: number = null;
-  /**
-   * Speed statistic of entity. Important stat, used by time engine to calculate how often entity should act.
-   */
-  public speed: number = null;
-  public perception: number = null;
+  protected _strength: number = null;
+  public get strength(): number {
+    return this._strength + this.accumulateTemporaryStat(EntityStats.Strength);
+  }
+
+  public set strength(value: number) {
+    this._strength = value;
+  }
+
+  protected _dexterity: number = null;
+  public get dexterity(): number {
+    return (
+      this._dexterity + this.accumulateTemporaryStat(EntityStats.Dexterity)
+    );
+  }
+
+  public set dexterity(value: number) {
+    this._dexterity = value;
+  }
+
+  protected _toughness: number = null;
+  public get toughness(): number {
+    return (
+      this._toughness + this.accumulateTemporaryStat(EntityStats.Toughness)
+    );
+  }
+
+  public set toughness(value: number) {
+    this._toughness = value;
+  }
+
+  protected _intelligence: number = null;
+  public get intelligence(): number {
+    return (
+      this._intelligence +
+      this.accumulateTemporaryStat(EntityStats.Intelligence)
+    );
+  }
+
+  public set intelligence(value: number) {
+    this._intelligence = value;
+  }
+
+  protected _speed: number = null;
+  public get speed(): number {
+    return this._speed + this.accumulateTemporaryStat(EntityStats.Speed);
+  }
+
+  public set speed(value: number) {
+    this._speed = value;
+  }
+
+  protected _perception: number = null;
+  public get perception(): number {
+    return (
+      this._perception + this.accumulateTemporaryStat(EntityStats.Perception)
+    );
+  }
+
+  public set perception(value: number) {
+    this._perception = value;
+  }
+
   /**
    * Array of cell model which are in entity field of view
    */
@@ -81,9 +155,17 @@ export class EntityModel extends BaseModel implements IEntity {
   public size: MonsterSizes = null;
   /**
    * Temporary entity stats modifiers, for example bleeding might cause temporary lose of strength. Not used anywhere
-   * yet! TODO finish implementation and usages
+   * yet!
    */
-  public temporaryStatsModifiers: Partial<IEntityStatsObject> = {};
+  public temporaryStatsModifiers: EntityTemporaryStatsModifiersType = {
+    [EntityStats.Strength]: new Set<IStatsSingleModifier>(),
+    [EntityStats.Dexterity]: new Set<IStatsSingleModifier>(),
+    [EntityStats.Intelligence]: new Set<IStatsSingleModifier>(),
+    [EntityStats.Toughness]: new Set<IStatsSingleModifier>(),
+    [EntityStats.Perception]: new Set<IStatsSingleModifier>(),
+    [EntityStats.Speed]: new Set<IStatsSingleModifier>(),
+  };
+
   // TODO remove content of collection
   public inventory: ItemsCollection = new ItemsCollection([
     weaponModelFactory.getRandomWeaponModel(),
@@ -185,6 +267,32 @@ export class EntityModel extends BaseModel implements IEntity {
 
   private onStatusesCollectionChange(): void {
     this.notify(EntityEvents.EntityModelStatusChange, this.entityStatuses);
+  }
+
+  private accumulateTemporaryStat(stat: EntityStats): number {
+    return Array.from(
+      this.temporaryStatsModifiers[stat as keyof EntityStatsModifiers],
+    ).reduce(
+      (sum: number, current: { count: number; modifier: number }) =>
+        sum + current.modifier,
+      0,
+    );
+  }
+
+  public getAccumulatedAllTemporaryStats(): IEntityStatsObject {
+    return Object.entries(this.temporaryStatsModifiers).reduce(
+      (
+        accumulator: IEntityStatsObject,
+        current: [string, Set<IStatsSingleModifier>],
+      ) => {
+        const stat = current[0] as EntityStats;
+
+        accumulator[stat] = this.accumulateTemporaryStat(stat);
+
+        return accumulator;
+      },
+      {} as IEntityStatsObject,
+    );
   }
 
   /**
@@ -331,6 +439,19 @@ export class EntityModel extends BaseModel implements IEntity {
     return this.position.inventory;
   }
 
+  public getBaseStats(): IEntityStatsObject {
+    return {
+      [EntityStats.Strength]: this._strength,
+      [EntityStats.Dexterity]: this._dexterity,
+      [EntityStats.Intelligence]: this._intelligence,
+      [EntityStats.Toughness]: this._toughness,
+      [EntityStats.Perception]: this._perception,
+      [EntityStats.Speed]: this._speed,
+      [EntityStats.HitPoints]: this.hitPoints,
+      [EntityStats.MaxHitPoints]: this.maxHitPoints,
+    };
+  }
+
   /**
    * Return description of entity.
    *
@@ -346,5 +467,46 @@ export class EntityModel extends BaseModel implements IEntity {
 
   public setCurrentHpToMax(): void {
     this.setProperty('hitPoints', this.maxHitPoints);
+  }
+
+  public addTemporaryStatModifier(stats: AddTemporaryStatModifierData): void {
+    for (const statModifier of stats) {
+      const { modifier, stat, source } = statModifier;
+
+      this.temporaryStatsModifiers[stat as keyof EntityStatsModifiers].add(
+        modifier,
+      );
+    }
+  }
+
+  /**
+   * Upgrade counters of each stat modifier and check which modifier has to be removed in current turn.
+   */
+  public updateTemporaryStatsModifiers(): Partial<
+    Record<EntityStats, 'positive' | 'negative'>
+  > {
+    const changedStats: Partial<Record<EntityStats, 'positive' | 'negative'>> =
+      {};
+
+    for (const [statName, statModifiers] of Object.entries(
+      this.temporaryStatsModifiers,
+    )) {
+      let removedModifiersValue = 0;
+
+      for (const singleStatModifier of statModifiers) {
+        if (++singleStatModifier.currentCount > singleStatModifier.count) {
+          removedModifiersValue += singleStatModifier.modifier;
+
+          statModifiers.delete(singleStatModifier);
+        }
+      }
+
+      if (removedModifiersValue !== 0) {
+        changedStats[statName as EntityStats] =
+          removedModifiersValue < 0 ? 'positive' : 'negative';
+      }
+    }
+
+    return changedStats;
   }
 }

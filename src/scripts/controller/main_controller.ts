@@ -118,6 +118,7 @@ export class MainController extends Controller {
     );
     globalInfoController.setPlayerStatsInView(
       this.gameController.getPlayerStats(),
+      this.gameController.getPlayerStatsModifiers(),
     );
 
     this.controllerInitialized = true;
@@ -407,6 +408,7 @@ export class MainController extends Controller {
   private setPlayerStats(): void {
     globalInfoController.setPlayerStatsInView(
       this.gameController.getPlayerStats(),
+      this.gameController.getPlayerStatsModifiers(),
     );
   }
 

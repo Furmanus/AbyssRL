@@ -495,6 +495,10 @@ export class GameController extends Controller {
     return this.playerController.getStatsObject();
   }
 
+  public getPlayerStatsModifiers(): Partial<IEntityStatsObject> {
+    return this.playerController.getStatsModifiers();
+  }
+
   /**
    * Returns player inventory.
    * @returns  ItemsCollection

@@ -13,14 +13,18 @@ import { EntityStatusesCollection } from '../collections/entity_statuses_collect
 import { EntityStatusCommonController } from '../controller/entity/entity_statuses/entity_status_common_controller';
 
 interface IStatsObject {
-  [EntityStats.Strength]: HTMLSpanElement;
-  [EntityStats.Dexterity]: HTMLSpanElement;
-  [EntityStats.Intelligence]: HTMLSpanElement;
-  [EntityStats.Toughness]: HTMLSpanElement;
-  [EntityStats.Perception]: HTMLSpanElement;
-  [EntityStats.Speed]: HTMLSpanElement;
+  [EntityStats.Strength]: ISingleStatObject;
+  [EntityStats.Dexterity]: ISingleStatObject;
+  [EntityStats.Intelligence]: ISingleStatObject;
+  [EntityStats.Toughness]: ISingleStatObject;
+  [EntityStats.Perception]: ISingleStatObject;
+  [EntityStats.Speed]: ISingleStatObject;
   [EntityStats.HitPoints]: HTMLSpanElement;
   [EntityStats.MaxHitPoints]: HTMLSpanElement;
+}
+interface ISingleStatObject {
+  base: HTMLSpanElement;
+  actual: HTMLSpanElement;
 }
 
 /**
@@ -49,14 +53,30 @@ export class InfoView {
   private tileset: CanvasImageSource;
   private TILE_SIZE: number = config.TILE_SIZE;
   private stats: IStatsObject = {
-    [EntityStats.Strength]: document.getElementById('info-stat-strength'),
-    [EntityStats.Dexterity]: document.getElementById('info-stat-dexterity'),
-    [EntityStats.Intelligence]: document.getElementById(
-      'info-stat-intelligence',
-    ),
-    [EntityStats.Toughness]: document.getElementById('info-stat-toughness'),
-    [EntityStats.Perception]: document.getElementById('info-stat-perception'),
-    [EntityStats.Speed]: document.getElementById('info-stat-speed'),
+    [EntityStats.Strength]: {
+      base: document.getElementById('info-stat-strength'),
+      actual: document.getElementById('info-stat-strength-actual'),
+    },
+    [EntityStats.Dexterity]: {
+      base: document.getElementById('info-stat-dexterity'),
+      actual: document.getElementById('info-stat-dexterity-actual'),
+    },
+    [EntityStats.Intelligence]: {
+      base: document.getElementById('info-stat-intelligence'),
+      actual: document.getElementById('info-stat-intelligence-actual'),
+    },
+    [EntityStats.Toughness]: {
+      base: document.getElementById('info-stat-toughness'),
+      actual: document.getElementById('info-stat-toughness-actual'),
+    },
+    [EntityStats.Perception]: {
+      base: document.getElementById('info-stat-perception'),
+      actual: document.getElementById('info-stat-perception-actual'),
+    },
+    [EntityStats.Speed]: {
+      base: document.getElementById('info-stat-speed'),
+      actual: document.getElementById('info-stat-speed-actual'),
+    },
     [EntityStats.HitPoints]: document.getElementById('info-stat-hitpoints'),
     [EntityStats.MaxHitPoints]: document.getElementById(
       'info-stat-maxhitpoints',
@@ -101,28 +121,130 @@ export class InfoView {
     return this.screenElement;
   }
 
-  public setStrength(value: string | number): void {
-    this.stats[EntityStats.Strength].innerText = value as string;
+  public setStrength(value: string | number, modifier?: number): void {
+    this.stats[EntityStats.Strength].base.innerText = value as string;
+
+    if (modifier) {
+      this.stats[EntityStats.Strength].actual.innerText = `(${
+        parseInt(value as string, 10) + modifier
+      })`;
+
+      if (modifier < 0) {
+        this.stats[EntityStats.Strength].actual.className =
+          'info-stats-actual-negative';
+      } else if (modifier > 0) {
+        this.stats[EntityStats.Strength].actual.className =
+          'info-stats-actual-positive';
+      }
+    } else {
+      this.stats[EntityStats.Strength].actual.className =
+        'info-stats-actual-hidden';
+    }
   }
 
-  public setDexterity(value: string | number): void {
-    this.stats[EntityStats.Dexterity].innerText = value as string;
+  public setDexterity(value: string | number, modifier?: number): void {
+    this.stats[EntityStats.Dexterity].base.innerText = value as string;
+
+    if (modifier) {
+      this.stats[EntityStats.Dexterity].actual.innerText = `(${
+        parseInt(value as string, 10) + modifier
+      })`;
+
+      if (modifier < 0) {
+        this.stats[EntityStats.Dexterity].actual.className =
+          'info-stats-actual-negative';
+      } else if (modifier > 0) {
+        this.stats[EntityStats.Dexterity].actual.className =
+          'info-stats-actual-positive';
+      }
+    } else {
+      this.stats[EntityStats.Dexterity].actual.className =
+        'info-stats-actual-hidden';
+    }
   }
 
-  public setIntelligence(value: string | number): void {
-    this.stats[EntityStats.Intelligence].innerText = value as string;
+  public setIntelligence(value: string | number, modifier?: number): void {
+    this.stats[EntityStats.Intelligence].base.innerText = value as string;
+
+    if (modifier) {
+      this.stats[EntityStats.Intelligence].actual.innerText = `(${
+        parseInt(value as string, 10) + modifier
+      })`;
+
+      if (modifier < 0) {
+        this.stats[EntityStats.Intelligence].actual.className =
+          'info-stats-actual-negative';
+      } else {
+        this.stats[EntityStats.Intelligence].actual.className =
+          'info-stats-actual-positive';
+      }
+    } else {
+      this.stats[EntityStats.Intelligence].actual.className =
+        'info-stats-actual-hidden';
+    }
   }
 
-  public setToughness(value: string | number): void {
-    this.stats[EntityStats.Toughness].innerText = value as string;
+  public setToughness(value: string | number, modifier?: number): void {
+    this.stats[EntityStats.Toughness].base.innerText = value as string;
+
+    if (modifier) {
+      this.stats[EntityStats.Toughness].actual.innerText = `(${
+        parseInt(value as string, 10) + modifier
+      })`;
+
+      if (modifier < 0) {
+        this.stats[EntityStats.Toughness].actual.className =
+          'info-stats-actual-negative';
+      } else {
+        this.stats[EntityStats.Toughness].actual.className =
+          'info-stats-actual-positive';
+      }
+    } else {
+      this.stats[EntityStats.Toughness].actual.className =
+        'info-stats-actual-hidden';
+    }
   }
 
-  public setPerception(value: string | number): void {
-    this.stats[EntityStats.Perception].innerText = value as string;
+  public setPerception(value: string | number, modifier?: number): void {
+    this.stats[EntityStats.Perception].base.innerText = value as string;
+
+    if (modifier) {
+      this.stats[EntityStats.Perception].actual.innerText = `(${
+        parseInt(value as string, 10) + modifier
+      })`;
+
+      if (modifier < 0) {
+        this.stats[EntityStats.Perception].actual.className =
+          'info-stats-actual-negative';
+      } else {
+        this.stats[EntityStats.Perception].actual.className =
+          'info-stats-actual-positive';
+      }
+    } else {
+      this.stats[EntityStats.Perception].actual.className =
+        'info-stats-actual-hidden';
+    }
   }
 
-  public setSpeed(value: string | number): void {
-    this.stats[EntityStats.Speed].innerText = value as string;
+  public setSpeed(value: string | number, modifier?: number): void {
+    this.stats[EntityStats.Speed].base.innerText = value as string;
+
+    if (modifier) {
+      this.stats[EntityStats.Speed].actual.innerText = `(${
+        parseInt(value as string, 10) + modifier
+      })`;
+
+      if (modifier < 0) {
+        this.stats[EntityStats.Speed].actual.className =
+          'info-stats-actual-negative';
+      } else {
+        this.stats[EntityStats.Speed].actual.className =
+          'info-stats-actual-positive';
+      }
+    } else {
+      this.stats[EntityStats.Speed].actual.className =
+        'info-stats-actual-hidden';
+    }
   }
 
   public setHitpoints(value: string | number): void {
@@ -133,13 +255,31 @@ export class InfoView {
     this.stats[EntityStats.MaxHitPoints].innerText = value as string;
   }
 
-  public setPlayerStats(stats: IEntityStatsObject): void {
-    this.setStrength(stats[EntityStats.Strength]);
-    this.setDexterity(stats[EntityStats.Dexterity]);
-    this.setIntelligence(stats[EntityStats.Intelligence]);
-    this.setToughness(stats[EntityStats.Toughness]);
-    this.setPerception(stats[EntityStats.Perception]);
-    this.setSpeed(stats[EntityStats.Speed]);
+  public setPlayerStats(
+    stats: IEntityStatsObject,
+    modifiers: Partial<IEntityStatsObject>,
+  ): void {
+    this.setStrength(
+      stats[EntityStats.Strength],
+      modifiers[EntityStats.Strength],
+    );
+    this.setDexterity(
+      stats[EntityStats.Dexterity],
+      modifiers[EntityStats.Dexterity],
+    );
+    this.setIntelligence(
+      stats[EntityStats.Intelligence],
+      modifiers[EntityStats.Intelligence],
+    );
+    this.setToughness(
+      stats[EntityStats.Toughness],
+      modifiers[EntityStats.Toughness],
+    );
+    this.setPerception(
+      stats[EntityStats.Perception],
+      modifiers[EntityStats.Perception],
+    );
+    this.setSpeed(stats[EntityStats.Speed], modifiers[EntityStats.Speed]);
     this.setHitpoints(stats[EntityStats.HitPoints]);
     this.setMaxHitpoints(stats[EntityStats.MaxHitPoints]);
   }

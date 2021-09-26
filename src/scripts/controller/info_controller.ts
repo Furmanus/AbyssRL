@@ -79,8 +79,11 @@ export class InfoController extends Controller {
    *
    * @param stats Object with player statistics
    */
-  public setPlayerStatsInView(stats: IEntityStatsObject): void {
-    this.view.setPlayerStats(stats);
+  public setPlayerStatsInView(
+    stats: IEntityStatsObject,
+    modifiers: Partial<IEntityStatsObject>,
+  ): void {
+    this.view.setPlayerStats(stats, modifiers);
   }
 
   public setEntityStatusesInView(statuses: EntityStatusesCollection): void {
