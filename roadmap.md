@@ -33,6 +33,8 @@
 ###Misc
 - [R.0.1.M1] Electron desktop build
 - [R.0.1.M2] Development server
+###Optionally scheduled for later
+- [R.0.1.E5] Drawn entity status icons on avatar, design and create special icons
 
 #0.2.0
 

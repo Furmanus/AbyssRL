@@ -17,6 +17,8 @@ import Timeout = NodeJS.Timeout;
 import { Vector } from '../model/position/vector';
 import { getPositionFromString } from '../helper/utility';
 import { TileDecorator } from './game_view_decorators/tile_decorator';
+import { EntityStatuses } from '../constants/entity/statuses';
+import { EntityStatusCommonController } from '../controller/entity/entity_statuses/entity_status_common_controller';
 
 interface IMousePosition {
   x: number;
@@ -210,6 +212,7 @@ export class GameView extends Observer {
    * @param   barPercentage   Percentage of horizontal bar drawn at top of image. Drawn only if barPercentage argument
    *                          is passed to this function
    * @param   barColor        Color of horizontal bar above image
+   * @param   statuses        Entity different statuses to show as icons on its avatar
    */
   private drawImage(
     x: number,
@@ -218,6 +221,7 @@ export class GameView extends Observer {
     j: number,
     barPercentage?: number,
     barColor?: string,
+    statuses?: string[],
   ): void {
     const tempSprite: ITemporayImagesMember =
       this.temporaryDrawnImages[`${x}x${y}`];
@@ -249,6 +253,10 @@ export class GameView extends Observer {
         barLength,
         4,
       );
+    }
+
+    if (statuses && Array.isArray(statuses) && statuses.length) {
+      // TODO draw status icon on avatar
     }
   }
 
@@ -299,6 +307,7 @@ export class GameView extends Observer {
       return;
     }
     const isCellNotVisible: boolean = !!this.foggedTiles[`${x}x${y}`];
+    const entityStatuses: string[] = [];
     let tile: string;
     let interval;
     let hpBarPercent: number = null;
@@ -315,6 +324,12 @@ export class GameView extends Observer {
         } else {
           hpBarColor = 'red';
         }
+
+        cell.entity.entityStatuses.forEach(
+          (status: EntityStatusCommonController) => {
+            // TODO fill statuses array with icon to draw
+          },
+        );
       } else if (cell.inventory.size) {
         tile = cell.inventory.get(0).display;
       } else {
@@ -355,6 +370,7 @@ export class GameView extends Observer {
         j,
         hpBarPercent,
         hpBarColor,
+        entityStatuses,
       ); // we draw frame of animation
 
       interval = window.setInterval(() => {
@@ -365,6 +381,7 @@ export class GameView extends Observer {
           j,
           hpBarPercent,
           hpBarColor,
+          entityStatuses,
         );
 
         if (light) {
