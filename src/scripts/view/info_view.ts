@@ -310,6 +310,12 @@ export class InfoView {
 
       this.examineDisplay.innerHTML = template.wrapper;
 
+      if (templateVariables.status !== 'good condition') {
+        this.examineDisplay
+          .querySelector('[data-element="status"]')
+          .classList.add('negative-status');
+      }
+
       canvas = this.examineDisplay.querySelector('#image');
       this.drawCellDisplayOnCanvas(canvas, cell.entity.display);
     } else if (cell.inventory.size) {
@@ -407,6 +413,7 @@ export class InfoView {
       weaponType: naturalWeapon.naturalType,
       weaponDamage: naturalWeapon.damage.getSerializedData(),
       weaponDmgType: naturalWeapon.type,
+      status: entity.getEntityGeneralStatusDescription(),
     };
   }
 

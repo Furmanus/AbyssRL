@@ -22,6 +22,9 @@ export function getEntityInfoTemplate(
                 <div class="examine-weapon">
                     <span>Attack: ${variables.weaponType} ${variables.weaponDamage} ${variables.weaponDmgType}</span>
                 </div>
+                <div class="examine-status" data-element="status">
+                    <span>${variables.status}</span>
+                </div>
             </div>
         `,
     cell: `

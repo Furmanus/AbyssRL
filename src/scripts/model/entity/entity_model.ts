@@ -152,6 +152,10 @@ export class EntityModel extends BaseModel implements IEntity {
   public isHostile: boolean = false;
   public hitPoints: number = null;
   public maxHitPoints: number = null;
+  public get hpToMaxHpRatio(): number {
+    return this.hitPoints / this.maxHitPoints;
+  }
+
   public size: MonsterSizes = null;
   /**
    * Temporary entity stats modifiers, for example bleeding might cause temporary lose of strength. Not used anywhere
@@ -508,5 +512,27 @@ export class EntityModel extends BaseModel implements IEntity {
     }
 
     return changedStats;
+  }
+
+  public getEntityGeneralStatusDescription(): string {
+    if (this.entityStatuses.size === 0 && this.hpToMaxHpRatio > 0.75) {
+      return 'good condition';
+    } else {
+      let status: string = '';
+
+      if (this.hpToMaxHpRatio <= 0.75 && this.hpToMaxHpRatio > 0.33) {
+        status += 'moderately wounded';
+      } else if (this.hpToMaxHpRatio <= 0.33) {
+        status += 'badly wounded';
+      }
+
+      this.entityStatuses.forEach(
+        (entityStatus: EntityStatusCommonController) => {
+          status += `${status !== '' ? ', ' : ''}${entityStatus.type}`;
+        },
+      );
+
+      return status;
+    }
   }
 }
