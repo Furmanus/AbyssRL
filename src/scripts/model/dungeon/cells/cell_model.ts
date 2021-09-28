@@ -208,4 +208,11 @@ export abstract class Cell extends BaseModel implements ICellModel {
     this.displayWhenVisible = null;
     this.specialConditions.delete(CellSpecialConditions.Bloody);
   }
+
+  public dryPoolOfBlood(): void {
+    if (this.specialConditions.has(CellSpecialConditions.Bloody)) {
+      this.specialConditions.delete(CellSpecialConditions.Bloody);
+      this.specialConditions.add(CellSpecialConditions.DriedBlood);
+    }
+  }
 }

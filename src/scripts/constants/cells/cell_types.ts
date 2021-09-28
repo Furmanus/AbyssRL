@@ -27,4 +27,5 @@ export const cellTypes = {
 
 export const enum CellSpecialConditions {
   Bloody = 'blood',
+  DriedBlood = 'dried_blood',
 }
