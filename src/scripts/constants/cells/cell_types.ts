@@ -29,3 +29,8 @@ export const enum CellSpecialConditions {
   Bloody = 'blood',
   DriedBlood = 'dried_blood',
 }
+
+export const cellSpecialConditionToWalkMessage = {
+  [CellSpecialConditions.Bloody]: 'There is a little pool of fresh blood here.',
+  [CellSpecialConditions.DriedBlood]: 'Old blood stains are visible here.',
+};

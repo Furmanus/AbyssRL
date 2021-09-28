@@ -13,7 +13,10 @@ import { PlayerController } from '../../../controller/entity/player_controller';
 import { ICellModel } from '../../../interfaces/cell';
 import { ItemsCollection } from '../../../collections/items_collection';
 import { MiscTiles } from '../../../constants/cells/sprites';
-import { CellSpecialConditions } from '../../../constants/cells/cell_types';
+import {
+  CellSpecialConditions,
+  cellSpecialConditionToWalkMessage,
+} from '../../../constants/cells/cell_types';
 
 /**
  * Class representing single map square(field).
@@ -116,7 +119,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Message displayed when player walks over cell.
    */
   get walkMessage(): string {
-    return '';
+    return this.cellSpecialConditionsToWalkMessage();
   }
 
   /**
@@ -214,5 +217,19 @@ export abstract class Cell extends BaseModel implements ICellModel {
       this.specialConditions.delete(CellSpecialConditions.Bloody);
       this.specialConditions.add(CellSpecialConditions.DriedBlood);
     }
+  }
+
+  private cellSpecialConditionsToWalkMessage(): string {
+    return Array.from(this.specialConditions).reduce((result, condition) => {
+      if (!(condition in cellSpecialConditionToWalkMessage)) {
+        return result;
+      }
+
+      if (result === '') {
+        return cellSpecialConditionToWalkMessage[condition];
+      } else {
+        return `${result}. ${cellSpecialConditionToWalkMessage[condition]}`;
+      }
+    }, '');
   }
 }

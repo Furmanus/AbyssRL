@@ -14,6 +14,7 @@ import { PLAYER_DEATH } from '../../constants/entity/player_actions';
 import { MonsterFactory } from '../../factory/monster_factory';
 import { IActor } from '../../interfaces/entity/entity_interfaces';
 import { MiscTiles } from '../../constants/cells/sprites';
+import { DungeonEventsFactory } from '../../factory/dungeon_event_factory';
 
 interface ILevelControllerConstructorConfig {
   readonly branch: string;
@@ -242,6 +243,11 @@ export class LevelController extends Controller {
 
     if (cell) {
       cell.createPoolOfBlood();
+
+      this.addActorToTimeEngine(
+        DungeonEventsFactory.getDryBloodEvent(cell),
+        false,
+      );
     }
   }
 }

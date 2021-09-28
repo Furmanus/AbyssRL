@@ -34,9 +34,10 @@ export class StairsModel extends Cell implements ICellModel {
 
   get walkMessage(): string {
     let message = Utility.capitalizeString(`${this.description} is here.`);
+    const superMessage = super.walkMessage;
 
-    if (this.specialConditions.has(CellSpecialConditions.Bloody)) {
-      message += ' Stairs are covered with blood. It is slippery here.';
+    if (superMessage) {
+      message += ` ${superMessage}`;
     }
 
     return message;

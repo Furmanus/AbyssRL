@@ -27,14 +27,4 @@ export class FloorModel extends Cell implements ICellModel {
   set display(tiles: string) {
     this.displaySet = tiles;
   }
-
-  get walkMessage(): string {
-    if (this.specialConditions.has(CellSpecialConditions.Bloody)) {
-      return `You walk through a little pool of blood. It is slippery here. ${
-        super.walkMessage
-      }`;
-    }
-
-    return super.walkMessage;
-  }
 }
