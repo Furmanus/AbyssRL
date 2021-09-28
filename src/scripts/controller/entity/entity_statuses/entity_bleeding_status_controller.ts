@@ -36,4 +36,19 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
       }
     }
   }
+
+  public getMaxBleedingCount(): number {
+    return this.maxBleedingCount;
+  }
+
+  public increaseMaxBleedingCount(val: number): void {
+    this.maxBleedingCount += val;
+  }
+
+  public add(status: EntityStatusCommonController): void {
+    if (status instanceof EntityBleedingStatusController) {
+      this.increaseMaxBleedingCount(status.getMaxBleedingCount());
+      this.entityController.increaseBloodLoss();
+    }
+  }
 }

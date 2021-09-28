@@ -4,7 +4,13 @@ import { EntityStatuses } from '../constants/entity/statuses';
 
 export class EntityStatusesCollection extends Collection<EntityStatusCommonController> {
   public addStatus(status: EntityStatusCommonController): this {
-    if (!this.getStatus(status)) {
+    const currentStatusOfSameType = this.getStatus(status);
+
+    if (currentStatusOfSameType) {
+      currentStatusOfSameType.add(status);
+
+      return this;
+    } else {
       return this.add(status);
     }
   }

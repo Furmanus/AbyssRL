@@ -36,6 +36,7 @@ import {
 } from '../container_inventory_modal_controller';
 import { ContainerInventoryModalEvents } from '../../constants/events/containerInventoryModalEvents';
 import { ArmourModel } from '../../model/items/armours/armour_model';
+import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -67,8 +68,6 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     this.model = new PlayerModel(constructorConfig);
     this.attachEvents();
-
-    this.inflictBleeding();
   }
 
   public static getInstance(constructorConfig?: IAnyObject): PlayerController {

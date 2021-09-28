@@ -329,6 +329,12 @@ export class EntityController<
     this.notify(EntityEvents.EntityBloodLoss, this.model);
   }
 
+  public increaseBloodLoss(): void {
+    globalMessagesController.showMessageInView(
+      `${this.model.getDescription()} blood loss increases!`,
+    );
+  }
+
   public addTemporaryStatsModifiers(
     modifiers: AddTemporaryStatModifierData,
   ): void {

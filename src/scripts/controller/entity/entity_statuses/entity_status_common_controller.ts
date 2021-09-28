@@ -24,4 +24,6 @@ export abstract class EntityStatusCommonController extends Controller {
   public act(): void {
     this.turnCount++;
   }
+
+  public abstract add(status: EntityStatusCommonController): void;
 }
