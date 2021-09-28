@@ -148,7 +148,7 @@ export class GameController extends Controller {
       levelController: playerLevel,
       display: entities.AVATAR,
       position: inititalPlayerCell,
-      speed: 15,
+      speed: 100,
       perception: 6,
       strength: 12,
       dexterity: 12,

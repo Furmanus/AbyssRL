@@ -17,7 +17,7 @@ export const monstersData: IMonsterDataObject = {
     dexterity: 10,
     intelligence: 5,
     toughness: 2,
-    speed: 15,
+    speed: 110,
     perception: 6,
     description: 'giant rat',
     type: MonstersTypes.GiantRat,
