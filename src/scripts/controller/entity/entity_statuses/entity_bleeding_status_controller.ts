@@ -8,7 +8,7 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
   private maxBleedingCount = getRandomNumber(3, 12);
   private bleedingCount = 0;
   private weaknessCount = 0;
-  private weaknessTurnStart = getRandomNumber(3, 3);
+  private weaknessTurnStart = getRandomNumber(10, 15);
 
   public act() {
     super.act();
@@ -26,7 +26,7 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
             source: this,
             modifier: {
               modifier: -1,
-              count: getRandomNumber(10, 10),
+              count: getRandomNumber(50, 80),
               currentCount: 0,
             },
           },
