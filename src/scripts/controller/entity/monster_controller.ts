@@ -39,7 +39,7 @@ export class MonsterController extends EntityController<MonsterModel> {
 
   public act(): void {
     super.act();
-    // TODO zbadac czemu w widoku gry czasami przy bleedingu zostaje gif otrzymania rany
+
     if (!this.isDead) {
       this.calculateFov();
       this.ai.performNextMove();

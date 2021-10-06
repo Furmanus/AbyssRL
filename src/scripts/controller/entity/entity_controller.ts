@@ -90,7 +90,7 @@ export class EntityController<
   @boundMethod
   public attack(defender: EntityModel): ICombatResult {
     const defenderController =
-      this.currentLevelController.getEntityControllerByModel(defender); // TODO tu sie wypierdala, sprawdzic dlaczego
+      this.currentLevelController.getEntityControllerByModel(defender);
 
     if (defenderController) {
       return doCombatAction(this, defenderController);
