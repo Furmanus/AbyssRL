@@ -7,6 +7,7 @@ export interface ICombatData {
   attacker: EntityModel;
   defender: EntityModel;
   wasDefenderHit: boolean;
+  isCriticalHit: boolean;
   damageAmount: number;
 }
 
@@ -80,13 +81,13 @@ const defenderPart: MessagePartType = {
       ' {defender} {state} wounding him.',
       ' {defender} makes poor attempt to dodge. Sharp teeths cuts {defender} body {state} wounding him.',
     ],
-    [DamageTypes.Bludgeoning]: [' {defender} {state} wounding him'],
-    [DamageTypes.Slashing]: [' {defender} {state} wounding him'],
-    [DamageTypes.Piercing]: [' {defender} {state} wounding him'],
+    [DamageTypes.Bludgeoning]: [' {defender} {state} wounding him.'],
+    [DamageTypes.Slashing]: [' {defender} {state} wounding him.'],
+    [DamageTypes.Piercing]: [' {defender} {state} wounding him.'],
   },
   miss: {
     [MonsterAttackTypes.Fist]: [
-      ' {defender}. {defender} makes excellent attempt to dodge. Attack misses',
+      ' {defender}. {defender} makes excellent attempt to dodge. Attack misses.',
       ' {defender}. {defender} successfully dodges incoming strike.',
       " {defender} ducks under {attacker}'s strike.",
     ],
@@ -95,7 +96,7 @@ const defenderPart: MessagePartType = {
       ' {defender}, but {defender} makes good attempt to dodge.',
     ],
     [DamageTypes.Bludgeoning]: [
-      ' {defender}. {defender} makes excellent attempt to dodge. Attack misses',
+      ' {defender}. {defender} makes excellent attempt to dodge. Attack misses.',
     ],
     [DamageTypes.Slashing]: [
       ' {defender}, but {defender} makes good attempt to dodge.',
@@ -106,7 +107,7 @@ const defenderPart: MessagePartType = {
     [MonsterAttackTypes.Fist]: [
       ' {defender}. {defender} makes poor attempt to dodge. Attack hits, but fails to hurt {defender}.',
       ' {defender}, but fails to hurt {defender}.',
-      " {defender} fails to dodge incoming strike, but attack doesn't penetrate {defender} armour",
+      " {defender} fails to dodge incoming strike, but attack doesn't penetrate {defender} armour.",
     ],
     [MonsterAttackTypes.Bite]: [
       " {defender}. {defender} makes poor attempt to dodge, but attack doesn't penetrate {defender} armour.",
@@ -117,13 +118,14 @@ const defenderPart: MessagePartType = {
     ],
     [DamageTypes.Slashing]: [' {defender}, but fails to hurt {defender}.'],
     [DamageTypes.Piercing]: [
-      " {defender} fails to dodge incoming strike, but attack doesn't penetrate {defender} armour",
+      " {defender} fails to dodge incoming strike, but attack doesn't penetrate {defender} armour.",
     ],
   },
 };
 
 export function generateCombatMessage(data: ICombatData): string {
-  const { attacker, defender, wasDefenderHit, damageAmount } = data;
+  const { attacker, defender, wasDefenderHit, damageAmount, isCriticalHit } =
+    data;
   const { weapon } = attacker;
   const weaponType: string = weapon.naturalType || weapon.type;
   let message: string = '';

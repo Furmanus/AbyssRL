@@ -6,6 +6,7 @@ import { LevelModel } from '../../model/dungeon/level_model';
 import { IAnyFunction } from '../../interfaces/common';
 import { ICavernGenerateLevelConfig } from '../../interfaces/generators';
 import Cellular from 'rot-js/lib/map/cellular';
+import { LevelController } from '../../controller/dungeon/level_controller';
 
 const singletonToken: symbol = Symbol('Cavern level generator singleton token');
 let instance: CavernLevelGenerator;
@@ -33,15 +34,16 @@ export class CavernLevelGenerator extends AbstractLevelGenerator {
   /**
    * Method responsible for generating cavern level.
    *
-   * @param   level           Level model which cells will be transformed.
+   * @param   levelController    Level controller which models cells will be modified.
    * @param   config          Object with configuration parameters.
    * @param   debugCallback   Optional: callback for rot.js generator for debugging purpose.
    */
   public generateLevel(
-    level: LevelModel,
+    levelController: LevelController,
     config?: ICavernGenerateLevelConfig,
     debugCallback?: IAnyFunction,
   ): void {
+    const { model: level } = levelController;
     const solidCellProbability = (config && config.solidCellProbability) || 0.5;
     const born = (config && config.born) || [5, 6, 7, 8];
     const survive = (config && config.survive) || [4, 5, 6, 7, 8];
@@ -90,7 +92,7 @@ export class CavernLevelGenerator extends AbstractLevelGenerator {
       this.generateRandomStairsDown(level);
     }
 
-    this.generateMonsters(level);
+    this.generateMonsters(levelController);
   }
 
   /**

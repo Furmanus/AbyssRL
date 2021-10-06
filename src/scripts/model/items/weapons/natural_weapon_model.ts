@@ -6,6 +6,7 @@ import { IAnyObject } from '../../../interfaces/common';
 import { WearableModel } from '../wearable_model';
 import { EntityModel } from '../../entity/entity_model';
 import { ItemTypes } from '../../../constants/items/item';
+import { WeaponCriticalDamageType } from '../../../constants/items/weapons';
 
 export class NaturalWeaponModel
   extends WearableModel
@@ -18,6 +19,8 @@ export class NaturalWeaponModel
   public display: string = null;
   public itemType: ItemTypes = null;
   public naturalType: MonsterAttackTypes;
+  public criticalHitRate = 0;
+  public criticalDamageType: [WeaponCriticalDamageType];
 
   get description(): string {
     return this.naturalType;

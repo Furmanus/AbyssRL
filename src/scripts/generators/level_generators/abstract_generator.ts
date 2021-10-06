@@ -24,6 +24,7 @@ import { MonsterFactory } from '../../factory/monster_factory';
 import { DungeonEvents } from '../../constants/dungeon_events';
 import { MonsterController } from '../../controller/entity/monster_controller';
 import { Directions } from '../../interfaces/directions';
+import { LevelController } from '../../controller/dungeon/level_controller';
 
 const { NE, N, NW, W, SW, S, SE, E } = directionShortToStringMap;
 const MONSTERS_LIMIT_PER_LEVEL: number = 20;
@@ -809,14 +810,15 @@ export abstract class AbstractLevelGenerator {
    *
    * @param levelModel Model of dungeon level
    */
-  public generateMonsters(levelModel: LevelModel): void {
+  public generateMonsters(levelController: LevelController): void {
     if (!config.debugOptions.noMonsters) {
       for (let i = 0; i < MONSTERS_LIMIT_PER_LEVEL; i++) {
+        const { model: levelModel } = levelController;
         const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
 
         if (randomCell) {
           const monsterController: MonsterController =
-            MonsterFactory.getGiantRatController(levelModel, randomCell);
+            MonsterFactory.getGiantRatController(levelController, randomCell);
           randomCell.setEntity(monsterController.getModel());
           levelModel.notify(
             DungeonEvents.NewCreatureSpawned,

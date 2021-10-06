@@ -13,8 +13,8 @@ import { Monsters, MonstersTypes } from '../../constants/entity/monsters';
 import { PLAYER_DEATH } from '../../constants/entity/player_actions';
 import { MonsterFactory } from '../../factory/monster_factory';
 import { IActor } from '../../interfaces/entity/entity_interfaces';
-import { MiscTiles } from '../../constants/cells/sprites';
 import { DungeonEventsFactory } from '../../factory/dungeon_event_factory';
+import { EntityFactory } from '../../factory/entity/entity_factory';
 
 interface ILevelControllerConstructorConfig {
   readonly branch: string;
@@ -27,6 +27,8 @@ interface ILevelControllerConstructorConfig {
 export class LevelController extends Controller {
   public model: LevelModel;
   public engine: EngineController;
+  private levelEntitiesControllers =
+    EntityFactory.getEntityControllerollection();
 
   constructor(config: ILevelControllerConstructorConfig) {
     super();
@@ -56,6 +58,11 @@ export class LevelController extends Controller {
       this,
       DungeonEvents.NewCreatureSpawned,
       this.onNewMonsterSpawned.bind(this),
+    );
+    this.levelEntitiesControllers.on(
+      this,
+      EntityEvents.EntityMove,
+      this.onEntityCollectionEntityMove,
     );
   }
 
@@ -127,13 +134,14 @@ export class LevelController extends Controller {
 
     if (actor instanceof EntityController) {
       this.attachEventsToMonsterController(actor);
+      this.levelEntitiesControllers.add(actor);
     }
   }
 
   public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
     const monsterController = MonsterFactory.getMonsterControllerByType(
       monster,
-      this.model,
+      this,
       cell,
     );
 
@@ -150,6 +158,7 @@ export class LevelController extends Controller {
 
     if (actor instanceof EntityController) {
       this.detachEventsFromMonsterController(actor);
+      this.levelEntitiesControllers.remove(actor);
     }
   }
 
@@ -248,6 +257,22 @@ export class LevelController extends Controller {
         DungeonEventsFactory.getDryBloodEvent(cell),
         false,
       );
+    }
+  }
+
+  public getEntityControllerByModel(
+    entityModel: EntityModel,
+  ): EntityController {
+    return this.levelEntitiesControllers.getControllerByEntityModel(
+      entityModel,
+    );
+  }
+
+  private onEntityCollectionEntityMove(entity: EntityController): void {
+    const entityModel = entity.getModel();
+
+    if (entityModel.type !== MonstersTypes.Player) {
+      this.notify(EntityEvents.EntityMove, entity.getModel());
     }
   }
 }

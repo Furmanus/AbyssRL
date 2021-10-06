@@ -19,6 +19,7 @@ import { getPositionFromString } from '../helper/utility';
 import { TileDecorator } from './game_view_decorators/tile_decorator';
 import { EntityStatuses } from '../constants/entity/statuses';
 import { EntityStatusCommonController } from '../controller/entity/entity_statuses/entity_status_common_controller';
+import { EntityModel } from '../model/entity/entity_model';
 
 interface IMousePosition {
   x: number;
@@ -32,6 +33,7 @@ interface ISprites {
 
 interface ITemporayImagesMember {
   sprite: string;
+  source?: EntityModel;
 }
 
 interface ITemporaryImages {
@@ -1018,11 +1020,46 @@ export class GameView extends Observer {
   }
 
   /**
+   * Updates entity position in temporaryDrawnTiles object. Used when monster move to correctly handle situation, where
+   * at certain coords there is some graphical effect scheduled to show and in meantime monster changed its position.
+   *
+   * @param {EntityModel} entity
+   */
+  public updateEntityPositionInTemporaryDrawnSprites(
+    entity: EntityModel,
+  ): void {
+    if (Object.keys(this.temporaryDrawnImages).length) {
+      const entityEntry = Object.entries(this.temporaryDrawnImages).find(
+        ([key, entry]) => entry.source === entity,
+      );
+
+      if (entityEntry) {
+        const temporaryTile = entityEntry[1].sprite;
+        const newPosition = this.camera.convertMapCoordinatesToCameraCoords(
+          entity.position.x,
+          entity.position.y,
+        );
+        const coordinates: string = `${newPosition.x}x${newPosition.y}`;
+
+        delete this.temporaryDrawnImages[entityEntry[0]];
+        this.temporaryDrawnImages[coordinates] = {
+          sprite: temporaryTile,
+          source: entity,
+        };
+      }
+    }
+  }
+
+  /**
    * Show explosion gfx in specified tile on canvas.
    *
    * @param position  Coordinates object
+   * @param source    Entity model on top of which explosion image should be drawn
    */
-  public showExplosionAtPosition(position: ICoordinates): void {
+  public showExplosionAtPosition(
+    position: ICoordinates,
+    source?: EntityModel,
+  ): void {
     const convertedPosition: ICoordinates =
       this.camera.convertMapCoordinatesToCameraCoords(position.x, position.y);
 
@@ -1031,6 +1068,7 @@ export class GameView extends Observer {
         convertedPosition,
         MiscTiles.Explosion,
         ALTERNATIVE_TILE_SPRITE_TIMEOUT,
+        source,
       );
     }
   }
@@ -1049,21 +1087,45 @@ export class GameView extends Observer {
     canvasCoords: ICoordinates,
     sprite: string,
     timeout: number,
+    source?: EntityModel,
   ): void {
     const coordinates: string = `${canvasCoords.x}x${canvasCoords.y}`;
 
     this.temporaryDrawnImages[coordinates] = {
       sprite,
+      source,
     };
 
     setTimeout(() => {
-      delete this.temporaryDrawnImages[coordinates];
-      /**
-       * We redraw original static sprite behind temporary sprite - otherwise it would've been redrawn during next
-       * whole screen redraw.
-       */
-      this.redrawStaticSpriteAtPosition(canvasCoords);
+      if (source) {
+        const convertedCoords = this.camera.convertMapCoordinatesToCameraCoords(
+          source.position.x,
+          source.position.y,
+        );
+        const key = `${convertedCoords.x}x${convertedCoords.y}`;
+
+        delete this.temporaryDrawnImages[key];
+        this.redrawStaticSpriteAtPosition(convertedCoords);
+      } else {
+        delete this.temporaryDrawnImages[coordinates];
+        /**
+         * We redraw original static sprite behind temporary sprite - otherwise it would've been redrawn during next
+         * whole screen redraw.
+         */
+        this.redrawStaticSpriteAtPosition(canvasCoords);
+      }
     }, timeout);
+  }
+
+  private getTemporaryDrawnImageKeyFromEntityPosition(
+    position: ICoordinates,
+  ): string {
+    const convertedCoords = this.camera.convertMapCoordinatesToCameraCoords(
+      position.x,
+      position.y,
+    );
+
+    return `${convertedCoords.x}x${convertedCoords.y}`;
   }
 
   /**

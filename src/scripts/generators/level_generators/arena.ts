@@ -14,6 +14,7 @@ import {
 import { Cell } from '../../model/dungeon/cells/cell_model';
 import { Position } from '../../model/position/position';
 import { MapWithObserver } from '../../core/map_with_observer';
+import { LevelController } from '../../controller/dungeon/level_controller';
 
 const singletonToken: symbol = Symbol('ArenaLevelGenerator singleton token');
 let instance: ArenaLevelGenerator;
@@ -40,15 +41,16 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
   /**
    * Generates arena big room from given level cells.
    *
-   * @param   level              Level cells in array.
+   * @param   levelController    Level controller which models cells will be modified.
    * @param   config             Additional level config info.
    * @param   debugCallback      Optional callback function serving as debug for map generation
    */
   public generateLevel(
-    level: LevelModel,
+    levelController: LevelController,
     config?: IDungeonStrategyGenerateLevelConfig,
     debugCallback?: IAnyFunction,
   ): void {
+    const { model: level } = levelController;
     const generator: Arena = new Map.Arena(
       globalConfig.LEVEL_WIDTH,
       globalConfig.LEVEL_HEIGHT,
@@ -78,7 +80,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
       this.generateRandomStairsDown(level);
     }
 
-    this.generateMonsters(level);
+    this.generateMonsters(levelController);
 
     function generatorCallback(x: number, y: number, value: number): void {
       if (value === 1) {

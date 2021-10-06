@@ -7,8 +7,27 @@ import { entities } from '../../../../constants/cells/sprites';
 import { ItemsCollection } from '../../../../collections/items_collection';
 import { getMonsterNaturalWeapon } from '../../../../factory/natural_weapon_factory';
 
+export type MonsterStats = Pick<
+  IEntity,
+  | 'strength'
+  | 'dexterity'
+  | 'intelligence'
+  | 'toughness'
+  | 'speed'
+  | 'perception'
+  | 'description'
+  | 'type'
+  | 'display'
+  | 'protection'
+  | 'hitPoints'
+  | 'maxHitPoints'
+  | 'size'
+  | 'inventory'
+  | 'naturalWeapon'
+>;
+
 interface IMonsterDataObject {
-  [key: string]: Partial<IEntity>;
+  [key: string]: MonsterStats;
 }
 
 export const monstersData: IMonsterDataObject = {

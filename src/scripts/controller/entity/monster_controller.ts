@@ -3,9 +3,11 @@ import { MonsterModel } from '../../model/entity/monster_model';
 import { MonsterAi } from '../../strategy/ai/monster_ai';
 import { MonstersTypes } from '../../constants/entity/monsters';
 import { AnimalAi } from '../../strategy/ai/animal_ai';
+import { LevelController } from '../dungeon/level_controller';
 
 interface IMonsterControllerConfig {
   model: MonsterModel;
+  levelController: LevelController;
 }
 type monstersAi = typeof MonsterAi | typeof AnimalAi;
 function getEntityAiStrategy(type: MonstersTypes): monstersAi {
@@ -37,8 +39,10 @@ export class MonsterController extends EntityController<MonsterModel> {
 
   public act(): void {
     super.act();
-
-    this.calculateFov();
-    this.ai.performNextMove();
+    // TODO zbadac czemu w widoku gry czasami przy bleedingu zostaje gif otrzymania rany
+    if (!this.isDead) {
+      this.calculateFov();
+      this.ai.performNextMove();
+    }
   }
 }

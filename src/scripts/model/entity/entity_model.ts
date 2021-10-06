@@ -196,6 +196,10 @@ export class EntityModel extends BaseModel implements IEntity {
     );
   }
 
+  public set protection(val: number) {
+    this.naturalProtection = val;
+  }
+
   public get evasion(): number {
     return this.equippedArmour?.dodgeModifier || 0;
   }

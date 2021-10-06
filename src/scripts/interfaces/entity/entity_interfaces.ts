@@ -8,6 +8,7 @@ import { WeaponModel } from '../../model/items/weapons/weapon_model';
 import { PlayerEquipSlots } from '../../constants/entity/inventory';
 import { ItemModel } from '../../model/items/item_model';
 import { ArmourModel } from '../../model/items/armours/armour_model';
+import { NaturalWeaponModel } from '../../model/items/weapons/natural_weapon_model';
 
 export interface IEntity {
   display: string;
@@ -29,8 +30,8 @@ export interface IEntity {
   maxHitPoints: number;
   size: MonsterSizes;
   inventory: ItemsCollection;
-  equippedWeapon: IWeapon;
-  naturalWeapon: IWeapon;
+  equippedWeapon: WeaponModel;
+  naturalWeapon: NaturalWeaponModel;
 }
 export interface IEntityController {
   model: EntityController;

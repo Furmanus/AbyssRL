@@ -25,6 +25,7 @@ import {
   globalInventoryController,
 } from '../../global/modal';
 import {
+  EntityEvents,
   EntityInventoryActions,
   InventoryModalEvents,
 } from '../../constants/entity_events';
@@ -37,6 +38,8 @@ import {
 import { ContainerInventoryModalEvents } from '../../constants/events/containerInventoryModalEvents';
 import { ArmourModel } from '../../model/items/armours/armour_model';
 import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
+import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
+import { globalInfoController } from '../../global/info_controller';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -94,6 +97,11 @@ export class PlayerController extends EntityController<PlayerModel> {
           levelNumber: newLevelModel.levelNumber,
         });
       },
+    );
+    this.model.on(
+      this,
+      EntityEvents.EntityModelStatusChange,
+      this.onEntityStatusChange,
     );
     this.globalInventoryController.on(
       this,
@@ -410,5 +418,9 @@ export class PlayerController extends EntityController<PlayerModel> {
       containerInventory,
       this.getPlayerInventory(),
     );
+  }
+
+  private onEntityStatusChange(statuses: EntityStatusesCollection): void {
+    globalInfoController.setEntityStatusesInView(statuses);
   }
 }

@@ -17,7 +17,7 @@
 - [R.0.1.E2] Create more advanced monsters AI: idling monsters shouldn't just wander around randomly
 - [R.0.1.E3] Humanoid monsters should recognize items, pick up them and use/wear them
 - [R.0.1.E4] Basic combat and non combat abilities for player/entities
-- [R.0.1.E5] Entity status (bleeding, poisoned, sick etc.)
+- [R.0.1.E5] Entity status (~~bleeding~~, poisoned, sick etc.)
 ###Items
 - [R.0.1.I1] ~~Add more weapons~~
 - [R.0.1.I2] Add ~~armours~~, rings, amulets, scrolls and potions

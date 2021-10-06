@@ -14,6 +14,7 @@ import { LevelModel } from '../../model/dungeon/level_model';
 import { IAnyFunction } from '../../interfaces/common';
 import { IDungeonStrategyGenerateLevelConfig } from '../../interfaces/generators';
 import { DungeonVaultsGenerator } from './vaults_generators/dungeon_vaults.js';
+import { LevelController } from '../../controller/dungeon/level_controller';
 
 interface IBspSplitRegions {
   roomsToReturn: DungeonAreaModel[];
@@ -52,15 +53,16 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
   /**
    * Generates random dungeon (rooms connected with corridors) from given level cells.
    *
-   * @param   level              Level model containing level cells.
+   * @param   levelController    Level controller which models cells will be modified.
    * @param   config             Additional level config info.
    * @param   debugCallback      Optional callback function serving as debug for map generation
    */
   public generateLevel(
-    level: LevelModel,
+    levelController: LevelController,
     config?: IDungeonStrategyGenerateLevelConfig,
     debugCallback?: IAnyFunction,
   ): void {
+    const { model: level } = levelController;
     const roomsArray: RoomModel[] = [];
     const bspRegions: IBspSplitRegions = this.createBspSplitRegions(undefined, {
       level,
@@ -103,7 +105,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
       DungeonVaultsGenerator.generateRandomRoom(room);
     });
 
-    this.generateMonsters(level);
+    this.generateMonsters(levelController);
   }
 
   /**

@@ -87,7 +87,7 @@ export class DungeonController extends Controller {
           levelNumber: counter,
         });
 
-        this.strategy.generateRandomLevel(this.levels[counter].getModel(), {
+        this.strategy.generateRandomLevel(this.levels[counter], {
           generateStairsDown: !(counter === maxLevelNumber),
         });
       }
@@ -102,7 +102,7 @@ export class DungeonController extends Controller {
       levelNumber: num,
     });
 
-    this.strategy.generateRandomLevel(this.levels[num].getModel(), {
+    this.strategy.generateRandomLevel(this.levels[num], {
       generateStairsDown: !(num === maxLevelNumber),
     });
   }

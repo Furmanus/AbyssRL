@@ -3,6 +3,9 @@ import { MonsterSizes } from '../constants/entity/monsters';
 import { Dice } from '../model/dice';
 import { capitalizeString } from './utility';
 import { generateCombatMessage } from './combat/combat_messages';
+import { criticalDamageTypeToStatusConstructor } from '../constants/items/weapons';
+import { EntityController } from '../controller/entity/entity_controller';
+import { entityStatusToDamageText } from '../constants/entity/statuses';
 
 const sizeToDodgeModifierMap: { [prop: string]: Dice } = {
   [MonsterSizes.Small]: new Dice('3d2'),
@@ -17,9 +20,11 @@ export interface ICombatResult {
 }
 
 export function doCombatAction(
-  attacker: EntityModel,
-  defender: EntityModel,
+  attackerController: EntityController,
+  defenderController: EntityController,
 ): ICombatResult {
+  const attacker = attackerController.getModel();
+  const defender = defenderController.getModel();
   const {
     dexterity: defenderDexterity,
     speed: defenderSpeed,
@@ -31,7 +36,7 @@ export function doCombatAction(
   const { toHit: attackerToHit } = attackerWeapon;
   let defenderDefenseRate: number =
     defenderDexterity +
-    Math.floor(defenderSpeed / 2) +
+    Math.floor(defenderSpeed / 12) +
     sizeToDodgeModifierMap[defenderSize].roll() +
     evasion;
   /**
@@ -42,6 +47,7 @@ export function doCombatAction(
     attackerToHit.roll() + Math.floor(attackerDexterity / 4);
   let isDefenderHit: boolean = true;
   let damageDealt: number = null;
+  let isCriticalHit = true;
 
   if (defenderDefenseRate > 0.5 * attackerBonus) {
     defenderDefenseRate -= Math.floor(attackerBonus / 2);
@@ -58,13 +64,23 @@ export function doCombatAction(
     }
   } while (defenderDefenseRate > 15);
 
-  attackerRollArray.forEach((reqRoll: number) => {
-    if (d20.roll() < reqRoll) {
+  attackerRollArray.forEach((reqRoll: number, index: number) => {
+    const roll = d20.roll();
+
+    if (roll < reqRoll) {
       isDefenderHit = false;
+
+      if (roll < 19 - index) {
+        isCriticalHit = false;
+      }
     }
   });
 
   if (isDefenderHit) {
+    const defenderDefenseRate = isCriticalHit
+      ? Math.round(defenderProtection / 2)
+      : defenderProtection;
+
     damageDealt = attackerWeapon.damage.roll() - defenderProtection;
 
     if (damageDealt > 0) {
@@ -72,12 +88,31 @@ export function doCombatAction(
       let message: string = generateCombatMessage({
         damageAmount: damageDealt,
         wasDefenderHit: isDefenderHit,
+        isCriticalHit,
         attacker,
         defender,
       });
+      let criticalText: string;
 
-      if (!isAlive) {
-        message += ` ${capitalizeString(defender.description)} drops dead!`;
+      if (isCriticalHit && Array.isArray(attackerWeapon.criticalDamageType)) {
+        const criticalHitEffect = attacker.weapon.criticalDamageType.random();
+        const criticalStatusConstructor =
+          criticalDamageTypeToStatusConstructor[criticalHitEffect];
+        const criticalStatusController =
+          criticalStatusConstructor(defenderController);
+        const criticalType = criticalStatusController.type;
+
+        criticalText =
+          entityStatusToDamageText[
+            criticalType as keyof typeof entityStatusToDamageText // TODO remove type cast after implementing all criticals
+          ];
+        defender.addStatus(criticalStatusController);
+      }
+
+      if (criticalText) {
+        message += ` ${capitalizeString(
+          criticalText.replace('{{description}}', defender.getDescription()),
+        )}`;
       }
 
       return {
@@ -88,6 +123,7 @@ export function doCombatAction(
       const message: string = generateCombatMessage({
         damageAmount: damageDealt,
         wasDefenderHit: isDefenderHit,
+        isCriticalHit,
         attacker,
         defender,
       });
@@ -101,6 +137,7 @@ export function doCombatAction(
     const message: string = generateCombatMessage({
       damageAmount: 0,
       wasDefenderHit: isDefenderHit,
+      isCriticalHit: false,
       attacker,
       defender,
     });

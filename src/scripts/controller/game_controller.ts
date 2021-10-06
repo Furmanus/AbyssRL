@@ -134,6 +134,7 @@ export class GameController extends Controller {
   private attachEventsToCurrentLevel(): void {
     this.currentLevel.on(this, PLAYER_DEATH, this.onPlayerDeath);
     this.currentLevel.on(this, EntityEvents.EntityHit, this.onEntityHit);
+    this.currentLevel.on(this, EntityEvents.EntityMove, this.onEntityMove);
   }
 
   /**
@@ -257,10 +258,17 @@ export class GameController extends Controller {
    */
   @boundMethod
   private onEntityHit(entity: EntityModel): void {
-    this.view.showExplosionAtPosition({
-      x: entity.position.x,
-      y: entity.position.y,
-    });
+    this.view.showExplosionAtPosition(
+      {
+        x: entity.position.x,
+        y: entity.position.y,
+      },
+      entity,
+    );
+  }
+
+  private onEntityMove(entity: EntityModel): void {
+    this.view.updateEntityPositionInTemporaryDrawnSprites(entity);
   }
 
   /**
@@ -334,6 +342,7 @@ export class GameController extends Controller {
       newCellCoordinateX + direction.x,
       newCellCoordinateY + direction.y,
     );
+
     /**
      * Await for movement object. It happens immediately except for situation when player tries to move into
      * dangerous terrain and he needs to confirm move.

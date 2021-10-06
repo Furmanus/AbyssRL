@@ -33,12 +33,17 @@ import { LevelController } from '../dungeon/level_controller';
 import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
 import { globalInfoController } from '../../global/info_controller';
 import { statusModifierToMessage } from '../../constants/entity/stats';
+import { capitalizeString } from '../../helper/utility';
 
 export class EntityController<
   M extends EntityModel = EntityModel,
 > extends Controller {
   protected model: M;
   protected currentLevelController: LevelController;
+  protected get isDead(): boolean {
+    return this.model.hitPoints <= 0;
+  }
+
   /**
    * Constructor for entity controller.
    * @param   config              Object with data for creating model and controller.
@@ -67,11 +72,6 @@ export class EntityController<
       EntityEvents.EntityEquippedArmourChange,
       this.onEntityEquippedArmourChange,
     );
-    this.model.on(
-      this,
-      EntityEvents.EntityModelStatusChange,
-      this.onEntityStatusChange,
-    );
   }
 
   /**
@@ -89,7 +89,14 @@ export class EntityController<
 
   @boundMethod
   public attack(defender: EntityModel): ICombatResult {
-    return doCombatAction(this.model, defender);
+    const defenderController =
+      this.currentLevelController.getEntityControllerByModel(defender); // TODO tu sie wypierdala, sprawdzic dlaczego
+
+    if (defenderController) {
+      return doCombatAction(this, defenderController);
+    } else {
+      console.error('Defender controller not found');
+    }
   }
 
   /**
@@ -101,6 +108,8 @@ export class EntityController<
   private onEntityPositionChange(newCell: Cell): void {
     newCell.walkEffect(this);
     this.calculateFov();
+
+    this.notify(EntityEvents.EntityMove, this);
   }
 
   /**
@@ -109,6 +118,10 @@ export class EntityController<
   @boundMethod
   private onEntityDeath(): void {
     this.notify(EntityEvents.EntityDeath, { entityController: this });
+
+    globalMessagesController.showMessageInView(
+      capitalizeString(`${this.model.getDescription()} drops dead.`),
+    );
   }
 
   /**
@@ -304,15 +317,6 @@ export class EntityController<
     source?: keyof typeof entityStatusToDamageText,
   ): void {
     this.model.takeHit(damage);
-
-    if (source in entityStatusToDamageText) {
-      globalMessagesController.showMessageInView(
-        entityStatusToDamageText[source].replace(
-          '{{description}}',
-          this.model.description,
-        ),
-      );
-    }
   }
 
   /**
@@ -358,10 +362,6 @@ export class EntityController<
         message.replace('{{entity}}', this.model.getDescription()),
       );
     }
-  }
-
-  private onEntityStatusChange(statuses: EntityStatusesCollection): void {
-    globalInfoController.setEntityStatusesInView(statuses);
   }
 
   private updateEntityStatsModifiers(): void {
