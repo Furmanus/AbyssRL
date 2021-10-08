@@ -47,7 +47,7 @@ export function doCombatAction(
     attackerToHit.roll() + Math.floor(attackerDexterity / 4);
   let isDefenderHit: boolean = true;
   let damageDealt: number = null;
-  let isCriticalHit = true;
+  let isCriticalHit = false;
 
   if (defenderDefenseRate > 0.5 * attackerBonus) {
     defenderDefenseRate -= Math.floor(attackerBonus / 2);
@@ -69,10 +69,11 @@ export function doCombatAction(
 
     if (roll < reqRoll) {
       isDefenderHit = false;
+    }
 
-      if (roll < 19 - index) {
-        isCriticalHit = false;
-      }
+    if (roll >= 18 - index) {
+      isCriticalHit = true;
+      isDefenderHit = true;
     }
   });
 
