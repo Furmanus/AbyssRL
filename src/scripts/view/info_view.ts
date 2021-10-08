@@ -404,15 +404,17 @@ export class InfoView {
   private prepareEntityDisplayVariables(
     entity: EntityModel,
   ): ITemplateVariables {
-    const { description, hitPoints, maxHitPoints, naturalWeapon } = entity;
+    const { description, hitPoints, maxHitPoints, weapon, equippedArmour } =
+      entity;
 
     return {
       description,
       hitPoints,
       maxHitPoints,
-      weaponType: naturalWeapon.naturalType,
-      weaponDamage: naturalWeapon.damage.getSerializedData(),
-      weaponDmgType: naturalWeapon.type,
+      weaponType: weapon.description,
+      weaponDamage: weapon.damage.getSerializedData(),
+      weaponDmgType: weapon.type,
+      armour: equippedArmour?.fullDescription || 'none',
       status: entity.getEntityGeneralStatusDescription(),
     };
   }
