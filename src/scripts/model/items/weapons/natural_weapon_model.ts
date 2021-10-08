@@ -20,7 +20,7 @@ export class NaturalWeaponModel
   public itemType: ItemTypes = null;
   public naturalType: MonsterAttackTypes;
   public criticalHitRate = 0;
-  public criticalDamageType: [WeaponCriticalDamageType];
+  public criticalDamageType: WeaponCriticalDamageType[];
 
   get description(): string {
     return this.naturalType;
@@ -49,6 +49,7 @@ export class NaturalWeaponModel
     }
     this.type = config.type;
     this.naturalType = config.naturalType;
+    this.criticalDamageType = config.criticalDamageType;
   }
 
   /**

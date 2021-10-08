@@ -5,6 +5,7 @@ import {
 import { NaturalWeaponModel } from '../model/items/weapons/natural_weapon_model';
 import { Dice } from '../model/dice';
 import { DamageTypes } from '../constants/combat_enums';
+import { WeaponCriticalDamageType } from '../constants/items/weapons';
 
 export function getMonsterNaturalWeapon(
   type: MonstersTypes,
@@ -16,6 +17,7 @@ export function getMonsterNaturalWeapon(
         toHit: new Dice('1d2'),
         type: DamageTypes.Piercing,
         naturalType: MonsterAttackTypes.Bite,
+        criticalDamageType: [WeaponCriticalDamageType.Bleeding],
       });
     case MonstersTypes.Player:
       return new NaturalWeaponModel({
