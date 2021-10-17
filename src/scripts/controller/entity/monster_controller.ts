@@ -4,6 +4,8 @@ import { MonsterAi } from '../../strategy/ai/monster_ai';
 import { MonstersTypes } from '../../constants/entity/monsters';
 import { AnimalAi } from '../../strategy/ai/animal_ai';
 import { LevelController } from '../dungeon/level_controller';
+import { LevelModel } from '../../model/dungeon/level_model';
+import { Cell } from '../../model/dungeon/cells/cell_model';
 
 interface IMonsterControllerConfig {
   model: MonsterModel;
@@ -43,6 +45,21 @@ export class MonsterController extends EntityController<MonsterModel> {
     if (!this.isDead) {
       this.calculateFov();
       this.ai.performNextMove();
+    }
+  }
+
+  public makeRandomMovement(): void {
+    const levelModel: LevelModel = this.getLevelModel();
+    const currentPosition: Cell = this.getEntityPosition();
+    const nextCell: Cell = levelModel.getRandomNeighbourCallback(
+      currentPosition,
+      (candidate: Cell) => {
+        return !candidate.blockMovement && !candidate.entity;
+      },
+    );
+
+    if (nextCell) {
+      this.move(nextCell);
     }
   }
 }

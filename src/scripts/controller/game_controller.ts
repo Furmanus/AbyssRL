@@ -352,17 +352,14 @@ export class GameController extends Controller {
     );
 
     if (movementResult.canMove) {
-      this.view.camera.centerOnCoordinates(
-        newPlayerCellPosition.x,
-        newPlayerCellPosition.y,
-      );
       this.view.removeAllTemporaryMessages();
-    } else {
-      this.view.camera.centerOnCoordinates(
-        playerModel.position.x,
-        playerModel.position.y,
-      );
     }
+
+    this.view.camera.centerOnCoordinates(
+      playerModel.position.x,
+      playerModel.position.y,
+    );
+
     if (movementResult.message && !(direction.x === 0 && direction.y === 0)) {
       this.notify(SHOW_MESSAGE_IN_VIEW, {
         message: movementResult.message,

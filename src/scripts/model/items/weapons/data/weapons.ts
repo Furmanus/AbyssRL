@@ -39,6 +39,6 @@ export const weaponsData: IWeaponData = {
     toHit: '1d1',
     name: 'morning star',
     type: DamageTypes.Bludgeoning,
-    criticalDamageType: null,
+    criticalDamageType: [WeaponCriticalDamageType.Stun],
   },
 };

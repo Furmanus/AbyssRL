@@ -36,7 +36,7 @@ export abstract class Ai<C extends EntityController = MonsterController>
    * classes, this fallback option makes simplest random movement.
    */
   public performNextMove(): void {
-    this.makeMoveInRandomDirection();
+    this.controller.makeRandomMovement();
   }
 
   protected examineFov(fov: Cell[]): IFilteredFov {
@@ -52,20 +52,5 @@ export abstract class Ai<C extends EntityController = MonsterController>
     });
 
     return filteredFov;
-  }
-
-  protected makeMoveInRandomDirection(): void {
-    const levelModel: LevelModel = this.controller.getLevelModel();
-    const currentPosition: Cell = this.controller.getEntityPosition();
-    const nextCell: Cell = levelModel.getRandomNeighbourCallback(
-      currentPosition,
-      (candidate: Cell) => {
-        return !candidate.blockMovement && !candidate.entity;
-      },
-    );
-
-    if (nextCell) {
-      this.controller.move(nextCell);
-    }
   }
 }

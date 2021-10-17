@@ -37,10 +37,10 @@ export class AnimalAi extends MonsterAi {
       } else if (pathToTarget && pathToTarget.length === 1) {
         // placeholder
       } else {
-        this.makeMoveInRandomDirection();
+        this.controller.makeRandomMovement();
       }
     } else {
-      this.makeMoveInRandomDirection();
+      this.controller.makeRandomMovement();
     }
   }
 }

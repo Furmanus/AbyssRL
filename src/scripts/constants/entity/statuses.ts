@@ -8,4 +8,5 @@ export enum EntityStatuses {
 
 export const entityStatusToDamageText = {
   [EntityStatuses.Bleeding]: '{{description}} loses blood!',
+  [EntityStatuses.Stunned]: '{{description}} is stunned by a force of attack!',
 };

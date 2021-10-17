@@ -9,9 +9,11 @@ export enum WeaponNames {
 
 export enum WeaponCriticalDamageType {
   Bleeding = 'bleeding',
+  Stun = 'stunned',
 }
 
 export const criticalDamageTypeToStatusConstructor = {
   [WeaponCriticalDamageType.Bleeding]:
     EntityStatusFactory.getEntityBleedingStatus,
+  [WeaponCriticalDamageType.Stun]: EntityStatusFactory.getEntityStunnedStatus,
 };

@@ -17,7 +17,7 @@ export function getMonsterNaturalWeapon(
         toHit: new Dice('1d2'),
         type: DamageTypes.Piercing,
         naturalType: MonsterAttackTypes.Bite,
-        criticalDamageType: [WeaponCriticalDamageType.Bleeding],
+        criticalDamageType: [WeaponCriticalDamageType.Stun],
       });
     case MonstersTypes.Player:
       return new NaturalWeaponModel({

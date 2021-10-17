@@ -6,8 +6,11 @@ import { IAnyObject } from '../../../interfaces/common';
 import { EntityController } from '../../../controller/entity/entity_controller';
 import { ICellModel } from '../../../interfaces/cell';
 import { UseAttemptResult } from './effects/use_attempt_result';
+import { MonstersTypes } from '../../../constants/entity/monsters';
 
 export class DoorModel extends Cell implements ICellModel {
+  public areOpen: boolean;
+
   constructor(x: number, y: number, config: IAnyObject) {
     super(x, y);
 
@@ -33,6 +36,7 @@ export class DoorModel extends Cell implements ICellModel {
   public useEffect(entityController: EntityController): UseEffectResult {
     if (this.areOpen) {
       this.close();
+
       return new UseEffectResult(
         true,
         `${entityController.getProperty('description')} closes doors`,
@@ -41,6 +45,7 @@ export class DoorModel extends Cell implements ICellModel {
     }
 
     this.open();
+
     return new UseEffectResult(
       true,
       `${entityController.getProperty('description')} opens doors`,
@@ -49,6 +54,16 @@ export class DoorModel extends Cell implements ICellModel {
   }
 
   public useAttempt(entity: EntityController): UseAttemptResult {
+    if (entity.isStunned()) {
+      const message = `${entity.getProperty('description')} ${
+        this.areOpen
+          ? 'tries to close doors, but fails.'
+          : 'tries to open doors, but fails.'
+      }`;
+
+      return new UseAttemptResult(false, message, true);
+    }
+
     if (this.areOpen && this.entity) {
       const entityDescription: string = entity.getProperty('description');
       const occupyingEntityDescription: string = this.entity.description;
@@ -70,6 +85,19 @@ export class DoorModel extends Cell implements ICellModel {
    */
   public walkAttempt(entityController: EntityController): WalkAttemptResult {
     if (!this.areOpen) {
+      if (entityController.isStunned()) {
+        const message = `${entityController.getProperty(
+          'description',
+        )} bumps into doors.`;
+
+        return new WalkAttemptResult(
+          false,
+          entityController.getModel().type === MonstersTypes.Player
+            ? message
+            : null,
+        );
+      }
+
       this.open();
 
       return new WalkAttemptResult(

@@ -212,7 +212,9 @@ export class PlayerController extends EntityController<PlayerModel> {
     }
 
     return new Promise((resolve) => {
-      if (newCell.blockMovement) {
+      if (this.isStunned()) {
+        this.makeRandomMovement(resolve);
+      } else if (newCell.blockMovement) {
         playerController.moveAttempt(newCell, resolve);
       } else if (newCell.confirmMovement) {
         if (newCell.type === playerModel.position.type) {
@@ -422,5 +424,15 @@ export class PlayerController extends EntityController<PlayerModel> {
 
   private onEntityStatusChange(statuses: EntityStatusesCollection): void {
     globalInfoController.setEntityStatusesInView(statuses);
+  }
+
+  public makeRandomMovement(
+    resolveFunction: (moveResolution: IMoveResolve) => void,
+  ): void {
+    const randomNearestCell = this.currentLevelController.model
+      .getCellNeighbours(this.getEntityPosition())
+      .random();
+
+    this.moveAttempt(randomNearestCell, resolveFunction);
   }
 }

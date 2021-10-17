@@ -5,13 +5,11 @@ import {
   AddTemporaryStatModifierData,
   EntityModel,
   IEntityStatsObject,
-  IStatsSingleModifier,
 } from '../../model/entity/entity_model';
 import { Controller } from '../controller';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { EntityEvents } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
-import { EntityStats } from '../../constants/entity/monsters';
 import { doCombatAction, ICombatResult } from '../../helper/combat_helper';
 import { globalMessagesController } from '../../global/messages';
 import { ItemModel } from '../../model/items/item_model';
@@ -30,18 +28,27 @@ import {
 } from '../../constants/entity/statuses';
 import { EntityStatusCommonController } from './entity_statuses/entity_status_common_controller';
 import { LevelController } from '../dungeon/level_controller';
-import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
-import { globalInfoController } from '../../global/info_controller';
 import { statusModifierToMessage } from '../../constants/entity/stats';
 import { capitalizeString } from '../../helper/utility';
+import { EntityStunnedStatusController } from './entity_statuses/entity_stunned_status_controller';
+import { MonstersTypes } from '../../constants/entity/monsters';
 
-export class EntityController<
+export abstract class EntityController<
   M extends EntityModel = EntityModel,
 > extends Controller {
   protected model: M;
   protected currentLevelController: LevelController;
   protected get isDead(): boolean {
     return this.model.hitPoints <= 0;
+  }
+
+  public isStunned(): boolean {
+    return !!this.model.entityStatuses
+      .get()
+      .find(
+        (status: EntityStatusCommonController) =>
+          status.type === EntityStatuses.Stunned,
+      );
   }
 
   /**
@@ -300,6 +307,26 @@ export class EntityController<
     return this.model.getAccumulatedAllTemporaryStats();
   }
 
+  public inflictStunnedStatus(message?: string): void {
+    const stunnedStatus = EntityStatusFactory.getEntityStunnedStatus(this);
+
+    this.model.addStatus(stunnedStatus);
+
+    if (message) {
+      globalMessagesController.showMessageInView(message);
+    }
+  }
+
+  public removeStunnedStatus(
+    stunnedStatus: EntityStunnedStatusController,
+  ): void {
+    this.model.removeStatus(stunnedStatus);
+
+    globalMessagesController.showMessageInView(
+      `${this.model.description} is no longer stunned.`,
+    );
+  }
+
   public inflictBleeding(): void {
     this.model.addStatus(EntityStatusFactory.getEntityBleedingStatus(this));
   }
@@ -341,6 +368,7 @@ export class EntityController<
 
   public addTemporaryStatsModifiers(
     modifiers: AddTemporaryStatModifierData,
+    silent?: boolean,
   ): void {
     const message = modifiers.reduce((text: string, modifierData: any) => {
       const { stat, modifier: modifierObject } = modifierData;
@@ -357,7 +385,7 @@ export class EntityController<
 
     this.model.addTemporaryStatModifier(modifiers);
 
-    if (message) {
+    if (message && !silent) {
       globalMessagesController.showMessageInView(
         message.replace('{{entity}}', this.model.getDescription()),
       );
@@ -379,4 +407,6 @@ export class EntityController<
       );
     }
   }
+
+  public abstract makeRandomMovement(resolveFunction?: () => void): void;
 }
