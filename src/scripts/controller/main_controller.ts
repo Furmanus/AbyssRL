@@ -52,6 +52,8 @@ import {
 import { globalInfoController } from '../global/info_controller';
 import { globalMiniMapController } from '../global/minimap_controller';
 import { DevFeaturesModalController } from './dev_features_modal_controller';
+import { autorun, reaction } from 'mobx';
+import { dungeonState } from '../state/application.state';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
   188: PlayerActions.PickUp,
@@ -199,13 +201,12 @@ export class MainController extends Controller {
       PLAYER_WALK_CONFIRM_NEEDED,
       this.onPlayerConfirmNeeded,
     );
-    this.gameController.on(
-      this,
-      DungeonEvents.ChangeCurrentLevel,
-      this.onChangeDungeonLevel,
-    );
     this.gameController.on(this, START_PLAYER_TURN, this.onPlayerTurnStarted);
     this.gameController.on(this, PLAYER_DEATH, this.onPlayerDeath);
+
+    autorun(() => {
+      this.onChangeDungeonLevel(dungeonState.currentLevelNumber);
+    });
   }
 
   /**
@@ -350,14 +351,11 @@ export class MainController extends Controller {
     this.detachEvents();
   }
 
-  /**
-   * Method triggered after game controller emits event about level change by player.
-   *
-   * @param data  Data object passed along with event
-   */
-  @boundMethod
-  private onChangeDungeonLevel(data: ILevelInfo): void {
-    globalInfoController.changeLevelInfoMessage(data);
+  private onChangeDungeonLevel(levelNumber: number): void {
+    globalInfoController.changeLevelInfoMessage({
+      branch: dungeonState.currentDungeonBranch,
+      levelNumber,
+    });
   }
 
   /**

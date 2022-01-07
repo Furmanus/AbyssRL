@@ -1,7 +1,9 @@
 export const MAIN_DUNGEON = 'main_dungeon';
 
-export const dungeonTypeToName = {
-  [MAIN_DUNGEON]: 'the Great Abyss',
-};
+export enum DungeonBranches {
+  Main = 'main_dungeon',
+}
 
-export type DungeonBranches = typeof MAIN_DUNGEON;
+export const dungeonTypeToName = {
+  [DungeonBranches.Main]: 'the Great Abyss',
+};

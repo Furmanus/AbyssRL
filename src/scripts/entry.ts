@@ -3,6 +3,7 @@
  * Created by Lukasz Lach on 2017-04-24.
  */
 
+import './state/application.state';
 import { MainController } from './controller/main_controller';
 import u5tiles from './assets/u5tiles.png';
 import '../styles/app.less';

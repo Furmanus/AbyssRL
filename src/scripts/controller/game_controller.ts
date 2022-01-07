@@ -33,6 +33,8 @@ import { boundMethod } from 'autobind-decorator';
 import { EntityEvents } from '../constants/entity_events';
 import { ItemsCollection } from '../collections/items_collection';
 import { PlayerModel } from '../model/entity/player_model';
+import { dungeonState } from '../state/application.state';
+import { reaction } from 'mobx';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -126,6 +128,13 @@ export class GameController extends Controller {
       DungeonEvents.ChangeCurrentLevel,
       this.onDungeonControllerLevelChange.bind(this),
     );
+
+    reaction(
+      () => dungeonState.currentLevelNumber,
+      (currentLevelNumber) => {
+        // TODO dopisac logikę ze zmianą
+      },
+    );
   }
 
   /**
@@ -211,9 +220,7 @@ export class GameController extends Controller {
       this.playerController.getEntityPosition().type;
 
     if (playerPositionCellType === cellTypes.STAIRS_DOWN) {
-      this.dungeonController.changeLevel(
-        this.dungeonController.getCurrentLevelNumber() + 1,
-      );
+      this.dungeonController.changeLevel(dungeonState.currentLevelNumber + 1);
     } else {
       globalMessagesController.showMessageInView("You can't go down here.");
     }
@@ -234,9 +241,7 @@ export class GameController extends Controller {
       this.playerController.getEntityPosition().type;
 
     if (playerPositionCellType === cellTypes.STAIRS_UP) {
-      this.dungeonController.changeLevel(
-        this.dungeonController.getCurrentLevelNumber() - 1,
-      );
+      this.dungeonController.changeLevel(dungeonState.currentLevelNumber - 1);
     } else {
       globalMessagesController.showMessageInView("You can't go up here.");
     }
