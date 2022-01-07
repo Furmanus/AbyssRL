@@ -65,9 +65,9 @@ export class DungeonController extends Controller {
   }
 
   private generateNewLevel(): void {
-    const { currentBranchMaxLevel } = dungeonState;
+    const { currentBranchMaxLevelNumber } = dungeonState;
 
-    for (let counter = 1; counter <= currentBranchMaxLevel; counter++) {
+    for (let counter = 1; counter <= currentBranchMaxLevelNumber; counter++) {
       if (!this.levels[counter]) {
         this.levels[counter] = new LevelController({
           branch: this.type,
@@ -75,14 +75,14 @@ export class DungeonController extends Controller {
         });
 
         this.strategy.generateRandomLevel(this.levels[counter], {
-          generateStairsDown: !(counter === currentBranchMaxLevel),
+          generateStairsDown: !(counter === currentBranchMaxLevelNumber),
         });
       }
     }
   }
 
   private generateNewLevelAtNumber(num: number): void {
-    const { currentBranchMaxLevel } = dungeonState;
+    const { currentBranchMaxLevelNumber } = dungeonState;
 
     this.levels[num] = new LevelController({
       branch: this.type,
@@ -90,7 +90,7 @@ export class DungeonController extends Controller {
     });
 
     this.strategy.generateRandomLevel(this.levels[num], {
-      generateStairsDown: !(num === currentBranchMaxLevel),
+      generateStairsDown: !(num === currentBranchMaxLevelNumber),
     });
   }
 

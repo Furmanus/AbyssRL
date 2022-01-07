@@ -4,19 +4,25 @@ import { ASCEND, DESCEND } from '../constants/directions';
 import { IActionAttempt } from '../interfaces/common';
 import { BaseState } from './baseState';
 import { ExcludeFunctionProperties } from '../interfaces/utility.interfaces';
+import { LevelModel } from '../model/dungeon/level_model';
 
 const dungeonBranchToMaxLevel = {
   [DungeonBranches.Main]: 8,
 };
 
+type DungeonLevels = {
+  [index: number]: LevelModel;
+};
+
 export class DungeonState extends BaseState {
-  public get currentBranchMaxLevel(): number {
-    return dungeonBranchToMaxLevel[this.currentDungeonBranch];
+  public levels: DungeonLevels = {};
+  public get currentBranchMaxLevelNumber(): number {
+    return dungeonBranchToMaxLevel[this.currentBranch];
   }
 
   public constructor(
-    public currentDungeonBranch: DungeonBranches = DungeonBranches.Main,
     public currentLevelNumber: number,
+    public currentBranch: DungeonBranches = DungeonBranches.Main,
     public parentDungeonBranch: DungeonBranches = null,
   ) {
     super();
@@ -31,7 +37,7 @@ export class DungeonState extends BaseState {
     const oldLevelNumber: number = this.currentLevelNumber;
     let direction: string;
 
-    if (num <= this.currentBranchMaxLevel) {
+    if (num <= this.currentBranchMaxLevelNumber) {
       direction = Math.sign(oldLevelNumber - num) > 0 ? ASCEND : DESCEND;
 
       this.currentLevelNumber = num;

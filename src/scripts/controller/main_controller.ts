@@ -353,7 +353,7 @@ export class MainController extends Controller {
 
   private onChangeDungeonLevel(levelNumber: number): void {
     globalInfoController.changeLevelInfoMessage({
-      branch: dungeonState.currentDungeonBranch,
+      branch: dungeonState.currentBranch,
       levelNumber,
     });
   }
