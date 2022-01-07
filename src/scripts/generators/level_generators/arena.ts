@@ -104,7 +104,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
     config: IFillLevelWithVoronoiPointConfig,
   ): void {
     const { targetCellType, cellAllowedToChange } = config;
-    const levelCells: MapWithObserver<string, Cell> = level.getCells();
+    const levelCells = level.getCells();
     let examinedCellsClosestVoronoiPointType: IExaminedCellsClosestVoronoiPointType;
     let examinedVoronoiPointDistance: number;
     /**

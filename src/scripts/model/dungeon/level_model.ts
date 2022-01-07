@@ -19,8 +19,18 @@ import { MapWithObserver } from '../../core/map_with_observer';
 import { EntityModel } from '../entity/entity_model';
 import { MonsterController } from '../../controller/entity/monster_controller';
 import { EntityController } from '../../controller/entity/entity_controller';
+import { DungeonBranches } from '../../constants/dungeon_types';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
+
+type LevelModelConstructorOption = {
+  branch: DungeonBranches;
+  levelNumber: number;
+  defaultWallType: string; // TODO dopisać własny typ
+  rooms: RoomModel[];
+  roomConnections: RoomConnectionModel[];
+  cells: Map<string, Cell>;
+};
 
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
@@ -31,7 +41,7 @@ export class LevelModel extends BaseModel {
   private defaultWallType: string = null;
   private rooms: RoomModel[] = [];
   private roomConnections: Set<RoomConnectionModel> = new Set();
-  private cells: MapWithObserver<string, Cell> = new MapWithObserver();
+  private cells: Map<string, Cell> = new Map();
   /**
    * @param   branch             Object to which this level belongs
    * @param   levelNumber         Number of this dungeon level
@@ -146,7 +156,7 @@ export class LevelModel extends BaseModel {
   /**
    * Returns map object containing level cells.
    */
-  public getCells(): MapWithObserver<string, Cell> {
+  public getCells(): Map<string, Cell> {
     return this.cells;
   }
 

@@ -55,7 +55,7 @@ export abstract class AbstractLevelGenerator {
    */
   protected smoothLevel(level: LevelModel, config: ISmoothLevelConfig): void {
     const { cellsToSmooth, cellsToChange, cellsAfterChange } = config;
-    const levelCells: MapWithObserver<string, Cell> = level.getCells();
+    const levelCells = level.getCells();
     let examinedCellNeighbours;
 
     if (
@@ -90,7 +90,7 @@ export abstract class AbstractLevelGenerator {
    * @param   level      Level model containing level cells.
    */
   protected smoothLevelHills(level: LevelModel): void {
-    const levelCells: MapWithObserver<string, Cell> = level.getCells();
+    const levelCells = level.getCells();
     let examinedCellNeighbours: ISearchCellSurroundingResult;
     let isHillFromLeftSide: boolean;
     let isHillFromRightSide: boolean;
@@ -148,7 +148,7 @@ export abstract class AbstractLevelGenerator {
    * @returns                 Returns object with information about direction of searched cells in cell surrounding.
    */
   protected isCertainCellInCellSurroundings(
-    levelCells: MapWithObserver<string, Cell>,
+    levelCells: Map<string, Cell>,
     cell: Cell,
     searchedCells: string[] = [],
   ): ISearchCellSurroundingResult {
@@ -524,7 +524,7 @@ export abstract class AbstractLevelGenerator {
    * @param     level   LevelModel
    */
   protected generateDeepWater(level: LevelModel): void {
-    const levelCells: MapWithObserver<string, Cell> = level.getCells();
+    const levelCells = level.getCells();
     let examinedCellSurrounding: Position[];
     let isCellSurroundedByWaterOnly: boolean;
 
