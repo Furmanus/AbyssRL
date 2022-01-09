@@ -33,7 +33,24 @@ const typeToGenerator: ITypeToGenerator = {
   cavern: cavernLevelGenerator,
 };
 
+const constructorToken = Symbol('MainDungeonLevelGeneratorStrategy');
+let instance: MainDungeonLevelGenerationStrategy = null;
+
 export class MainDungeonLevelGenerationStrategy {
+  public constructor(token: symbol) {
+    if (token !== constructorToken) {
+      throw new Error('Invalid constructor invocation');
+    }
+  }
+
+  public static getInstance(): MainDungeonLevelGenerationStrategy {
+    if (!instance) {
+      instance = new MainDungeonLevelGenerationStrategy(constructorToken);
+    }
+
+    return instance;
+  }
+
   public generateRandomLevel(
     levelController: LevelController,
     generateConfig: IDungeonStrategyGenerateLevelConfig,

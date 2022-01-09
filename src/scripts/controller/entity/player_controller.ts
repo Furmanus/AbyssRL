@@ -40,6 +40,7 @@ import { ArmourModel } from '../../model/items/armours/armour_model';
 import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
 import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
 import { globalInfoController } from '../../global/info_controller';
+import { SerializedEntityModel } from '../../model/entity/entity_model';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -62,7 +63,7 @@ export class PlayerController extends EntityController<PlayerModel> {
 
   private containerInventoryController = globalContainerInventoryController;
 
-  constructor(token: symbol, constructorConfig: IAnyObject) {
+  constructor(token: symbol, constructorConfig: SerializedEntityModel) {
     super(constructorConfig);
 
     if (token !== constructorToken) {
@@ -73,7 +74,9 @@ export class PlayerController extends EntityController<PlayerModel> {
     this.attachEvents();
   }
 
-  public static getInstance(constructorConfig?: IAnyObject): PlayerController {
+  public static getInstance(
+    constructorConfig?: SerializedEntityModel,
+  ): PlayerController {
     if (!constructorConfig && !instance) {
       throw new Error('Controller not initialized yet');
     }

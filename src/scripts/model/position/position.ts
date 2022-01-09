@@ -1,3 +1,7 @@
+import { ExcludeFunctionProperties } from '../../interfaces/utility.interfaces';
+
+export type SerializedPosition = ExcludeFunctionProperties<Position>;
+
 /**
  * Class which instances represents position on two dimensional grid.
  */
@@ -28,5 +32,9 @@ export class Position {
     return Math.sqrt(
       Math.pow(position.x - this.x, 2) + Math.pow(position.y - this.y, 2),
     );
+  }
+
+  public serialize(): SerializedPosition {
+    return { ...this };
   }
 }

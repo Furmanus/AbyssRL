@@ -17,25 +17,12 @@ import { dungeonState } from '../../state/application.state';
  * Controller of single dungeon.
  */
 export class DungeonController extends Controller {
-  /**
-   * Type of dungeon.
-   */
-  private readonly type: DungeonBranches;
-  /**
-   * Object with level controllers. Key is equal to level number.
-   */
-  private readonly levels: Record<string, LevelController>;
-  private readonly strategy: MainDungeonLevelGenerationStrategy;
+  private get strategy(): MainDungeonLevelGenerationStrategy {
+    return getDungeonStrategyInstance(dungeonState.currentBranch);
+  }
 
-  constructor(
-    type: DungeonBranches = DungeonBranches.Main,
-    maxLevelNumber: number = 8,
-  ) {
+  constructor() {
     super();
-
-    this.type = type;
-    this.levels = {};
-    this.strategy = getDungeonStrategyInstance(this.type);
 
     this.initialize();
     this.attachEvents();
@@ -64,49 +51,32 @@ export class DungeonController extends Controller {
     );
   }
 
-  private generateNewLevel(): void {
-    const { currentBranchMaxLevelNumber } = dungeonState;
+  private generateNewLevel(num?: number): void {
+    const { currentBranchMaxLevelNumber, currentBranch } = dungeonState;
+    const nextLevelNumberToGenerateInCurrentBranch =
+      num ?? dungeonState.getCurrentBranchNextLevelNumber();
 
-    for (let counter = 1; counter <= currentBranchMaxLevelNumber; counter++) {
-      if (!this.levels[counter]) {
-        this.levels[counter] = new LevelController({
-          branch: this.type,
-          levelNumber: counter,
-        });
+    if (nextLevelNumberToGenerateInCurrentBranch) {
+      const newLevelController = new LevelController({
+        branch: currentBranch,
+        levelNumber: nextLevelNumberToGenerateInCurrentBranch,
+      });
 
-        this.strategy.generateRandomLevel(this.levels[counter], {
-          generateStairsDown: !(counter === currentBranchMaxLevelNumber),
-        });
-      }
+      this.strategy.generateRandomLevel(newLevelController, {
+        generateStairsDown:
+          nextLevelNumberToGenerateInCurrentBranch !==
+          currentBranchMaxLevelNumber,
+      });
+
+      dungeonState.addNewLevelControllerToCurrentBranch(
+        newLevelController,
+        nextLevelNumberToGenerateInCurrentBranch,
+      );
     }
   }
 
   private generateNewLevelAtNumber(num: number): void {
-    const { currentBranchMaxLevelNumber } = dungeonState;
-
-    this.levels[num] = new LevelController({
-      branch: this.type,
-      levelNumber: num,
-    });
-
-    this.strategy.generateRandomLevel(this.levels[num], {
-      generateStairsDown: !(num === currentBranchMaxLevelNumber),
-    });
-  }
-
-  /**
-   * Returns certain level controller from dungeon.
-   *
-   * @param   levelNumber     Number of level in dungeon
-   * @returns                 Returns level controller of given level number
-   */
-  public getLevel(levelNumber: number): LevelController {
-    try {
-      return this.levels[levelNumber];
-    } catch (e) {
-      console.error("Can't find dungeon level");
-      console.error(e.stack);
-    }
+    this.generateNewLevel(num);
   }
 
   /**
@@ -125,21 +95,6 @@ export class DungeonController extends Controller {
   }
 
   /**
-   * Returns type of dungeon.
-   */
-  public getType(): string {
-    return this.type;
-  }
-
-  /**
-   * Returns controller of level on which player currently is.
-   * @private
-   */
-  private getCurrentLevelController(): LevelController {
-    return this.levels[dungeonState.currentLevelNumber];
-  }
-
-  /**
    * Generates new level controller with model in place of current level. Current level number is model is changed in this process.
    * @private
    */
@@ -152,7 +107,7 @@ export class DungeonController extends Controller {
   }
 
   private onDevModalMonsterSpawn(monster: Monsters): void {
-    const currentLevel = this.getCurrentLevelController();
+    const currentLevel = dungeonState.getCurrentLevelController();
     const playerController = PlayerController.getInstance();
     const playerFov = playerController.getPlayerFov();
     const unOccupiedCell = playerFov.find(

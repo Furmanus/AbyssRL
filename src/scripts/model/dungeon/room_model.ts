@@ -12,6 +12,12 @@ export interface IRoomConfig {
   levelModel: LevelModel;
 }
 
+type CellsTransformFunction = (
+  positionX: number,
+  positionY: number,
+  isWall: 1 | 0,
+) => void;
+
 export class RoomModel extends BaseModel {
   public rectangle: Rectangle;
   public iteration: number;
@@ -19,7 +25,11 @@ export class RoomModel extends BaseModel {
   public cells: Position[];
   private levelModel: LevelModel;
 
-  constructor(rectangle: Rectangle, roomConfig: IRoomConfig) {
+  constructor(
+    rectangle: Rectangle,
+    roomConfig: IRoomConfig,
+    doorSpots: Position[] = [],
+  ) {
     super();
 
     this.rectangle = rectangle;
@@ -29,7 +39,7 @@ export class RoomModel extends BaseModel {
     /**
      * Set of door positions in room.
      */
-    this.doorSpots = new Set<Position>();
+    this.doorSpots = new Set<Position>(doorSpots);
   }
 
   get left(): number {
@@ -57,13 +67,13 @@ export class RoomModel extends BaseModel {
   }
 
   get hasStairsUp(): boolean {
-    return !!this.getCells().find((cell: Cell) =>
+    return !!this.getCellsFromPosition().find((cell: Cell) =>
       cell.type.includes('stairs_up'),
     );
   }
 
   get hasStairsDown(): boolean {
-    return !!this.getCells().find((cell: Cell) =>
+    return !!this.getCellsFromPosition().find((cell: Cell) =>
       cell.type.includes('stairs_down'),
     );
   }
@@ -94,7 +104,7 @@ export class RoomModel extends BaseModel {
       if (attemptNumber > 200) {
         break;
       } else {
-        const cellCandidate: Cell = this.getCells().random();
+        const cellCandidate: Cell = this.getCellsFromPosition().random();
 
         if (callback(cellCandidate)) {
           cell = cellCandidate;
@@ -114,7 +124,7 @@ export class RoomModel extends BaseModel {
     let cell: Cell;
 
     while (!cell) {
-      const cellCandidate: Cell = this.getCells().random();
+      const cellCandidate: Cell = this.getCellsFromPosition().random();
 
       if (!cellCandidate.blockMovement) {
         cell = cellCandidate;
@@ -131,7 +141,7 @@ export class RoomModel extends BaseModel {
     let cell: Cell;
 
     while (!cell) {
-      const cellCandidate: Cell = this.getCells().random();
+      const cellCandidate: Cell = this.getCellsFromPosition().random();
 
       if (cellCandidate.blockMovement) {
         cell = cellCandidate;
@@ -149,7 +159,7 @@ export class RoomModel extends BaseModel {
     return this.levelModel.getCell(x, y);
   }
 
-  public getCells(): Cell[] {
+  public getCellsFromPosition(): Cell[] {
     const cells: Cell[] = [];
 
     this.cells.forEach((pos: Position) => {
@@ -167,9 +177,9 @@ export class RoomModel extends BaseModel {
     }
   }
 
-  public transform(callback: IAnyFunction): this {
+  public transform(callback: CellsTransformFunction): this {
     this.cells.forEach((pos: Position) => {
-      const isWall: boolean =
+      const isWall =
         pos.y === this.top ||
         pos.y === this.bottom ||
         pos.x === this.right ||

@@ -4,6 +4,8 @@ import { MonsterController } from '../controller/entity/monster_controller';
 import { MonsterModel } from '../model/entity/monster_model';
 import { Monsters, MonstersTypes } from '../constants/entity/monsters';
 import { LevelController } from '../controller/dungeon/level_controller';
+import { Position, SerializedPosition } from '../model/position/position';
+import { dungeonState } from '../state/application.state';
 
 export class MonsterFactory {
   public static getMonsterControllerByType(
@@ -23,13 +25,16 @@ export class MonsterFactory {
 
   public static getGiantRatController(
     levelController: LevelController,
-    startingPosition: Cell,
+    startingPosition: SerializedPosition,
   ): MonsterController {
     return new MonsterController({
       model: new MonsterModel({
         type: MonstersTypes.GiantRat,
-        position: startingPosition,
-        level: levelController.model,
+        position: {
+          branch: dungeonState.currentBranch,
+          level: dungeonState.currentLevelNumber,
+          position: new Position(startingPosition.x, startingPosition.y),
+        },
       }),
       levelController,
     });

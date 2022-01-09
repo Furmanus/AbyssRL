@@ -9,6 +9,7 @@ import { PlayerEquipSlots } from '../../constants/entity/inventory';
 import { ItemModel } from '../../model/items/item_model';
 import { ArmourModel } from '../../model/items/armours/armour_model';
 import { NaturalWeaponModel } from '../../model/items/weapons/natural_weapon_model';
+import { EntityDungeonPosition } from '../../model/entity/entity_model';
 
 export interface IEntity {
   display: string;
@@ -45,4 +46,14 @@ export interface IPlayerEquipSlotsType {
 export interface IActor {
   act: () => void;
   getSpeed: () => number;
+}
+
+export function isEntityPosition(obj: unknown): obj is EntityDungeonPosition {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'branch' in obj &&
+    'level' in obj &&
+    'position' in obj
+  );
 }

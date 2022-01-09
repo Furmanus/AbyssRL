@@ -1,13 +1,15 @@
-import { MAIN_DUNGEON } from '../constants/dungeon_types';
+import { DungeonBranches, MAIN_DUNGEON } from '../constants/dungeon_types';
 import { MainDungeonLevelGenerationStrategy } from '../strategy/dungeon_generator/main_dungeon_strategy';
 import { IAnyObject } from '../interfaces/common';
 
-const dungeonTypeToStrategy: IAnyObject = {
-  [MAIN_DUNGEON]: MainDungeonLevelGenerationStrategy,
+type AllDungeonStrategies = MainDungeonLevelGenerationStrategy;
+
+const dungeonTypeToStrategy: Record<DungeonBranches, any> = {
+  [DungeonBranches.Main]: MainDungeonLevelGenerationStrategy.getInstance(),
 };
 
 export function getDungeonStrategyInstance<
   M = MainDungeonLevelGenerationStrategy,
->(dungeonType: string): M {
-  return new dungeonTypeToStrategy[dungeonType]();
+>(dungeonType: DungeonBranches): M {
+  return dungeonTypeToStrategy[dungeonType];
 }

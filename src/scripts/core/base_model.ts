@@ -24,4 +24,8 @@ export class BaseModel extends Constructor implements IAnyObject {
       console.warn(`Attempt to set unknown property ${key}`);
     }
   }
+
+  public serialize(): unknown {
+    return { ...this };
+  }
 }

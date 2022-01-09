@@ -7,16 +7,16 @@ import {
 } from '../constants/game_actions';
 import { entities } from '../constants/cells/sprites';
 import {
-  SHOW_MESSAGE_IN_VIEW,
-  PLAYER_ACTION_MOVE_PLAYER,
-  PLAYER_WALK_CONFIRM_NEEDED,
-  START_PLAYER_TURN,
   END_PLAYER_TURN,
   PLAYER_ACTION_ACTIVATE_OBJECT,
-  PLAYER_ACTION_GO_UP,
   PLAYER_ACTION_GO_DOWN,
+  PLAYER_ACTION_GO_UP,
+  PLAYER_ACTION_MOVE_PLAYER,
   PLAYER_DEATH,
+  PLAYER_WALK_CONFIRM_NEEDED,
   PlayerActions,
+  SHOW_MESSAGE_IN_VIEW,
+  START_PLAYER_TURN,
 } from '../constants/entity/player_actions';
 import { PlayerController } from './entity/player_controller';
 import { DungeonController } from './dungeon/dungeon_controller';
@@ -35,6 +35,8 @@ import { ItemsCollection } from '../collections/items_collection';
 import { PlayerModel } from '../model/entity/player_model';
 import { dungeonState } from '../state/application.state';
 import { reaction } from 'mobx';
+import { Position } from '../model/position/position';
+import { MonstersTypes } from '../constants/entity/monsters';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -42,7 +44,6 @@ import { reaction } from 'mobx';
  */
 export class GameController extends Controller {
   private dungeonController: DungeonController;
-  private currentLevel: LevelController;
   private playerController: PlayerController;
   private view: GameView;
   private currentlyExaminedCell: Cell;
@@ -54,7 +55,6 @@ export class GameController extends Controller {
     super();
 
     this.dungeonController = new DungeonController();
-    this.currentLevel = null;
     this.playerController = null;
     this.currentlyExaminedCell = null;
 
@@ -75,16 +75,15 @@ export class GameController extends Controller {
    * Method responsible for initialization of game controller.
    */
   protected initialize(): void {
-    this.currentLevel = this.dungeonController.getLevel(1);
-
     this.initializePlayer();
     this.drawLevelInView();
     /**
      * setTimeout because main controller at this point doesn't have events attached, think how to solve it better
+     * // TODO usunac w celu uproszczenia
      */
     window.setTimeout(() => {
       this.notify(DungeonEvents.ChangeCurrentLevel, {
-        branch: this.dungeonController.getType(),
+        branch: dungeonState.currentBranch,
         levelNumber: 1,
       });
     }, 1);
@@ -141,23 +140,27 @@ export class GameController extends Controller {
    * Method responsible for attaching listening on events on current level.
    */
   private attachEventsToCurrentLevel(): void {
-    this.currentLevel.on(this, PLAYER_DEATH, this.onPlayerDeath);
-    this.currentLevel.on(this, EntityEvents.EntityHit, this.onEntityHit);
-    this.currentLevel.on(this, EntityEvents.EntityMove, this.onEntityMove);
+    const currentLevel = dungeonState.getCurrentLevelController();
+
+    currentLevel.on(this, PLAYER_DEATH, this.onPlayerDeath);
+    currentLevel.on(this, EntityEvents.EntityHit, this.onEntityHit);
+    currentLevel.on(this, EntityEvents.EntityMove, this.onEntityMove);
   }
 
   /**
    * Creates player character and adds it to proper level controller time engine.
    */
   private initializePlayer(): void {
-    const inititalPlayerCell: Cell = this.currentLevel.getStairsUpCell();
-    const playerLevel: LevelController = this.currentLevel;
+    const currentLevel = dungeonState.getCurrentLevelController();
+    const initialPlayerCell: Cell = currentLevel.getStairsUpCell();
 
     this.playerController = PlayerController.getInstance({
-      level: playerLevel.model,
-      levelController: playerLevel,
       display: entities.AVATAR,
-      position: inititalPlayerCell,
+      position: {
+        branch: dungeonState.currentBranch,
+        level: dungeonState.currentLevelNumber,
+        position: new Position(initialPlayerCell.x, initialPlayerCell.y),
+      },
       speed: 100,
       perception: 6,
       strength: 12,
@@ -166,14 +169,15 @@ export class GameController extends Controller {
       toughness: 12,
       hitPoints: 20,
       maxHitPoints: 20,
+      type: MonstersTypes.Player,
     });
 
-    inititalPlayerCell.entity = this.playerController.getModel();
+    initialPlayerCell.entity = this.playerController.getModel();
     this.playerController.calculateFov();
-    this.currentLevel.addActorToTimeEngine(this.playerController);
+    currentLevel.addActorToTimeEngine(this.playerController);
     this.view.camera.centerOnCoordinates(
-      inititalPlayerCell.x,
-      inititalPlayerCell.y,
+      initialPlayerCell.x,
+      initialPlayerCell.y,
     );
   }
 
@@ -181,7 +185,7 @@ export class GameController extends Controller {
    * Starts game by starting time engine on current level.
    */
   private startGame(): void {
-    this.currentLevel.startTimeEngine();
+    dungeonState.getCurrentLevelController()?.startTimeEngine();
   }
 
   /**
@@ -288,20 +292,20 @@ export class GameController extends Controller {
     direction: string;
   }): void {
     const { newLevelController, direction } = data;
+    const currentLevel = dungeonState.getCurrentLevelController();
     let newPlayerCell: Cell;
 
     if (newLevelController) {
-      this.currentLevel.lockTimeEngine();
-      this.currentLevel.removeActorFromTimeEngine(this.playerController);
+      currentLevel.lockTimeEngine();
+      currentLevel.removeActorFromTimeEngine(this.playerController);
 
-      this.currentLevel = newLevelController;
-      this.currentLevel.addActorToTimeEngine(this.playerController);
+      newLevelController.addActorToTimeEngine(this.playerController);
       this.attachEventsToCurrentLevel();
 
-      if (this.currentLevel.wasTimeEngineStarted()) {
-        this.currentLevel.unlockTimeEngine();
+      if (newLevelController.wasTimeEngineStarted()) {
+        newLevelController.unlockTimeEngine();
       } else {
-        this.currentLevel.startTimeEngine();
+        newLevelController.startTimeEngine();
       }
 
       if (direction === ASCEND) {
@@ -310,7 +314,7 @@ export class GameController extends Controller {
         newPlayerCell = newLevelController.getStairsUpCell();
       }
       this.playerController.changeLevel(
-        this.currentLevel.getModel(),
+        newLevelController.getModel(),
         newPlayerCell,
       );
       this.view.centerCameraOnCoordinates({
@@ -340,10 +344,11 @@ export class GameController extends Controller {
    * @param   direction.y     Vertical direction where player will move.
    */
   private async movePlayer(direction: IDirection): Promise<void> {
+    const currentLevel = dungeonState.getCurrentLevelController();
     const playerModel = this.playerController.getModel();
     const newCellCoordinateX = playerModel.position.x;
     const newCellCoordinateY = playerModel.position.y;
-    const newPlayerCellPosition = this.currentLevel.getCell(
+    const newPlayerCellPosition = currentLevel.getCell(
       newCellCoordinateX + direction.x,
       newCellCoordinateY + direction.y,
     );
@@ -375,11 +380,12 @@ export class GameController extends Controller {
   }
 
   private activateObject(direction: IDirection): void {
+    const currentLevel = dungeonState.getCurrentLevelController();
     const { x, y } = direction;
     const playerModel = this.playerController.getModel();
     const playerXPosition = playerModel.position.x;
     const playerYPosition = playerModel.position.y;
-    const activatedObjectCell = this.currentLevel.getCell(
+    const activatedObjectCell = currentLevel.getCell(
       playerXPosition + x,
       playerYPosition + y,
     );
@@ -391,7 +397,7 @@ export class GameController extends Controller {
    * Method responsible for refreshing game screen.
    */
   private refreshGameScreen(): void {
-    const levelModel = this.currentLevel.getModel();
+    const levelModel = dungeonState.getCurrentLevelController().getModel();
     const playerFov = this.playerController.getFov();
 
     this.view.refreshScreen(levelModel, playerFov);
@@ -404,14 +410,10 @@ export class GameController extends Controller {
    * @param    newHeight   New height of canvas.
    */
   public changeGameScreenInView(newWidth: number, newHeight: number): void {
+    const levelModel = dungeonState.getCurrentLevelController().getModel();
     const playerFov = this.playerController.getPlayerFov();
 
-    this.view.changeGameScreenSize(
-      newWidth,
-      newHeight,
-      this.currentLevel.getModel(),
-      playerFov,
-    );
+    this.view.changeGameScreenSize(newWidth, newHeight, levelModel, playerFov);
   }
 
   /**
@@ -444,7 +446,9 @@ export class GameController extends Controller {
    * Method triggered after player controller notifies about beginning of player turn.
    */
   private onPlayerStartTurn(): void {
-    this.currentLevel.lockTimeEngine();
+    const currentLevel = dungeonState.getCurrentLevelController();
+
+    currentLevel.lockTimeEngine();
     this.playerController.calculateFov();
     this.refreshGameScreen();
 
@@ -455,17 +459,18 @@ export class GameController extends Controller {
    * Method triggered after player controller notifies about end of player turn.
    */
   private onPlayerEndTurn(): void {
-    this.currentLevel.unlockTimeEngine();
+    const currentLevel = dungeonState.getCurrentLevelController();
+
+    currentLevel.unlockTimeEngine();
   }
 
   /**
    * Draws current level on canvas game view.
    */
   private drawLevelInView(): void {
-    this.view.drawScreen(
-      this.currentLevel.getModel(),
-      this.playerController.getFov(),
-    );
+    const levelModel = dungeonState.getCurrentLevelController().getModel();
+
+    this.view.drawScreen(levelModel, this.playerController.getFov());
   }
 
   /**
@@ -474,9 +479,10 @@ export class GameController extends Controller {
    * @param direction Direction object with x and y coordinates
    */
   public examineCellInDirection(direction: IDirection): void {
+    const currentLevel = dungeonState.getCurrentLevelController();
     const lastCell: Cell =
       this.currentlyExaminedCell || this.playerController.getEntityPosition();
-    const nextCell: Cell = this.currentLevel.getCell(
+    const nextCell: Cell = currentLevel.getCell(
       lastCell.x + direction.x,
       lastCell.y + direction.y,
     );
@@ -486,7 +492,7 @@ export class GameController extends Controller {
 
       if (playerFov.includes(nextCell)) {
         this.view.centerCameraOnCoordinates({ x, y });
-        this.view.refreshScreen(this.currentLevel.getModel(), playerFov);
+        this.view.refreshScreen(currentLevel.getModel(), playerFov);
         this.view.drawAnimatedBorder(x, y);
         this.currentlyExaminedCell = nextCell;
 
@@ -537,15 +543,13 @@ export class GameController extends Controller {
   }
 
   public disableExamineMode(): void {
+    const levelModel = dungeonState.getCurrentLevelController().getModel();
     const playerCell: Cell = this.playerController.getEntityPosition();
 
     this.view.disableExamineMode();
     this.currentlyExaminedCell = null;
     this.view.centerCameraOnCoordinates({ x: playerCell.x, y: playerCell.y });
-    this.view.refreshScreen(
-      this.currentLevel.getModel(),
-      this.playerController.getFov(),
-    );
+    this.view.refreshScreen(levelModel, this.playerController.getFov());
 
     this.notify(STOP_EXAMINE_CELL);
   }
