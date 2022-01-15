@@ -51,7 +51,7 @@ export class DungeonController extends Controller {
     );
   }
 
-  private generateNewLevel(num?: number): void {
+  public generateNewLevel(num?: number): void {
     const { currentBranchMaxLevelNumber, currentBranch } = dungeonState;
     const nextLevelNumberToGenerateInCurrentBranch =
       num ?? dungeonState.getCurrentBranchNextLevelNumber();
@@ -75,7 +75,7 @@ export class DungeonController extends Controller {
     }
   }
 
-  private generateNewLevelAtNumber(num: number): void {
+  public generateNewLevelAtNumber(num: number): void {
     this.generateNewLevel(num);
   }
 

@@ -41,6 +41,7 @@ import { EntityStatusFactory } from '../../factory/entity/entity_status_factory'
 import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
 import { globalInfoController } from '../../global/info_controller';
 import { SerializedEntityModel } from '../../model/entity/entity_model';
+import { dungeonState } from '../../state/application.state';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -72,6 +73,11 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     this.model = new PlayerModel(constructorConfig);
     this.attachEvents();
+
+    dungeonState.entityManager.addEntityToLevel(
+      this,
+      dungeonState.currentLevelNumber,
+    );
   }
 
   public static getInstance(
@@ -91,16 +97,6 @@ export class PlayerController extends EntityController<PlayerModel> {
   protected attachEvents(): void {
     super.attachEvents();
 
-    this.model.on(
-      this,
-      'property:level:change',
-      (newLevelModel: LevelModel) => {
-        this.notify(DungeonEvents.ChangeCurrentLevel, {
-          branch: newLevelModel.branch,
-          levelNumber: newLevelModel.levelNumber,
-        });
-      },
-    );
     this.model.on(
       this,
       EntityEvents.EntityModelStatusChange,

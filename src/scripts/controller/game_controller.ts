@@ -27,7 +27,7 @@ import { Controller } from './controller';
 import { cellTypes } from '../constants/cells/cell_types';
 import { globalMessagesController } from '../global/messages';
 import { DungeonEvents } from '../constants/dungeon_events';
-import { ASCEND } from '../constants/directions';
+import { ASCEND, DESCEND } from '../constants/directions';
 import { EntityModel, IEntityStatsObject } from '../model/entity/entity_model';
 import { boundMethod } from 'autobind-decorator';
 import { EntityEvents } from '../constants/entity_events';
@@ -122,16 +122,19 @@ export class GameController extends Controller {
       },
     );
 
-    this.dungeonController.on(
-      this,
-      DungeonEvents.ChangeCurrentLevel,
-      this.onDungeonControllerLevelChange.bind(this),
-    );
-
     reaction(
       () => dungeonState.currentLevelNumber,
-      (currentLevelNumber) => {
-        // TODO dopisac logikę ze zmianą
+      (currentLevelNumber, previousLevelNumber) => {
+        const direction =
+          Math.sign(currentLevelNumber - previousLevelNumber) === 1
+            ? DESCEND
+            : ASCEND;
+        // TODO przeanalizować logikę i zrefaktorować
+        this.dungeonController.generateNewLevelAtNumber(currentLevelNumber);
+        this.onDungeonStateCurrentLevelChange(
+          previousLevelNumber,
+          currentLevelNumber,
+        );
       },
     );
   }
@@ -172,7 +175,6 @@ export class GameController extends Controller {
       type: MonstersTypes.Player,
     });
 
-    initialPlayerCell.entity = this.playerController.getModel();
     this.playerController.calculateFov();
     currentLevel.addActorToTimeEngine(this.playerController);
     this.view.camera.centerOnCoordinates(
@@ -222,12 +224,12 @@ export class GameController extends Controller {
   private descentDownLevel(): void {
     const playerPositionCellType: string =
       this.playerController.getEntityPosition().type;
-
-    if (playerPositionCellType === cellTypes.STAIRS_DOWN) {
-      this.dungeonController.changeLevel(dungeonState.currentLevelNumber + 1);
-    } else {
-      globalMessagesController.showMessageInView("You can't go down here.");
-    }
+    // TODO temporary dev purpose
+    // if (playerPositionCellType === cellTypes.STAIRS_DOWN) {
+    this.dungeonController.changeLevel(dungeonState.currentLevelNumber + 1);
+    // } else {
+    //   globalMessagesController.showMessageInView("You can't go down here.");
+    // }
   }
 
   /**
@@ -280,24 +282,24 @@ export class GameController extends Controller {
     this.view.updateEntityPositionInTemporaryDrawnSprites(entity);
   }
 
-  /**
-   * Method triggered after dungeon controller notifies change on current level.
-   *
-   * @param data     Data passed along with event. Contains information about current level controller and
-   *                 whether change of level was made through descending or ascending (used to calculate new player
-   *                 position)
-   */
-  private onDungeonControllerLevelChange(data: {
-    newLevelController: LevelController;
-    direction: string;
-  }): void {
-    const { newLevelController, direction } = data;
-    const currentLevel = dungeonState.getCurrentLevelController();
+  private onDungeonStateCurrentLevelChange(
+    previousLevelNumber: number,
+    currentLevelNumber: number,
+  ): void {
+    const direction =
+      Math.sign(currentLevelNumber - previousLevelNumber) === 1
+        ? DESCEND
+        : ASCEND;
+    const previousLevelController = dungeonState.getLevelController(
+      dungeonState.currentBranch,
+      previousLevelNumber,
+    );
+    const newLevelController = dungeonState.getCurrentLevelController();
     let newPlayerCell: Cell;
 
     if (newLevelController) {
-      currentLevel.lockTimeEngine();
-      currentLevel.removeActorFromTimeEngine(this.playerController);
+      previousLevelController.lockTimeEngine();
+      previousLevelController.removeActorFromTimeEngine(this.playerController);
 
       newLevelController.addActorToTimeEngine(this.playerController);
       this.attachEventsToCurrentLevel();
@@ -314,7 +316,8 @@ export class GameController extends Controller {
         newPlayerCell = newLevelController.getStairsUpCell();
       }
       this.playerController.changeLevel(
-        newLevelController.getModel(),
+        previousLevelNumber,
+        currentLevelNumber,
         newPlayerCell,
       );
       this.view.centerCameraOnCoordinates({

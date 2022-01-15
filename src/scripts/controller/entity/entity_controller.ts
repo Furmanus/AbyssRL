@@ -32,6 +32,8 @@ import { statusModifierToMessage } from '../../constants/entity/stats';
 import { capitalizeString } from '../../helper/utility';
 import { EntityStunnedStatusController } from './entity_statuses/entity_stunned_status_controller';
 import { MonstersTypes } from '../../constants/entity/monsters';
+import { dungeonState } from '../../state/application.state';
+import { DungeonBranches } from '../../constants/dungeon_types';
 
 export abstract class EntityController<
   M extends EntityModel = EntityModel,
@@ -81,16 +83,17 @@ export abstract class EntityController<
     );
   }
 
-  /**
-   * Moves entity into new cell.
-   */
-  public move(newCell: Cell): void {
+  public move(
+    newCell: Cell,
+    levelNumber: number = dungeonState.currentLevelNumber,
+    dungeonBranch: DungeonBranches = dungeonState.currentBranch,
+  ): void {
     if (newCell.entity && newCell.entity !== this.getModel()) {
       const attackResult: ICombatResult = this.attack(newCell.entity);
 
       globalMessagesController.showMessageInView(attackResult.message);
     } else {
-      this.model.move(newCell);
+      this.model.move(newCell, levelNumber, dungeonBranch);
     }
   }
 
@@ -291,8 +294,16 @@ export abstract class EntityController<
    * @param level         New level where player currently is
    * @param position      New player position (cell)
    */
-  public changeLevel(level: LevelModel, position: Cell): void {
-    this.model.changeLevel(level);
+  public changeLevel(
+    oldLevelNumber: number,
+    newLevelNumber: number,
+    position: Cell,
+  ): void {
+    dungeonState.entityManager.moveEntityFromLevelToLevel(
+      this,
+      oldLevelNumber,
+      newLevelNumber,
+    );
     this.move(position);
   }
 

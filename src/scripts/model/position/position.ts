@@ -1,4 +1,5 @@
 import { ExcludeFunctionProperties } from '../../interfaces/utility.interfaces';
+import { Cell } from '../dungeon/cells/cell_model';
 
 export type SerializedPosition = ExcludeFunctionProperties<Position>;
 
@@ -12,6 +13,10 @@ export class Position {
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
+  }
+
+  public static fromCell(cell: Cell): Position {
+    return new Position(cell.x, cell.y);
   }
 
   /**

@@ -17,6 +17,8 @@ import {
   CellSpecialConditions,
   cellSpecialConditionToWalkMessage,
 } from '../../../constants/cells/cell_types';
+import { DungeonStateEntityManager } from '../../../state/managers/dungeonStateEntity.manager';
+import { dungeonState } from '../../../state/application.state';
 
 /**
  * Class representing single map square(field).
@@ -30,10 +32,6 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Vertical position on level grid.
    */
   public y: number;
-  /**
-   * Entity (monster or player) occupying cell.
-   */
-  public entity: EntityModel = null;
   /**
    * Array of items in cell.
    */
@@ -77,6 +75,13 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   public get isContainer(): boolean {
     return Array.isArray(this.containerInventory);
+  }
+
+  /**
+   * Entity (monster or player) occupying cell.
+   */
+  public get entity(): EntityModel {
+    return dungeonState.entityManager.findEntityByCell(this)?.getModel();
   }
 
   /**
@@ -127,22 +132,6 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   get modifiers(): IAnyObject {
     return null;
-  }
-
-  /**
-   * Resets value entity field of cell model instance (sets it to null).
-   */
-  public clearEntity(): void {
-    this.entity = null;
-  }
-
-  /**
-   * Sets value of entity field of cell model instance.
-   *
-   * @param entity    Model of entity
-   */
-  public setEntity(entity: EntityModel): void {
-    this.entity = entity;
   }
 
   /**

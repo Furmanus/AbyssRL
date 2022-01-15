@@ -5,11 +5,11 @@ import { IActionAttempt } from '../interfaces/common';
 import { BaseState } from './baseState';
 import { ExcludeFunctionProperties } from '../interfaces/utility.interfaces';
 import { LevelModel } from '../model/dungeon/level_model';
-import { EntityModel } from '../model/entity/entity_model';
 import { DungeonStateEntityManager } from './managers/dungeonStateEntity.manager';
 import { LevelController } from '../controller/dungeon/level_controller';
+import { EntityController } from '../controller/entity/entity_controller';
 
-const dungeonBranchToMaxLevel = {
+export const dungeonBranchToMaxLevel = {
   [DungeonBranches.Main]: 8,
 };
 
@@ -17,7 +17,7 @@ type DungeonStructure = {
   [branch in DungeonBranches]: {
     [levelNumber: number]: {
       level: LevelController;
-      entities: Set<EntityModel>;
+      entities: Set<EntityController>;
     };
   };
 };
@@ -116,7 +116,7 @@ export class DungeonState extends BaseState {
     if (!this.dungeonsStructure[this.currentBranch][levelNumber]) {
       this.dungeonsStructure[this.currentBranch][levelNumber] = {
         level: null,
-        entities: new Set<EntityModel>(),
+        entities: new Set<EntityController>(),
       };
     }
 

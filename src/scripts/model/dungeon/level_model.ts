@@ -88,15 +88,6 @@ export class LevelModel extends BaseModel {
   }
 
   /**
-   * Method responsible for removing entity from level cells, if its present in any.
-   *
-   * @param entity    Entity model
-   */
-  public removeEntity(entity: EntityModel): void {
-    entity.position.entity = null;
-  }
-
-  /**
    * Method responsible for setting stairsUp field of level model.
    * @param   x   Row
    * @param   y   Column
@@ -294,11 +285,5 @@ export class LevelModel extends BaseModel {
     }
 
     return result;
-  }
-
-  public addMonster(monsterController: MonsterController, cell: Cell): void {
-    cell.setEntity(monsterController.getModel());
-
-    this.notify(DungeonEvents.NewCreatureSpawned, monsterController);
   }
 }

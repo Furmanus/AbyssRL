@@ -15,6 +15,7 @@ import { MonsterFactory } from '../../factory/monster_factory';
 import { IActor } from '../../interfaces/entity/entity_interfaces';
 import { DungeonEventsFactory } from '../../factory/dungeon_event_factory';
 import { EntityFactory } from '../../factory/entity/entity_factory';
+import { dungeonState } from '../../state/application.state';
 
 interface ILevelControllerConstructorConfig {
   readonly branch: string;
@@ -54,11 +55,6 @@ export class LevelController extends Controller {
    * Enables listening on various events.
    */
   protected attachEvents(): void {
-    this.model.on(
-      this,
-      DungeonEvents.NewCreatureSpawned,
-      this.onNewMonsterSpawned.bind(this),
-    );
     this.levelEntitiesControllers.on(
       this,
       EntityEvents.EntityMove,
@@ -145,7 +141,8 @@ export class LevelController extends Controller {
       cell,
     );
 
-    this.model.addMonster(monsterController, cell);
+    dungeonState.entityManager.addEntityToLevel(monsterController);
+    this.addActorToTimeEngine(monsterController);
   }
 
   /**
@@ -198,15 +195,6 @@ export class LevelController extends Controller {
    */
   public getModel(): LevelModel {
     return this.model;
-  }
-
-  /**
-   * Method triggered after level model notifies that new monster has been spawned.
-   *
-   * @param monster   Newly spawned monster controller
-   */
-  private onNewMonsterSpawned(monster: MonsterController): void {
-    this.addActorToTimeEngine(monster);
   }
 
   /**

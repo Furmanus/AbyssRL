@@ -308,23 +308,14 @@ export class EntityModel extends BaseModel implements IEntity {
    * @param   newCell     New cell which entity will occupy.
    */
   public changePosition(newCell: Cell): void {
-    this.setProperty('position', newCell);
-  }
-
-  /**
-   * Changes level property and position property of entity.
-   *
-   * @param level         New entity level
-   */
-  public changeLevel(level: LevelModel): void {
-    this.setProperty('level', level);
+    this.entityPosition.position = Position.fromCell(newCell);
   }
 
   /**
    * Sets new fov array of entity.
    */
   public setFov(fovArray: Cell[]): void {
-    this.setProperty('fov', fovArray);
+    this.fov = fovArray;
   }
 
   public addStatus(entityStatus: EntityStatusCommonController): void {
@@ -391,14 +382,17 @@ export class EntityModel extends BaseModel implements IEntity {
    *
    * @param newCell   New cell where entity currently is
    */
-  public move(newCell: Cell): void {
+  public move(
+    newCell: Cell,
+    levelNumber: number = dungeonState.currentLevelNumber,
+    dungeonBranch: DungeonBranches = dungeonState.currentBranch,
+  ): void {
     this.lastVisitedCell = this.position; // remember on what cell entity was in previous turn
-    this.position.clearEntity(); // we clear entity field of cell which entity is right now at
     this.entityPosition.position = new Position(newCell.x, newCell.y);
-    /**
-     * in new cell model where monster is after movement, we store information about new entity occupying new cell.
-     */
-    this.position.setEntity(this);
+
+    this.entityPosition.level = levelNumber;
+    this.entityPosition.branch = dungeonBranch;
+
     this.notify(EntityEvents.EntityMove, newCell);
   }
 

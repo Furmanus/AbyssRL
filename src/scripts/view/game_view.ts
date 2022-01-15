@@ -919,7 +919,7 @@ export class GameView extends Observer {
     const cameraCoords = this.camera.getCoords();
     const cameraX = cameraCoords.x;
     const cameraY = cameraCoords.y;
-    let examinedCell;
+    let examinedCell: Cell;
 
     this.currentPlayerFov = playerFov;
 
