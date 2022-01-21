@@ -818,10 +818,10 @@ export abstract class AbstractLevelGenerator {
 
         if (randomCell) {
           const monsterController: MonsterController =
-            MonsterFactory.getGiantRatController(levelController, randomCell);
-          randomCell.setEntity(monsterController.getModel());
-          levelModel.notify(
-            DungeonEvents.NewCreatureSpawned,
+            MonsterFactory.getGiantRatController(randomCell);
+
+          levelController.spawnMonsterInSpecificCell(
+            randomCell,
             monsterController,
           );
         }

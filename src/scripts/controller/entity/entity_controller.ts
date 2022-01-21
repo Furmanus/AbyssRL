@@ -34,12 +34,12 @@ import { EntityStunnedStatusController } from './entity_statuses/entity_stunned_
 import { MonstersTypes } from '../../constants/entity/monsters';
 import { dungeonState } from '../../state/application.state';
 import { DungeonBranches } from '../../constants/dungeon_types';
+import { IWeapon } from '../../interfaces/combat';
 
 export abstract class EntityController<
   M extends EntityModel = EntityModel,
 > extends Controller {
   protected model: M;
-  protected currentLevelController: LevelController;
   protected get isDead(): boolean {
     return this.model.hitPoints <= 0;
   }
@@ -51,18 +51,6 @@ export abstract class EntityController<
         (status: EntityStatusCommonController) =>
           status.type === EntityStatuses.Stunned,
       );
-  }
-
-  /**
-   * Constructor for entity controller.
-   * @param   config              Object with data for creating model and controller.
-   * @param   config.display      Name of sprite visible on game screen.
-   * @param   config.position     Starting player position.
-   */
-  constructor(config: IAnyObject) {
-    super();
-
-    this.currentLevelController = config.levelController;
   }
 
   protected attachEvents(): void {
@@ -100,7 +88,7 @@ export abstract class EntityController<
   @boundMethod
   public attack(defender: EntityModel): ICombatResult {
     const defenderController =
-      this.currentLevelController.getEntityControllerByModel(defender);
+      dungeonState.entityManager.findEntityControllerByModel(defender);
 
     if (defenderController) {
       return doCombatAction(this, defenderController);
@@ -174,11 +162,12 @@ export abstract class EntityController<
   public dropItems(items: ItemModel[]): void {
     const equippedWeapon = items.find(
       (item) =>
-        item instanceof WeaponModel && this.model.isWeaponEquipped(item),
+        item instanceof WeaponModel &&
+        this.model.isWeaponEquipped(item as IWeapon),
     );
 
     if (equippedWeapon && equippedWeapon instanceof WeaponModel) {
-      this.model.removeWeapon(equippedWeapon);
+      this.model.removeWeapon(equippedWeapon as IWeapon);
     }
 
     this.model.dropItems(items);
@@ -355,16 +344,6 @@ export abstract class EntityController<
     source?: keyof typeof entityStatusToDamageText,
   ): void {
     this.model.takeHit(damage);
-  }
-
-  /**
-   * Return property value from model.
-   */
-  public getProperty(propertyName: string): any {
-    if (!this.model[propertyName]) {
-      throw new TypeError(`Uknown property ${propertyName}`);
-    }
-    return this.model[propertyName];
   }
 
   public dropBlood(): void {

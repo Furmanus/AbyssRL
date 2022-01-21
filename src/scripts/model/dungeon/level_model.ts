@@ -40,6 +40,8 @@ export class LevelModel extends BaseModel {
   public levelNumber: number;
   private defaultWallType: string = null;
   private rooms: RoomModel[] = [];
+  private stairsUp: Position;
+  private stairsDown: Position;
   private roomConnections: Set<RoomConnectionModel> = new Set();
   private cells: Map<string, Cell> = new Map();
   /**

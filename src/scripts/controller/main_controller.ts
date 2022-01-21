@@ -428,7 +428,7 @@ export class MainController extends Controller {
   private openPlayerInventory(mode: EntityInventoryActions): void {
     const playerModel = this.gameController.getPlayerModel();
     const { inventory } = playerModel;
-
+    // nie działa otwieranie, inventory jest undefined
     globalInventoryController.openModal(inventory, mode, playerModel);
     this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
   }

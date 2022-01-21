@@ -83,7 +83,7 @@ export type SerializedEntityModel = {
   position: EntityDungeonPosition;
   lastVisitedCell?: SerializedPosition;
   size?: MonsterSizes;
-  inventory?: unknown[]; // TODO fix
+  inventory?: ItemModel[]; // serialized item model
   naturalWeapon?: unknown; // TODO fix
 };
 
@@ -224,13 +224,7 @@ export class EntityModel extends BaseModel implements IEntity {
     [EntityStats.Speed]: new Set<IStatsSingleModifier>(),
   };
 
-  // TODO remove content of collection
-  public inventory: ItemsCollection = new ItemsCollection([
-    weaponModelFactory.getRandomWeaponModel(),
-    weaponModelFactory.getRandomWeaponModel(),
-    ArmourModelFactory.getRandomArmourModel(),
-    ArmourModelFactory.getRandomArmourModel(),
-  ]);
+  public inventory: ItemsCollection;
 
   public entityStatuses = EntityStatusFactory.getCollection();
 
@@ -282,7 +276,7 @@ export class EntityModel extends BaseModel implements IEntity {
     this.hitPoints = config.hitPoints;
     this.maxHitPoints = config.maxHitPoints;
     this.protection = config.protection;
-    this.inventory = config.inventory ?? (config.inventory as any); // TODO fix
+    this.inventory = ItemsCollection.getInstance(config.inventory); // TODO fix
     this.naturalWeapon = config.naturalWeapon ?? (config.naturalWeapon as any); // TODO fix
     // TODO add initialization of inventory
 
@@ -530,7 +524,7 @@ export class EntityModel extends BaseModel implements IEntity {
   }
 
   public setCurrentHpToMax(): void {
-    this.setProperty('hitPoints', this.maxHitPoints);
+    this.hitPoints = this.maxHitPoints;
   }
 
   public addTemporaryStatModifier(stats: AddTemporaryStatModifierData): void {

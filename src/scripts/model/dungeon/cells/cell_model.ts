@@ -40,6 +40,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Boolean variable indicating whether cells display can be changed or not.
    */
   public preventDisplayChange: boolean = false;
+  public description: string;
   /**
    * Variable indicating if cell was discovered by player (used for purpose of drawing visited but not currently
    * visible cells)

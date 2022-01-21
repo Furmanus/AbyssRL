@@ -62,16 +62,16 @@ export class DungeonController extends Controller {
         levelNumber: nextLevelNumberToGenerateInCurrentBranch,
       });
 
+      dungeonState.addNewLevelControllerToCurrentBranch(
+        newLevelController,
+        nextLevelNumberToGenerateInCurrentBranch,
+      );
+
       this.strategy.generateRandomLevel(newLevelController, {
         generateStairsDown:
           nextLevelNumberToGenerateInCurrentBranch !==
           currentBranchMaxLevelNumber,
       });
-
-      dungeonState.addNewLevelControllerToCurrentBranch(
-        newLevelController,
-        nextLevelNumberToGenerateInCurrentBranch,
-      );
     }
   }
 

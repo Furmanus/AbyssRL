@@ -187,7 +187,13 @@ export class GameController extends Controller {
    * Starts game by starting time engine on current level.
    */
   private startGame(): void {
-    dungeonState.getCurrentLevelController()?.startTimeEngine();
+    const currentLevelController = dungeonState.getCurrentLevelController();
+
+    if (currentLevelController) {
+      currentLevelController.startTimeEngine();
+    } else {
+      throw new Error('Current level controller not found');
+    }
   }
 
   /**

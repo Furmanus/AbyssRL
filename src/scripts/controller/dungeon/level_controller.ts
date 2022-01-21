@@ -134,12 +134,26 @@ export class LevelController extends Controller {
     }
   }
 
-  public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
-    const monsterController = MonsterFactory.getMonsterControllerByType(
-      monster,
-      this,
-      cell,
-    );
+  public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void;
+  public spawnMonsterInSpecificCell(
+    cell: Cell,
+    monster: MonsterController,
+  ): void;
+
+  public spawnMonsterInSpecificCell(
+    cell: Cell,
+    monster: Monsters | MonsterController,
+  ): void {
+    let monsterController: MonsterController;
+
+    if (monster instanceof MonsterController) {
+      monsterController = monster;
+    } else {
+      monsterController = MonsterFactory.getMonsterControllerByType(
+        monster,
+        cell,
+      );
+    }
 
     dungeonState.entityManager.addEntityToLevel(monsterController);
     this.addActorToTimeEngine(monsterController);
@@ -205,10 +219,16 @@ export class LevelController extends Controller {
   @boundMethod
   private onMonsterDeath(data: { entityController: EntityController }): void {
     const { entityController } = data;
+    const entityModel = entityController.getModel();
+    const { branch, level } = entityModel.entityPosition;
 
     if (entityController.getModel().type !== MonstersTypes.Player) {
       this.removeActorFromTimeEngine(entityController);
-      this.removeEntityFromLevel(entityController.getModel());
+      dungeonState.entityManager.removeEntityFromLevel(
+        entityController,
+        level,
+        branch,
+      );
       entityController.off(this, EntityEvents.EntityDeath);
     } else {
       this.lockTimeEngine();
@@ -224,15 +244,6 @@ export class LevelController extends Controller {
   @boundMethod
   private onEntityHit(entity: EntityModel): void {
     this.notify(EntityEvents.EntityHit, entity);
-  }
-
-  /**
-   * Method responsible for removing entity model from level cells (if its present in any).
-   *
-   * @param entity    Entity model
-   */
-  private removeEntityFromLevel(entity: EntityModel): void {
-    this.model.removeEntity(entity);
   }
 
   private onEntityBloodLoss(entity: EntityModel): void {

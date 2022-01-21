@@ -94,6 +94,27 @@ export class DungeonStateEntityManager {
     return null;
   }
 
+  public findEntityControllerByModel(
+    entityModel: EntityModel,
+    branch: DungeonBranches = this.dungeonState.currentBranch,
+    levelNumber: number = this.dungeonState.currentLevelNumber,
+  ): EntityController {
+    const entities = this.getEntitiesFromLevel(branch, levelNumber);
+
+    if (entities) {
+      return Array.from(entities).find(
+        (entityController) => entityController.getModel() === entityModel,
+      );
+    }
+  }
+
+  private getEntitiesFromLevel(
+    branch: DungeonBranches,
+    levelNumber: number,
+  ): Set<EntityController> {
+    return this.dungeonState.dungeonsStructure[branch]?.[levelNumber]?.entities;
+  }
+
   private isEntityOnLevel(
     entityController: EntityController,
     levelNumber: number,

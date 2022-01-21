@@ -10,6 +10,7 @@ export class WeaponModel extends WearableModel {
   public damage: Dice;
   public toHit: Dice;
   public readonly type: DamageTypes;
+  public readonly naturalType: string;
   public readonly name: string;
   public display: string;
   public itemType: ItemTypes = ItemTypes.Weapon;

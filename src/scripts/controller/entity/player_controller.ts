@@ -42,6 +42,7 @@ import { EntityStatusesCollection } from '../../collections/entity_statuses_coll
 import { globalInfoController } from '../../global/info_controller';
 import { SerializedEntityModel } from '../../model/entity/entity_model';
 import { dungeonState } from '../../state/application.state';
+import { LevelController } from '../dungeon/level_controller';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -63,9 +64,12 @@ export class PlayerController extends EntityController<PlayerModel> {
     globalInventoryController;
 
   private containerInventoryController = globalContainerInventoryController;
+  private get currentLevelController(): LevelController {
+    return dungeonState.getCurrentLevelController();
+  }
 
   constructor(token: symbol, constructorConfig: SerializedEntityModel) {
-    super(constructorConfig);
+    super();
 
     if (token !== constructorToken) {
       throw new Error('Invalid constructor');

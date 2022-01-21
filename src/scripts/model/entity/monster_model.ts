@@ -18,19 +18,19 @@ export class MonsterModel extends EntityModel implements IEntity {
     this.description = config.description ?? entityConfig.description;
     this.display = config.display ?? entityConfig.display;
     this.size = config.size ?? entityConfig.size;
-    this.inventory = config.inventory ?? (entityConfig.inventory as any); // TODO fix
+    this.inventory = config.inventory || (entityConfig.inventory as any); // TODO fix
     this.naturalWeapon =
       config.naturalWeapon ?? (entityConfig.naturalWeapon as any); // TODO fix
     this.lastVisitedCell = config.lastVisitedCell || null;
-    this.speed = this.speed ?? entityConfig.speed;
-    this.perception = this.perception ?? entityConfig.perception;
-    this.type = this.type ?? entityConfig.type;
-    this.strength = this.strength ?? entityConfig.strength;
-    this.dexterity = this.dexterity ?? entityConfig.dexterity;
-    this.intelligence = this.intelligence ?? entityConfig.intelligence;
-    this.toughness = this.toughness ?? entityConfig.toughness;
-    this.hitPoints = this.hitPoints ?? entityConfig.hitPoints;
-    this.maxHitPoints = this.maxHitPoints ?? entityConfig.maxHitPoints;
-    this.protection = this.protection ?? entityConfig.protection;
+    this.speed = this.speed || entityConfig.speed;
+    this.perception = this.perception || entityConfig.perception;
+    this.type = this.type || entityConfig.type;
+    this.strength = this.strength || entityConfig.strength;
+    this.dexterity = this.dexterity || entityConfig.dexterity;
+    this.intelligence = this.intelligence || entityConfig.intelligence;
+    this.toughness = this.toughness || entityConfig.toughness;
+    this.hitPoints = this.hitPoints || entityConfig.hitPoints;
+    this.maxHitPoints = this.maxHitPoints || entityConfig.maxHitPoints;
+    this.protection = this.protection || entityConfig.protection;
   }
 }
