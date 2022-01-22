@@ -1,15 +1,9 @@
 import { DamageTypes } from '../../../../constants/combat_enums';
 import { WeaponCriticalDamageType } from '../../../../constants/items/weapons';
+import { SerializedWeapon } from '../weapon_model';
 
-export interface IWeaponConfigObject {
-  damage: string;
-  toHit: string;
-  name: string;
-  type: DamageTypes;
-  criticalDamageType: WeaponCriticalDamageType[];
-}
 export interface IWeaponData {
-  [type: string]: IWeaponConfigObject;
+  [type: string]: SerializedWeapon;
 }
 
 export const weaponsData: IWeaponData = {

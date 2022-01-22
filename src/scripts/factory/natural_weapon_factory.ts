@@ -5,7 +5,10 @@ import {
 import { NaturalWeaponModel } from '../model/items/weapons/natural_weapon_model';
 import { Dice } from '../model/dice';
 import { DamageTypes } from '../constants/combat_enums';
-import { WeaponCriticalDamageType } from '../constants/items/weapons';
+import {
+  NaturalWeaponNames,
+  WeaponCriticalDamageType,
+} from '../constants/items/weapons';
 
 export function getMonsterNaturalWeapon(
   type: MonstersTypes,
@@ -13,18 +16,23 @@ export function getMonsterNaturalWeapon(
   switch (type) {
     case MonstersTypes.GiantRat:
       return new NaturalWeaponModel({
-        damage: new Dice('1d2+1'),
-        toHit: new Dice('1d2'),
+        damage: '1d2+1',
+        toHit: '1d2',
         type: DamageTypes.Piercing,
         naturalType: MonsterAttackTypes.Bite,
-        criticalDamageType: [WeaponCriticalDamageType.Stun],
+        criticalDamageType: [WeaponCriticalDamageType.Bleeding],
+        criticalHitRate: 3,
+        name: NaturalWeaponNames.Teeth,
       });
     case MonstersTypes.Player:
       return new NaturalWeaponModel({
-        damage: new Dice('1d5'),
-        toHit: new Dice('2d2'),
+        damage: '1d5',
+        toHit: '2d2',
         type: DamageTypes.Bludgeoning,
         naturalType: MonsterAttackTypes.Fist,
+        criticalHitRate: 5,
+        criticalDamageType: [WeaponCriticalDamageType.Stun],
+        name: NaturalWeaponNames.Fist,
       });
     default:
       return null;

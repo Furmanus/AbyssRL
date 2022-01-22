@@ -278,7 +278,6 @@ export class EntityModel extends BaseModel implements IEntity {
     this.protection = config.protection;
     this.inventory = ItemsCollection.getInstance(config.inventory); // TODO fix
     this.naturalWeapon = config.naturalWeapon ?? (config.naturalWeapon as any); // TODO fix
-    // TODO add initialization of inventory
 
     this.attachEventsToCollections();
   }

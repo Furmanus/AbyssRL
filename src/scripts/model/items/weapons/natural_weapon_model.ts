@@ -7,17 +7,19 @@ import { WearableModel } from '../wearable_model';
 import { EntityModel } from '../../entity/entity_model';
 import { ItemTypes } from '../../../constants/items/item';
 import { WeaponCriticalDamageType } from '../../../constants/items/weapons';
+import { SerializedWeapon } from './weapon_model';
 
-export class NaturalWeaponModel
-  extends WearableModel
-  implements INaturalWeapon
-{
+export interface SerializedNaturalWeapon extends SerializedWeapon {
+  naturalType: MonsterAttackTypes;
+}
+
+export class NaturalWeaponModel extends WearableModel {
+  public itemType: ItemTypes = ItemTypes.NaturalWeapon;
   public damage: Dice;
   public toHit: Dice;
   public type: DamageTypes;
   public name: string = null;
   public display: string = null;
-  public itemType: ItemTypes = null;
   public naturalType: MonsterAttackTypes;
   public criticalHitRate = 0;
   public criticalDamageType: WeaponCriticalDamageType[];
@@ -32,10 +34,17 @@ export class NaturalWeaponModel
     })`;
   }
 
-  // TODO Think how to solve passing more specific config object type?
-  public constructor(config: IAnyObject) {
+  public constructor(config: SerializedNaturalWeapon) {
     super();
-    const { damage, toHit } = config;
+    const {
+      damage,
+      toHit,
+      criticalDamageType,
+      naturalType,
+      type,
+      name,
+      criticalHitRate,
+    } = config;
 
     if (typeof damage === 'string') {
       this.damage = new Dice(damage);
@@ -47,22 +56,26 @@ export class NaturalWeaponModel
     } else {
       this.toHit = toHit;
     }
-    this.type = config.type;
-    this.naturalType = config.naturalType;
-    this.criticalDamageType = config.criticalDamageType;
+    this.type = type;
+    this.naturalType = naturalType;
+    this.criticalDamageType = criticalDamageType;
+    this.name = name;
   }
 
   /**
    * Returns serialized model data.
    * @returns  Serialized natural weapon model data
    */
-  public getDataToSerialization(): string {
-    return JSON.stringify({
+  public getDataToSerialization(): SerializedNaturalWeapon {
+    return {
       damage: this.damage.getSerializedData(),
       toHit: this.toHit.getSerializedData(),
       type: this.type,
+      name: this.name,
       naturalType: this.naturalType,
-    });
+      criticalHitRate: this.criticalHitRate,
+      criticalDamageType: this.criticalDamageType,
+    };
   }
 
   public wear(entity: EntityModel): never {

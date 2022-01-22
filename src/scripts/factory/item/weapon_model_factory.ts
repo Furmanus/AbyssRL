@@ -1,7 +1,4 @@
-import {
-  IWeaponConfigObject,
-  weaponsData,
-} from '../../model/items/weapons/data/weapons';
+import { weaponsData } from '../../model/items/weapons/data/weapons';
 import { WeaponModel } from '../../model/items/weapons/weapon_model';
 import { WeaponNames } from '../../constants/items/weapons';
 import { getRandomNumber } from '../../helper/rng';
@@ -16,7 +13,7 @@ export const weaponModelFactory = {
     const weaponsDataKeys: string[] = Object.keys(weaponsData);
     const { length } = weaponsDataKeys;
     const randomKey: string = weaponsDataKeys[getRandomNumber(0, length - 1)];
-    const weaponConstructorConfig: IWeaponConfigObject = weaponsData[randomKey];
+    const weaponConstructorConfig = weaponsData[randomKey];
 
     return new WeaponModel(weaponConstructorConfig);
   },

@@ -1,14 +1,8 @@
 import { ArmourNames } from '../../../constants/items/armour_names';
 import { ItemSprites } from '../../../constants/cells/sprites';
+import { SerializedArmour } from './armour_model';
 
-export interface IArmourConfig {
-  dodgeModifier: number;
-  protectionModifier: number;
-  name: ArmourNames;
-  display: string;
-}
-
-export const armourData: Record<ArmourNames, IArmourConfig> = {
+export const armourData: Record<ArmourNames, SerializedArmour> = {
   [ArmourNames.Robe]: {
     dodgeModifier: 0,
     protectionModifier: 1,
