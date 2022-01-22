@@ -1,3 +1,7 @@
+import { ExcludeFunctionProperties } from '../../interfaces/utility.interfaces';
+
+export type SerializedVector = ExcludeFunctionProperties<Vector>;
+
 /**
  * Class representing two dimensional vector.
  */
@@ -22,5 +26,9 @@ export class Vector {
     this.y -= vector.y;
 
     return this;
+  }
+
+  public getDataToSerialization(): SerializedVector {
+    return { ...this };
   }
 }

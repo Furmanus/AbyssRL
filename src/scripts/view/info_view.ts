@@ -412,7 +412,7 @@ export class InfoView {
       hitPoints,
       maxHitPoints,
       weaponType: weapon.description,
-      weaponDamage: weapon.damage.getSerializedData(),
+      weaponDamage: weapon.damage.getDataToSerialization(),
       weaponDmgType: weapon.type,
       armour: equippedArmour?.fullDescription || 'none',
       status: entity.getEntityGeneralStatusDescription(),
@@ -433,8 +433,8 @@ export class InfoView {
     if (item instanceof WeaponModel) {
       return {
         ...baseVariables,
-        damage: `${item.damage.getSerializedData()} (${item.type})`,
-        toHit: `${item.toHit.getSerializedData()}`,
+        damage: `${item.damage.getDataToSerialization()} (${item.type})`,
+        toHit: `${item.toHit.getDataToSerialization()}`,
       };
     } else if (item instanceof ArmourModel) {
       return {

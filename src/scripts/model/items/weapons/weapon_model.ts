@@ -29,7 +29,7 @@ export class WeaponModel extends WearableModel {
   }
 
   public get fullDescription(): string {
-    return `${this.description} (${this.damage.getSerializedData()}, ${
+    return `${this.description} (${this.damage.getDataToSerialization()}, ${
       this.type
     })`;
   }
@@ -55,8 +55,8 @@ export class WeaponModel extends WearableModel {
    */
   public getDataToSerialization(): SerializedWeapon {
     return {
-      damage: this.damage.getSerializedData(),
-      toHit: this.toHit.getSerializedData(),
+      damage: this.damage.getDataToSerialization(),
+      toHit: this.toHit.getDataToSerialization(),
       type: this.type,
       name: this.name,
       criticalHitRate: this.criticalHitRate,

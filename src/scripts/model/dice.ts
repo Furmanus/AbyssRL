@@ -48,7 +48,7 @@ export class Dice {
     return this.additional;
   }
 
-  public getSerializedData(): string {
+  public getDataToSerialization(): string {
     let desc: string = `${this.multiplier}d${this.sides}`;
 
     if (this.additional) {
