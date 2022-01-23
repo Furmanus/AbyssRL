@@ -9,12 +9,19 @@ import { ItemTypes } from '../../../constants/items/item';
 import { WeaponCriticalDamageType } from '../../../constants/items/weapons';
 import { SerializedWeapon } from './weapon_model';
 
-export interface SerializedNaturalWeapon extends SerializedWeapon {
+export interface SerializedNaturalWeapon {
+  itemType: ItemTypes.NaturalWeapon;
   naturalType: MonsterAttackTypes;
+  damage: string;
+  toHit: string;
+  name: string;
+  type: DamageTypes;
+  criticalHitRate?: number;
+  criticalDamageType: WeaponCriticalDamageType[];
 }
 
 export class NaturalWeaponModel extends WearableModel {
-  public itemType: ItemTypes = ItemTypes.NaturalWeapon;
+  public itemType: ItemTypes.NaturalWeapon = ItemTypes.NaturalWeapon;
   public damage: Dice;
   public toHit: Dice;
   public type: DamageTypes;
@@ -36,6 +43,7 @@ export class NaturalWeaponModel extends WearableModel {
 
   public constructor(config: SerializedNaturalWeapon) {
     super();
+
     const {
       damage,
       toHit,
@@ -68,6 +76,7 @@ export class NaturalWeaponModel extends WearableModel {
    */
   public getDataToSerialization(): SerializedNaturalWeapon {
     return {
+      itemType: this.itemType,
       damage: this.damage.getDataToSerialization(),
       toHit: this.toHit.getDataToSerialization(),
       type: this.type,

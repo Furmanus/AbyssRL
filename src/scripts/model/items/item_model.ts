@@ -1,6 +1,14 @@
 import { BaseModel } from '../../core/base_model';
 import { EntityModel } from '../entity/entity_model';
 import { ItemTypes } from '../../constants/items/item';
+import { SerializedWeapon } from './weapons/weapon_model';
+import { SerializedArmour } from './armours/armour_model';
+import { SerializedNaturalWeapon } from './weapons/natural_weapon_model';
+
+export type SerializedItem =
+  | SerializedWeapon
+  | SerializedArmour
+  | SerializedNaturalWeapon;
 
 export abstract class ItemModel extends BaseModel {
   /**
@@ -19,6 +27,8 @@ export abstract class ItemModel extends BaseModel {
    * Returns full description of item along with additional info (damage and damage type for weapons for example).
    */
   public abstract get fullDescription(): string;
+
+  public abstract getDataToSerialization(): SerializedItem;
 
   public drop(entity: EntityModel): void {
     // placeholder

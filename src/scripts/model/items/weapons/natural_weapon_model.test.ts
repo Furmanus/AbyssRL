@@ -2,8 +2,10 @@ import { NaturalWeaponModel } from './natural_weapon_model';
 import { Dice } from '../../dice';
 import { MonsterAttackTypes } from '../../../constants/entity/monsters';
 import { DamageTypes } from '../../../constants/combat_enums';
+import { ItemTypes } from '../../../constants/items/item';
 
 const weaponModel: NaturalWeaponModel = new NaturalWeaponModel({
+  itemType: ItemTypes.NaturalWeapon,
   damage: '2d5',
   toHit: '1d2',
   naturalType: MonsterAttackTypes.Fist,
@@ -20,6 +22,7 @@ const serializedWeaponModel: string =
 
 describe('Test natural weapon model', () => {
   const testWeaponModel = new NaturalWeaponModel({
+    itemType: ItemTypes.NaturalWeapon,
     damage: '2d5',
     toHit: '1d2',
     naturalType: MonsterAttackTypes.Fist,
@@ -29,6 +32,7 @@ describe('Test natural weapon model', () => {
     criticalDamageType: [],
   });
   const secondTestWeaponModel = new NaturalWeaponModel({
+    itemType: ItemTypes.NaturalWeapon,
     damage: '2d5',
     toHit: '1d2',
     naturalType: MonsterAttackTypes.Fist,

@@ -1,13 +1,19 @@
 import { DamageTypes } from '../../../../constants/combat_enums';
 import { WeaponCriticalDamageType } from '../../../../constants/items/weapons';
 import { SerializedWeapon } from '../weapon_model';
+import { ItemTypes } from '../../../../constants/items/item';
 
 export interface IWeaponData {
   [type: string]: SerializedWeapon;
 }
 
+const defaultWeaponOptions: { itemType: ItemTypes.Weapon } = {
+  itemType: ItemTypes.Weapon,
+};
+
 export const weaponsData: IWeaponData = {
   long_sword: {
+    ...defaultWeaponOptions,
     damage: '1d8',
     toHit: '1d3',
     name: 'long sword',
@@ -15,6 +21,7 @@ export const weaponsData: IWeaponData = {
     criticalDamageType: [WeaponCriticalDamageType.Bleeding],
   },
   broad_axe: {
+    ...defaultWeaponOptions,
     damage: '1d6+3',
     toHit: '1d2',
     name: 'broad axe',
@@ -22,6 +29,7 @@ export const weaponsData: IWeaponData = {
     criticalDamageType: [WeaponCriticalDamageType.Bleeding],
   },
   short_spear: {
+    ...defaultWeaponOptions,
     damage: '1d6',
     toHit: '1d4',
     name: 'short spear',
@@ -29,6 +37,7 @@ export const weaponsData: IWeaponData = {
     criticalDamageType: [WeaponCriticalDamageType.Bleeding],
   },
   morning_star: {
+    ...defaultWeaponOptions,
     damage: '1d7+2',
     toHit: '1d1',
     name: 'morning star',

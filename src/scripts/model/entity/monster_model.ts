@@ -5,7 +5,6 @@ import { monstersData, MonsterStats } from './monsters/data/monsters';
 import { MonsterSizes, MonstersTypes } from '../../constants/entity/monsters';
 import { entities } from '../../constants/cells/sprites';
 import { ItemsCollection } from '../../collections/items_collection';
-import { getMonsterNaturalWeapon } from '../../factory/natural_weapon_factory';
 
 export class MonsterModel extends EntityModel implements IEntity {
   public isHostile: boolean = true;
@@ -18,9 +17,6 @@ export class MonsterModel extends EntityModel implements IEntity {
     this.description = config.description ?? entityConfig.description;
     this.display = config.display ?? entityConfig.display;
     this.size = config.size ?? entityConfig.size;
-    this.inventory = config.inventory || (entityConfig.inventory as any); // TODO fix
-    this.naturalWeapon =
-      config.naturalWeapon ?? (entityConfig.naturalWeapon as any); // TODO fix
     this.lastVisitedCell = config.lastVisitedCell || null;
     this.speed = this.speed || entityConfig.speed;
     this.perception = this.perception || entityConfig.perception;

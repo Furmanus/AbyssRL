@@ -4,6 +4,7 @@ import { WearableModel } from '../wearable_model';
 import { ArmourNames } from '../../../constants/items/armour_names';
 
 export interface SerializedArmour {
+  itemType: ItemTypes.Armour;
   dodgeModifier: number;
   protectionModifier: number;
   name: ArmourNames;
@@ -11,7 +12,7 @@ export interface SerializedArmour {
 }
 
 export class ArmourModel extends WearableModel {
-  public itemType = ItemTypes.Armour;
+  public itemType: ItemTypes.Armour = ItemTypes.Armour;
   public display: string;
   public dodgeModifier: number;
   public protectionModifier: number;
@@ -54,6 +55,7 @@ export class ArmourModel extends WearableModel {
       dodgeModifier: this.dodgeModifier,
       name: this.name,
       display: this.display,
+      itemType: this.itemType,
     };
   }
 }

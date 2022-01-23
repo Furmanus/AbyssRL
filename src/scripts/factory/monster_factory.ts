@@ -1,11 +1,10 @@
-import { LevelModel } from '../model/dungeon/level_model';
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { MonsterController } from '../controller/entity/monster_controller';
 import { MonsterModel } from '../model/entity/monster_model';
 import { Monsters, MonstersTypes } from '../constants/entity/monsters';
-import { LevelController } from '../controller/dungeon/level_controller';
 import { Position, SerializedPosition } from '../model/position/position';
 import { dungeonState } from '../state/application.state';
+import { NaturalWeaponFactory } from './natural_weapon_factory';
 
 const partialDefaultMonsterConfig = {
   strength: 0,

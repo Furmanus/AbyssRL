@@ -14,10 +14,13 @@ import {
 } from '../../constants/entity/monsters';
 import { ItemsCollection } from '../../collections/items_collection';
 import { IWeapon } from '../../interfaces/combat';
-import { ItemModel } from '../items/item_model';
-import { weaponModelFactory } from '../../factory/item/weapon_model_factory';
+import { ItemModel, SerializedItem } from '../items/item_model';
+import { WeaponModelFactory } from '../../factory/item/weapon_model_factory';
 import { WeaponModel } from '../items/weapons/weapon_model';
-import { NaturalWeaponModel } from '../items/weapons/natural_weapon_model';
+import {
+  NaturalWeaponModel,
+  SerializedNaturalWeapon,
+} from '../items/weapons/natural_weapon_model';
 import { ArmourModel } from '../items/armours/armour_model';
 import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
 import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
@@ -26,6 +29,7 @@ import { CollectionEvents } from '../../constants/collection_events';
 import { DungeonBranches } from '../../constants/dungeon_types';
 import { dungeonState } from '../../state/application.state';
 import { Position, SerializedPosition } from '../position/position';
+import { NaturalWeaponFactory } from '../../factory/natural_weapon_factory';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -41,6 +45,10 @@ export interface IEntityStatsObject {
 type EntityStatsModifiers = Omit<
   IEntityStatsObject,
   'hitpoints' | 'maxHitpoints'
+>;
+
+type UpdatedStatsChangeModifiers = Partial<
+  Record<EntityStats, 'positive' | 'negative'>
 >;
 
 export interface IStatsSingleModifier {
@@ -83,8 +91,8 @@ export type SerializedEntityModel = {
   position: EntityDungeonPosition;
   lastVisitedCell?: SerializedPosition;
   size?: MonsterSizes;
-  inventory?: ItemModel[]; // serialized item model
-  naturalWeapon?: unknown; // TODO fix
+  inventory?: SerializedItem[];
+  naturalWeapon?: SerializedNaturalWeapon;
 };
 
 export class EntityModel extends BaseModel implements IEntity {
@@ -252,7 +260,7 @@ export class EntityModel extends BaseModel implements IEntity {
     return this.equippedArmour?.dodgeModifier || 0;
   }
 
-  get weapon(): WeaponModel {
+  get weapon(): WeaponModel | NaturalWeaponModel {
     return this.equippedWeapon || this.naturalWeapon;
   }
 
@@ -276,8 +284,19 @@ export class EntityModel extends BaseModel implements IEntity {
     this.hitPoints = config.hitPoints;
     this.maxHitPoints = config.maxHitPoints;
     this.protection = config.protection;
-    this.inventory = ItemsCollection.getInstance(config.inventory); // TODO fix
-    this.naturalWeapon = config.naturalWeapon ?? (config.naturalWeapon as any); // TODO fix
+    this.inventory = ItemsCollection.getInstanceFromSerializedData(
+      config.inventory || [],
+    );
+
+    if (config.naturalWeapon) {
+      this.naturalWeapon = NaturalWeaponFactory.getMonsterNaturalWeaponFromData(
+        config.naturalWeapon,
+      );
+    } else {
+      this.naturalWeapon = NaturalWeaponFactory.getMonsterNaturalWeapon(
+        this.type,
+      );
+    }
 
     this.attachEventsToCollections();
   }
@@ -539,9 +558,7 @@ export class EntityModel extends BaseModel implements IEntity {
   /**
    * Upgrade counters of each stat modifier and check which modifier has to be removed in current turn.
    */
-  public updateTemporaryStatsModifiers(): Partial<
-    Record<EntityStats, 'positive' | 'negative'>
-  > {
+  public updateTemporaryStatsModifiers(): UpdatedStatsChangeModifiers {
     const changedStats: Partial<Record<EntityStats, 'positive' | 'negative'>> =
       {};
 
@@ -605,8 +622,8 @@ export class EntityModel extends BaseModel implements IEntity {
       maxHitPoints: this.maxHitPoints,
       size: this.size,
       position: this.entityPosition,
-      inventory: this.inventory as never, // TODO fix and serialize
-      naturalWeapon: this.naturalWeapon,
+      inventory: this.inventory.getDataForSerialization(),
+      naturalWeapon: this.naturalWeapon.getDataToSerialization(),
       lastVisitedCell: this.lastVisitedCellEntityPosition.serialize(),
     };
   }

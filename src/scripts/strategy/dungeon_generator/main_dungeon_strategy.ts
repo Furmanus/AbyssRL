@@ -6,7 +6,7 @@ import { config } from '../../global/config';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { IDungeonStrategyGenerateLevelConfig } from '../../interfaces/generators';
 import { Cell } from '../../model/dungeon/cells/cell_model';
-import { weaponModelFactory } from '../../factory/item/weapon_model_factory';
+import { WeaponModelFactory } from '../../factory/item/weapon_model_factory';
 import { WeaponModel } from '../../model/items/weapons/weapon_model';
 import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
 import { LevelController } from '../../controller/dungeon/level_controller';
@@ -87,7 +87,7 @@ export class MainDungeonLevelGenerationStrategy {
     for (let i = 0; i < 10; i++) {
       const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
       const weaponModel: WeaponModel =
-        weaponModelFactory.getRandomWeaponModel();
+        WeaponModelFactory.getRandomWeaponModel();
       const armourModel = ArmourModelFactory.getRandomArmourModel();
 
       randomCell.inventory.add(Math.random() < 0.5 ? weaponModel : armourModel);
