@@ -1,28 +1,27 @@
-import { Cell } from '../cell_model';
+import { Cell, SerializedCell } from '../cell_model';
 import {
   CellSpecialConditions,
-  cellTypes,
+  CellTypes,
 } from '../../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../../helper/cells_description';
 import { terrain } from '../../../../constants/cells/sprites';
-import { UP } from '../../../../constants/cells/stairs_directions';
+import { DOWN, UP } from '../../../../constants/cells/stairs_directions';
 import * as Utility from '../../../../helper/utility';
 import { IAnyObject } from '../../../../interfaces/common';
 import { ICellModel } from '../../../../interfaces/cell';
 
+export interface SerializedStairs extends SerializedCell {
+  direction: typeof UP | typeof DOWN;
+}
+
 export class StairsModel extends Cell implements ICellModel {
   private areStairsUp: string;
-  /**
-   * @param   x                   Horizontal position on level grid.
-   * @param   y                   Vertical position on level grid.
-   * @param   config              Configuration object.
-   * @param   config.direction    Direction of stairs - either up or down.
-   */
-  constructor(x: number, y: number, config: IAnyObject) {
-    super(x, y);
+
+  constructor(config: SerializedStairs) {
+    super(config);
 
     this.type =
-      config.direction === UP ? cellTypes.STAIRS_UP : cellTypes.STAIRS_DOWN;
+      config.direction === UP ? CellTypes.StairsUp : CellTypes.StairsDown;
     this.description = cellsDescriptions[this.type];
 
     this.areStairsUp = config.direction;
@@ -41,5 +40,12 @@ export class StairsModel extends Cell implements ICellModel {
     }
 
     return message;
+  }
+
+  public getDataToSerialization(): SerializedStairs {
+    return {
+      ...super.getDataToSerialization(),
+      direction: this.areStairsUp ? UP : DOWN,
+    };
   }
 }

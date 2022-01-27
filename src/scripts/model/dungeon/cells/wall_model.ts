@@ -1,6 +1,11 @@
-import { Cell } from './cell_model';
+import { Cell, SerializedCell } from './cell_model';
 import { IAnyObject } from '../../../interfaces/common';
 import { ICellModel } from '../../../interfaces/cell';
+
+export interface SerializedWall extends SerializedCell {
+  description: string;
+  display: string[];
+}
 
 export class WallModel extends Cell implements ICellModel {
   /**
@@ -11,8 +16,8 @@ export class WallModel extends Cell implements ICellModel {
    * @param   config.description  Description of cell (visible for example while looking at it).
    * @param   config.display      Array with cell types name. They must be equal to keys global tiledata.
    */
-  constructor(x: number, y: number, config: IAnyObject) {
-    super(x, y);
+  constructor(config: SerializedWall) {
+    super(config);
 
     this.type = config.type;
     this.description = config.description;
@@ -33,5 +38,13 @@ export class WallModel extends Cell implements ICellModel {
 
   set display(tiles: string) {
     this.displaySet = tiles;
+  }
+
+  public getDataToSerialization(): SerializedWall {
+    return {
+      ...super.getDataToSerialization(),
+      description: this.description,
+      display: [this.displaySet],
+    };
   }
 }

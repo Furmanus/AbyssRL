@@ -1,4 +1,4 @@
-import { Cell } from './cell_model';
+import { Cell, SerializedCell } from './cell_model';
 import { DungeonEvents } from '../../../constants/dungeon_events';
 import { WalkAttemptResult } from './effects/walk_attempt_result';
 import { UseEffectResult } from './effects/use_effect_result';
@@ -8,15 +8,24 @@ import { ICellModel } from '../../../interfaces/cell';
 import { UseAttemptResult } from './effects/use_attempt_result';
 import { MonstersTypes } from '../../../constants/entity/monsters';
 
-export class DoorModel extends Cell implements ICellModel {
+export type SerializedDoor = SerializedCell & {
+  areOpen: boolean;
+  openDisplay: string;
+};
+
+export abstract class DoorModel extends Cell implements ICellModel {
   public areOpen: boolean;
   public closedDisplay: string;
   public openDisplay: string;
 
-  constructor(x: number, y: number, config: IAnyObject) {
-    super(x, y);
+  constructor(config: SerializedDoor) {
+    super(config);
 
-    this.areOpen = false;
+    if (config) {
+      this.areOpen = config.areOpen;
+    } else {
+      this.areOpen = false;
+    }
   }
 
   get display(): string {
@@ -135,5 +144,13 @@ export class DoorModel extends Cell implements ICellModel {
         y: this.y,
       });
     }
+  }
+
+  public getDataToSerialization(): SerializedDoor {
+    return {
+      ...super.getDataToSerialization(),
+      areOpen: this.areOpen,
+      openDisplay: this.openDisplay,
+    };
   }
 }

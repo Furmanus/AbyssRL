@@ -1,6 +1,6 @@
-import { Rectangle } from '../position/rectangle';
+import { Rectangle, SerializedRectangle } from '../position/rectangle';
 import * as Utility from '../../helper/utility';
-import { Position } from '../position/position';
+import { Position, SerializedPosition } from '../position/position';
 import * as Rng from '../../helper/rng';
 import { BaseModel } from '../../core/base_model';
 import { IAnyFunction } from '../../interfaces/common';
@@ -17,6 +17,12 @@ type CellsTransformFunction = (
   positionY: number,
   isWall: 1 | 0,
 ) => void;
+
+export type SerializedRoom = {
+  rectangle: SerializedRectangle;
+  doorSpots: SerializedPosition[];
+  cells: SerializedPosition[];
+};
 
 export class RoomModel extends BaseModel {
   public rectangle: Rectangle;
@@ -256,5 +262,13 @@ export class RoomModel extends BaseModel {
    */
   public getLevelModel(): LevelModel {
     return this.levelModel;
+  }
+
+  public getDataToSerialization(): SerializedRoom {
+    return {
+      rectangle: this.rectangle.getDataToSerialization(),
+      doorSpots: Array.from(this.doorSpots).map((pos) => pos.serialize()),
+      cells: this.cells.map((pos) => pos.serialize()),
+    };
   }
 }

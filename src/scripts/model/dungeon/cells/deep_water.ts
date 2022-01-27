@@ -1,16 +1,16 @@
-import { Cell } from './cell_model';
+import { Cell, SerializedCell } from './cell_model';
 import { cellsDescriptions } from '../../../helper/cells_description';
 import { terrain } from '../../../constants/cells/sprites';
-import { cellTypes } from '../../../constants/cells/cell_types';
+import { CellTypes } from '../../../constants/cells/cell_types';
 import { ICellModel } from '../../../interfaces/cell';
 
 export class DeepWater extends Cell implements ICellModel {
-  constructor(x: number, y: number) {
-    super(x, y);
+  constructor(config: SerializedCell) {
+    super(config);
 
     this.confirmMovement = true;
-    this.type = cellTypes.DEEP_WATER;
-    this.description = cellsDescriptions[cellTypes.DEEP_WATER];
+    this.type = CellTypes.DeepWater;
+    this.description = cellsDescriptions[CellTypes.DeepWater];
   }
 
   get display(): string {

@@ -16,9 +16,10 @@ import { IActor } from '../../interfaces/entity/entity_interfaces';
 import { DungeonEventsFactory } from '../../factory/dungeon_event_factory';
 import { EntityFactory } from '../../factory/entity/entity_factory';
 import { dungeonState } from '../../state/application.state';
+import { DungeonBranches } from '../../constants/dungeon_types';
 
 interface ILevelControllerConstructorConfig {
-  readonly branch: string;
+  readonly branch: DungeonBranches;
   readonly levelNumber: number;
 }
 

@@ -1,6 +1,6 @@
 import { config as globalConfig } from '../../global/config';
 import { AbstractLevelGenerator } from './abstract_generator';
-import { cellTypes } from '../../constants/cells/cell_types';
+import { CellTypes } from '../../constants/cells/cell_types';
 import { Position } from '../../model/position/position';
 import { RoomModel } from '../../model/dungeon/room_model';
 import {
@@ -71,7 +71,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
     const { createdAreas } = bspRegions;
     const rooms: RoomModel[] = this.createRoomsFromRegions(createdRooms);
 
-    level.initialize(cellTypes.GRAY_WALL);
+    level.initialize(CellTypes.GrayWall);
     /**
      * Transform rectangles into rooms on level model.
      */
@@ -95,9 +95,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
     function generatorCallback(x: number, y: number, value: number): void {
       if (value === 1) {
-        level.changeCellType(x, y, cellTypes.GRAY_WALL);
+        level.changeCellType(x, y, CellTypes.GrayWall);
       } else {
-        level.changeCellType(x, y, cellTypes.RED_FLOOR);
+        level.changeCellType(x, y, CellTypes.RedFloor);
       }
     }
 
@@ -125,7 +125,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
             level.changeCellType(
               doorSpot.x,
               doorSpot.y,
-              cellTypes.WOODEN_SOLID_DOORS,
+              CellTypes.WoodenSolidDoors,
             );
           });
         }
@@ -337,7 +337,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
 
     if (chosenRooms) {
       this.connectTwoRooms(level, chosenRooms[0], chosenRooms[1], [
-        cellTypes.RED_FLOOR,
+        CellTypes.RedFloor,
       ]);
     }
   }
@@ -485,7 +485,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
     level.changeCellType(
       randomCellPosition.x,
       randomCellPosition.y,
-      cellTypes.STAIRS_UP,
+      CellTypes.StairsUp,
     );
     level.setStairsUp(randomCellPosition.x, randomCellPosition.y);
   }
@@ -508,7 +508,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
     level.changeCellType(
       randomCellPosition.x,
       randomCellPosition.y,
-      cellTypes.STAIRS_DOWN,
+      CellTypes.StairsDown,
     );
     level.setStairsDown(randomCellPosition.x, randomCellPosition.y);
   }

@@ -1,6 +1,6 @@
-import { Cell } from '../cell_model';
+import { Cell, SerializedCell } from '../cell_model';
 import { ICellModel } from '../../../../interfaces/cell';
-import { cellTypes } from '../../../../constants/cells/cell_types';
+import { CellTypes } from '../../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../../helper/cells_description';
 import { dungeonFeaturesEnum } from '../../../../constants/cells/sprites';
 import { ItemsCollection } from '../../../../collections/items_collection';
@@ -9,13 +9,11 @@ import { UseEffectResult } from '../effects/use_effect_result';
 import { isPlayerController } from '../../../../interfaces/type_guards';
 
 export class ChestOfDrawersModel extends Cell implements ICellModel {
-  public containerInventory = new ItemsCollection();
+  constructor(config: SerializedCell) {
+    super(config);
 
-  constructor(x: number, y: number) {
-    super(x, y);
-
-    this.type = cellTypes.CHEST_OF_DRAWERS;
-    this.description = cellsDescriptions[cellTypes.CHEST_OF_DRAWERS];
+    this.type = CellTypes.ChestOfDrawers;
+    this.description = cellsDescriptions[CellTypes.ChestOfDrawers];
   }
 
   get display(): string {

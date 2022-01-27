@@ -1,8 +1,11 @@
-import { cellTypes } from '../constants/cells/cell_types';
-import { FloorModel } from '../model/dungeon/cells/floor_model';
+import { CellTypes } from '../constants/cells/cell_types';
+import {
+  FloorModel,
+  SerializedFloor,
+} from '../model/dungeon/cells/floor_model';
 import { cellsDescriptions } from '../helper/cells_description';
 import { terrain } from '../constants/cells/sprites';
-import { WallModel } from '../model/dungeon/cells/wall_model';
+import { SerializedWall, WallModel } from '../model/dungeon/cells/wall_model';
 import { WoodenSolidDoorModel } from '../model/dungeon/cells/doors/wooden_solid_door';
 import { LavaCellModel } from '../model/dungeon/cells/lava_model';
 import { FountainModel } from '../model/dungeon/cells/fountain_model';
@@ -10,165 +13,287 @@ import { ShallowWater } from '../model/dungeon/cells/shallow_water';
 import { DeepWater } from '../model/dungeon/cells/deep_water';
 import { BushModel } from '../model/dungeon/cells/floors/bush_model';
 import { TreeModel } from '../model/dungeon/cells/tree_model';
-import { StairsModel } from '../model/dungeon/cells/floors/stairs';
+import {
+  SerializedStairs,
+  StairsModel,
+} from '../model/dungeon/cells/floors/stairs';
 import { DOWN, UP } from '../constants/cells/stairs_directions';
-import { Cell } from '../model/dungeon/cells/cell_model';
+import { Cell, SerializedCell } from '../model/dungeon/cells/cell_model';
 import { BedHead } from '../model/dungeon/cells/special/bed_head';
 import { BedFoot } from '../model/dungeon/cells/special/bed_foot';
 import { BarrelModel } from '../model/dungeon/cells/special/barrel';
 import { ChestOfDrawersModel } from '../model/dungeon/cells/special/chest_of_drawers_model';
+import { SerializedDoor } from '../model/dungeon/cells/door_model';
 
 export const CellModelFactory = {
   getCellModel(x: number, y: number, type: string): Cell {
     switch (type) {
-      case cellTypes.RED_FLOOR:
+      case CellTypes.RedFloor:
         return CellModelFactory.getRedFloorCell(x, y);
-      case cellTypes.WOODEN_FLOOR:
+      case CellTypes.WoodenFloor:
         return CellModelFactory.getWoodenFloor(x, y);
-      case cellTypes.GRASS:
+      case CellTypes.Grass:
         return CellModelFactory.getGrassFloor(x, y);
-      case cellTypes.GRAY_WALL:
+      case CellTypes.GrayWall:
         return CellModelFactory.getGrayWallModel(x, y);
-      case cellTypes.HIGH_PEAKS:
+      case CellTypes.HighPeaks:
         return CellModelFactory.getHighPeaksWallModel(x, y);
-      case cellTypes.MOUNTAIN:
+      case CellTypes.Mountain:
         return CellModelFactory.getMountainWallModel(x, y);
-      case cellTypes.HILLS:
+      case CellTypes.Hills:
         return CellModelFactory.getHillsFloorModel(x, y);
-      case cellTypes.LEFT_HILLS:
-        return CellModelFactory.getLefttHillsFloorModel(x, y);
-      case cellTypes.RIGHT_HILLS:
+      case CellTypes.LeftHills:
+        return CellModelFactory.getLeftHillsFloorModel(x, y);
+      case CellTypes.RightHills:
         return CellModelFactory.getRightHillsFloorModel(x, y);
-      case cellTypes.WOODEN_SOLID_DOORS:
+      case CellTypes.WoodenSolidDoors:
         return CellModelFactory.getWoodenSolidDoors(x, y);
-      case cellTypes.LAVA:
+      case CellTypes.Lava:
         return CellModelFactory.getLavaFloorModel(x, y);
-      case cellTypes.FOUNTAIN:
+      case CellTypes.Fountain:
         return CellModelFactory.getFountainModel(x, y);
-      case cellTypes.SHALLOW_WATER:
+      case CellTypes.ShallowWater:
         return CellModelFactory.getShallowWater(x, y);
-      case cellTypes.DEEP_WATER:
+      case CellTypes.DeepWater:
         return CellModelFactory.getDeepWater(x, y);
-      case cellTypes.BUSH:
+      case CellTypes.Bush:
         return CellModelFactory.getBush(x, y);
-      case cellTypes.TREE:
+      case CellTypes.Tree:
         return CellModelFactory.getTree(x, y);
-      case cellTypes.STAIRS_DOWN:
+      case CellTypes.StairsDown:
         return CellModelFactory.getStairsDown(x, y);
-      case cellTypes.STAIRS_UP:
+      case CellTypes.StairsUp:
         return CellModelFactory.getStairsUp(x, y);
-      case cellTypes.BED_HEAD:
+      case CellTypes.BedHead:
         return CellModelFactory.getBedHead(x, y);
-      case cellTypes.BED_FOOT:
+      case CellTypes.BedFoot:
         return CellModelFactory.getBedFoot(x, y);
-      case cellTypes.BARREL:
+      case CellTypes.Barrel:
         return CellModelFactory.getBarrelModel(x, y);
-      case cellTypes.CHEST_OF_DRAWERS:
+      case CellTypes.ChestOfDrawers:
         return CellModelFactory.getChestOfDrawersModel(x, y);
       default:
         throw new Error('Unknown cell type in cell model factory.');
     }
   },
-  getRedFloorCell(x: number, y: number): FloorModel {
-    return new FloorModel(x, y, {
-      type: cellTypes.RED_FLOOR,
-      description: cellsDescriptions[cellTypes.RED_FLOOR],
-      display: [terrain.RED_FLOOR],
+  getRedFloorCell(
+    x: number,
+    y: number,
+    serializedData?: SerializedFloor,
+  ): FloorModel {
+    return new FloorModel({
+      x,
+      y,
+      type: CellTypes.RedFloor,
+      description:
+        serializedData?.description ?? cellsDescriptions[CellTypes.RedFloor],
+      display: serializedData?.display ?? [terrain.RED_FLOOR],
+      ...(serializedData && serializedData),
     });
   },
-  getWoodenFloor(x: number, y: number): FloorModel {
-    return new FloorModel(x, y, {
-      type: cellTypes.WOODEN_FLOOR,
-      description: cellsDescriptions[cellTypes.WOODEN_FLOOR],
+  getWoodenFloor(
+    x: number,
+    y: number,
+    serializedData?: SerializedFloor,
+  ): FloorModel {
+    return new FloorModel({
+      x,
+      y,
+      type: CellTypes.WoodenFloor,
+      description: cellsDescriptions[CellTypes.WoodenFloor],
       display: [terrain.WOODEN_FLOOR_1, terrain.WOODEN_FLOOR_2],
+      ...(serializedData && serializedData),
     });
   },
-  getGrassFloor(x: number, y: number): FloorModel {
-    return new FloorModel(x, y, {
-      type: cellTypes.GRASS,
-      description: cellsDescriptions[cellTypes.GRASS],
+  getGrassFloor(
+    x: number,
+    y: number,
+    serializedData?: SerializedFloor,
+  ): FloorModel {
+    return new FloorModel({
+      x,
+      y,
+      type: CellTypes.Grass,
+      description: cellsDescriptions[CellTypes.Grass],
       display: [terrain.GRASS_2],
+      ...(serializedData && serializedData),
     });
   },
-  getGrayWallModel(x: number, y: number): WallModel {
-    return new WallModel(x, y, {
-      type: cellTypes.GRAY_WALL,
-      description: cellsDescriptions[cellTypes.GRAY_WALL],
+  getGrayWallModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedWall,
+  ): WallModel {
+    return new WallModel({
+      x,
+      y,
+      type: CellTypes.GrayWall,
+      description: cellsDescriptions[CellTypes.GrayWall],
       display: [terrain.GRAY_WALL],
+      ...(serializedData && serializedData),
     });
   },
-  getHighPeaksWallModel(x: number, y: number): WallModel {
-    return new WallModel(x, y, {
-      type: cellTypes.HIGH_PEAKS,
-      description: cellsDescriptions[cellTypes.HIGH_PEAKS],
+  getHighPeaksWallModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedWall,
+  ): WallModel {
+    return new WallModel({
+      x,
+      y,
+      type: CellTypes.HighPeaks,
+      description: cellsDescriptions[CellTypes.HighPeaks],
       display: [terrain.HIGH_PEAKS],
+      ...(serializedData && serializedData),
     });
   },
-  getMountainWallModel(x: number, y: number): WallModel {
-    return new WallModel(x, y, {
-      type: cellTypes.MOUNTAIN,
-      description: cellsDescriptions[cellTypes.MOUNTAIN],
+  getMountainWallModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedWall,
+  ): WallModel {
+    return new WallModel({
+      x,
+      y,
+      type: CellTypes.Mountain,
+      description: cellsDescriptions[CellTypes.Mountain],
       display: [terrain.MOUNTAIN],
+      ...(serializedData && serializedData),
     });
   },
-  getHillsFloorModel(x: number, y: number): FloorModel {
-    return new FloorModel(x, y, {
-      type: cellTypes.HILLS,
-      description: cellsDescriptions[cellTypes.HILLS],
+  getHillsFloorModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedWall,
+  ): FloorModel {
+    return new FloorModel({
+      x,
+      y,
+      type: CellTypes.Hills,
+      description: cellsDescriptions[CellTypes.Hills],
       display: [terrain.HILLS],
+      ...(serializedData && serializedData),
     });
   },
-  getRightHillsFloorModel(x: number, y: number): FloorModel {
-    return new FloorModel(x, y, {
-      type: cellTypes.RIGHT_HILLS,
-      description: cellsDescriptions[cellTypes.HILLS],
+  getRightHillsFloorModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedFloor,
+  ): FloorModel {
+    return new FloorModel({
+      x,
+      y,
+      type: CellTypes.RightHills,
+      description: cellsDescriptions[CellTypes.Hills],
       display: [terrain.RIGHT_HILLS],
+      ...(serializedData && serializedData),
     });
   },
-  getLefttHillsFloorModel(x: number, y: number): FloorModel {
-    return new FloorModel(x, y, {
-      type: cellTypes.LEFT_HILLS,
-      description: cellsDescriptions[cellTypes.HILLS],
+  getLeftHillsFloorModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedFloor,
+  ): FloorModel {
+    return new FloorModel({
+      x,
+      y,
+      type: CellTypes.LeftHills,
+      description: cellsDescriptions[CellTypes.Hills],
       display: [terrain.LEFT_HILLS],
+      ...(serializedData && serializedData),
     });
   },
-  getWoodenSolidDoors(x: number, y: number): WoodenSolidDoorModel {
-    return new WoodenSolidDoorModel(x, y);
+  getWoodenSolidDoors(
+    x: number,
+    y: number,
+    serializedData?: SerializedDoor,
+  ): WoodenSolidDoorModel {
+    return new WoodenSolidDoorModel({
+      x,
+      y,
+      ...(serializedData && serializedData),
+    });
   },
-  getLavaFloorModel(x: number, y: number): LavaCellModel {
-    return new LavaCellModel(x, y);
+  getLavaFloorModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedFloor,
+  ): LavaCellModel {
+    return new LavaCellModel({ x, y, ...(serializedData && serializedData) });
   },
-  getFountainModel(x: number, y: number): FountainModel {
-    return new FountainModel(x, y);
+  getFountainModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedCell,
+  ): FountainModel {
+    return new FountainModel({ x, y, ...(serializedData && serializedData) });
   },
-  getShallowWater(x: number, y: number): ShallowWater {
-    return new ShallowWater(x, y);
+  getShallowWater(
+    x: number,
+    y: number,
+    serializedData?: SerializedCell,
+  ): ShallowWater {
+    return new ShallowWater({ x, y, ...(serializedData && serializedData) });
   },
-  getDeepWater(x: number, y: number): DeepWater {
-    return new DeepWater(x, y);
+  getDeepWater(
+    x: number,
+    y: number,
+    serializedData?: SerializedCell,
+  ): DeepWater {
+    return new DeepWater({ x, y, ...(serializedData && serializedData) });
   },
-  getBush(x: number, y: number): BushModel {
-    return new BushModel(x, y);
+  getBush(x: number, y: number, serializedData?: SerializedCell): BushModel {
+    return new BushModel({ x, y, ...(serializedData && serializedData) });
   },
-  getTree(x: number, y: number): TreeModel {
-    return new TreeModel(x, y);
+  getTree(x: number, y: number, serializedData?: SerializedCell): TreeModel {
+    return new TreeModel({ x, y, ...(serializedData && serializedData) });
   },
-  getStairsUp(x: number, y: number): StairsModel {
-    return new StairsModel(x, y, { direction: UP });
+  getStairsUp(
+    x: number,
+    y: number,
+    serializedData?: SerializedStairs,
+  ): StairsModel {
+    return new StairsModel({
+      x,
+      y,
+      direction: UP,
+      ...(serializedData && serializedData),
+    });
   },
-  getStairsDown(x: number, y: number): StairsModel {
-    return new StairsModel(x, y, { direction: DOWN });
+  getStairsDown(
+    x: number,
+    y: number,
+    serializedData?: SerializedStairs,
+  ): StairsModel {
+    return new StairsModel({
+      x,
+      y,
+      direction: DOWN,
+      ...(serializedData && serializedData),
+    });
   },
-  getBedHead(x: number, y: number): BedHead {
-    return new BedHead(x, y);
+  getBedHead(x: number, y: number, serializedData?: SerializedCell): BedHead {
+    return new BedHead({ x, y, ...(serializedData && serializedData) });
   },
-  getBedFoot(x: number, y: number): BedFoot {
-    return new BedFoot(x, y);
+  getBedFoot(x: number, y: number, serializedData?: SerializedCell): BedFoot {
+    return new BedFoot({ x, y, ...(serializedData && serializedData) });
   },
-  getBarrelModel(x: number, y: number): BarrelModel {
-    return new BarrelModel(x, y);
+  getBarrelModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedCell,
+  ): BarrelModel {
+    return new BarrelModel({ x, y, ...(serializedData && serializedData) });
   },
-  getChestOfDrawersModel(x: number, y: number): ChestOfDrawersModel {
-    return new ChestOfDrawersModel(x, y);
+  getChestOfDrawersModel(
+    x: number,
+    y: number,
+    serializedData?: SerializedCell,
+  ): ChestOfDrawersModel {
+    return new ChestOfDrawersModel({
+      x,
+      y,
+      ...(serializedData && serializedData),
+    });
   },
 };

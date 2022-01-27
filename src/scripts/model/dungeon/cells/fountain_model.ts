@@ -1,15 +1,15 @@
-import { Cell } from './cell_model';
-import { cellTypes } from '../../../constants/cells/cell_types';
+import { Cell, SerializedCell } from './cell_model';
+import { CellTypes } from '../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../helper/cells_description';
 import { terrain } from '../../../constants/cells/sprites';
 import { ICellModel } from '../../../interfaces/cell';
 
 export class FountainModel extends Cell implements ICellModel {
-  constructor(x: number, y: number) {
-    super(x, y);
+  constructor(config: SerializedCell) {
+    super(config);
 
-    this.type = cellTypes.FOUNTAIN;
-    this.description = cellsDescriptions[cellTypes.FOUNTAIN];
+    this.type = CellTypes.Fountain;
+    this.description = cellsDescriptions[CellTypes.Fountain];
   }
 
   get blockMovement(): boolean {

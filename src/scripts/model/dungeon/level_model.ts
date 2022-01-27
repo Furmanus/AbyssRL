@@ -1,9 +1,5 @@
-/**
- * Created by Docent Furman on 16.07.2017.
- */
-
 import { config as globalConfig } from '../../global/config';
-import { cellTypes } from '../../constants/cells/cell_types';
+import { CellTypes } from '../../constants/cells/cell_types';
 import { CellModelFactory } from '../../factory/cell_model_factory';
 import { BaseModel } from '../../core/base_model';
 import { Position } from '../position/position';
@@ -26,7 +22,7 @@ export type randomCellTest = (cellCandidate: Cell) => boolean;
 type LevelModelConstructorOption = {
   branch: DungeonBranches;
   levelNumber: number;
-  defaultWallType: string; // TODO dopisać własny typ
+  defaultWallType: CellTypes;
   rooms: RoomModel[];
   roomConnections: RoomConnectionModel[];
   cells: Map<string, Cell>;
@@ -36,9 +32,9 @@ type LevelModelConstructorOption = {
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
 export class LevelModel extends BaseModel {
-  public branch: string;
+  public branch: DungeonBranches;
   public levelNumber: number;
-  private defaultWallType: string = null;
+  private defaultWallType: CellTypes = null;
   private rooms: RoomModel[] = [];
   private stairsUp: Position;
   private stairsDown: Position;
@@ -48,7 +44,7 @@ export class LevelModel extends BaseModel {
    * @param   branch             Object to which this level belongs
    * @param   levelNumber         Number of this dungeon level
    */
-  constructor(branch: string, levelNumber: number) {
+  constructor(branch: DungeonBranches, levelNumber: number) {
     super();
 
     this.branch = branch;
@@ -60,8 +56,7 @@ export class LevelModel extends BaseModel {
    *
    * @param   defaultWallType     Type of default wall of level
    */
-  public initialize(defaultWallType: string = cellTypes.HIGH_PEAKS): void {
-    // TODO remove setting default wall type from here and move it to constructor
+  public initialize(defaultWallType: CellTypes = CellTypes.HighPeaks): void {
     this.defaultWallType = defaultWallType;
 
     this.createCells();

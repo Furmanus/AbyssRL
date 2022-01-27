@@ -1,7 +1,3 @@
-/**
- * Created by Docent Furman on 16.07.2017.
- */
-
 import { WalkAttemptResult } from './effects/walk_attempt_result';
 import { UseAttemptResult } from './effects/use_attempt_result';
 import { UseEffectResult } from './effects/use_effect_result';
@@ -16,9 +12,21 @@ import { MiscTiles } from '../../../constants/cells/sprites';
 import {
   CellSpecialConditions,
   cellSpecialConditionToWalkMessage,
+  CellTypes,
 } from '../../../constants/cells/cell_types';
 import { DungeonStateEntityManager } from '../../../state/managers/dungeonStateEntity.manager';
 import { dungeonState } from '../../../state/application.state';
+import { SerializedItem } from '../../items/item_model';
+
+export type SerializedCell = {
+  x: number;
+  y: number;
+  inventory: SerializedItem[];
+  wasDiscoveredByPlayer: boolean;
+  specialConditions: CellSpecialConditions[];
+  type: CellTypes;
+  containerInventory: SerializedItem[];
+};
 
 /**
  * Class representing single map square(field).
@@ -65,7 +73,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
   /**
    * Type of cell.
    */
-  public type: string = '';
+  public type: CellTypes = null;
   /**
    * Inventory of cell container, difference between container inventory and inventory is that items in inventory are
    * seen as laying on ground and containerInventory must be activated to display modal with inventory.
@@ -92,12 +100,22 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * @param   y       Vertical position on level grid.
    * @param   config  Object with additional configuration data.
    */
-  constructor(x: number, y: number, config: IAnyObject = {}) {
+  constructor(config: SerializedCell) {
     super();
 
-    this.x = x;
-    this.y = y;
-    // TODO add initialization of inventory
+    this.x = config.x;
+    this.y = config.y;
+
+    if (config) {
+      this.specialConditions = new Set(config.specialConditions);
+      this.containerInventory = ItemsCollection.getInstanceFromSerializedData(
+        config.containerInventory,
+      );
+      this.inventory = ItemsCollection.getInstanceFromSerializedData(
+        config.inventory,
+      );
+      this.wasDiscoveredByPlayer = config.wasDiscoveredByPlayer;
+    }
   }
 
   /**
@@ -221,5 +239,17 @@ export abstract class Cell extends BaseModel implements ICellModel {
         return `${result}. ${cellSpecialConditionToWalkMessage[condition]}`;
       }
     }, '');
+  }
+
+  public getDataToSerialization(): SerializedCell {
+    return {
+      x: this.x,
+      y: this.y,
+      type: this.type,
+      specialConditions: Array.from(this.specialConditions),
+      wasDiscoveredByPlayer: this.wasDiscoveredByPlayer,
+      inventory: this.inventory?.getDataForSerialization(),
+      containerInventory: this.containerInventory?.getDataForSerialization(),
+    };
   }
 }
