@@ -2,6 +2,8 @@
  * Main controller. Responsible for taking user keyboard input, processing it, and triggering appriopiate methods from
  * other sub controllers. Also responsible for managing all sub controllers.
  */
+import './entity/monster_controller'; // TODO hack to avoid circular dependency, try to solve it in better way
+import './entity/player_controller';
 import { GameController } from './game_controller';
 import { InfoController } from './info_controller';
 import { MiniMapController } from './minimap_controller';
@@ -53,7 +55,8 @@ import { globalInfoController } from '../global/info_controller';
 import { globalMiniMapController } from '../global/minimap_controller';
 import { DevFeaturesModalController } from './dev_features_modal_controller';
 import { autorun, reaction } from 'mobx';
-import { dungeonState } from '../state/application.state';
+import { dungeonState, initState } from '../state/application.state';
+import type { SerializedDungeonState } from '../state/applicationState.interfaces';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
   188: PlayerActions.PickUp,
@@ -80,8 +83,15 @@ export class MainController extends Controller {
    * Constructor of main application controller.
    * @param  tileset  HTML Img element with tiles to draw.
    */
-  constructor(tileset: HTMLImageElement) {
+  constructor(
+    tileset: HTMLImageElement,
+    serializedGameState?: SerializedDungeonState,
+  ) {
     super();
+
+    if (serializedGameState) {
+      initState(serializedGameState);
+    }
 
     globalInfoController.initialize(tileset);
     this.gameController = new GameController(tileset);
@@ -281,6 +291,8 @@ export class MainController extends Controller {
         this.gameController.takePlayerAction(PLAYER_ACTION_GO_UP);
       } else if (keycode === 190) {
         this.gameController.takePlayerAction(PLAYER_ACTION_GO_DOWN);
+      } else if (keycode === 83) {
+        this.saveGame();
       }
     } else if (this.controlPressed) {
       // placeholder
@@ -653,5 +665,10 @@ export class MainController extends Controller {
     this.detachEvents();
 
     window.addEventListener('keydown', callback);
+  }
+
+  private saveGame(): void {
+    const serializedGameState = JSON.stringify(dungeonState.serialize());
+    console.log(serializedGameState);
   }
 }

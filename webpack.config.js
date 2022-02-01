@@ -3,6 +3,7 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 const plugins = [
   new CleanWebpackPlugin(),
@@ -14,6 +15,13 @@ const plugins = [
   new MiniCssExtractPlugin({
     filename: '[name].[hash].css',
   }),
+  // new CircularDependencyPlugin({
+  //   exclude: /node_modules/,
+  //   include: /src/,
+  //   failOnError: true,
+  //   allowAsyncCycles: true,
+  //   cwd: process.cwd(),
+  // }),
 ];
 
 module.exports = (env) => {
@@ -72,7 +80,7 @@ module.exports = (env) => {
         },
       ],
     },
-    devtool: mode === 'development' ? 'eval-source-map' : 'hidden-source-map',
+    devtool: mode === 'development' ? 'cheap-source-map' : 'hidden-source-map',
     watch,
     mode,
     plugins,

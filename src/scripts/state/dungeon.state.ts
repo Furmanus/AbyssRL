@@ -3,26 +3,31 @@ import { action, makeObservable, observable } from 'mobx';
 import { ASCEND, DESCEND } from '../constants/directions';
 import { IActionAttempt } from '../interfaces/common';
 import { BaseState } from './baseState';
-import { ExcludeFunctionProperties } from '../interfaces/utility.interfaces';
-import { LevelModel } from '../model/dungeon/level_model';
+import { LevelModel, SerializedLevel } from '../model/dungeon/level_model';
 import { DungeonStateEntityManager } from './managers/dungeonStateEntity.manager';
-import { LevelController } from '../controller/dungeon/level_controller';
+import type { LevelController } from '../controller/dungeon/level_controller';
 import { EntityController } from '../controller/entity/entity_controller';
+import { SerializedEntityModel } from '../model/entity/entity_model';
+import { PartialDungeonState } from './application.state';
+import {
+  DungeonBranchLevelEntryStructure,
+  DungeonBranchStructure,
+  DungeonStructure,
+  SerializedDungeon,
+  SerializedDungeonBranchStructure,
+  SerializedDungeonState,
+} from './applicationState.interfaces';
+import { LevelModelFactory } from '../factory/levelModel.factory';
+import { LevelControllerFactory } from '../factory/levelController.factory';
 
 export const dungeonBranchToMaxLevel = {
   [DungeonBranches.Main]: 8,
 };
 
-type DungeonStructure = {
-  [branch in DungeonBranches]: {
-    [levelNumber: number]: {
-      level: LevelController;
-      entities: Set<EntityController>;
-    };
-  };
-};
-
 export class DungeonState extends BaseState {
+  public currentLevelNumber: number;
+  public currentBranch: DungeonBranches;
+  public parentDungeonBranch: DungeonBranches = null;
   public entityManager = DungeonStateEntityManager.getInstance(this);
   public dungeonsStructure: DungeonStructure = {
     [DungeonBranches.Main]: {},
@@ -32,12 +37,24 @@ export class DungeonState extends BaseState {
     return dungeonBranchToMaxLevel[this.currentBranch];
   }
 
-  public constructor(
-    public currentLevelNumber: number,
-    public currentBranch: DungeonBranches = DungeonBranches.Main,
-    public parentDungeonBranch: DungeonBranches = null,
-  ) {
+  public constructor(config: PartialDungeonState | SerializedDungeonState) {
     super();
+
+    const { currentBranch, currentLevelNumber, parentDungeonBranch } = config;
+
+    this.currentLevelNumber = currentLevelNumber;
+    this.currentBranch = currentBranch;
+    this.parentDungeonBranch = parentDungeonBranch;
+
+    if (
+      'dungeonStructure' in config &&
+      typeof config.dungeonStructure === 'object' &&
+      config.dungeonStructure !== null
+    ) {
+      this.dungeonsStructure = this.recreateDungeonStructureFromSerializedState(
+        config.dungeonStructure,
+      );
+    }
 
     makeObservable(this, {
       currentLevelNumber: observable,
@@ -124,9 +141,77 @@ export class DungeonState extends BaseState {
       levelController;
   }
 
-  public serialize(): ExcludeFunctionProperties<this> {
-    return {
-      ...this,
+  public serialize(): SerializedDungeonState {
+    const serializedDungeon: Partial<SerializedDungeonState> = {
+      currentBranch: this.currentBranch,
+      currentLevelNumber: this.currentLevelNumber,
+      parentDungeonBranch: this.parentDungeonBranch,
+      dungeonStructure: {} as SerializedDungeon,
     };
+
+    for (const [dungeonBranch, dungeonBranchEntry] of Object.entries(
+      this.dungeonsStructure,
+    )) {
+      serializedDungeon.dungeonStructure[dungeonBranch as DungeonBranches] = {};
+
+      for (const [levelNumber, levelNumberEntry] of Object.entries(
+        dungeonBranchEntry,
+      )) {
+        serializedDungeon.dungeonStructure[dungeonBranch as DungeonBranches][
+          levelNumber as any
+        ] = {
+          level: levelNumberEntry.level.model.getDataToSerialization(),
+          entities: Array.from(levelNumberEntry.entities).map(
+            (entityController) => entityController.getModel().serialize(),
+          ),
+        };
+      }
+    }
+
+    return serializedDungeon as SerializedDungeonState;
+  }
+
+  private recreateDungeonStructureFromSerializedState(
+    dungeonStructure: SerializedDungeon,
+  ): DungeonStructure {
+    const recreatedDungeonStructure: Partial<DungeonStructure> = {};
+
+    for (const [branchName, branchStructure] of Object.entries(
+      dungeonStructure,
+    )) {
+      recreatedDungeonStructure[branchName as DungeonBranches] =
+        this.recreateBranchDungeonStructure(
+          branchName as DungeonBranches,
+          branchStructure,
+        );
+    }
+
+    return recreatedDungeonStructure as DungeonStructure;
+  }
+
+  private recreateBranchDungeonStructure(
+    branchName: DungeonBranches,
+    branchStructure: SerializedDungeonBranchStructure,
+  ): DungeonBranchStructure {
+    const dungeonBranchStructure: Partial<DungeonBranchStructure> = {};
+
+    for (const [levelNumber, stateLevelStructure] of Object.entries(
+      branchStructure,
+    )) {
+      const lvlNumber = parseInt(levelNumber, 10);
+
+      dungeonBranchStructure[lvlNumber] = {
+        level: LevelControllerFactory.getInstance({
+          branch: branchName,
+          levelNumber: lvlNumber,
+          model: LevelModelFactory.getLevelModelFromSerializedData(
+            stateLevelStructure.level,
+          ),
+        }),
+        entities: new Set<EntityController>(),
+      };
+    }
+
+    return dungeonBranchStructure;
   }
 }

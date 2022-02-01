@@ -11,7 +11,11 @@ import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEve
 import { Monsters } from '../../constants/entity/monsters';
 import { PlayerController } from '../entity/player_controller';
 import { Cell } from '../../model/dungeon/cells/cell_model';
-import { dungeonState } from '../../state/application.state';
+import {
+  dungeonState,
+  hasStateBeenLoaded,
+} from '../../state/application.state';
+import { LevelControllerFactory } from '../../factory/levelController.factory';
 
 /**
  * Controller of single dungeon.
@@ -32,7 +36,9 @@ export class DungeonController extends Controller {
    * Initialization of dungeon controller instance.
    */
   protected initialize(): void {
-    this.generateNewLevel();
+    if (!hasStateBeenLoaded) {
+      this.generateNewLevel();
+    }
   }
 
   protected attachEvents(): void {
@@ -57,7 +63,7 @@ export class DungeonController extends Controller {
       num ?? dungeonState.getCurrentBranchNextLevelNumber();
 
     if (nextLevelNumberToGenerateInCurrentBranch) {
-      const newLevelController = new LevelController({
+      const newLevelController = LevelControllerFactory.getInstance({
         branch: currentBranch,
         levelNumber: nextLevelNumberToGenerateInCurrentBranch,
       });

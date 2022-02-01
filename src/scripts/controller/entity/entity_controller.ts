@@ -1,11 +1,5 @@
 import { calculateFov } from '../../helper/fov_helper';
 import { IAnyObject } from '../../interfaces/common';
-import { Cell } from '../../model/dungeon/cells/cell_model';
-import {
-  AddTemporaryStatModifierData,
-  EntityModel,
-  IEntityStatsObject,
-} from '../../model/entity/entity_model';
 import { Controller } from '../controller';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { EntityEvents } from '../../constants/entity_events';
@@ -35,6 +29,12 @@ import { MonstersTypes } from '../../constants/entity/monsters';
 import { dungeonState } from '../../state/application.state';
 import { DungeonBranches } from '../../constants/dungeon_types';
 import { IWeapon } from '../../interfaces/combat';
+import { Cell } from '../../model/dungeon/cells/cell_model';
+import {
+  AddTemporaryStatModifierData,
+  EntityModel,
+  IEntityStatsObject,
+} from '../../model/entity/entity_model';
 
 export abstract class EntityController<
   M extends EntityModel = EntityModel,

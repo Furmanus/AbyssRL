@@ -2,7 +2,7 @@ import { RoomModel, SerializedRoom } from './room_model';
 import { BaseModel } from '../../core/base_model';
 import { Position, SerializedPosition } from '../position/position';
 
-type SerializedRoomConnection = {
+export type SerializedRoomConnection = {
   firstRoom: SerializedRoom;
   secondRoom: SerializedRoom;
   corridor: SerializedPosition[];

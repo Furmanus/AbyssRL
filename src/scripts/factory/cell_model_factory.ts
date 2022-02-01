@@ -25,53 +25,117 @@ import { BarrelModel } from '../model/dungeon/cells/special/barrel';
 import { ChestOfDrawersModel } from '../model/dungeon/cells/special/chest_of_drawers_model';
 import { SerializedDoor } from '../model/dungeon/cells/door_model';
 
+type AllSerializedCells =
+  | SerializedCell
+  | SerializedStairs
+  | SerializedWall
+  | SerializedFloor
+  | SerializedDoor;
+
 export const CellModelFactory = {
-  getCellModel(x: number, y: number, type: string): Cell {
+  getCellModel(
+    x: number,
+    y: number,
+    type: string,
+    serializedData?: AllSerializedCells,
+  ): Cell {
     switch (type) {
       case CellTypes.RedFloor:
-        return CellModelFactory.getRedFloorCell(x, y);
+        return CellModelFactory.getRedFloorCell(
+          x,
+          y,
+          serializedData as SerializedFloor,
+        );
       case CellTypes.WoodenFloor:
-        return CellModelFactory.getWoodenFloor(x, y);
+        return CellModelFactory.getWoodenFloor(
+          x,
+          y,
+          serializedData as SerializedFloor,
+        );
       case CellTypes.Grass:
-        return CellModelFactory.getGrassFloor(x, y);
+        return CellModelFactory.getGrassFloor(
+          x,
+          y,
+          serializedData as SerializedFloor,
+        );
       case CellTypes.GrayWall:
-        return CellModelFactory.getGrayWallModel(x, y);
+        return CellModelFactory.getGrayWallModel(
+          x,
+          y,
+          serializedData as SerializedWall,
+        );
       case CellTypes.HighPeaks:
-        return CellModelFactory.getHighPeaksWallModel(x, y);
+        return CellModelFactory.getHighPeaksWallModel(
+          x,
+          y,
+          serializedData as SerializedWall,
+        );
       case CellTypes.Mountain:
-        return CellModelFactory.getMountainWallModel(x, y);
+        return CellModelFactory.getMountainWallModel(
+          x,
+          y,
+          serializedData as SerializedWall,
+        );
       case CellTypes.Hills:
-        return CellModelFactory.getHillsFloorModel(x, y);
+        return CellModelFactory.getHillsFloorModel(
+          x,
+          y,
+          serializedData as SerializedWall,
+        );
       case CellTypes.LeftHills:
-        return CellModelFactory.getLeftHillsFloorModel(x, y);
+        return CellModelFactory.getLeftHillsFloorModel(
+          x,
+          y,
+          serializedData as SerializedFloor,
+        );
       case CellTypes.RightHills:
-        return CellModelFactory.getRightHillsFloorModel(x, y);
+        return CellModelFactory.getRightHillsFloorModel(
+          x,
+          y,
+          serializedData as SerializedFloor,
+        );
       case CellTypes.WoodenSolidDoors:
-        return CellModelFactory.getWoodenSolidDoors(x, y);
+        return CellModelFactory.getWoodenSolidDoors(
+          x,
+          y,
+          serializedData as SerializedDoor,
+        );
       case CellTypes.Lava:
-        return CellModelFactory.getLavaFloorModel(x, y);
+        return CellModelFactory.getLavaFloorModel(
+          x,
+          y,
+          serializedData as SerializedFloor,
+        );
       case CellTypes.Fountain:
-        return CellModelFactory.getFountainModel(x, y);
+        return CellModelFactory.getFountainModel(x, y, serializedData);
       case CellTypes.ShallowWater:
-        return CellModelFactory.getShallowWater(x, y);
+        return CellModelFactory.getShallowWater(x, y, serializedData);
       case CellTypes.DeepWater:
-        return CellModelFactory.getDeepWater(x, y);
+        return CellModelFactory.getDeepWater(x, y, serializedData);
       case CellTypes.Bush:
-        return CellModelFactory.getBush(x, y);
+        return CellModelFactory.getBush(x, y, serializedData);
       case CellTypes.Tree:
-        return CellModelFactory.getTree(x, y);
+        return CellModelFactory.getTree(x, y, serializedData);
       case CellTypes.StairsDown:
-        return CellModelFactory.getStairsDown(x, y);
+        return CellModelFactory.getStairsDown(
+          x,
+          y,
+          serializedData as SerializedStairs,
+        );
       case CellTypes.StairsUp:
-        return CellModelFactory.getStairsUp(x, y);
+        return CellModelFactory.getStairsUp(
+          x,
+          y,
+          serializedData as SerializedStairs,
+        );
       case CellTypes.BedHead:
-        return CellModelFactory.getBedHead(x, y);
+        return CellModelFactory.getBedHead(x, y, serializedData);
       case CellTypes.BedFoot:
-        return CellModelFactory.getBedFoot(x, y);
+        return CellModelFactory.getBedFoot(x, y, serializedData);
       case CellTypes.Barrel:
-        return CellModelFactory.getBarrelModel(x, y);
+        return CellModelFactory.getBarrelModel(x, y, serializedData);
       case CellTypes.ChestOfDrawers:
-        return CellModelFactory.getChestOfDrawersModel(x, y);
+        return CellModelFactory.getChestOfDrawersModel(x, y, serializedData);
       default:
         throw new Error('Unknown cell type in cell model factory.');
     }

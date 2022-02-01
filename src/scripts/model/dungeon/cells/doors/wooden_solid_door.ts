@@ -21,9 +21,5 @@ export class WoodenSolidDoorModel extends DoorModel implements ICellModel {
      * Sprite to display when doors are open.
      */
     this.openDisplay = config.openDisplay || terrain.RED_FLOOR;
-    /**
-     * Boolean flag indicating if doors are open or not.
-     */
-    this.areOpen = false;
   }
 }

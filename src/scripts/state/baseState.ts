@@ -1,5 +1,5 @@
 import { ExcludeFunctionProperties } from '../interfaces/utility.interfaces';
 
 export abstract class BaseState {
-  public abstract serialize(): ExcludeFunctionProperties<this>;
+  public abstract serialize(): unknown;
 }

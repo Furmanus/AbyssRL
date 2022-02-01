@@ -2,11 +2,14 @@ import { config as globalConfig } from '../../global/config';
 import { CellTypes } from '../../constants/cells/cell_types';
 import { CellModelFactory } from '../../factory/cell_model_factory';
 import { BaseModel } from '../../core/base_model';
-import { Position } from '../position/position';
-import { Cell } from './cells/cell_model';
+import { Position, SerializedPosition } from '../position/position';
+import { Cell, SerializedCell } from './cells/cell_model';
 import { DungeonAreaModel } from './dungeon_area_model';
-import { RoomModel } from './room_model';
-import { RoomConnectionModel } from './room_connection_model';
+import { RoomModel, SerializedRoom } from './room_model';
+import {
+  RoomConnectionModel,
+  SerializedRoomConnection,
+} from './room_connection_model';
 import {
   DungeonEvents,
   DungeonModelEvents,
@@ -28,6 +31,17 @@ type LevelModelConstructorOption = {
   cells: Map<string, Cell>;
 };
 
+export interface SerializedLevel {
+  branch: DungeonBranches;
+  levelNumber: number;
+  defaultWallType: CellTypes;
+  rooms: SerializedRoom[];
+  stairsUp: SerializedPosition;
+  stairsDown: SerializedPosition;
+  roomConnections: SerializedRoomConnection[];
+  cells: SerializedCell[];
+}
+
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
@@ -44,11 +58,19 @@ export class LevelModel extends BaseModel {
    * @param   branch             Object to which this level belongs
    * @param   levelNumber         Number of this dungeon level
    */
-  constructor(branch: DungeonBranches, levelNumber: number) {
+  constructor(
+    branch: DungeonBranches,
+    levelNumber: number,
+    serializedData?: SerializedLevel,
+  ) {
     super();
 
     this.branch = branch;
     this.levelNumber = levelNumber;
+
+    if (serializedData) {
+      this.recreateLevelFromSerializedData(serializedData);
+    }
   }
 
   /**
@@ -62,6 +84,37 @@ export class LevelModel extends BaseModel {
     this.createCells();
   }
 
+  private recreateLevelFromSerializedData(data: SerializedLevel): void {
+    const {
+      defaultWallType,
+      stairsUp,
+      stairsDown,
+      cells,
+      rooms,
+      roomConnections,
+    } = data;
+
+    this.defaultWallType = defaultWallType;
+    this.stairsUp = new Position(stairsUp.x, stairsUp.y);
+    this.stairsDown = new Position(stairsDown.x, stairsDown.y);
+
+    this.cells = cells.reduce((accumulator, examinedCell) => {
+      const cell = CellModelFactory.getCellModel(
+        examinedCell.x,
+        examinedCell.y,
+        examinedCell.type,
+        examinedCell,
+      );
+
+      accumulator.set(
+        this.convertPositionToMapCoords(examinedCell.x, examinedCell.y),
+        cell,
+      );
+
+      return accumulator;
+    }, new Map<string, Cell>());
+  }
+
   /**
    * Method responsible for initializing level with {@code Cell} objects. Initially creates level filled with walls.
    */
@@ -71,7 +124,7 @@ export class LevelModel extends BaseModel {
     for (let i = 0; i < globalConfig.LEVEL_WIDTH; i++) {
       for (let j = 0; j < globalConfig.LEVEL_HEIGHT; j++) {
         this.cells.set(
-          `${i}x${j}`,
+          this.convertPositionToMapCoords(i, j),
           CellModelFactory.getCellModel(i, j, defaultWallType),
         );
       }
@@ -79,7 +132,10 @@ export class LevelModel extends BaseModel {
   }
 
   public changeCellType(x: number, y: number, type: string): void {
-    this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
+    this.cells.set(
+      this.convertPositionToMapCoords(x, y),
+      CellModelFactory.getCellModel(x, y, type),
+    );
 
     this.notify(DungeonModelEvents.CellTypeChanged, { x, y });
   }
@@ -131,14 +187,16 @@ export class LevelModel extends BaseModel {
    * Returns cell at given coordinates.
    */
   public getCell(x: number, y: number): Cell {
-    return this.cells.get(`${x}x${y}`);
+    return this.cells.get(this.convertPositionToMapCoords(x, y));
   }
 
   /**
    * Returns cell from given position object.
    */
   public getCellFromPosition(position: Position): Cell {
-    return this.cells.get(`${position.x}x${position.y}`);
+    return this.cells.get(
+      this.convertPositionToMapCoords(position.x, position.y),
+    );
   }
 
   /**
@@ -282,5 +340,30 @@ export class LevelModel extends BaseModel {
     }
 
     return result;
+  }
+
+  public getDataToSerialization(): SerializedLevel {
+    const serializedCells: SerializedCell[] = [];
+
+    for (const cell of this.cells.values()) {
+      serializedCells.push(cell.getDataToSerialization());
+    }
+
+    return {
+      branch: this.branch,
+      levelNumber: this.levelNumber,
+      defaultWallType: this.defaultWallType,
+      stairsUp: this.stairsUp.serialize(),
+      stairsDown: this.stairsDown.serialize(),
+      rooms: this.rooms.map((room) => room.getDataToSerialization()),
+      roomConnections: Array.from(this.roomConnections).map((connection) =>
+        connection.getDataToSerialization(),
+      ),
+      cells: serializedCells,
+    };
+  }
+
+  private convertPositionToMapCoords(x: number, y: number): string {
+    return `${x}x${y}`;
   }
 }

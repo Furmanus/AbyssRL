@@ -1,6 +1,4 @@
-import { LevelModel } from '../../model/dungeon/level_model';
 import { EngineController } from '../time_engine/engine_controller';
-import { Cell } from '../../model/dungeon/cells/cell_model';
 import { EntityController } from '../entity/entity_controller';
 import { Controller } from '../controller';
 import { MonsterController } from '../entity/monster_controller';
@@ -17,10 +15,14 @@ import { DungeonEventsFactory } from '../../factory/dungeon_event_factory';
 import { EntityFactory } from '../../factory/entity/entity_factory';
 import { dungeonState } from '../../state/application.state';
 import { DungeonBranches } from '../../constants/dungeon_types';
+import { LevelModelFactory } from '../../factory/levelModel.factory';
+import { LevelModel } from '../../model/dungeon/level_model';
+import { Cell } from '../../model/dungeon/cells/cell_model';
 
-interface ILevelControllerConstructorConfig {
+export interface ILevelControllerConstructorConfig {
   readonly branch: DungeonBranches;
   readonly levelNumber: number;
+  readonly model?: LevelModel;
 }
 
 /**
@@ -35,7 +37,14 @@ export class LevelController extends Controller {
   constructor(config: ILevelControllerConstructorConfig) {
     super();
 
-    this.model = new LevelModel(config.branch, config.levelNumber);
+    if (config.model) {
+      this.model = config.model;
+    } else {
+      this.model = LevelModelFactory.getNewLevelModel(
+        config.branch,
+        config.levelNumber,
+      );
+    }
     this.engine = new EngineController();
 
     this.initialize();

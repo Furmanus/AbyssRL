@@ -624,7 +624,7 @@ export class EntityModel extends BaseModel implements IEntity {
       position: this.entityPosition,
       inventory: this.inventory.getDataForSerialization(),
       naturalWeapon: this.naturalWeapon.getDataToSerialization(),
-      lastVisitedCell: this.lastVisitedCellEntityPosition.serialize(),
+      lastVisitedCell: this.lastVisitedCellEntityPosition?.serialize(),
     };
   }
 }
