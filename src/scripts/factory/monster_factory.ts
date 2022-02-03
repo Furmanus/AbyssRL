@@ -5,6 +5,7 @@ import { Monsters, MonstersTypes } from '../constants/entity/monsters';
 import { Position, SerializedPosition } from '../model/position/position';
 import { dungeonState } from '../state/application.state';
 import { NaturalWeaponFactory } from './natural_weapon_factory';
+import { SerializedEntityModel } from '../model/entity/entity_model';
 
 const partialDefaultMonsterConfig = {
   strength: 0,
@@ -19,10 +20,11 @@ const partialDefaultMonsterConfig = {
 export class MonsterFactory {
   public static getMonsterControllerByType(
     type: Monsters,
-    startingPosition: Cell,
+    startingPosition: SerializedPosition,
+    serializedData?: SerializedEntityModel,
   ): MonsterController {
     if (type in monsterTypeToFactoryMethod) {
-      return monsterTypeToFactoryMethod[type](startingPosition);
+      return monsterTypeToFactoryMethod[type](startingPosition, serializedData);
     }
 
     throw new Error('Invalid monster type');
@@ -30,6 +32,7 @@ export class MonsterFactory {
 
   public static getGiantRatController(
     startingPosition: SerializedPosition,
+    serializedData?: SerializedEntityModel,
   ): MonsterController {
     return new MonsterController({
       model: new MonsterModel({
@@ -40,6 +43,7 @@ export class MonsterFactory {
           position: new Position(startingPosition.x, startingPosition.y),
         },
         ...partialDefaultMonsterConfig,
+        ...serializedData,
       }),
     });
   }

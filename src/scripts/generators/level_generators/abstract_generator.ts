@@ -3,8 +3,8 @@ import { config, config as globalConfig } from '../../global/config';
 import * as Rng from '../../helper/rng';
 import * as Utility from '../../helper/utility';
 import {
-  directionToStringMap,
   directionShortToStringMap,
+  directionToStringMap,
 } from '../../constants/keyboard_directions';
 import { terrain } from '../../constants/cells/sprites';
 import { getCircleFromLevelCells } from '../../helper/level_cells_helper';
@@ -19,12 +19,10 @@ import {
 import { Cell } from '../../model/dungeon/cells/cell_model';
 import { Direction } from '../../model/position/direction';
 import { DirectionType } from '../../interfaces/common';
-import { MapWithObserver } from '../../core/map_with_observer';
 import { MonsterFactory } from '../../factory/monster_factory';
-import { DungeonEvents } from '../../constants/dungeon_events';
-import { MonsterController } from '../../controller/entity/monster_controller';
 import { Directions } from '../../interfaces/directions';
 import { LevelController } from '../../controller/dungeon/level_controller';
+import { Monsters } from '../../constants/entity/monsters';
 
 const { NE, N, NW, W, SW, S, SE, E } = directionShortToStringMap;
 const MONSTERS_LIMIT_PER_LEVEL: number = 20;
@@ -813,12 +811,9 @@ export abstract class AbstractLevelGenerator {
         const randomCell: Cell = levelModel.getRandomUnoccupiedCell();
 
         if (randomCell) {
-          const monsterController: MonsterController =
-            MonsterFactory.getGiantRatController(randomCell);
-
           levelController.spawnMonsterInSpecificCell(
             randomCell,
-            monsterController,
+            Monsters.GiantRat,
           );
         }
       }

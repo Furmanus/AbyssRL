@@ -2,8 +2,6 @@
  * Main controller. Responsible for taking user keyboard input, processing it, and triggering appriopiate methods from
  * other sub controllers. Also responsible for managing all sub controllers.
  */
-import './entity/monster_controller'; // TODO hack to avoid circular dependency, try to solve it in better way
-import './entity/player_controller';
 import { GameController } from './game_controller';
 import { InfoController } from './info_controller';
 import { MiniMapController } from './minimap_controller';
@@ -55,7 +53,7 @@ import { globalInfoController } from '../global/info_controller';
 import { globalMiniMapController } from '../global/minimap_controller';
 import { DevFeaturesModalController } from './dev_features_modal_controller';
 import { autorun, reaction } from 'mobx';
-import { dungeonState, initState } from '../state/application.state';
+import { dungeonState } from '../state/application.state';
 import type { SerializedDungeonState } from '../state/applicationState.interfaces';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
@@ -90,7 +88,7 @@ export class MainController extends Controller {
     super();
 
     if (serializedGameState) {
-      initState(serializedGameState);
+      dungeonState.loadDungeonStateFromData(serializedGameState);
     }
 
     globalInfoController.initialize(tileset);
@@ -667,8 +665,17 @@ export class MainController extends Controller {
     window.addEventListener('keydown', callback);
   }
 
-  private saveGame(): void {
+  private async saveGame(): Promise<void> {
     const serializedGameState = JSON.stringify(dungeonState.serialize());
-    console.log(serializedGameState);
+
+    await fetch('/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: serializedGameState,
+    });
+
+    console.log('saved');
   }
 }

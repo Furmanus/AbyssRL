@@ -176,10 +176,14 @@ export class GameController extends Controller {
     });
 
     this.playerController.calculateFov();
-    currentLevel.addActorToTimeEngine(this.playerController);
+
+    if (!currentLevel.engine.hasActor(this.playerController)) {
+      currentLevel.addActorToTimeEngine(this.playerController);
+    }
+
     this.view.camera.centerOnCoordinates(
-      initialPlayerCell.x,
-      initialPlayerCell.y,
+      this.playerController.getModel().position.x,
+      this.playerController.getModel().position.y,
     );
   }
 

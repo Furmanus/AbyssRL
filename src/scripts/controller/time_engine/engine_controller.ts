@@ -9,9 +9,18 @@ import { IActor } from '../../interfaces/entity/entity_interfaces';
  * fields, provided by rot.js library.
  */
 export class EngineController extends Controller {
+  private actors: IActor[] = [];
   private scheduler: scheduler = new Scheduler.Speed();
   private engine: engine = new Engine(this.scheduler);
   private wasEngineStarted: boolean = false;
+
+  public hasActor(actor: IActor): boolean {
+    return this.actors.includes(actor);
+  }
+
+  public setCurrentActor(actor: IActor): void {
+    this.scheduler._current = actor;
+  }
 
   /**
    * Adds actor to engine scheduler.
@@ -21,6 +30,7 @@ export class EngineController extends Controller {
    */
   public addActor(actor: IActor, repeat: boolean = true): void {
     this.scheduler.add(actor, repeat);
+    this.actors.push(actor);
   }
 
   /**
@@ -30,6 +40,7 @@ export class EngineController extends Controller {
    */
   public removeActor(actor: IActor): void {
     this.scheduler.remove(actor);
+    this.actors.splice(this.actors.indexOf(actor), 1);
   }
 
   /**

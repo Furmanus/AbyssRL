@@ -1,7 +1,7 @@
 import { EngineController } from '../time_engine/engine_controller';
 import { EntityController } from '../entity/entity_controller';
 import { Controller } from '../controller';
-import { MonsterController } from '../entity/monster_controller';
+import type { MonsterController } from '../entity/monster_controller';
 import { DungeonEvents } from '../../constants/dungeon_events';
 import { IAnyObject } from '../../interfaces/common';
 import { EntityEvents } from '../../constants/entity_events';
@@ -129,6 +129,10 @@ export class LevelController extends Controller {
     this.engine.unlockEngine();
   }
 
+  public setCurrentActorInTimeEngine(actor: IActor): void {
+    this.engine.setCurrentActor(actor);
+  }
+
   /**
    * Adds actor to engine scheduler.
    *
@@ -144,29 +148,13 @@ export class LevelController extends Controller {
     }
   }
 
-  public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void;
-  public spawnMonsterInSpecificCell(
-    cell: Cell,
-    monster: MonsterController,
-  ): void;
-
-  public spawnMonsterInSpecificCell(
-    cell: Cell,
-    monster: Monsters | MonsterController,
-  ): void {
-    let monsterController: MonsterController;
-
-    if (monster instanceof MonsterController) {
-      monsterController = monster;
-    } else {
-      monsterController = MonsterFactory.getMonsterControllerByType(
-        monster,
-        cell,
-      );
-    }
+  public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
+    const monsterController = MonsterFactory.getMonsterControllerByType(
+      monster,
+      cell,
+    );
 
     dungeonState.entityManager.addEntityToLevel(monsterController);
-    this.addActorToTimeEngine(monsterController);
   }
 
   /**

@@ -1,4 +1,3 @@
-import { EntityController } from './entity_controller';
 import * as Utility from '../../helper/utility';
 import { config } from '../../global/config';
 import {
@@ -43,6 +42,7 @@ import { globalInfoController } from '../../global/info_controller';
 import { SerializedEntityModel } from '../../model/entity/entity_model';
 import { dungeonState } from '../../state/application.state';
 import { LevelController } from '../dungeon/level_controller';
+import { EntityController } from './entity_controller';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -57,6 +57,7 @@ const constructorToken = Symbol('Player controller');
 let instance: PlayerController;
 
 export class PlayerController extends EntityController<PlayerModel> {
+  public hasMoved = false;
   private globalMessageController: MessagesController =
     globalMessagesController;
 
@@ -187,6 +188,7 @@ export class PlayerController extends EntityController<PlayerModel> {
     super.act();
 
     this.notify(START_PLAYER_TURN);
+    this.hasMoved = true;
   }
 
   /**

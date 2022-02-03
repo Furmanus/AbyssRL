@@ -11,10 +11,7 @@ import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEve
 import { Monsters } from '../../constants/entity/monsters';
 import { PlayerController } from '../entity/player_controller';
 import { Cell } from '../../model/dungeon/cells/cell_model';
-import {
-  dungeonState,
-  hasStateBeenLoaded,
-} from '../../state/application.state';
+import { dungeonState } from '../../state/application.state';
 import { LevelControllerFactory } from '../../factory/levelController.factory';
 
 /**
@@ -36,7 +33,7 @@ export class DungeonController extends Controller {
    * Initialization of dungeon controller instance.
    */
   protected initialize(): void {
-    if (!hasStateBeenLoaded) {
+    if (!dungeonState.hasStateBeenLoadedFromData) {
       this.generateNewLevel();
     }
   }

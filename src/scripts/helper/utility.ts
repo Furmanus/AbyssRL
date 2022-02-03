@@ -266,3 +266,9 @@ export function getNumericValueOfChar(char: string): number {
 export function getLetterFromNumber(num: number): string {
   return String.fromCharCode(num + 97);
 }
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}

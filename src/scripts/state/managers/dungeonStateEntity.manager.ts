@@ -40,9 +40,26 @@ export class DungeonStateEntityManager {
     levelNumber: number = this.dungeonState.currentLevelNumber,
     dungeonBranch: DungeonBranches = this.dungeonState.currentBranch,
   ): this {
-    this.dungeonState.dungeonsStructure[dungeonBranch][
-      levelNumber
-    ].entities.add(entity);
+    if (
+      !this.dungeonState.hasStateBeenLoadedFromData &&
+      !this.dungeonState.dungeonsStructure[dungeonBranch][levelNumber]
+    ) {
+      this.dungeonState.dungeonsStructure[dungeonBranch] = {
+        [levelNumber]: {
+          level: null,
+          entities: new Set<EntityController>(),
+        },
+      };
+    }
+
+    const { level, entities } =
+      this.dungeonState.dungeonsStructure[dungeonBranch][levelNumber];
+
+    entities.add(entity);
+    // level controller might have not been initialized yet, happens in case of loading game from saved data
+    if (level) {
+      level.addActorToTimeEngine(entity);
+    }
 
     return this;
   }
@@ -52,9 +69,11 @@ export class DungeonStateEntityManager {
     levelNumber: number,
     dungeonBranch: DungeonBranches = this.dungeonState.currentBranch,
   ): this {
-    this.dungeonState.dungeonsStructure[dungeonBranch][
-      levelNumber
-    ].entities.delete(entity);
+    const { level, entities } =
+      this.dungeonState.dungeonsStructure[dungeonBranch][levelNumber];
+
+    entities.delete(entity);
+    level.removeActorFromTimeEngine(entity);
 
     return this;
   }

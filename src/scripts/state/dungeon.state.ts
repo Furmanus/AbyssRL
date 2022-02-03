@@ -3,14 +3,12 @@ import { action, makeObservable, observable } from 'mobx';
 import { ASCEND, DESCEND } from '../constants/directions';
 import { IActionAttempt } from '../interfaces/common';
 import { BaseState } from './baseState';
-import { LevelModel, SerializedLevel } from '../model/dungeon/level_model';
+import { LevelModel } from '../model/dungeon/level_model';
 import { DungeonStateEntityManager } from './managers/dungeonStateEntity.manager';
 import type { LevelController } from '../controller/dungeon/level_controller';
 import { EntityController } from '../controller/entity/entity_controller';
-import { SerializedEntityModel } from '../model/entity/entity_model';
 import { PartialDungeonState } from './application.state';
 import {
-  DungeonBranchLevelEntryStructure,
   DungeonBranchStructure,
   DungeonStructure,
   SerializedDungeon,
@@ -19,12 +17,21 @@ import {
 } from './applicationState.interfaces';
 import { LevelModelFactory } from '../factory/levelModel.factory';
 import { LevelControllerFactory } from '../factory/levelController.factory';
+import {
+  EntityModel,
+  SerializedEntityModel,
+} from '../model/entity/entity_model';
+import { MonstersTypes } from '../constants/entity/monsters';
+import { EntityFactory } from '../factory/entity/entity_factory';
+import { sleep } from '../helper/utility';
+import engine from 'rot-js/lib/engine';
 
 export const dungeonBranchToMaxLevel = {
   [DungeonBranches.Main]: 8,
 };
 
 export class DungeonState extends BaseState {
+  public hasStateBeenLoadedFromData = false;
   public currentLevelNumber: number;
   public currentBranch: DungeonBranches;
   public parentDungeonBranch: DungeonBranches = null;
@@ -37,14 +44,27 @@ export class DungeonState extends BaseState {
     return dungeonBranchToMaxLevel[this.currentBranch];
   }
 
-  public constructor(config: PartialDungeonState | SerializedDungeonState) {
+  public constructor() {
     super();
 
+    this.currentLevelNumber = 1;
+    this.currentBranch = DungeonBranches.Main;
+    this.parentDungeonBranch = null;
+
+    makeObservable(this, {
+      currentLevelNumber: observable,
+      setCurrentLevelNumber: action,
+    });
+  }
+
+  public loadDungeonStateFromData(
+    config: PartialDungeonState | SerializedDungeonState,
+  ): void {
     const { currentBranch, currentLevelNumber, parentDungeonBranch } = config;
 
-    this.currentLevelNumber = currentLevelNumber;
-    this.currentBranch = currentBranch;
-    this.parentDungeonBranch = parentDungeonBranch;
+    this.currentLevelNumber = currentLevelNumber || 1;
+    this.currentBranch = currentBranch || DungeonBranches.Main;
+    this.parentDungeonBranch = parentDungeonBranch ?? null;
 
     if (
       'dungeonStructure' in config &&
@@ -54,12 +74,9 @@ export class DungeonState extends BaseState {
       this.dungeonsStructure = this.recreateDungeonStructureFromSerializedState(
         config.dungeonStructure,
       );
-    }
 
-    makeObservable(this, {
-      currentLevelNumber: observable,
-      setCurrentLevelNumber: action,
-    });
+      this.hasStateBeenLoadedFromData = true;
+    }
   }
 
   public setCurrentLevelNumber(num: number): void {
@@ -208,10 +225,30 @@ export class DungeonState extends BaseState {
             stateLevelStructure.level,
           ),
         }),
-        entities: new Set<EntityController>(),
+        entities: new Set<EntityController>(
+          stateLevelStructure.entities
+            .reverse()
+            .map(this.createEntityFromSerializedData),
+        ),
       };
+
+      dungeonBranchStructure[lvlNumber].entities.forEach((entityController) => {
+        dungeonBranchStructure[lvlNumber].level.addActorToTimeEngine(
+          entityController,
+        );
+      });
     }
 
     return dungeonBranchStructure;
+  }
+
+  private createEntityFromSerializedData(
+    serializedEntity: SerializedEntityModel,
+  ): EntityController {
+    if (serializedEntity.type === MonstersTypes.Player) {
+      return EntityFactory.getPlayerController(serializedEntity);
+    } else {
+      return EntityFactory.getMonsterController(serializedEntity);
+    }
   }
 }
