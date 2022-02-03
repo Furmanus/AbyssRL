@@ -130,7 +130,9 @@ export class GameController extends Controller {
             ? DESCEND
             : ASCEND;
         // TODO przeanalizować logikę i zrefaktorować
-        this.dungeonController.generateNewLevelAtNumber(currentLevelNumber);
+        if (!dungeonState.doesLevelExist(currentLevelNumber)) {
+          this.dungeonController.generateNewLevelAtNumber(currentLevelNumber);
+        }
         this.onDungeonStateCurrentLevelChange(
           previousLevelNumber,
           currentLevelNumber,
@@ -234,12 +236,12 @@ export class GameController extends Controller {
   private descentDownLevel(): void {
     const playerPositionCellType: string =
       this.playerController.getEntityPosition().type;
-    // TODO temporary dev purpose
-    // if (playerPositionCellType === cellTypes.STAIRS_DOWN) {
-    this.dungeonController.changeLevel(dungeonState.currentLevelNumber + 1);
-    // } else {
-    //   globalMessagesController.showMessageInView("You can't go down here.");
-    // }
+
+    if (playerPositionCellType === CellTypes.StairsDown) {
+      this.dungeonController.changeLevel(dungeonState.currentLevelNumber + 1);
+    } else {
+      globalMessagesController.showMessageInView("You can't go down here.");
+    }
   }
 
   /**

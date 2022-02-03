@@ -17,14 +17,9 @@ import {
 } from './applicationState.interfaces';
 import { LevelModelFactory } from '../factory/levelModel.factory';
 import { LevelControllerFactory } from '../factory/levelController.factory';
-import {
-  EntityModel,
-  SerializedEntityModel,
-} from '../model/entity/entity_model';
+import { SerializedEntityModel } from '../model/entity/entity_model';
 import { MonstersTypes } from '../constants/entity/monsters';
 import { EntityFactory } from '../factory/entity/entity_factory';
-import { sleep } from '../helper/utility';
-import engine from 'rot-js/lib/engine';
 
 export const dungeonBranchToMaxLevel = {
   [DungeonBranches.Main]: 8,
@@ -156,6 +151,13 @@ export class DungeonState extends BaseState {
 
     this.dungeonsStructure[this.currentBranch][levelNumber].level =
       levelController;
+  }
+
+  public doesLevelExist(
+    levelNumber: number,
+    branch: DungeonBranches = DungeonBranches.Main,
+  ): boolean {
+    return !!this.dungeonsStructure[branch]?.[levelNumber]?.level;
   }
 
   public serialize(): SerializedDungeonState {

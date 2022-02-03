@@ -52,7 +52,7 @@ import {
 import { globalInfoController } from '../global/info_controller';
 import { globalMiniMapController } from '../global/minimap_controller';
 import { DevFeaturesModalController } from './dev_features_modal_controller';
-import { autorun, reaction } from 'mobx';
+import { autorun } from 'mobx';
 import { dungeonState } from '../state/application.state';
 import type { SerializedDungeonState } from '../state/applicationState.interfaces';
 
