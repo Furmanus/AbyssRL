@@ -76,6 +76,7 @@ export type EntityDungeonPosition = {
 };
 
 export type SerializedEntityModel = {
+  id: string;
   strength?: number;
   dexterity?: number;
   intelligence?: number;
@@ -93,6 +94,8 @@ export type SerializedEntityModel = {
   size?: MonsterSizes;
   inventory?: SerializedItem[];
   naturalWeapon?: SerializedNaturalWeapon;
+  equippedWeapon: string;
+  equippedArmour: string;
 };
 
 export class EntityModel extends BaseModel implements IEntity {
@@ -269,7 +272,7 @@ export class EntityModel extends BaseModel implements IEntity {
   }
 
   constructor(config: SerializedEntityModel) {
-    super();
+    super(config);
 
     this.entityPosition = config.position;
     this.display = config.display;
@@ -297,6 +300,13 @@ export class EntityModel extends BaseModel implements IEntity {
         this.type,
       );
     }
+
+    this.equippedWeapon = this.inventory.getById(
+      config.equippedWeapon,
+    ) as WeaponModel;
+    this.equippedArmour = this.inventory.getById(
+      config.equippedArmour,
+    ) as ArmourModel;
 
     this.attachEventsToCollections();
   }
@@ -608,6 +618,7 @@ export class EntityModel extends BaseModel implements IEntity {
 
   public serialize(): SerializedEntityModel {
     return {
+      ...super.serialize(),
       type: this.type,
       display: this.display,
       description: this.description,
@@ -625,6 +636,8 @@ export class EntityModel extends BaseModel implements IEntity {
       inventory: this.inventory.getDataForSerialization(),
       naturalWeapon: this.naturalWeapon.getDataToSerialization(),
       lastVisitedCell: this.lastVisitedCellEntityPosition?.serialize(),
+      equippedArmour: this.equippedArmour.id,
+      equippedWeapon: this.equippedWeapon.id,
     };
   }
 }

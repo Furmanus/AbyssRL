@@ -32,6 +32,7 @@ type LevelModelConstructorOption = {
 };
 
 export interface SerializedLevel {
+  id: string;
   branch: DungeonBranches;
   levelNumber: number;
   defaultWallType: CellTypes;
@@ -63,7 +64,7 @@ export class LevelModel extends BaseModel {
     levelNumber: number,
     serializedData?: SerializedLevel,
   ) {
-    super();
+    super(serializedData);
 
     this.branch = branch;
     this.levelNumber = levelNumber;
@@ -92,11 +93,13 @@ export class LevelModel extends BaseModel {
       cells,
       rooms,
       roomConnections,
+      id,
     } = data;
 
     this.defaultWallType = defaultWallType;
     this.stairsUp = new Position(stairsUp.x, stairsUp.y);
     this.stairsDown = new Position(stairsDown.x, stairsDown.y);
+    this.id = id;
 
     this.cells = cells.reduce((accumulator, examinedCell) => {
       const cell = CellModelFactory.getCellModel(
@@ -350,6 +353,7 @@ export class LevelModel extends BaseModel {
     }
 
     return {
+      ...super.serialize(),
       branch: this.branch,
       levelNumber: this.levelNumber,
       defaultWallType: this.defaultWallType,

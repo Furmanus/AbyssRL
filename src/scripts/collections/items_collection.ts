@@ -1,8 +1,17 @@
 import { Collection } from './collection';
 import { ItemModel, SerializedItem } from '../model/items/item_model';
 import { ItemModelFactory } from '../factory/item/itemModel.factory';
+import It = jest.It;
 
 export class ItemsCollection extends Collection<ItemModel> {
+  public getById(id: string): ItemModel {
+    if (id) {
+      return this.get().find((item) => item.id === id) || null;
+    }
+
+    return null;
+  }
+
   public getFirstItem(): ItemModel {
     return this.get(0);
   }

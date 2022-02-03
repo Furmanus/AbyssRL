@@ -6,6 +6,7 @@ import { DamageTypes } from '../../../constants/combat_enums';
 import { WeaponCriticalDamageType } from '../../../constants/items/weapons';
 
 export interface SerializedWeapon {
+  id: string;
   itemType: ItemTypes.Weapon;
   damage: string;
   toHit: string;
@@ -36,7 +37,7 @@ export class WeaponModel extends WearableModel {
   }
 
   public constructor(config: SerializedWeapon) {
-    super();
+    super(config);
 
     const { damage, toHit, name, type, criticalDamageType, criticalHitRate } =
       config;
@@ -56,6 +57,7 @@ export class WeaponModel extends WearableModel {
    */
   public getDataToSerialization(): SerializedWeapon {
     return {
+      ...super.serialize(),
       damage: this.damage.getDataToSerialization(),
       toHit: this.toHit.getDataToSerialization(),
       type: this.type,

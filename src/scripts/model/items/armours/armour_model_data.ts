@@ -4,9 +4,11 @@ import { SerializedArmour } from './armour_model';
 import { ItemTypes } from '../../../constants/items/item';
 
 const defaultArmourOptions: {
+  id: string;
   itemType: ItemTypes.Armour;
   display: ItemSprites.Armour;
 } = {
+  id: null,
   itemType: ItemTypes.Armour,
   display: ItemSprites.Armour,
 };

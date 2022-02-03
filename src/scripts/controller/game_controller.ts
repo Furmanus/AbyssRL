@@ -160,6 +160,7 @@ export class GameController extends Controller {
     const initialPlayerCell: Cell = currentLevel.getStairsUpCell();
 
     this.playerController = PlayerController.getInstance({
+      id: null,
       display: entities.AVATAR,
       position: {
         branch: dungeonState.currentBranch,
@@ -175,6 +176,8 @@ export class GameController extends Controller {
       hitPoints: 20,
       maxHitPoints: 20,
       type: MonstersTypes.Player,
+      equippedWeapon: null,
+      equippedArmour: null,
     });
 
     this.playerController.calculateFov();

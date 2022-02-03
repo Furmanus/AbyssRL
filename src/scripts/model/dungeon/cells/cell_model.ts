@@ -19,6 +19,7 @@ import { dungeonState } from '../../../state/application.state';
 import { SerializedItem } from '../../items/item_model';
 
 export type SerializedCell = {
+  id: string;
   x: number;
   y: number;
   inventory: SerializedItem[];
@@ -101,7 +102,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * @param   config  Object with additional configuration data.
    */
   constructor(config: SerializedCell) {
-    super();
+    super(config);
 
     this.x = config.x;
     this.y = config.y;
@@ -243,6 +244,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
 
   public getDataToSerialization(): SerializedCell {
     return {
+      id: this.id,
       x: this.x,
       y: this.y,
       type: this.type,

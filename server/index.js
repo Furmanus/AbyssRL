@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const jsonpack = require('jsonpack');
 const fs = require('fs');
 const app = express();
 
@@ -15,12 +16,12 @@ app.use(express.static(path.resolve(__dirname, '..', 'dist')));
 app.get('/save', (req, res) => {
   const data = fs.readFileSync(SAVE_FILE_PATH, 'utf-8');
 
-  res.set('Content-Type', 'application/json').send(JSON.parse(data));
+  res.set('Content-Type', 'application/json').send(jsonpack.unpack(data));
 });
 app.post('/save', (req, res) => {
   const { body } = req;
 
-  fs.writeFileSync(SAVE_FILE_PATH, JSON.stringify(body), {
+  fs.writeFileSync(SAVE_FILE_PATH, jsonpack.pack(body), {
     encoding: 'utf-8',
     flag: 'w+',
   });

@@ -7,7 +7,8 @@ export interface IWeaponData {
   [type: string]: SerializedWeapon;
 }
 
-const defaultWeaponOptions: { itemType: ItemTypes.Weapon } = {
+const defaultWeaponOptions: { id: string; itemType: ItemTypes.Weapon } = {
+  id: null,
   itemType: ItemTypes.Weapon,
 };
 
