@@ -14,7 +14,6 @@ import {
   cellSpecialConditionToWalkMessage,
   CellTypes,
 } from '../../../constants/cells/cell_types';
-import { DungeonStateEntityManager } from '../../../state/managers/dungeonStateEntity.manager';
 import { dungeonState } from '../../../state/application.state';
 import { SerializedItem } from '../../items/item_model';
 
@@ -64,10 +63,6 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   public displaySet: string = null;
   /**
-   * Display of cell to draw only if it is visible by player, otherwise displaySet is used
-   */
-  public displayWhenVisible: string = null;
-  /**
    * Array of strings describing cell special conditions, for example pool of blood which might be slippery
    */
   public specialConditions = new Set<CellSpecialConditions>();
@@ -92,6 +87,20 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   public get entity(): EntityModel {
     return dungeonState.entityManager.findEntityByCell(this)?.getModel();
+  }
+
+  /**
+   * Display of cell to draw only if it is visible by player, otherwise displaySet is used
+   */
+  public get displayWhenVisible(): MiscTiles {
+    if (
+      this.specialConditions.has(CellSpecialConditions.DriedBlood) ||
+      this.specialConditions.has(CellSpecialConditions.Bloody)
+    ) {
+      return MiscTiles.PoolOfBlood;
+    }
+
+    return null;
   }
 
   /**
@@ -212,12 +221,10 @@ export abstract class Cell extends BaseModel implements ICellModel {
   }
 
   public createPoolOfBlood(): void {
-    this.displayWhenVisible = MiscTiles.PoolOfBlood;
     this.specialConditions.add(CellSpecialConditions.Bloody);
   }
 
   public clearPoolOfBlood(): void {
-    this.displayWhenVisible = null;
     this.specialConditions.delete(CellSpecialConditions.Bloody);
   }
 

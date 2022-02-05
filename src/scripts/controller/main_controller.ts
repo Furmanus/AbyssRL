@@ -3,9 +3,6 @@
  * other sub controllers. Also responsible for managing all sub controllers.
  */
 import { GameController } from './game_controller';
-import { InfoController } from './info_controller';
-import { MiniMapController } from './minimap_controller';
-import { MessagesController } from './messages_controller';
 import { keyboardKeyToDirectionMap } from '../constants/keyboard_directions';
 import { config } from '../global/config';
 import {
@@ -28,7 +25,6 @@ import {
 import { Controller } from './controller';
 import { DungeonEvents } from '../constants/dungeon_events';
 import { boundMethod } from 'autobind-decorator';
-import { ILevelInfo } from '../interfaces/level';
 import {
   EXAMINE_CELL,
   ModalActions,
@@ -55,6 +51,8 @@ import { DevFeaturesModalController } from './dev_features_modal_controller';
 import { autorun } from 'mobx';
 import { dungeonState } from '../state/application.state';
 import type { SerializedDungeonState } from '../state/applicationState.interfaces';
+import { KeyboardKeys } from '../constants/keyboard_keys';
+import { PlayerController } from './entity/player_controller';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
   188: PlayerActions.PickUp,
@@ -291,6 +289,8 @@ export class MainController extends Controller {
         this.gameController.takePlayerAction(PLAYER_ACTION_GO_DOWN);
       } else if (keycode === 83) {
         this.saveGame();
+      } else if (keycode === 81) {
+        this.quitGame();
       }
     } else if (this.controlPressed) {
       // placeholder
@@ -666,16 +666,98 @@ export class MainController extends Controller {
   }
 
   private async saveGame(): Promise<void> {
-    const serializedGameState = JSON.stringify(dungeonState.serialize());
+    const key = await this.waitForUserInput(
+      [KeyboardKeys.n, KeyboardKeys.y, KeyboardKeys.Esc, KeyboardKeys.Space],
+      'Do you want to save game? (y/n)',
+    );
 
-    await fetch('/save', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: serializedGameState,
+    if (key === KeyboardKeys.y) {
+      const serializedGameState = JSON.stringify(dungeonState.serialize());
+
+      try {
+        await fetch('/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: serializedGameState,
+        });
+      } catch {
+        globalMessagesController.showMessageInView('Failed to save game.');
+      }
+
+      globalMessagesController.showMessageInView('Game saved!');
+    } else {
+      globalMessagesController.removeLastMessage();
+    }
+  }
+
+  private async quitGame(): Promise<void> {
+    const key = await this.waitForUserInput(
+      [KeyboardKeys.Wildcard, KeyboardKeys.CapitalY],
+      'Do you want to quit game? (Y/n)',
+    );
+
+    if (key === KeyboardKeys.CapitalY) {
+      try {
+        await fetch('/save', {
+          method: 'DELETE',
+        });
+
+        globalMessagesController.showMessageInView(
+          `${
+            PlayerController.getInstance().getModel().description
+          } committed suicide...`,
+        );
+
+        window.setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } catch {
+        globalMessagesController.showMessageInView(
+          'Failed to delete saved game.',
+        );
+      }
+    } else {
+      globalMessagesController.showMessageInView(
+        'You decide to continue on your quest.',
+      );
+    }
+  }
+
+  private waitForUserInput(
+    allowedKeys: KeyboardKeys[],
+    message?: string,
+  ): Promise<KeyboardKeys> {
+    this.detachEvents();
+
+    globalMessagesController.showMessageInView(message);
+
+    return new Promise((resolve) => {
+      const listener = (e: KeyboardEvent) => {
+        const key = e.key as KeyboardKeys;
+        const isMetaKey = [
+          KeyboardKeys.Shift,
+          KeyboardKeys.Alt,
+          KeyboardKeys.Command,
+          KeyboardKeys.Ctrl,
+        ].includes(key);
+
+        if (isMetaKey) {
+          return;
+        }
+
+        if (
+          allowedKeys.includes(key) ||
+          allowedKeys.includes(KeyboardKeys.Wildcard)
+        ) {
+          resolve(key);
+          window.removeEventListener('keydown', listener);
+          this.attachEvents();
+        }
+      };
+
+      window.addEventListener('keydown', listener);
     });
-
-    console.log('saved');
   }
 }

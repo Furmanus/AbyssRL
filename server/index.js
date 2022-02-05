@@ -28,6 +28,14 @@ app.post('/save', (req, res) => {
 
   res.end();
 });
+app.delete('/save', (req, res) => {
+  fs.writeFileSync(SAVE_FILE_PATH, '', {
+    encoding: 'utf-8',
+    flag: 'w+',
+  });
+
+  res.end();
+});
 
 app.listen(5020, () => {
   console.log(`App is listening on port ${PORT}`);
