@@ -99,8 +99,9 @@ export function doCombatAction(
         const criticalHitEffect = attacker.weapon.criticalDamageType.random();
         const criticalStatusConstructor =
           criticalDamageTypeToStatusConstructor[criticalHitEffect];
-        const criticalStatusController =
-          criticalStatusConstructor(defenderController);
+        const criticalStatusController = criticalStatusConstructor({
+          entityModelId: defenderController.getModel().id,
+        });
         const criticalType = criticalStatusController.type;
 
         criticalText =

@@ -308,7 +308,9 @@ export abstract class EntityController<
   }
 
   public inflictStunnedStatus(message?: string): void {
-    const stunnedStatus = EntityStatusFactory.getEntityStunnedStatus(this);
+    const stunnedStatus = EntityStatusFactory.getEntityStunnedStatus({
+      entityModelId: this.getModel().id,
+    });
 
     this.model.addStatus(stunnedStatus);
 
@@ -328,7 +330,11 @@ export abstract class EntityController<
   }
 
   public inflictBleeding(): void {
-    this.model.addStatus(EntityStatusFactory.getEntityBleedingStatus(this));
+    this.model.addStatus(
+      EntityStatusFactory.getEntityBleedingStatus({
+        entityModelId: this.getModel().id,
+      }),
+    );
   }
 
   public stopBleeding(bleedingStatus: EntityBleedingStatusController): void {

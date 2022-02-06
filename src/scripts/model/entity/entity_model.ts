@@ -24,12 +24,16 @@ import {
 import { ArmourModel } from '../items/armours/armour_model';
 import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
 import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
-import { EntityStatusCommonController } from '../../controller/entity/entity_statuses/entity_status_common_controller';
+import {
+  AllEntityStatusesSerialized,
+  EntityStatusCommonController,
+} from '../../controller/entity/entity_statuses/entity_status_common_controller';
 import { CollectionEvents } from '../../constants/collection_events';
 import { DungeonBranches } from '../../constants/dungeon_types';
 import { dungeonState } from '../../state/application.state';
 import { Position, SerializedPosition } from '../position/position';
 import { NaturalWeaponFactory } from '../../factory/natural_weapon_factory';
+import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -96,6 +100,7 @@ export type SerializedEntityModel = {
   naturalWeapon?: SerializedNaturalWeapon;
   equippedWeapon: string;
   equippedArmour: string;
+  entityStatuses: AllEntityStatusesSerialized[];
 };
 
 export class EntityModel extends BaseModel implements IEntity {
@@ -307,6 +312,10 @@ export class EntityModel extends BaseModel implements IEntity {
     this.equippedArmour = this.inventory.getById(
       config.equippedArmour,
     ) as ArmourModel;
+
+    this.entityStatuses = EntityStatusFactory.getCollectionFromSerializedData(
+      config.entityStatuses,
+    );
 
     this.attachEventsToCollections();
   }
@@ -638,6 +647,7 @@ export class EntityModel extends BaseModel implements IEntity {
       lastVisitedCell: this.lastVisitedCellEntityPosition?.serialize(),
       equippedArmour: this.equippedArmour?.id || null,
       equippedWeapon: this.equippedWeapon?.id || null,
+      entityStatuses: this.entityStatuses.getDataToSerialization(),
     };
   }
 }

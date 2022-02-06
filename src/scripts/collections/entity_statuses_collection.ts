@@ -1,6 +1,12 @@
 import { Collection } from './collection';
-import { EntityStatusCommonController } from '../controller/entity/entity_statuses/entity_status_common_controller';
+import {
+  AllEntityStatusControllers,
+  AllEntityStatusesSerialized,
+  EntityStatusCommonController,
+} from '../controller/entity/entity_statuses/entity_status_common_controller';
 import { EntityStatuses } from '../constants/entity/statuses';
+import { EntityStunnedStatusController } from '../controller/entity/entity_statuses/entity_stunned_status_controller';
+import { EntityBleedingStatusController } from '../controller/entity/entity_statuses/entity_bleeding_status_controller';
 
 export class EntityStatusesCollection extends Collection<EntityStatusCommonController> {
   public addStatus(status: EntityStatusCommonController): this {
@@ -45,6 +51,12 @@ export class EntityStatusesCollection extends Collection<EntityStatusCommonContr
 
     return this.get().find(
       (statusController) => statusController.type === entityStatus,
+    );
+  }
+
+  public getDataToSerialization(): AllEntityStatusesSerialized[] {
+    return this.get().map((status: AllEntityStatusControllers) =>
+      status.getDataToSerialization(),
     );
   }
 }

@@ -178,6 +178,7 @@ export class GameController extends Controller {
       type: MonstersTypes.Player,
       equippedWeapon: null,
       equippedArmour: null,
+      entityStatuses: [],
     });
 
     this.playerController.calculateFov();

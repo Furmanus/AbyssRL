@@ -127,6 +127,25 @@ export class DungeonStateEntityManager {
     }
   }
 
+  public getEntityControllerById(entityId: string): EntityController {
+    const { dungeonsStructure } = this.dungeonState;
+    console.log(entityId);
+    for (const branchStructure of Object.values(dungeonsStructure)) {
+      for (const levelStructure of Object.values(branchStructure)) {
+        console.log(
+          Array.from(levelStructure.entities).map((en) => en.getModel().id),
+        );
+        const entityController = Array.from(levelStructure.entities).find(
+          (entity) => entity.getModel().id === entityId,
+        );
+
+        if (entityController) {
+          return entityController;
+        }
+      }
+    }
+  }
+
   private getEntitiesFromLevel(
     branch: DungeonBranches,
     levelNumber: number,

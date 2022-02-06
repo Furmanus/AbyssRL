@@ -42,6 +42,7 @@ export class MonsterFactory {
           level: dungeonState.currentLevelNumber,
           position: new Position(startingPosition.x, startingPosition.y),
         },
+        entityStatuses: [],
         ...partialDefaultMonsterConfig,
         ...serializedData,
       }),
