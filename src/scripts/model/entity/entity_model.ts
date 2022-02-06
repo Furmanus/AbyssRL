@@ -34,6 +34,8 @@ import { dungeonState } from '../../state/application.state';
 import { Position, SerializedPosition } from '../position/position';
 import { NaturalWeaponFactory } from '../../factory/natural_weapon_factory';
 import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
+import { entityRegistry } from '../../global/entityRegistry';
+import { EntityController } from '../../controller/entity/entity_controller';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -313,9 +315,17 @@ export class EntityModel extends BaseModel implements IEntity {
       config.equippedArmour,
     ) as ArmourModel;
 
-    this.entityStatuses = EntityStatusFactory.getCollectionFromSerializedData(
-      config.entityStatuses,
-    );
+    window.setTimeout(() => {
+      const recreatedStatusesCollection =
+        EntityStatusFactory.getCollectionFromSerializedData(
+          config.entityStatuses,
+          entityRegistry.getControllerByModel(this),
+        );
+
+      recreatedStatusesCollection.forEach((status) => {
+        this.entityStatuses.addStatus(status);
+      });
+    }, 0);
 
     this.attachEventsToCollections();
   }

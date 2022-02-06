@@ -6,6 +6,7 @@ import { Position, SerializedPosition } from '../model/position/position';
 import { dungeonState } from '../state/application.state';
 import { NaturalWeaponFactory } from './natural_weapon_factory';
 import { SerializedEntityModel } from '../model/entity/entity_model';
+import { entityRegistry } from '../global/entityRegistry';
 
 const partialDefaultMonsterConfig = {
   strength: 0,
@@ -34,7 +35,7 @@ export class MonsterFactory {
     startingPosition: SerializedPosition,
     serializedData?: SerializedEntityModel,
   ): MonsterController {
-    return new MonsterController({
+    const controller = new MonsterController({
       model: new MonsterModel({
         type: MonstersTypes.GiantRat,
         position: {
@@ -47,6 +48,10 @@ export class MonsterFactory {
         ...serializedData,
       }),
     });
+
+    entityRegistry.addEntry(controller.getModel(), controller);
+
+    return controller;
   }
 }
 

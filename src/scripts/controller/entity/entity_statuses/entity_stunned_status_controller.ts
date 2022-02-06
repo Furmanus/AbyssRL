@@ -17,8 +17,11 @@ export class EntityStunnedStatusController extends EntityStatusCommonController 
   public type = EntityStatuses.Stunned;
   protected effectLength = getRandomNumber(3, 4);
 
-  public constructor(data: EntityStunnedStatusSerializedData) {
-    super(data);
+  public constructor(
+    data: EntityStunnedStatusSerializedData,
+    entityController?: EntityController,
+  ) {
+    super(data, entityController);
 
     const { effectLength } = data;
 

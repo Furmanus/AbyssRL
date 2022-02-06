@@ -37,14 +37,23 @@ export abstract class EntityStatusCommonController extends Controller {
    */
   protected entityController: EntityController;
 
-  public constructor(entity: string);
-  public constructor(entity: AllEntityStatusesSerialized);
-  public constructor(entity: string | AllEntityStatusesSerialized) {
+  public constructor(entity: string, entityController?: EntityController);
+
+  public constructor(
+    entity: AllEntityStatusesSerialized,
+    entityController?: EntityController,
+  );
+
+  public constructor(
+    entity: string | AllEntityStatusesSerialized,
+    entityControllerInstance?: EntityController,
+  ) {
     super();
     let entityController: EntityController;
 
     if (typeof entity === 'string') {
       entityController =
+        entityControllerInstance ||
         dungeonState.entityManager.getEntityControllerById(entity);
     } else {
       const { entityModelId, turnCount } = entity;
@@ -53,6 +62,7 @@ export abstract class EntityStatusCommonController extends Controller {
         this.turnCount = turnCount;
       }
       entityController =
+        entityControllerInstance ||
         dungeonState.entityManager.getEntityControllerById(entityModelId);
     }
 

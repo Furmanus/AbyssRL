@@ -5,6 +5,7 @@ import { monstersData, MonsterStats } from './monsters/data/monsters';
 import { MonsterSizes, MonstersTypes } from '../../constants/entity/monsters';
 import { entities } from '../../constants/cells/sprites';
 import { ItemsCollection } from '../../collections/items_collection';
+import { EntityController } from '../../controller/entity/entity_controller';
 
 export class MonsterModel extends EntityModel implements IEntity {
   public isHostile: boolean = true;

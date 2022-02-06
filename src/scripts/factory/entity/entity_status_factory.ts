@@ -18,14 +18,16 @@ import { EntityStatuses } from '../../constants/entity/statuses';
 export class EntityStatusFactory {
   public static getEntityBleedingStatus(
     data: EntityBleedingStatusSerializedData,
+    entityController?: EntityController,
   ): EntityBleedingStatusController {
-    return new EntityBleedingStatusController(data);
+    return new EntityBleedingStatusController(data, entityController);
   }
 
   public static getEntityStunnedStatus(
     data: EntityStunnedStatusSerializedData,
+    entityController?: EntityController,
   ): EntityStunnedStatusController {
-    return new EntityStunnedStatusController(data);
+    return new EntityStunnedStatusController(data, entityController);
   }
 
   public static getCollection(
@@ -36,6 +38,7 @@ export class EntityStatusFactory {
 
   public static getCollectionFromSerializedData(
     entityStatuses: AllEntityStatusesSerialized[],
+    entityController?: EntityController,
   ): EntityStatusesCollection {
     const entityStatusControllers = entityStatuses.map((serializedStatus) => {
       switch (serializedStatus.type) {

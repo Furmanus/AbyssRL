@@ -5,6 +5,7 @@ import {
 import { getRandomNumber } from '../../../helper/rng';
 import { EntityStatuses } from '../../../constants/entity/statuses';
 import { EntityStats } from '../../../constants/entity/monsters';
+import { EntityController } from '../entity_controller';
 
 export interface EntityBleedingStatusSerializedData
   extends EntityStatusCommonSerializedData {
@@ -22,8 +23,11 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
   private weaknessCount = 0;
   private weaknessTurnStart = getRandomNumber(10, 15);
 
-  public constructor(data: EntityBleedingStatusSerializedData) {
-    super(data);
+  public constructor(
+    data: EntityBleedingStatusSerializedData,
+    entityController?: EntityController,
+  ) {
+    super(data, entityController);
 
     const {
       weaknessCount,
