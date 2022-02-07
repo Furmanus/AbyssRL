@@ -95,7 +95,11 @@ export function doCombatAction(
       });
       let criticalText: string;
 
-      if (isCriticalHit && Array.isArray(attackerWeapon.criticalDamageType)) {
+      if (
+        isAlive &&
+        isCriticalHit &&
+        Array.isArray(attackerWeapon.criticalDamageType)
+      ) {
         const criticalHitEffect = attacker.weapon.criticalDamageType.random();
         const criticalStatusConstructor =
           criticalDamageTypeToStatusConstructor[criticalHitEffect];

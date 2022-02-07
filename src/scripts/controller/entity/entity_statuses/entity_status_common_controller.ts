@@ -69,7 +69,7 @@ export abstract class EntityStatusCommonController extends Controller {
     if (entityController) {
       this.entityController = entityController;
     } else {
-      throw new Error('Entity controller not found');
+      throw new Error(`Entity controller ${String(entity)} not found`);
     }
   }
 
