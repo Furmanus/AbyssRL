@@ -4,11 +4,22 @@ import engine from 'rot-js/lib/engine';
 import { Controller } from '../controller';
 import { IActor } from '../../interfaces/entity/entity_interfaces';
 
+export interface ITimeEngine {
+  hasActor(actor: IActor): boolean;
+  addActor(actor: IActor, repeat: boolean): void;
+  removeActor(actor: IActor): void;
+  clearScheduler(): void;
+  startEngine(): void;
+  lockEngine(): void;
+  unlockEngine(): void;
+  hasEngineBeenStarted(): boolean;
+}
+
 /**
  * Controller of time engine of game. Doesn't have explicit, separate model, models are scheduler and engine
  * fields, provided by rot.js library.
  */
-export class EngineController extends Controller {
+export class EngineController extends Controller implements ITimeEngine {
   private actors: IActor[] = [];
   private scheduler: scheduler = new Scheduler.Speed();
   private engine: engine = new Engine(this.scheduler);
@@ -48,13 +59,6 @@ export class EngineController extends Controller {
    */
   public clearScheduler(): void {
     this.scheduler.clear();
-  }
-
-  /**
-   * Picks next actor in engine scheduler.
-   */
-  public nextActor(): void {
-    this.scheduler.next();
   }
 
   /**

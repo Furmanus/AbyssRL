@@ -1,5 +1,5 @@
 import { getRandomNumber } from '../helper/rng';
-import { DriedBloodDungeonEvent } from '../dungeon_events/events/dried_blood_event';
+import { DriedBloodDungeonEvent } from '../model/dungeon_events/events/dried_blood_event';
 import { Cell } from '../model/dungeon/cells/cell_model';
 
 export class DungeonEventsFactory {

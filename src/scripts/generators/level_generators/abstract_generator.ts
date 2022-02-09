@@ -25,7 +25,7 @@ import { LevelController } from '../../controller/dungeon/level_controller';
 import { Monsters } from '../../constants/entity/monsters';
 
 const { NE, N, NW, W, SW, S, SE, E } = directionShortToStringMap;
-const MONSTERS_LIMIT_PER_LEVEL: number = 20;
+const MONSTERS_LIMIT_PER_LEVEL: number = 5;
 
 /**
  * Which cell types can be replaced to stairs during level generation.

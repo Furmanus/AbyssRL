@@ -18,6 +18,7 @@ import { DungeonBranches } from '../../constants/dungeon_types';
 import { LevelModelFactory } from '../../factory/levelModel.factory';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { Cell } from '../../model/dungeon/cells/cell_model';
+import { TimeEngine } from '../../model/time/time_engine';
 
 export interface ILevelControllerConstructorConfig {
   readonly branch: DungeonBranches;
@@ -30,7 +31,7 @@ export interface ILevelControllerConstructorConfig {
  */
 export class LevelController extends Controller {
   public model: LevelModel;
-  public engine: EngineController;
+  public engine: TimeEngine;
   private levelEntitiesControllers =
     EntityFactory.getEntityControllerollection();
 
@@ -45,7 +46,7 @@ export class LevelController extends Controller {
         config.levelNumber,
       );
     }
-    this.engine = new EngineController();
+    this.engine = new TimeEngine();
 
     this.initialize();
   }
@@ -127,10 +128,6 @@ export class LevelController extends Controller {
    */
   public unlockTimeEngine(): void {
     this.engine.unlockEngine();
-  }
-
-  public setCurrentActorInTimeEngine(actor: IActor): void {
-    this.engine.setCurrentActor(actor);
   }
 
   /**
