@@ -6,12 +6,12 @@ export class QueueMember {
 
   public constructor(actor: IActor, nextActionAt: number) {
     this.actor = actor;
-    this.nextActionAt = nextActionAt + actor.getSpeed();
+    this.nextActionAt = nextActionAt + 1 / actor.getSpeed();
   }
 
   public takeAction(): void {
     this.actor.act();
 
-    this.nextActionAt += this.actor.getSpeed();
+    this.nextActionAt += 1 / this.actor.getSpeed();
   }
 }

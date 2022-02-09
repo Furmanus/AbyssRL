@@ -22,13 +22,13 @@ describe('Time engine', () => {
     const engine = new TimeEngine();
     const actorFirst = new FakeActor(70, () => {
       actorsAction.push('first');
+      engine.lockEngine();
     });
     const actorSecond = new FakeActor(100, () => {
       actorsAction.push('second');
     });
     const actorThird = new FakeActor(150, () => {
       actorsAction.push('third');
-      engine.lockEngine();
     });
 
     engine.addActor(actorFirst, true);
@@ -37,20 +37,20 @@ describe('Time engine', () => {
 
     engine.startEngine();
 
-    expect(actorsAction).toStrictEqual(['first', 'second', 'first', 'third']);
+    expect(actorsAction).toStrictEqual(['third', 'second', 'third', 'third']);
   });
   it('should remove non repeatable actors', () => {
     const actorsAction: string[] = [];
     const engine = new TimeEngine();
     const actorFirst = new FakeActor(100, () => {
       actorsAction.push('first');
+      engine.lockEngine();
     });
-    const actorSecond = new FakeActor(20, () => {
+    const actorSecond = new FakeActor(150, () => {
       actorsAction.push('second');
     });
     const actorThird = new FakeActor(120, () => {
       actorsAction.push('third');
-      engine.lockEngine();
     });
 
     engine.addActor(actorFirst, true);
@@ -59,17 +59,17 @@ describe('Time engine', () => {
 
     engine.startEngine();
 
-    expect(actorsAction).toStrictEqual(['second', 'first', 'third']);
+    expect(actorsAction).toStrictEqual(['second', 'third', 'first']);
   });
   it('fast actor should act multiple times before slow actor', () => {
     const actorsAction: string[] = [];
     const engine = new TimeEngine();
     const actorFirst = new FakeActor(20, () => {
       actorsAction.push('first');
+      engine.lockEngine();
     });
     const actorThird = new FakeActor(99, () => {
       actorsAction.push('third');
-      engine.lockEngine();
     });
 
     engine.addActor(actorFirst, true);
@@ -78,11 +78,26 @@ describe('Time engine', () => {
     engine.startEngine();
 
     expect(actorsAction).toStrictEqual([
-      'first',
-      'first',
-      'first',
-      'first',
       'third',
+      'third',
+      'third',
+      'third',
+      'first',
     ]);
+  });
+  it('lock and unlock engine should work correctly', () => {
+    const actorsAction: string[] = [];
+    const engine = new TimeEngine();
+    const actorFirst = new FakeActor(20, () => {
+      actorsAction.push('first');
+      engine.lockEngine();
+    });
+
+    engine.addActor(actorFirst, true);
+    engine.startEngine();
+    engine.unlockEngine();
+    engine.unlockEngine();
+
+    expect(actorsAction).toStrictEqual(['first', 'first', 'first']);
   });
 });
