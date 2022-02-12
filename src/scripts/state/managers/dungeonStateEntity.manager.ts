@@ -3,6 +3,7 @@ import { DungeonBranches } from '../../constants/dungeon_types';
 import { EntityModel } from '../../model/entity/entity_model';
 import { EntityController } from '../../controller/entity/entity_controller';
 import { Cell } from '../../model/dungeon/cells/cell_model';
+import { DungeonEvent } from '../../model/dungeon_events/dungeon_event';
 
 const constructorSymbol = Symbol('EntityStateManager');
 const instance: DungeonStateEntityManager = null;
@@ -48,6 +49,7 @@ export class DungeonStateEntityManager {
         [levelNumber]: {
           level: null,
           entities: new Set<EntityController>(),
+          scheduledDungeonEvents: new Set<DungeonEvent>(),
         },
       };
     }
@@ -135,6 +137,27 @@ export class DungeonStateEntityManager {
         const entityController = Array.from(levelStructure.entities).find(
           (entity) => entity.getModel().id === entityId,
         );
+
+        if (entityController) {
+          return entityController;
+        }
+      }
+    }
+  }
+
+  public getActorById(id: string): EntityController | DungeonEvent {
+    const entityController = this.getEntityControllerById(id);
+    const { dungeonsStructure } = this.dungeonState;
+
+    if (entityController) {
+      return entityController;
+    }
+
+    for (const branchStructure of Object.values(dungeonsStructure)) {
+      for (const levelStructure of Object.values(branchStructure)) {
+        const entityController = Array.from(
+          levelStructure.scheduledDungeonEvents,
+        ).find((entity) => entity.id === id);
 
         if (entityController) {
           return entityController;

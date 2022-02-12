@@ -388,6 +388,10 @@ export abstract class EntityController<
     }
   }
 
+  public getId(): string {
+    return this.getModel().id;
+  }
+
   private updateEntityStatsModifiers(): void {
     const modifiedStats = this.model.updateTemporaryStatsModifiers();
     let message = '';

@@ -20,6 +20,12 @@ import { LevelControllerFactory } from '../factory/levelController.factory';
 import { SerializedEntityModel } from '../model/entity/entity_model';
 import { MonstersTypes } from '../constants/entity/monsters';
 import { EntityFactory } from '../factory/entity/entity_factory';
+import {
+  AllSerializedEventTypes,
+  DungeonEvent,
+  DungeonEventTypes,
+} from '../model/dungeon_events/dungeon_event';
+import { DungeonEventsFactory } from '../factory/dungeon_event_factory';
 
 export const dungeonBranchToMaxLevel = {
   [DungeonBranches.Main]: 8,
@@ -146,6 +152,7 @@ export class DungeonState extends BaseState {
       this.dungeonsStructure[this.currentBranch][levelNumber] = {
         level: null,
         entities: new Set<EntityController>(),
+        scheduledDungeonEvents: new Set<DungeonEvent>(),
       };
     }
 
@@ -183,6 +190,9 @@ export class DungeonState extends BaseState {
           entities: Array.from(levelNumberEntry.entities).map(
             (entityController) => entityController.getModel().serialize(),
           ),
+          scheduledDungeonEvents: Array.from(
+            levelNumberEntry.scheduledDungeonEvents,
+          ).map((event) => event.getDataToSerialization()),
         };
       }
     }
@@ -232,6 +242,11 @@ export class DungeonState extends BaseState {
             .reverse()
             .map(this.createEntityFromSerializedData),
         ),
+        scheduledDungeonEvents: new Set<DungeonEvent>(
+          stateLevelStructure.scheduledDungeonEvents.map(
+            this.createDungeonEventFromSerializedData,
+          ),
+        ),
       };
 
       dungeonBranchStructure[lvlNumber].entities.forEach((entityController) => {
@@ -251,6 +266,15 @@ export class DungeonState extends BaseState {
       return EntityFactory.getPlayerController(serializedEntity);
     } else {
       return EntityFactory.getMonsterController(serializedEntity);
+    }
+  }
+
+  private createDungeonEventFromSerializedData(
+    data: AllSerializedEventTypes,
+  ): DungeonEvent {
+    switch (data.type) {
+      case DungeonEventTypes.DryBlood:
+        return DungeonEventsFactory.getDryBloodEvent(data);
     }
   }
 }

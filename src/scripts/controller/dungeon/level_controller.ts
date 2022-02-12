@@ -1,8 +1,5 @@
-import { EngineController } from '../time_engine/engine_controller';
 import { EntityController } from '../entity/entity_controller';
 import { Controller } from '../controller';
-import type { MonsterController } from '../entity/monster_controller';
-import { DungeonEvents } from '../../constants/dungeon_events';
 import { IAnyObject } from '../../interfaces/common';
 import { EntityEvents } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
@@ -19,6 +16,8 @@ import { LevelModelFactory } from '../../factory/levelModel.factory';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { Cell } from '../../model/dungeon/cells/cell_model';
 import { TimeEngine } from '../../model/time/time_engine';
+import { getRandomNumber } from '../../helper/rng';
+import { DungeonEventTypes } from '../../model/dungeon_events/dungeon_event';
 
 export interface ILevelControllerConstructorConfig {
   readonly branch: DungeonBranches;
@@ -245,10 +244,18 @@ export class LevelController extends Controller {
     const cell = this.getCell(entity.position.x, entity.position.y);
 
     if (cell) {
+      const { branch, levelNumber } = this.model;
+
       cell.createPoolOfBlood();
 
       this.addActorToTimeEngine(
-        DungeonEventsFactory.getDryBloodEvent(cell),
+        DungeonEventsFactory.getDryBloodEvent({
+          type: DungeonEventTypes.DryBlood,
+          speed: getRandomNumber(12, 15) / 100,
+          branch,
+          levelNumber,
+          cell: entity.position,
+        }),
         false,
       );
     }

@@ -1,15 +1,57 @@
 import { IActor } from '../../interfaces/entity/entity_interfaces';
-import { QueueMember } from './queue_member';
+import { QueueMember, SerializedQueueMember } from './queue_member';
+import { dungeonState } from '../../state/application.state';
+import { IEngine } from './time_engine.interfaces';
+import { TimeEngineTypes } from './time_engine.constants';
 
-export class SpeedTimeEngine {
+export interface SerializedSpeedTimeEngine {
+  queue: SerializedQueueMember[];
+  repeatableActorsIds: string[];
+  currentTimestamp: number;
+  isUnlocked: boolean;
+  wasEngineStarted: boolean;
+  type: TimeEngineTypes.Speed;
+}
+
+export class SpeedTimeEngine implements IEngine {
+  public type = TimeEngineTypes.Speed;
   private queue: QueueMember[] = [];
   private repeatableActors: Set<IActor> = new Set<IActor>();
   private currentTimestamp = 0;
   private isUnlocked = false;
   public wasEngineStarted = false;
 
+  public constructor(data?: SerializedSpeedTimeEngine) {
+    if (data) {
+      const {
+        queue,
+        repeatableActorsIds,
+        wasEngineStarted,
+        currentTimestamp,
+        isUnlocked,
+      } = data;
+
+      this.wasEngineStarted = wasEngineStarted;
+      this.isUnlocked = isUnlocked;
+      this.currentTimestamp = currentTimestamp;
+      this.repeatableActors = new Set<IActor>(
+        repeatableActorsIds.map((actorId) =>
+          dungeonState.entityManager.getActorById(actorId),
+        ),
+      );
+      this.queue = queue.map(
+        (serializedMember) => new QueueMember(serializedMember),
+      );
+    }
+  }
+
   public addActor(actor: IActor, repeatable: boolean = true): void {
-    this.queue.push(new QueueMember(actor, this.currentTimestamp));
+    this.queue.push(
+      new QueueMember({
+        actorId: actor,
+        nextActionAt: this.currentTimestamp,
+      }),
+    );
 
     if (repeatable) {
       this.repeatableActors.add(actor);
@@ -93,5 +135,18 @@ export class SpeedTimeEngine {
     } else {
       this.isUnlocked = false;
     }
+  }
+
+  public getDataToSerialization(): SerializedSpeedTimeEngine {
+    return {
+      currentTimestamp: this.currentTimestamp,
+      isUnlocked: this.isUnlocked,
+      wasEngineStarted: this.wasEngineStarted,
+      repeatableActorsIds: Array.from(this.repeatableActors).map((actor) =>
+        actor.getId(),
+      ),
+      queue: this.queue.map((member) => member.getDataToSerialization()),
+      type: TimeEngineTypes.Speed,
+    };
   }
 }

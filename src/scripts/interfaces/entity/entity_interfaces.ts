@@ -46,6 +46,7 @@ export interface IPlayerEquipSlotsType {
 export interface IActor {
   act: () => void;
   getSpeed: () => number;
+  getId: () => string;
 }
 
 export function isEntityPosition(obj: unknown): obj is EntityDungeonPosition {

@@ -14,6 +14,10 @@ class FakeActor implements IActor {
   getSpeed() {
     return this.speed;
   }
+
+  public getId(): string {
+    return Math.random().toString();
+  }
 }
 
 describe('Time engine', () => {
