@@ -1,5 +1,4 @@
 import { calculateFov } from '../../helper/fov_helper';
-import { IAnyObject } from '../../interfaces/common';
 import { Controller } from '../controller';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { EntityEvents } from '../../constants/entity_events';
@@ -21,7 +20,6 @@ import {
   entityStatusToDamageText,
 } from '../../constants/entity/statuses';
 import { EntityStatusCommonController } from './entity_statuses/entity_status_common_controller';
-import { LevelController } from '../dungeon/level_controller';
 import { statusModifierToMessage } from '../../constants/entity/stats';
 import { capitalizeString } from '../../helper/utility';
 import { EntityStunnedStatusController } from './entity_statuses/entity_stunned_status_controller';
@@ -406,6 +404,10 @@ export abstract class EntityController<
         message.replaceAll('{{entity}}', this.model.getDescription()),
       );
     }
+  }
+
+  public destroy(): void {
+    // TODO add implementation
   }
 
   public abstract makeRandomMovement(resolveFunction?: () => void): void;

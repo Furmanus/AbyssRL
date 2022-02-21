@@ -229,6 +229,9 @@ export function getPositionFromString(
     'Invalid position coordinates in getPositionFromString method',
   );
 }
+export function convertCoordsToString(x: number, y: number): string {
+  return `${x}x${y}`;
+}
 export function getArrayRandomElement<P>(array: P[]): P {
   return array[Math.floor(Math.random() * array.length)];
 }

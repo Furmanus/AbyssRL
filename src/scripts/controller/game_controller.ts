@@ -384,16 +384,20 @@ export class GameController extends Controller {
       this.view.removeAllTemporaryMessages();
     }
 
-    this.view.camera.centerOnCoordinates(
-      playerModel.position.x,
-      playerModel.position.y,
-    );
-
     if (movementResult.message && !(direction.x === 0 && direction.y === 0)) {
       this.notify(SHOW_MESSAGE_IN_VIEW, {
         message: movementResult.message,
       });
     }
+
+    if (movementResult.shouldEndPlayerTurn) {
+      this.onPlayerEndTurn();
+    }
+
+    this.view.camera.centerOnCoordinates(
+      playerModel.position.x,
+      playerModel.position.y,
+    );
 
     this.refreshGameScreen();
   }

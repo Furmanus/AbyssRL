@@ -4,6 +4,7 @@ import {
   SpeedTimeEngine,
 } from './speed_time_engine';
 import { TimeEngineTypes } from './time_engine.constants';
+import { QueueMember } from './queue_member';
 
 export interface IEngine {
   type: TimeEngineTypes;
@@ -11,7 +12,7 @@ export interface IEngine {
   addActor(actor: IActor, repeatable: boolean): void;
   hasActor(actor: IActor): boolean;
   removeActor(actor: IActor): void;
-  nextActor(): IActor;
+  nextActor(): QueueMember;
   startEngine(): void;
   clear(): void;
   lock(): void;

@@ -4,6 +4,7 @@ import {
   SerializedDriedBloodDungeonEvent,
 } from './events/dried_blood_event';
 import { DungeonBranches } from '../../constants/dungeon_types';
+import { dungeonState } from '../../state/application.state';
 
 export interface SerializedDungeonEvent extends SerializedBaseModel {
   speed: number;
@@ -33,7 +34,7 @@ export abstract class DungeonEvent extends BaseModel {
     this.levelNumber = levelNumber;
   }
 
-  public act(): void {}
+  public abstract act(): void;
 
   public getSpeed(): number {
     return this.speed;
@@ -41,6 +42,10 @@ export abstract class DungeonEvent extends BaseModel {
 
   public getId(): string {
     return this.id;
+  }
+
+  public destroy(): void {
+    dungeonState.eventsManager.removeEvent(this);
   }
 
   public getDataToSerialization(): SerializedDungeonEvent {

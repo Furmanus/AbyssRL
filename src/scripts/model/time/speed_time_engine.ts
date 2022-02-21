@@ -1,12 +1,11 @@
 import { IActor } from '../../interfaces/entity/entity_interfaces';
 import { QueueMember, SerializedQueueMember } from './queue_member';
-import { dungeonState } from '../../state/application.state';
 import { IEngine } from './time_engine.interfaces';
 import { TimeEngineTypes } from './time_engine.constants';
+import { MonsterController } from '../../controller/entity/monster_controller';
 
 export interface SerializedSpeedTimeEngine {
   queue: SerializedQueueMember[];
-  repeatableActorsIds: string[];
   currentTimestamp: number;
   isUnlocked: boolean;
   wasEngineStarted: boolean;
@@ -16,29 +15,17 @@ export interface SerializedSpeedTimeEngine {
 export class SpeedTimeEngine implements IEngine {
   public type = TimeEngineTypes.Speed;
   private queue: QueueMember[] = [];
-  private repeatableActors: Set<IActor> = new Set<IActor>();
   private currentTimestamp = 0;
   private isUnlocked = false;
   public wasEngineStarted = false;
 
   public constructor(data?: SerializedSpeedTimeEngine) {
     if (data) {
-      const {
-        queue,
-        repeatableActorsIds,
-        wasEngineStarted,
-        currentTimestamp,
-        isUnlocked,
-      } = data;
+      const { queue, wasEngineStarted, currentTimestamp, isUnlocked } = data;
 
       this.wasEngineStarted = wasEngineStarted;
       this.isUnlocked = isUnlocked;
       this.currentTimestamp = currentTimestamp;
-      this.repeatableActors = new Set<IActor>(
-        repeatableActorsIds.map((actorId) =>
-          dungeonState.entityManager.getActorById(actorId),
-        ),
-      );
       this.queue = queue.map(
         (serializedMember) => new QueueMember(serializedMember),
       );
@@ -50,12 +37,10 @@ export class SpeedTimeEngine implements IEngine {
       new QueueMember({
         actorId: actor,
         nextActionAt: this.currentTimestamp,
+        isRepeatable: repeatable,
+        lastSavedActorSpeed: actor.getSpeed(),
       }),
     );
-
-    if (repeatable) {
-      this.repeatableActors.add(actor);
-    }
   }
 
   public hasActor(actor: IActor): boolean {
@@ -63,30 +48,28 @@ export class SpeedTimeEngine implements IEngine {
   }
 
   public removeActor(actor: IActor): void {
-    const queueMember = this.queue.find(
+    const memberIndex = this.queue.findIndex(
       (queueMember) => queueMember.actor === actor,
     );
-    const memberIndex = this.queue.indexOf(queueMember);
 
-    if (memberIndex) {
+    if (memberIndex !== -1) {
       this.queue.splice(memberIndex, 1);
-      this.repeatableActors.delete(actor);
     }
   }
 
-  public nextActor(): IActor {
+  public nextActor(): QueueMember {
     const [member] = this.queue.sort((a, b) => a.nextActionAt - b.nextActionAt);
 
     if (member) {
       this.currentTimestamp = member.nextActionAt;
       member.takeAction();
 
-      return member.actor;
+      return member;
     }
   }
 
   public startEngine(): void {
-    if (this.isUnlocked || this.wasEngineStarted) {
+    if (this.isUnlocked) {
       throw new Error('Cannot start unlocked engine');
     }
 
@@ -100,7 +83,6 @@ export class SpeedTimeEngine implements IEngine {
 
   public clear(): void {
     this.queue = [];
-    this.repeatableActors.clear();
   }
 
   public lock(): void {
@@ -108,6 +90,10 @@ export class SpeedTimeEngine implements IEngine {
   }
 
   public unlock(): void {
+    if (this.isUnlocked) {
+      throw new Error('Cannot start unlocked engine');
+    }
+
     this.isUnlocked = true;
     this.resume();
   }
@@ -122,15 +108,10 @@ export class SpeedTimeEngine implements IEngine {
 
   private processQueue(): void {
     if (this.queue.length) {
-      const currentActor = this.nextActor();
+      const queueMember = this.nextActor();
 
-      if (!this.repeatableActors.has(currentActor)) {
-        this.queue.splice(
-          this.queue.indexOf(
-            this.queue.find((entry) => entry.actor === currentActor),
-          ),
-          1,
-        );
+      if (!queueMember.isRepeatable) {
+        queueMember.actor.destroy();
       }
     } else {
       this.isUnlocked = false;
@@ -142,9 +123,6 @@ export class SpeedTimeEngine implements IEngine {
       currentTimestamp: this.currentTimestamp,
       isUnlocked: this.isUnlocked,
       wasEngineStarted: this.wasEngineStarted,
-      repeatableActorsIds: Array.from(this.repeatableActors).map((actor) =>
-        actor.getId(),
-      ),
       queue: this.queue.map((member) => member.getDataToSerialization()),
       type: TimeEngineTypes.Speed,
     };

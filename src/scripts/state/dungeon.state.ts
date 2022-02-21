@@ -9,6 +9,7 @@ import type { LevelController } from '../controller/dungeon/level_controller';
 import { EntityController } from '../controller/entity/entity_controller';
 import { PartialDungeonState } from './application.state';
 import {
+  DungeonBranchLevelEntryStructure,
   DungeonBranchStructure,
   DungeonStructure,
   SerializedDungeon,
@@ -26,6 +27,11 @@ import {
   DungeonEventTypes,
 } from '../model/dungeon_events/dungeon_event';
 import { DungeonEventsFactory } from '../factory/dungeon_event_factory';
+import { Cell, SerializedCell } from '../model/dungeon/cells/cell_model';
+import { TimeEngine } from '../model/time/time_engine';
+import { DungeonStateCellsManager } from './managers/dungeonStateCells.manager';
+import { CellModelFactory } from '../factory/cell_model_factory';
+import { DungeonStateEventsManager } from './managers/dungeonStateEvents.manager';
 
 export const dungeonBranchToMaxLevel = {
   [DungeonBranches.Main]: 8,
@@ -37,6 +43,8 @@ export class DungeonState extends BaseState {
   public currentBranch: DungeonBranches;
   public parentDungeonBranch: DungeonBranches = null;
   public entityManager = DungeonStateEntityManager.getInstance(this);
+  public cellsManager = DungeonStateCellsManager.getInstance(this);
+  public eventsManager = DungeonStateEventsManager.getInstance(this);
   public dungeonsStructure: DungeonStructure = {
     [DungeonBranches.Main]: {},
   };
@@ -144,6 +152,13 @@ export class DungeonState extends BaseState {
     }
   }
 
+  public getTimeEngine(
+    branch: DungeonBranches,
+    levelNumber: number,
+  ): TimeEngine {
+    return this.dungeonsStructure[branch][levelNumber].timeEngine;
+  }
+
   public addNewLevelControllerToCurrentBranch(
     levelController: LevelController,
     levelNumber: number,
@@ -153,6 +168,8 @@ export class DungeonState extends BaseState {
         level: null,
         entities: new Set<EntityController>(),
         scheduledDungeonEvents: new Set<DungeonEvent>(),
+        timeEngine: new TimeEngine(),
+        cells: new Map<string, Cell>(),
       };
     }
 
@@ -193,6 +210,15 @@ export class DungeonState extends BaseState {
           scheduledDungeonEvents: Array.from(
             levelNumberEntry.scheduledDungeonEvents,
           ).map((event) => event.getDataToSerialization()),
+          timeEngine: levelNumberEntry.timeEngine.getDataToSerialization(),
+          cells: Array.from(levelNumberEntry.cells.entries()).reduce(
+            (accumulator, [coords, cell]) => {
+              accumulator[coords] = cell.getDataToSerialization();
+
+              return accumulator;
+            },
+            {} as Record<string, SerializedCell>,
+          ),
         };
       }
     }
@@ -229,31 +255,53 @@ export class DungeonState extends BaseState {
     )) {
       const lvlNumber = parseInt(levelNumber, 10);
 
-      dungeonBranchStructure[lvlNumber] = {
-        level: LevelControllerFactory.getInstance({
-          branch: branchName,
-          levelNumber: lvlNumber,
-          model: LevelModelFactory.getLevelModelFromSerializedData(
-            stateLevelStructure.level,
-          ),
-        }),
-        entities: new Set<EntityController>(
-          stateLevelStructure.entities
-            .reverse()
-            .map(this.createEntityFromSerializedData),
-        ),
-        scheduledDungeonEvents: new Set<DungeonEvent>(
-          stateLevelStructure.scheduledDungeonEvents.map(
-            this.createDungeonEventFromSerializedData,
-          ),
-        ),
-      };
+      dungeonBranchStructure[lvlNumber] =
+        {} as DungeonBranchLevelEntryStructure;
 
-      dungeonBranchStructure[lvlNumber].entities.forEach((entityController) => {
-        dungeonBranchStructure[lvlNumber].level.addActorToTimeEngine(
-          entityController,
-        );
+      const level = LevelControllerFactory.getInstance({
+        branch: branchName,
+        levelNumber: lvlNumber,
+        model: LevelModelFactory.getLevelModelFromSerializedData(
+          stateLevelStructure.level,
+        ),
       });
+
+      dungeonBranchStructure[lvlNumber].level = level;
+
+      const cells = new Map<string, Cell>(
+        Object.entries(stateLevelStructure.cells).map(
+          ([coord, serializedCell]) => [
+            coord,
+            CellModelFactory.getCellModel(
+              serializedCell.x,
+              serializedCell.y,
+              serializedCell.type,
+              serializedCell,
+            ),
+          ],
+        ),
+      );
+
+      dungeonBranchStructure[lvlNumber].cells = cells;
+
+      const entities = new Set<EntityController>(
+        stateLevelStructure.entities.map(this.createEntityFromSerializedData),
+      );
+
+      dungeonBranchStructure[lvlNumber].entities = entities;
+
+      const scheduledDungeonEvents = new Set<DungeonEvent>(
+        stateLevelStructure.scheduledDungeonEvents.map(
+          this.createDungeonEventFromSerializedData,
+        ),
+      );
+
+      dungeonBranchStructure[lvlNumber].scheduledDungeonEvents =
+        scheduledDungeonEvents;
+
+      const timeEngine = new TimeEngine(stateLevelStructure.timeEngine);
+
+      dungeonBranchStructure[lvlNumber].timeEngine = timeEngine;
     }
 
     return dungeonBranchStructure;
@@ -274,7 +322,7 @@ export class DungeonState extends BaseState {
   ): DungeonEvent {
     switch (data.type) {
       case DungeonEventTypes.DryBlood:
-        return DungeonEventsFactory.getDryBloodEvent(data);
+        return DungeonEventsFactory.createDryBloodEvent(data);
     }
   }
 }

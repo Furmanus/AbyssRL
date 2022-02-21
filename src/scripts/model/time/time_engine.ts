@@ -1,5 +1,4 @@
 import { BaseModel } from '../../core/base_model';
-import { ITimeEngine } from '../../controller/time_engine/engine_controller';
 import { IActor } from '../../interfaces/entity/entity_interfaces';
 import { SpeedTimeEngine } from './speed_time_engine';
 import { AllSerializedEngineTypes, IEngine } from './time_engine.interfaces';
@@ -7,6 +6,18 @@ import { TimeEngineTypes } from './time_engine.constants';
 
 export interface SerializedTimeEngine {
   engine: AllSerializedEngineTypes;
+}
+
+export interface ITimeEngine {
+  hasActor(actor: IActor): boolean;
+  addActor(actor: IActor, repeat: boolean): void;
+  removeActor(actor: IActor): void;
+  clearScheduler(): void;
+  startEngine(): void;
+  lockEngine(): void;
+  unlockEngine(): void;
+  hasEngineBeenStarted(): boolean;
+  getDataToSerialization(): SerializedTimeEngine;
 }
 
 export class TimeEngine extends BaseModel implements ITimeEngine {

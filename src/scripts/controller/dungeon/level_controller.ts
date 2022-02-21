@@ -30,7 +30,13 @@ export interface ILevelControllerConstructorConfig {
  */
 export class LevelController extends Controller {
   public model: LevelModel;
-  public engine: TimeEngine;
+  public get engine(): TimeEngine {
+    return dungeonState.getTimeEngine(
+      this.model.branch,
+      this.model.levelNumber,
+    );
+  }
+
   private levelEntitiesControllers =
     EntityFactory.getEntityControllerollection();
 
@@ -45,7 +51,6 @@ export class LevelController extends Controller {
         config.levelNumber,
       );
     }
-    this.engine = new TimeEngine();
 
     this.initialize();
   }
@@ -216,17 +221,16 @@ export class LevelController extends Controller {
     const entityModel = entityController.getModel();
     const { branch, level } = entityModel.entityPosition;
 
-    if (entityController.getModel().type !== MonstersTypes.Player) {
-      this.removeActorFromTimeEngine(entityController);
+    if (entityController.getModel().type === MonstersTypes.Player) {
+      this.lockTimeEngine();
+      this.notify(PLAYER_DEATH);
+    } else {
       dungeonState.entityManager.removeEntityFromLevel(
         entityController,
         level,
         branch,
       );
       entityController.off(this, EntityEvents.EntityDeath);
-    } else {
-      this.lockTimeEngine();
-      this.notify(PLAYER_DEATH);
     }
   }
 
@@ -248,16 +252,13 @@ export class LevelController extends Controller {
 
       cell.createPoolOfBlood();
 
-      this.addActorToTimeEngine(
-        DungeonEventsFactory.getDryBloodEvent({
-          type: DungeonEventTypes.DryBlood,
-          speed: getRandomNumber(12, 15) / 100,
-          branch,
-          levelNumber,
-          cell: entity.position,
-        }),
-        false,
-      );
+      DungeonEventsFactory.createDryBloodEvent({
+        type: DungeonEventTypes.DryBlood,
+        speed: getRandomNumber(12, 15),
+        branch,
+        levelNumber,
+        cell: entity.position,
+      });
     }
   }
 

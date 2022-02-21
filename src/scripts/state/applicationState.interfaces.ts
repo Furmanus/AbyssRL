@@ -7,6 +7,8 @@ import type {
   DungeonEvent,
   SerializedDungeonEvent,
 } from '../model/dungeon_events/dungeon_event';
+import { SerializedTimeEngine, TimeEngine } from '../model/time/time_engine';
+import { Cell, SerializedCell } from '../model/dungeon/cells/cell_model';
 
 export type DungeonStructure = {
   [branch in DungeonBranches]: DungeonBranchStructure;
@@ -23,7 +25,9 @@ export type SerializedDungeonBranchStructure = {
 export type SerializedDungeonLevelEntryStructure = {
   level: SerializedLevel;
   entities: SerializedEntityModel[];
+  cells: Record<string, SerializedCell>;
   scheduledDungeonEvents: SerializedDungeonEvent[];
+  timeEngine: SerializedTimeEngine;
 };
 
 export type DungeonBranchStructure = {
@@ -33,7 +37,9 @@ export type DungeonBranchStructure = {
 export type DungeonBranchLevelEntryStructure = {
   level: LevelController;
   entities: Set<EntityController>;
+  cells: Map<string, Cell>;
   scheduledDungeonEvents: Set<DungeonEvent>;
+  timeEngine: TimeEngine;
 };
 
 export type SerializedDungeonState = {

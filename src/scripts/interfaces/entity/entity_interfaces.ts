@@ -47,6 +47,7 @@ export interface IActor {
   act: () => void;
   getSpeed: () => number;
   getId: () => string;
+  destroy: () => void;
 }
 
 export function isEntityPosition(obj: unknown): obj is EntityDungeonPosition {

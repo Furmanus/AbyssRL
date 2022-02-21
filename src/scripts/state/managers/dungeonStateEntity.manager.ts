@@ -4,6 +4,7 @@ import { EntityModel } from '../../model/entity/entity_model';
 import { EntityController } from '../../controller/entity/entity_controller';
 import { Cell } from '../../model/dungeon/cells/cell_model';
 import { DungeonEvent } from '../../model/dungeon_events/dungeon_event';
+import { TimeEngine } from '../../model/time/time_engine';
 
 const constructorSymbol = Symbol('EntityStateManager');
 const instance: DungeonStateEntityManager = null;
@@ -50,6 +51,8 @@ export class DungeonStateEntityManager {
           level: null,
           entities: new Set<EntityController>(),
           scheduledDungeonEvents: new Set<DungeonEvent>(),
+          timeEngine: new TimeEngine(),
+          cells: new Map<string, Cell>(),
         },
       };
     }
@@ -74,8 +77,8 @@ export class DungeonStateEntityManager {
     const { level, entities } =
       this.dungeonState.dungeonsStructure[dungeonBranch][levelNumber];
 
-    entities.delete(entity);
     level.removeActorFromTimeEngine(entity);
+    entities.delete(entity);
 
     return this;
   }
