@@ -1,22 +1,32 @@
-/**
- * Created by Docent Furman on 16.07.2017.
- */
-
 import { WalkAttemptResult } from './effects/walk_attempt_result';
 import { UseAttemptResult } from './effects/use_attempt_result';
 import { UseEffectResult } from './effects/use_effect_result';
 import { IAnyObject } from '../../../interfaces/common';
 import { BaseModel } from '../../../core/base_model';
 import { EntityModel } from '../../entity/entity_model';
-import { EntityController } from '../../../controller/entity/entity_controller';
-import { PlayerController } from '../../../controller/entity/player_controller';
+import type { EntityController } from '../../../controller/entity/entity_controller';
+import type { PlayerController } from '../../../controller/entity/player_controller';
 import { ICellModel } from '../../../interfaces/cell';
 import { ItemsCollection } from '../../../collections/items_collection';
 import { MiscTiles } from '../../../constants/cells/sprites';
 import {
   CellSpecialConditions,
   cellSpecialConditionToWalkMessage,
+  CellTypes,
 } from '../../../constants/cells/cell_types';
+import { dungeonState } from '../../../state/application.state';
+import { SerializedItem } from '../../items/item_model';
+
+export type SerializedCell = {
+  id: string;
+  x: number;
+  y: number;
+  inventory: SerializedItem[];
+  wasDiscoveredByPlayer: boolean;
+  specialConditions: CellSpecialConditions[];
+  type: CellTypes;
+  containerInventory: SerializedItem[];
+};
 
 /**
  * Class representing single map square(field).
@@ -31,10 +41,6 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   public y: number;
   /**
-   * Entity (monster or player) occupying cell.
-   */
-  public entity: EntityModel = null;
-  /**
    * Array of items in cell.
    */
   public inventory: ItemsCollection = new ItemsCollection();
@@ -42,6 +48,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Boolean variable indicating whether cells display can be changed or not.
    */
   public preventDisplayChange: boolean = false;
+  public description: string;
   /**
    * Variable indicating if cell was discovered by player (used for purpose of drawing visited but not currently
    * visible cells)
@@ -56,17 +63,13 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   public displaySet: string = null;
   /**
-   * Display of cell to draw only if it is visible by player, otherwise displaySet is used
-   */
-  public displayWhenVisible: string = null;
-  /**
    * Array of strings describing cell special conditions, for example pool of blood which might be slippery
    */
   public specialConditions = new Set<CellSpecialConditions>();
   /**
    * Type of cell.
    */
-  public type: string = '';
+  public type: CellTypes = null;
   /**
    * Inventory of cell container, difference between container inventory and inventory is that items in inventory are
    * seen as laying on ground and containerInventory must be activated to display modal with inventory.
@@ -80,18 +83,49 @@ export abstract class Cell extends BaseModel implements ICellModel {
   }
 
   /**
+   * Entity (monster or player) occupying cell.
+   */
+  public get entity(): EntityModel {
+    return dungeonState.entityManager.findEntityByCell(this)?.getModel();
+  }
+
+  /**
+   * Display of cell to draw only if it is visible by player, otherwise displaySet is used
+   */
+  public get displayWhenVisible(): MiscTiles {
+    if (
+      this.specialConditions.has(CellSpecialConditions.DriedBlood) ||
+      this.specialConditions.has(CellSpecialConditions.Bloody)
+    ) {
+      return MiscTiles.PoolOfBlood;
+    }
+
+    return null;
+  }
+
+  /**
    * Initializes cell and fills it with data. Data are imported from {@code cellTypes} object, where constructor parameter is used as key.
    *
    * @param   x       Horizontal position on level grid.
    * @param   y       Vertical position on level grid.
    * @param   config  Object with additional configuration data.
    */
-  constructor(x: number, y: number, config: IAnyObject = {}) {
-    super();
+  constructor(config: SerializedCell) {
+    super(config);
 
-    this.x = x;
-    this.y = y;
-    // TODO add initialization of inventory
+    this.x = config.x;
+    this.y = config.y;
+
+    if (config) {
+      this.specialConditions = new Set(config.specialConditions);
+      this.containerInventory = ItemsCollection.getInstanceFromSerializedData(
+        config.containerInventory,
+      );
+      this.inventory = ItemsCollection.getInstanceFromSerializedData(
+        config.inventory,
+      );
+      this.wasDiscoveredByPlayer = config.wasDiscoveredByPlayer;
+    }
   }
 
   /**
@@ -127,22 +161,6 @@ export abstract class Cell extends BaseModel implements ICellModel {
    */
   get modifiers(): IAnyObject {
     return null;
-  }
-
-  /**
-   * Resets value entity field of cell model instance (sets it to null).
-   */
-  public clearEntity(): void {
-    this.entity = null;
-  }
-
-  /**
-   * Sets value of entity field of cell model instance.
-   *
-   * @param entity    Model of entity
-   */
-  public setEntity(entity: EntityModel): void {
-    this.entity = entity;
   }
 
   /**
@@ -203,12 +221,10 @@ export abstract class Cell extends BaseModel implements ICellModel {
   }
 
   public createPoolOfBlood(): void {
-    this.displayWhenVisible = MiscTiles.PoolOfBlood;
     this.specialConditions.add(CellSpecialConditions.Bloody);
   }
 
   public clearPoolOfBlood(): void {
-    this.displayWhenVisible = null;
     this.specialConditions.delete(CellSpecialConditions.Bloody);
   }
 
@@ -231,5 +247,18 @@ export abstract class Cell extends BaseModel implements ICellModel {
         return `${result}. ${cellSpecialConditionToWalkMessage[condition]}`;
       }
     }, '');
+  }
+
+  public getDataToSerialization(): SerializedCell {
+    return {
+      id: this.id,
+      x: this.x,
+      y: this.y,
+      type: this.type,
+      specialConditions: Array.from(this.specialConditions),
+      wasDiscoveredByPlayer: this.wasDiscoveredByPlayer,
+      inventory: this.inventory?.getDataForSerialization(),
+      containerInventory: this.containerInventory?.getDataForSerialization(),
+    };
   }
 }

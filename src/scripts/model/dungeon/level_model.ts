@@ -1,16 +1,15 @@
-/**
- * Created by Docent Furman on 16.07.2017.
- */
-
 import { config as globalConfig } from '../../global/config';
-import { cellTypes } from '../../constants/cells/cell_types';
+import { CellTypes } from '../../constants/cells/cell_types';
 import { CellModelFactory } from '../../factory/cell_model_factory';
 import { BaseModel } from '../../core/base_model';
-import { Position } from '../position/position';
-import { Cell } from './cells/cell_model';
+import { Position, SerializedPosition } from '../position/position';
+import { Cell, SerializedCell } from './cells/cell_model';
 import { DungeonAreaModel } from './dungeon_area_model';
-import { RoomModel } from './room_model';
-import { RoomConnectionModel } from './room_connection_model';
+import { RoomModel, SerializedRoom } from './room_model';
+import {
+  RoomConnectionModel,
+  SerializedRoomConnection,
+} from './room_connection_model';
 import {
   DungeonEvents,
   DungeonModelEvents,
@@ -19,28 +18,62 @@ import { MapWithObserver } from '../../core/map_with_observer';
 import { EntityModel } from '../entity/entity_model';
 import { MonsterController } from '../../controller/entity/monster_controller';
 import { EntityController } from '../../controller/entity/entity_controller';
+import { DungeonBranches } from '../../constants/dungeon_types';
+import { dungeonState } from '../../state/application.state';
+import { convertCoordsToString } from '../../helper/utility';
 
 export type randomCellTest = (cellCandidate: Cell) => boolean;
+
+type LevelModelConstructorOption = {
+  branch: DungeonBranches;
+  levelNumber: number;
+  defaultWallType: CellTypes;
+  rooms: RoomModel[];
+  roomConnections: RoomConnectionModel[];
+  cells: Record<string, string>;
+};
+
+export interface SerializedLevel {
+  id: string;
+  branch: DungeonBranches;
+  levelNumber: number;
+  defaultWallType: CellTypes;
+  rooms: SerializedRoom[];
+  stairsUp: SerializedPosition;
+  stairsDown: SerializedPosition;
+  roomConnections: SerializedRoomConnection[];
+  cells: Record<string, string>; // cell coordinate to cell id
+}
 
 /**
  * Class representing single dungeon level. Contains level map which consist Cell objects.
  */
 export class LevelModel extends BaseModel {
-  public branch: string;
+  public branch: DungeonBranches;
   public levelNumber: number;
-  private defaultWallType: string = null;
+  private defaultWallType: CellTypes = null;
   private rooms: RoomModel[] = [];
+  private stairsUp: Position;
+  private stairsDown: Position;
   private roomConnections: Set<RoomConnectionModel> = new Set();
-  private cells: MapWithObserver<string, Cell> = new MapWithObserver();
+  private cells: Record<string, string> = {};
   /**
    * @param   branch             Object to which this level belongs
    * @param   levelNumber         Number of this dungeon level
    */
-  constructor(branch: string, levelNumber: number) {
-    super();
+  constructor(
+    branch: DungeonBranches,
+    levelNumber: number,
+    serializedData?: SerializedLevel,
+  ) {
+    super(serializedData);
 
     this.branch = branch;
     this.levelNumber = levelNumber;
+
+    if (serializedData) {
+      this.recreateLevelFromSerializedData(serializedData);
+    }
   }
 
   /**
@@ -48,11 +81,27 @@ export class LevelModel extends BaseModel {
    *
    * @param   defaultWallType     Type of default wall of level
    */
-  public initialize(defaultWallType: string = cellTypes.HIGH_PEAKS): void {
-    // TODO remove setting default wall type from here and move it to constructor
+  public initialize(defaultWallType: CellTypes = CellTypes.HighPeaks): void {
     this.defaultWallType = defaultWallType;
 
     this.createCells();
+  }
+
+  private recreateLevelFromSerializedData(data: SerializedLevel): void {
+    const {
+      defaultWallType,
+      stairsUp,
+      stairsDown,
+      cells,
+      rooms,
+      roomConnections,
+      id,
+    } = data;
+
+    this.defaultWallType = defaultWallType;
+    this.stairsUp = new Position(stairsUp.x, stairsUp.y);
+    this.stairsDown = new Position(stairsDown.x, stairsDown.y);
+    this.id = id;
   }
 
   /**
@@ -63,27 +112,29 @@ export class LevelModel extends BaseModel {
 
     for (let i = 0; i < globalConfig.LEVEL_WIDTH; i++) {
       for (let j = 0; j < globalConfig.LEVEL_HEIGHT; j++) {
-        this.cells.set(
-          `${i}x${j}`,
-          CellModelFactory.getCellModel(i, j, defaultWallType),
-        );
+        const cell = CellModelFactory.getCellModel(i, j, defaultWallType);
+
+        this.cells[convertCoordsToString(i, j)] = cell.id;
+
+        dungeonState.cellsManager.addCell(this.branch, this.levelNumber, cell);
       }
     }
   }
 
   public changeCellType(x: number, y: number, type: string): void {
-    this.cells.set(`${x}x${y}`, CellModelFactory.getCellModel(x, y, type));
+    const newCell = CellModelFactory.getCellModel(x, y, type);
+
+    this.cells[convertCoordsToString(x, y)] = newCell.id;
+
+    dungeonState.cellsManager.changeCellType(
+      this.branch,
+      this.levelNumber,
+      x,
+      y,
+      newCell,
+    );
 
     this.notify(DungeonModelEvents.CellTypeChanged, { x, y });
-  }
-
-  /**
-   * Method responsible for removing entity from level cells, if its present in any.
-   *
-   * @param entity    Entity model
-   */
-  public removeEntity(entity: EntityModel): void {
-    entity.position.entity = null;
   }
 
   /**
@@ -133,21 +184,26 @@ export class LevelModel extends BaseModel {
    * Returns cell at given coordinates.
    */
   public getCell(x: number, y: number): Cell {
-    return this.cells.get(`${x}x${y}`);
+    return dungeonState.cellsManager.getCell(
+      this.branch,
+      this.levelNumber,
+      x,
+      y,
+    );
   }
 
   /**
    * Returns cell from given position object.
    */
   public getCellFromPosition(position: Position): Cell {
-    return this.cells.get(`${position.x}x${position.y}`);
+    return this.getCell(position.x, position.y);
   }
 
   /**
    * Returns map object containing level cells.
    */
-  public getCells(): MapWithObserver<string, Cell> {
-    return this.cells;
+  public getCells(): Map<string, Cell> {
+    return dungeonState.dungeonsStructure[this.branch][this.levelNumber].cells;
   }
 
   /**
@@ -251,7 +307,7 @@ export class LevelModel extends BaseModel {
    * Returns random cell without any entity and without blocked movement.
    */
   public getRandomUnoccupiedCell(): Cell {
-    let cell: Cell = Array.from(this.cells.values()).random();
+    let cell: Cell = Array.from(this.getCells().values()).random();
     let attempt: number = 0;
 
     while (cell.blockMovement || cell.entity) {
@@ -259,7 +315,7 @@ export class LevelModel extends BaseModel {
         cell = undefined;
         break;
       }
-      cell = Array.from(this.cells.values()).random();
+      cell = Array.from(this.getCells().values()).random();
       attempt += 1;
     }
 
@@ -286,9 +342,19 @@ export class LevelModel extends BaseModel {
     return result;
   }
 
-  public addMonster(monsterController: MonsterController, cell: Cell): void {
-    cell.setEntity(monsterController.getModel());
-
-    this.notify(DungeonEvents.NewCreatureSpawned, monsterController);
+  public getDataToSerialization(): SerializedLevel {
+    return {
+      ...super.serialize(),
+      branch: this.branch,
+      levelNumber: this.levelNumber,
+      defaultWallType: this.defaultWallType,
+      stairsUp: this.stairsUp.serialize(),
+      stairsDown: this.stairsDown.serialize(),
+      rooms: this.rooms.map((room) => room.getDataToSerialization()),
+      roomConnections: Array.from(this.roomConnections).map((connection) =>
+        connection.getDataToSerialization(),
+      ),
+      cells: this.cells,
+    };
   }
 }

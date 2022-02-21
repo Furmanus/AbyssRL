@@ -1,5 +1,11 @@
-import { Position } from './position';
+import { Position, SerializedPosition } from './position';
 import { Vector } from './vector';
+
+export type SerializedRectangle = {
+  leftTop: SerializedPosition;
+  height: number;
+  width: number;
+};
 
 export class Rectangle {
   public leftTop: Position;
@@ -90,5 +96,13 @@ export class Rectangle {
     const secondRect = firstRect === this ? rect : this;
 
     return Math.max(secondRect.top - firstRect.bottom, 0);
+  }
+
+  public getDataToSerialization(): SerializedRectangle {
+    return {
+      leftTop: this.leftTop.serialize(),
+      height: this.height,
+      width: this.width,
+    };
   }
 }

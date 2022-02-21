@@ -1,14 +1,23 @@
 import { ItemTypes } from '../../../constants/items/item';
 import { EntityModel } from '../../entity/entity_model';
 import { WearableModel } from '../wearable_model';
-import { IArmourConfig } from './armour_model_data';
+import { ArmourNames } from '../../../constants/items/armour_names';
+
+export interface SerializedArmour {
+  id: string;
+  itemType: ItemTypes.Armour;
+  dodgeModifier: number;
+  protectionModifier: number;
+  name: ArmourNames;
+  display: string;
+}
 
 export class ArmourModel extends WearableModel {
+  public itemType: ItemTypes.Armour = ItemTypes.Armour;
   public display: string;
-  public itemType = ItemTypes.Armour;
   public dodgeModifier: number;
   public protectionModifier: number;
-  public name: string;
+  public name: ArmourNames;
 
   public get description(): string {
     return this.name;
@@ -18,10 +27,10 @@ export class ArmourModel extends WearableModel {
     return `${this.name} [${this.dodgeModifier}, ${this.protectionModifier}]`;
   }
 
-  public constructor(config: IArmourConfig) {
-    super();
+  public constructor(config: SerializedArmour) {
+    super(config);
 
-    const { protectionModifier, dodgeModifier, name, display } = config;
+    const { protectionModifier, dodgeModifier, name, display, id } = config;
 
     this.display = display;
     this.name = name;
@@ -41,12 +50,14 @@ export class ArmourModel extends WearableModel {
    * Returns serialized model data.
    * @returns  Serialized natural weapon model data
    */
-  public getDataToSerialization(): string {
-    return JSON.stringify({
+  public getDataToSerialization(): SerializedArmour {
+    return {
+      ...super.serialize(),
       protectionModifier: this.protectionModifier,
       dodgeModifier: this.dodgeModifier,
       name: this.name,
       display: this.display,
-    });
+      itemType: this.itemType,
+    };
   }
 }

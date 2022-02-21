@@ -229,6 +229,9 @@ export function getPositionFromString(
     'Invalid position coordinates in getPositionFromString method',
   );
 }
+export function convertCoordsToString(x: number, y: number): string {
+  return `${x}x${y}`;
+}
 export function getArrayRandomElement<P>(array: P[]): P {
   return array[Math.floor(Math.random() * array.length)];
 }
@@ -265,4 +268,10 @@ export function getNumericValueOfChar(char: string): number {
  */
 export function getLetterFromNumber(num: number): string {
   return String.fromCharCode(num + 97);
+}
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 }

@@ -1,16 +1,15 @@
-import { FloorModel } from './floor_model';
-import { cellTypes } from '../../../constants/cells/cell_types';
+import { FloorModel, SerializedFloor } from './floor_model';
+import { CellTypes } from '../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../helper/cells_description';
 import { terrain } from '../../../constants/cells/sprites';
 import { ICellModel } from '../../../interfaces/cell';
 
 export class LavaCellModel extends FloorModel implements ICellModel {
-  constructor(x: number, y: number) {
-    super(x, y, {
-      type: cellTypes.LAVA,
-      description: cellsDescriptions[cellTypes.LAVA],
-    });
+  constructor(config: SerializedFloor) {
+    super(config);
 
+    this.type = CellTypes.Lava;
+    this.description = cellsDescriptions[CellTypes.Lava];
     this.confirmMovement = true;
   }
 

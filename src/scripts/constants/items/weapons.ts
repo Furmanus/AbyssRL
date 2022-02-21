@@ -7,6 +7,11 @@ export enum WeaponNames {
   MorningStar = 'morning_star',
 }
 
+export enum NaturalWeaponNames {
+  Teeth = 'teeth',
+  Fist = 'fist',
+}
+
 export enum WeaponCriticalDamageType {
   Bleeding = 'bleeding',
   Stun = 'stunned',

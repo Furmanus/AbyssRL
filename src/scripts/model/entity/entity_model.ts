@@ -3,7 +3,10 @@ import { IAnyObject } from '../../interfaces/common';
 import { Cell } from '../dungeon/cells/cell_model';
 import { LevelModel } from '../dungeon/level_model';
 import { EntityEvents } from '../../constants/entity_events';
-import { IEntity } from '../../interfaces/entity/entity_interfaces';
+import {
+  IEntity,
+  isEntityPosition,
+} from '../../interfaces/entity/entity_interfaces';
 import {
   EntityStats,
   MonsterSizes,
@@ -11,15 +14,28 @@ import {
 } from '../../constants/entity/monsters';
 import { ItemsCollection } from '../../collections/items_collection';
 import { IWeapon } from '../../interfaces/combat';
-import { ItemModel } from '../items/item_model';
-import { weaponModelFactory } from '../../factory/item/weapon_model_factory';
+import { ItemModel, SerializedItem } from '../items/item_model';
+import { WeaponModelFactory } from '../../factory/item/weapon_model_factory';
 import { WeaponModel } from '../items/weapons/weapon_model';
-import { NaturalWeaponModel } from '../items/weapons/natural_weapon_model';
+import {
+  NaturalWeaponModel,
+  SerializedNaturalWeapon,
+} from '../items/weapons/natural_weapon_model';
 import { ArmourModel } from '../items/armours/armour_model';
 import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
 import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
-import { EntityStatusCommonController } from '../../controller/entity/entity_statuses/entity_status_common_controller';
+import {
+  AllEntityStatusesSerialized,
+  EntityStatusCommonController,
+} from '../../controller/entity/entity_statuses/entity_status_common_controller';
 import { CollectionEvents } from '../../constants/collection_events';
+import { DungeonBranches } from '../../constants/dungeon_types';
+import { dungeonState } from '../../state/application.state';
+import { Position, SerializedPosition } from '../position/position';
+import { NaturalWeaponFactory } from '../../factory/natural_weapon_factory';
+import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
+import { entityRegistry } from '../../global/entityRegistry';
+import { EntityController } from '../../controller/entity/entity_controller';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -37,6 +53,10 @@ type EntityStatsModifiers = Omit<
   'hitpoints' | 'maxHitpoints'
 >;
 
+type UpdatedStatsChangeModifiers = Partial<
+  Record<EntityStats, 'positive' | 'negative'>
+>;
+
 export interface IStatsSingleModifier {
   modifier: number;
   count: number;
@@ -48,29 +68,81 @@ type EntityTemporaryStatsModifiersType = {
 };
 
 type EntityStatModifierSource = EntityStatusCommonController;
+
 export type AddTemporaryStatModifierData = Array<{
   stat: Omit<EntityStats, 'HitPoints' | 'MaxHitPoints'>;
   source: EntityStatModifierSource;
   modifier: IStatsSingleModifier;
 }>;
 
+export type EntityDungeonPosition = {
+  branch: DungeonBranches;
+  level: number;
+  position: Position;
+};
+
+export type SerializedEntityModel = {
+  id: string;
+  strength?: number;
+  dexterity?: number;
+  intelligence?: number;
+  toughness?: number;
+  speed?: number;
+  perception?: number;
+  description?: string;
+  type: MonstersTypes;
+  display?: string;
+  protection?: number;
+  hitPoints?: number;
+  maxHitPoints?: number;
+  position: EntityDungeonPosition;
+  lastVisitedCell?: SerializedPosition;
+  size?: MonsterSizes;
+  inventory?: SerializedItem[];
+  naturalWeapon?: SerializedNaturalWeapon;
+  equippedWeapon: string;
+  equippedArmour: string;
+  entityStatuses: AllEntityStatusesSerialized[];
+};
+
 export class EntityModel extends BaseModel implements IEntity {
   /**
    * Visible sprite of entity. Member of file constants/sprites.js.
    */
   public display: string;
+  public entityPosition: EntityDungeonPosition = null;
   /**
    * Level model where entity is.
    */
-  public level: LevelModel;
+  public get level(): LevelModel {
+    return dungeonState.getLevelModel(
+      this.entityPosition.branch,
+      this.entityPosition.level,
+    );
+  }
+
   /**
    * Cell model where entity is.
    */
-  public position: Cell;
-  /**
-   * Cell model where entity was in last turn.
-   */
-  public lastVisitedCell: Cell = null;
+  public get position(): Cell {
+    return this.level.getCellFromPosition(this.entityPosition.position);
+  }
+
+  public lastVisitedCellEntityPosition: Position = null;
+  public get lastVisitedCell(): Cell {
+    if (this.lastVisitedCellEntityPosition) {
+      return this.level.getCellFromPosition(this.lastVisitedCellEntityPosition);
+    }
+
+    return null;
+  }
+
+  public set lastVisitedCell(cell: Cell | SerializedPosition) {
+    if (cell) {
+      this.lastVisitedCellEntityPosition = new Position(cell.x, cell.y);
+    }
+  }
+
   protected _strength: number = null;
   public get strength(): number {
     return this._strength + this.accumulateTemporaryStat(EntityStats.Strength);
@@ -170,13 +242,7 @@ export class EntityModel extends BaseModel implements IEntity {
     [EntityStats.Speed]: new Set<IStatsSingleModifier>(),
   };
 
-  // TODO remove content of collection
-  public inventory: ItemsCollection = new ItemsCollection([
-    weaponModelFactory.getRandomWeaponModel(),
-    weaponModelFactory.getRandomWeaponModel(),
-    ArmourModelFactory.getRandomArmourModel(),
-    ArmourModelFactory.getRandomArmourModel(),
-  ]);
+  public inventory: ItemsCollection;
 
   public entityStatuses = EntityStatusFactory.getCollection();
 
@@ -204,7 +270,7 @@ export class EntityModel extends BaseModel implements IEntity {
     return this.equippedArmour?.dodgeModifier || 0;
   }
 
-  get weapon(): WeaponModel {
+  get weapon(): WeaponModel | NaturalWeaponModel {
     return this.equippedWeapon || this.naturalWeapon;
   }
 
@@ -212,17 +278,54 @@ export class EntityModel extends BaseModel implements IEntity {
     return {};
   }
 
-  constructor(config: IAnyObject) {
-    super();
+  constructor(config: SerializedEntityModel) {
+    super(config);
 
+    this.entityPosition = config.position;
     this.display = config.display;
-    this.level = config.level;
-    this.position = config.position;
     this.lastVisitedCell = config.lastVisitedCell || null;
     this.speed = config.speed;
     this.perception = config.perception;
     this.type = config.type;
-    // TODO add initialization of inventory
+    this.strength = config.strength;
+    this.dexterity = config.dexterity;
+    this.intelligence = config.intelligence;
+    this.toughness = config.toughness;
+    this.hitPoints = config.hitPoints;
+    this.maxHitPoints = config.maxHitPoints;
+    this.protection = config.protection;
+    this.inventory = ItemsCollection.getInstanceFromSerializedData(
+      config.inventory || [],
+    );
+
+    if (config.naturalWeapon) {
+      this.naturalWeapon = NaturalWeaponFactory.getMonsterNaturalWeaponFromData(
+        config.naturalWeapon,
+      );
+    } else {
+      this.naturalWeapon = NaturalWeaponFactory.getMonsterNaturalWeapon(
+        this.type,
+      );
+    }
+
+    this.equippedWeapon = this.inventory.getById(
+      config.equippedWeapon,
+    ) as WeaponModel;
+    this.equippedArmour = this.inventory.getById(
+      config.equippedArmour,
+    ) as ArmourModel;
+
+    window.setTimeout(() => {
+      const recreatedStatusesCollection =
+        EntityStatusFactory.getCollectionFromSerializedData(
+          config.entityStatuses,
+          entityRegistry.getControllerByModel(this),
+        );
+
+      recreatedStatusesCollection.forEach((status) => {
+        this.entityStatuses.addStatus(status);
+      });
+    }, 0);
 
     this.attachEventsToCollections();
   }
@@ -246,23 +349,14 @@ export class EntityModel extends BaseModel implements IEntity {
    * @param   newCell     New cell which entity will occupy.
    */
   public changePosition(newCell: Cell): void {
-    this.setProperty('position', newCell);
-  }
-
-  /**
-   * Changes level property and position property of entity.
-   *
-   * @param level         New entity level
-   */
-  public changeLevel(level: LevelModel): void {
-    this.setProperty('level', level);
+    this.entityPosition.position = Position.fromCell(newCell);
   }
 
   /**
    * Sets new fov array of entity.
    */
   public setFov(fovArray: Cell[]): void {
-    this.setProperty('fov', fovArray);
+    this.fov = fovArray;
   }
 
   public addStatus(entityStatus: EntityStatusCommonController): void {
@@ -329,14 +423,17 @@ export class EntityModel extends BaseModel implements IEntity {
    *
    * @param newCell   New cell where entity currently is
    */
-  public move(newCell: Cell): void {
+  public move(
+    newCell: Cell,
+    levelNumber: number = dungeonState.currentLevelNumber,
+    dungeonBranch: DungeonBranches = dungeonState.currentBranch,
+  ): void {
     this.lastVisitedCell = this.position; // remember on what cell entity was in previous turn
-    this.position.clearEntity(); // we clear entity field of cell which entity is right now at
-    this.position = newCell; // we move entity to new position
-    /**
-     * in new cell model where monster is after movement, we store information about new entity occupying new cell.
-     */
-    this.position.setEntity(this);
+    this.entityPosition.position = new Position(newCell.x, newCell.y);
+
+    this.entityPosition.level = levelNumber;
+    this.entityPosition.branch = dungeonBranch;
+
     this.notify(EntityEvents.EntityMove, newCell);
   }
 
@@ -474,7 +571,7 @@ export class EntityModel extends BaseModel implements IEntity {
   }
 
   public setCurrentHpToMax(): void {
-    this.setProperty('hitPoints', this.maxHitPoints);
+    this.hitPoints = this.maxHitPoints;
   }
 
   public addTemporaryStatModifier(stats: AddTemporaryStatModifierData): void {
@@ -490,9 +587,7 @@ export class EntityModel extends BaseModel implements IEntity {
   /**
    * Upgrade counters of each stat modifier and check which modifier has to be removed in current turn.
    */
-  public updateTemporaryStatsModifiers(): Partial<
-    Record<EntityStats, 'positive' | 'negative'>
-  > {
+  public updateTemporaryStatsModifiers(): UpdatedStatsChangeModifiers {
     const changedStats: Partial<Record<EntityStats, 'positive' | 'negative'>> =
       {};
 
@@ -538,5 +633,31 @@ export class EntityModel extends BaseModel implements IEntity {
 
       return status;
     }
+  }
+
+  public serialize(): SerializedEntityModel {
+    return {
+      ...super.serialize(),
+      type: this.type,
+      display: this.display,
+      description: this.description,
+      protection: this.naturalProtection,
+      strength: this._strength,
+      dexterity: this._dexterity,
+      toughness: this._toughness,
+      speed: this._speed,
+      intelligence: this._intelligence,
+      perception: this._perception,
+      hitPoints: this.hitPoints,
+      maxHitPoints: this.maxHitPoints,
+      size: this.size,
+      position: this.entityPosition,
+      inventory: this.inventory.getDataForSerialization(),
+      naturalWeapon: this.naturalWeapon.getDataToSerialization(),
+      lastVisitedCell: this.lastVisitedCellEntityPosition?.serialize(),
+      equippedArmour: this.equippedArmour?.id || null,
+      equippedWeapon: this.equippedWeapon?.id || null,
+      entityStatuses: this.entityStatuses.getDataToSerialization(),
+    };
   }
 }

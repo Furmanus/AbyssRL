@@ -2,7 +2,7 @@ import { RoomModel } from '../../../../model/dungeon/room_model';
 import { LevelModel } from '../../../../model/dungeon/level_model';
 import { twoCellsArray } from '../../../../helper/level_decorator_helper';
 import * as levelDecoratorHelper from '../../../../helper/level_decorator_helper';
-import { cellTypes } from '../../../../constants/cells/cell_types';
+import { CellTypes } from '../../../../constants/cells/cell_types';
 
 export function generateRoomWithBed(room: RoomModel): boolean {
   if (room.hasStairsUp || room.hasStairsDown) {
@@ -21,12 +21,12 @@ export function generateRoomWithBed(room: RoomModel): boolean {
     roomLevelModel.changeCellType(
       bedCells[0].x,
       bedCells[0].y,
-      cellTypes.BED_HEAD,
+      CellTypes.BedHead,
     );
     roomLevelModel.changeCellType(
       bedCells[1].x,
       bedCells[1].y,
-      cellTypes.BED_FOOT,
+      CellTypes.BedFoot,
     );
 
     const barrelCell =
@@ -36,7 +36,7 @@ export function generateRoomWithBed(room: RoomModel): boolean {
       roomLevelModel.changeCellType(
         barrelCell.x,
         barrelCell.y,
-        cellTypes.CHEST_OF_DRAWERS,
+        CellTypes.ChestOfDrawers,
       );
     }
 

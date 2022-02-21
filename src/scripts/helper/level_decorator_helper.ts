@@ -1,7 +1,7 @@
 import { Cell } from '../model/dungeon/cells/cell_model';
 import { RoomModel } from '../model/dungeon/room_model';
 import { LevelModel } from '../model/dungeon/level_model';
-import { cellTypes } from '../constants/cells/cell_types';
+import { CellTypes } from '../constants/cells/cell_types';
 
 export type twoCellsArray = [Cell, Cell];
 
@@ -13,8 +13,8 @@ function isCellAdjacentToWallTest(cell: Cell): boolean {
 }
 function isCellAdjacentToStairsTest(cell: Cell): boolean {
   return (
-    cell.type.includes(cellTypes.STAIRS_DOWN) ||
-    cell.type.includes(cellTypes.STAIRS_UP)
+    cell.type.includes(CellTypes.StairsDown) ||
+    cell.type.includes(CellTypes.StairsUp)
   );
 }
 export function getRandomInteriorFloorCellAdjacentToWall(

@@ -1,12 +1,17 @@
-import { getRandomNumber } from '../helper/rng';
-import { DriedBloodDungeonEvent } from '../dungeon_events/events/dried_blood_event';
-import { Cell } from '../model/dungeon/cells/cell_model';
+import {
+  DriedBloodDungeonEvent,
+  SerializedDriedBloodDungeonEvent,
+} from '../model/dungeon_events/events/dried_blood_event';
+import { dungeonState } from '../state/application.state';
 
 export class DungeonEventsFactory {
-  public static getDryBloodEvent(
-    cell: Cell,
-    timeout: number = getRandomNumber(12, 15),
+  public static createDryBloodEvent(
+    data: SerializedDriedBloodDungeonEvent,
   ): DriedBloodDungeonEvent {
-    return new DriedBloodDungeonEvent(Math.round(100 / timeout), cell);
+    const event = new DriedBloodDungeonEvent(data);
+
+    dungeonState.eventsManager.addEvent(event);
+
+    return event;
   }
 }

@@ -1,4 +1,3 @@
-import { EntityController } from './entity_controller';
 import * as Utility from '../../helper/utility';
 import { config } from '../../global/config';
 import {
@@ -40,10 +39,15 @@ import { ArmourModel } from '../../model/items/armours/armour_model';
 import { EntityStatusFactory } from '../../factory/entity/entity_status_factory';
 import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
 import { globalInfoController } from '../../global/info_controller';
+import { SerializedEntityModel } from '../../model/entity/entity_model';
+import { dungeonState } from '../../state/application.state';
+import { LevelController } from '../dungeon/level_controller';
+import { EntityController } from './entity_controller';
 
 export interface IMoveResolve {
   canMove: boolean;
   message: string;
+  shouldEndPlayerTurn?: boolean;
 }
 interface IInventoryActionConfirmData {
   action: EntityInventoryActions;
@@ -54,6 +58,7 @@ const constructorToken = Symbol('Player controller');
 let instance: PlayerController;
 
 export class PlayerController extends EntityController<PlayerModel> {
+  public hasMoved = false;
   private globalMessageController: MessagesController =
     globalMessagesController;
 
@@ -61,9 +66,12 @@ export class PlayerController extends EntityController<PlayerModel> {
     globalInventoryController;
 
   private containerInventoryController = globalContainerInventoryController;
+  private get currentLevelController(): LevelController {
+    return dungeonState.getCurrentLevelController();
+  }
 
-  constructor(token: symbol, constructorConfig: IAnyObject) {
-    super(constructorConfig);
+  constructor(token: symbol, constructorConfig: SerializedEntityModel) {
+    super();
 
     if (token !== constructorToken) {
       throw new Error('Invalid constructor');
@@ -71,9 +79,16 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     this.model = new PlayerModel(constructorConfig);
     this.attachEvents();
+
+    dungeonState.entityManager.addEntityToLevel(
+      this,
+      dungeonState.currentLevelNumber,
+    );
   }
 
-  public static getInstance(constructorConfig?: IAnyObject): PlayerController {
+  public static getInstance(
+    constructorConfig?: SerializedEntityModel,
+  ): PlayerController {
     if (!constructorConfig && !instance) {
       throw new Error('Controller not initialized yet');
     }
@@ -88,16 +103,6 @@ export class PlayerController extends EntityController<PlayerModel> {
   protected attachEvents(): void {
     super.attachEvents();
 
-    this.model.on(
-      this,
-      'property:level:change',
-      (newLevelModel: LevelModel) => {
-        this.notify(DungeonEvents.ChangeCurrentLevel, {
-          branch: newLevelModel.branch,
-          levelNumber: newLevelModel.levelNumber,
-        });
-      },
-    );
     this.model.on(
       this,
       EntityEvents.EntityModelStatusChange,
@@ -184,6 +189,7 @@ export class PlayerController extends EntityController<PlayerModel> {
     super.act();
 
     this.notify(START_PLAYER_TURN);
+    this.hasMoved = true;
   }
 
   /**
@@ -235,6 +241,7 @@ export class PlayerController extends EntityController<PlayerModel> {
               resolve({
                 canMove: false,
                 message: 'You abort your attempt.',
+                shouldEndPlayerTurn: false,
               });
             },
           });
@@ -329,7 +336,7 @@ export class PlayerController extends EntityController<PlayerModel> {
    */
   public moveAttempt(
     cellModel: Cell,
-    promiseResolveFunction: IAnyFunction,
+    promiseResolveFunction: (moveResult: IMoveResolve) => void,
   ): void {
     const entityMoveFunction = super.move.bind(this);
     const walkAttemptCellResult = cellModel.walkAttempt(this);
@@ -343,6 +350,7 @@ export class PlayerController extends EntityController<PlayerModel> {
         message: `${Utility.capitalizeString(
           cellModel.description,
         )} is blocking your way.`,
+        shouldEndPlayerTurn: false,
       });
       return;
     }
@@ -350,11 +358,10 @@ export class PlayerController extends EntityController<PlayerModel> {
       if (cellModel.entity.isHostile) {
         const attackResult: ICombatResult = this.attack(cellModel.entity);
 
-        this.notify(END_PLAYER_TURN);
-
         promiseResolveFunction({
           canMove: false,
           message: attackResult.message,
+          shouldEndPlayerTurn: true,
         });
       } else {
         promiseResolveFunction({
@@ -362,6 +369,7 @@ export class PlayerController extends EntityController<PlayerModel> {
           message: `${Utility.capitalizeString(
             cellModel.entity.description,
           )} is in your way.`,
+          shouldEndPlayerTurn: false,
         });
       }
       return;
@@ -375,10 +383,10 @@ export class PlayerController extends EntityController<PlayerModel> {
       }
     }
 
-    this.notify(END_PLAYER_TURN); // player successfully moved, so we notify game controller to end turn
     promiseResolveFunction({
       canMove: canPlayerMove,
       message: moveAttemptMessage,
+      shouldEndPlayerTurn: true,
     });
   }
 

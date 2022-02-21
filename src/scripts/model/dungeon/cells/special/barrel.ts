@@ -1,5 +1,5 @@
-import { Cell } from '../cell_model';
-import { cellTypes } from '../../../../constants/cells/cell_types';
+import { Cell, SerializedCell } from '../cell_model';
+import { CellTypes } from '../../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../../helper/cells_description';
 import { dungeonFeaturesEnum } from '../../../../constants/cells/sprites';
 import { ICellModel } from '../../../../interfaces/cell';
@@ -11,13 +11,11 @@ import { isPlayerController } from '../../../../interfaces/type_guards';
 import { ItemsCollection } from '../../../../collections/items_collection';
 
 export class BarrelModel extends Cell implements ICellModel {
-  public containerInventory = new ItemsCollection();
+  constructor(config: SerializedCell) {
+    super(config);
 
-  constructor(x: number, y: number) {
-    super(x, y);
-
-    this.type = cellTypes.BARREL;
-    this.description = cellsDescriptions[cellTypes.BARREL];
+    this.type = CellTypes.Barrel;
+    this.description = cellsDescriptions[CellTypes.Barrel];
   }
 
   get display(): string {

@@ -1,18 +1,18 @@
-import { DoorModel } from '../door_model';
-import { cellTypes } from '../../../../constants/cells/cell_types';
+import { DoorModel, SerializedDoor } from '../door_model';
+import { CellTypes } from '../../../../constants/cells/cell_types';
 import { terrain } from '../../../../constants/cells/sprites';
 import { cellsDescriptions } from '../../../../helper/cells_description';
 import { IAnyObject } from '../../../../interfaces/common';
 import { ICellModel } from '../../../../interfaces/cell';
 
 export class WoodenSolidDoorModel extends DoorModel implements ICellModel {
-  constructor(x: number, y: number, config: IAnyObject = {}) {
-    super(x, y, config);
+  constructor(config: SerializedDoor) {
+    super(config);
     /**
      * Type of cell.
      */
-    this.type = cellTypes.WOODEN_SOLID_DOORS;
-    this.description = cellsDescriptions[cellTypes.WOODEN_SOLID_DOORS];
+    this.type = CellTypes.WoodenSolidDoors;
+    this.description = cellsDescriptions[CellTypes.WoodenSolidDoors];
     /**
      * Sprite to display when doors are closed.
      */
@@ -20,10 +20,6 @@ export class WoodenSolidDoorModel extends DoorModel implements ICellModel {
     /**
      * Sprite to display when doors are open.
      */
-    this.openDisplay = config.openDoorsDisplay || terrain.RED_FLOOR;
-    /**
-     * Boolean flag indicating if doors are open or not.
-     */
-    this.areOpen = false;
+    this.openDisplay = config.openDisplay || terrain.RED_FLOOR;
   }
 }

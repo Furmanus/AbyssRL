@@ -6,12 +6,13 @@ import { AnimalAi } from '../../strategy/ai/animal_ai';
 import { LevelController } from '../dungeon/level_controller';
 import { LevelModel } from '../../model/dungeon/level_model';
 import { Cell } from '../../model/dungeon/cells/cell_model';
+import { PlayerController } from './player_controller';
 
 interface IMonsterControllerConfig {
   model: MonsterModel;
-  levelController: LevelController;
 }
 type monstersAi = typeof MonsterAi | typeof AnimalAi;
+
 function getEntityAiStrategy(type: MonstersTypes): monstersAi {
   switch (type) {
     case MonstersTypes.GiantRat:
@@ -25,7 +26,7 @@ export class MonsterController extends EntityController<MonsterModel> {
   private ai: MonsterAi;
 
   public constructor(config: IMonsterControllerConfig) {
-    super(config);
+    super();
 
     this.model = config.model;
     this.ai = new (getEntityAiStrategy(this.model.type))({
@@ -40,11 +41,18 @@ export class MonsterController extends EntityController<MonsterModel> {
   }
 
   public act(): void {
-    super.act();
+    /** Below if is temporary hack. It is required because when recovering game state from saved data, there is no
+     *  serialized time engine there. At recreation of level each entity is put to new instance of scheduler, which result
+     *  of monsters taking free move after loading game. TODO find way to serialize time engine, restore it upon loading
+     *  game and remove below if
+     */
+    if (PlayerController.getInstance().hasMoved) {
+      super.act();
 
-    if (!this.isDead) {
-      this.calculateFov();
-      this.ai.performNextMove();
+      if (!this.isDead) {
+        this.calculateFov();
+        this.ai.performNextMove();
+      }
     }
   }
 

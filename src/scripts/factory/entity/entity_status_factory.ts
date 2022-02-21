@@ -1,25 +1,56 @@
 import { EntityController } from '../../controller/entity/entity_controller';
-import { EntityBleedingStatusController } from '../../controller/entity/entity_statuses/entity_bleeding_status_controller';
-import { EntityStatusCommonController } from '../../controller/entity/entity_statuses/entity_status_common_controller';
+import {
+  EntityBleedingStatusController,
+  EntityBleedingStatusSerializedData,
+} from '../../controller/entity/entity_statuses/entity_bleeding_status_controller';
+import {
+  AllEntityStatusControllers,
+  AllEntityStatusesSerialized,
+  EntityStatusCommonController,
+} from '../../controller/entity/entity_statuses/entity_status_common_controller';
 import { EntityStatusesCollection } from '../../collections/entity_statuses_collection';
-import { EntityStunnedStatusController } from '../../controller/entity/entity_statuses/entity_stunned_status_controller';
+import {
+  EntityStunnedStatusController,
+  EntityStunnedStatusSerializedData,
+} from '../../controller/entity/entity_statuses/entity_stunned_status_controller';
+import { EntityStatuses } from '../../constants/entity/statuses';
 
 export class EntityStatusFactory {
   public static getEntityBleedingStatus(
-    entityController: EntityController,
+    data: EntityBleedingStatusSerializedData,
+    entityController?: EntityController,
   ): EntityBleedingStatusController {
-    return new EntityBleedingStatusController(entityController);
+    return new EntityBleedingStatusController(data, entityController);
   }
 
   public static getEntityStunnedStatus(
-    entityController: EntityController,
+    data: EntityStunnedStatusSerializedData,
+    entityController?: EntityController,
   ): EntityStunnedStatusController {
-    return new EntityStunnedStatusController(entityController);
+    return new EntityStunnedStatusController(data, entityController);
   }
 
   public static getCollection(
-    entityStatuses?: EntityStatusCommonController[],
+    entityStatuses: AllEntityStatusControllers[] = [],
   ): EntityStatusesCollection {
     return new EntityStatusesCollection(entityStatuses);
+  }
+
+  public static getCollectionFromSerializedData(
+    entityStatuses: AllEntityStatusesSerialized[],
+    entityController?: EntityController,
+  ): EntityStatusesCollection {
+    const entityStatusControllers = entityStatuses.map((serializedStatus) => {
+      switch (serializedStatus.type) {
+        case EntityStatuses.Bleeding:
+          return EntityStatusFactory.getEntityBleedingStatus(serializedStatus);
+        case EntityStatuses.Stunned:
+          return EntityStatusFactory.getEntityStunnedStatus(serializedStatus);
+        default:
+          throw new Error('Entity status not implemented');
+      }
+    });
+
+    return EntityStatusFactory.getCollection(entityStatusControllers);
   }
 }

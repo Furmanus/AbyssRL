@@ -1,23 +1,30 @@
+import { weaponsData } from '../../model/items/weapons/data/weapons';
 import {
-  IWeaponConfigObject,
-  weaponsData,
-} from '../../model/items/weapons/data/weapons';
-import { WeaponModel } from '../../model/items/weapons/weapon_model';
+  SerializedWeapon,
+  WeaponModel,
+} from '../../model/items/weapons/weapon_model';
 import { WeaponNames } from '../../constants/items/weapons';
 import { getRandomNumber } from '../../helper/rng';
 
-export const weaponModelFactory = {
-  getWeaponModel(type: WeaponNames): WeaponModel {
-    if (type in weaponsData) {
+export class WeaponModelFactory {
+  public static getWeaponModel(type: SerializedWeapon): WeaponModel;
+  public static getWeaponModel(type: WeaponNames): WeaponModel;
+  public static getWeaponModel(
+    type: WeaponNames | SerializedWeapon,
+  ): WeaponModel {
+    if (typeof type === 'string') {
       return new WeaponModel(weaponsData[type]);
     }
-  },
-  getRandomWeaponModel(): WeaponModel {
+
+    return new WeaponModel(type);
+  }
+
+  public static getRandomWeaponModel(): WeaponModel {
     const weaponsDataKeys: string[] = Object.keys(weaponsData);
     const { length } = weaponsDataKeys;
     const randomKey: string = weaponsDataKeys[getRandomNumber(0, length - 1)];
-    const weaponConstructorConfig: IWeaponConfigObject = weaponsData[randomKey];
+    const weaponConstructorConfig = weaponsData[randomKey];
 
     return new WeaponModel(weaponConstructorConfig);
-  },
-};
+  }
+}

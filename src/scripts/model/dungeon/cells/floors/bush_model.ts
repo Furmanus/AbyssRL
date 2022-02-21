@@ -1,15 +1,15 @@
-import { Cell } from '../cell_model';
-import { cellTypes } from '../../../../constants/cells/cell_types';
+import { Cell, SerializedCell } from '../cell_model';
+import { CellTypes } from '../../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../../helper/cells_description';
 import { terrain } from '../../../../constants/cells/sprites';
 import { ICellModel } from '../../../../interfaces/cell';
 
 export class BushModel extends Cell implements ICellModel {
-  constructor(x: number, y: number) {
-    super(x, y);
+  constructor(config: SerializedCell) {
+    super(config);
 
-    this.type = cellTypes.BUSH;
-    this.description = cellsDescriptions[cellTypes.BUSH];
+    this.type = CellTypes.Bush;
+    this.description = cellsDescriptions[CellTypes.Bush];
   }
 
   get display(): string {

@@ -1,15 +1,33 @@
-import { EntityStatusCommonController } from './entity_status_common_controller';
+import {
+  EntityStatusCommonController,
+  EntityStatusCommonSerializedData,
+} from './entity_status_common_controller';
 import { EntityStatuses } from '../../../constants/entity/statuses';
 import { EntityStats } from '../../../constants/entity/monsters';
 import { getRandomNumber } from '../../../helper/rng';
 import { EntityController } from '../entity_controller';
 
+export interface EntityStunnedStatusSerializedData
+  extends EntityStatusCommonSerializedData {
+  type?: EntityStatuses.Stunned;
+  effectLength?: number;
+}
+
 export class EntityStunnedStatusController extends EntityStatusCommonController {
   public type = EntityStatuses.Stunned;
   protected effectLength = getRandomNumber(3, 4);
 
-  public constructor(entityController: EntityController) {
-    super(entityController);
+  public constructor(
+    data: EntityStunnedStatusSerializedData,
+    entityController?: EntityController,
+  ) {
+    super(data, entityController);
+
+    const { effectLength } = data;
+
+    if (effectLength) {
+      this.effectLength = effectLength;
+    }
 
     this.init();
   }
@@ -73,5 +91,13 @@ export class EntityStunnedStatusController extends EntityStatusCommonController 
     if (status instanceof EntityStunnedStatusController) {
       this.increaseStunTurnCount(status.effectLength);
     }
+  }
+
+  public getDataToSerialization(): EntityStunnedStatusSerializedData {
+    return {
+      ...super.getDataToSerialization(),
+      type: EntityStatuses.Stunned,
+      effectLength: this.effectLength,
+    };
   }
 }

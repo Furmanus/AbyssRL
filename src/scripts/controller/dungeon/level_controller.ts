@@ -1,10 +1,5 @@
-import { LevelModel } from '../../model/dungeon/level_model';
-import { EngineController } from '../time_engine/engine_controller';
-import { Cell } from '../../model/dungeon/cells/cell_model';
 import { EntityController } from '../entity/entity_controller';
 import { Controller } from '../controller';
-import { MonsterController } from '../entity/monster_controller';
-import { DungeonEvents } from '../../constants/dungeon_events';
 import { IAnyObject } from '../../interfaces/common';
 import { EntityEvents } from '../../constants/entity_events';
 import { boundMethod } from 'autobind-decorator';
@@ -15,10 +10,19 @@ import { MonsterFactory } from '../../factory/monster_factory';
 import { IActor } from '../../interfaces/entity/entity_interfaces';
 import { DungeonEventsFactory } from '../../factory/dungeon_event_factory';
 import { EntityFactory } from '../../factory/entity/entity_factory';
+import { dungeonState } from '../../state/application.state';
+import { DungeonBranches } from '../../constants/dungeon_types';
+import { LevelModelFactory } from '../../factory/levelModel.factory';
+import { LevelModel } from '../../model/dungeon/level_model';
+import { Cell } from '../../model/dungeon/cells/cell_model';
+import { TimeEngine } from '../../model/time/time_engine';
+import { getRandomNumber } from '../../helper/rng';
+import { DungeonEventTypes } from '../../model/dungeon_events/dungeon_event';
 
-interface ILevelControllerConstructorConfig {
-  readonly branch: string;
+export interface ILevelControllerConstructorConfig {
+  readonly branch: DungeonBranches;
   readonly levelNumber: number;
+  readonly model?: LevelModel;
 }
 
 /**
@@ -26,15 +30,27 @@ interface ILevelControllerConstructorConfig {
  */
 export class LevelController extends Controller {
   public model: LevelModel;
-  public engine: EngineController;
+  public get engine(): TimeEngine {
+    return dungeonState.getTimeEngine(
+      this.model.branch,
+      this.model.levelNumber,
+    );
+  }
+
   private levelEntitiesControllers =
     EntityFactory.getEntityControllerollection();
 
   constructor(config: ILevelControllerConstructorConfig) {
     super();
 
-    this.model = new LevelModel(config.branch, config.levelNumber);
-    this.engine = new EngineController();
+    if (config.model) {
+      this.model = config.model;
+    } else {
+      this.model = LevelModelFactory.getNewLevelModel(
+        config.branch,
+        config.levelNumber,
+      );
+    }
 
     this.initialize();
   }
@@ -54,11 +70,6 @@ export class LevelController extends Controller {
    * Enables listening on various events.
    */
   protected attachEvents(): void {
-    this.model.on(
-      this,
-      DungeonEvents.NewCreatureSpawned,
-      this.onNewMonsterSpawned.bind(this),
-    );
     this.levelEntitiesControllers.on(
       this,
       EntityEvents.EntityMove,
@@ -141,11 +152,10 @@ export class LevelController extends Controller {
   public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
     const monsterController = MonsterFactory.getMonsterControllerByType(
       monster,
-      this,
       cell,
     );
 
-    this.model.addMonster(monsterController, cell);
+    dungeonState.entityManager.addEntityToLevel(monsterController);
   }
 
   /**
@@ -201,15 +211,6 @@ export class LevelController extends Controller {
   }
 
   /**
-   * Method triggered after level model notifies that new monster has been spawned.
-   *
-   * @param monster   Newly spawned monster controller
-   */
-  private onNewMonsterSpawned(monster: MonsterController): void {
-    this.addActorToTimeEngine(monster);
-  }
-
-  /**
    * Method triggered after monster controller notifies about its death.
    *
    * @param data    Data object passed along with event
@@ -217,14 +218,19 @@ export class LevelController extends Controller {
   @boundMethod
   private onMonsterDeath(data: { entityController: EntityController }): void {
     const { entityController } = data;
+    const entityModel = entityController.getModel();
+    const { branch, level } = entityModel.entityPosition;
 
-    if (entityController.getModel().type !== MonstersTypes.Player) {
-      this.removeActorFromTimeEngine(entityController);
-      this.removeEntityFromLevel(entityController.getModel());
-      entityController.off(this, EntityEvents.EntityDeath);
-    } else {
+    if (entityController.getModel().type === MonstersTypes.Player) {
       this.lockTimeEngine();
       this.notify(PLAYER_DEATH);
+    } else {
+      dungeonState.entityManager.removeEntityFromLevel(
+        entityController,
+        level,
+        branch,
+      );
+      entityController.off(this, EntityEvents.EntityDeath);
     }
   }
 
@@ -238,25 +244,21 @@ export class LevelController extends Controller {
     this.notify(EntityEvents.EntityHit, entity);
   }
 
-  /**
-   * Method responsible for removing entity model from level cells (if its present in any).
-   *
-   * @param entity    Entity model
-   */
-  private removeEntityFromLevel(entity: EntityModel): void {
-    this.model.removeEntity(entity);
-  }
-
   private onEntityBloodLoss(entity: EntityModel): void {
     const cell = this.getCell(entity.position.x, entity.position.y);
 
     if (cell) {
+      const { branch, levelNumber } = this.model;
+
       cell.createPoolOfBlood();
 
-      this.addActorToTimeEngine(
-        DungeonEventsFactory.getDryBloodEvent(cell),
-        false,
-      );
+      DungeonEventsFactory.createDryBloodEvent({
+        type: DungeonEventTypes.DryBlood,
+        speed: getRandomNumber(12, 15),
+        branch,
+        levelNumber,
+        cell: entity.position,
+      });
     }
   }
 

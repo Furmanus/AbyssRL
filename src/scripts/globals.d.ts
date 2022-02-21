@@ -10,3 +10,9 @@ interface Set<T> {
 interface Array<T> {
   random(): T;
 }
+
+declare global {
+  interface Window {
+    dungeonState: DungeonState;
+  }
+}

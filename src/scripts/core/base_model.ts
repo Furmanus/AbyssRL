@@ -1,27 +1,23 @@
 import { Constructor } from './constructor';
 import { IAnyObject } from '../interfaces/common';
+import { v4 as uuid } from 'uuid';
 
-export class BaseModel extends Constructor implements IAnyObject {
-  /**
-   * Models extending base model can have different number and type of properties
-   */
-  [prop: string]: any;
-  /**
-   * Sets property value in model.
-   *
-   * @param   key     Name of property
-   * @param   value   Value of property
-   * @param   silent  If set to true, no notification will be send about property change
-   */
-  public setProperty(key: string, value: any, silent: boolean = false): void {
-    if (this.hasOwnProperty(key)) {
-      this[key] = value;
+export interface SerializedBaseModel {
+  id?: string;
+}
 
-      if (!silent) {
-        this.notify(`property:${key}:change`, value);
-      }
-    } else {
-      console.warn(`Attempt to set unknown property ${key}`);
+export class BaseModel extends Constructor {
+  public id = uuid();
+
+  public constructor(config?: SerializedBaseModel) {
+    super();
+
+    if (config?.id) {
+      this.id = config.id;
     }
+  }
+
+  public serialize(): { id: string } {
+    return { id: this.id };
   }
 }

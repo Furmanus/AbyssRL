@@ -2,6 +2,7 @@ import { EntityModel } from '../../model/entity/entity_model';
 import { MonsterAttackTypes } from '../../constants/entity/monsters';
 import { capitalizeString } from '../utility';
 import { DamageTypes } from '../../constants/combat_enums';
+import { NaturalWeaponModel } from '../../model/items/weapons/natural_weapon_model';
 
 export interface ICombatData {
   attacker: EntityModel;
@@ -127,9 +128,10 @@ export function generateCombatMessage(data: ICombatData): string {
   const { attacker, defender, wasDefenderHit, damageAmount, isCriticalHit } =
     data;
   const { weapon } = attacker;
-  const weaponType: string = weapon.naturalType || weapon.type;
-  let message: string = '';
-  let state: string = '';
+  const weaponType =
+    weapon instanceof NaturalWeaponModel ? weapon.naturalType : weapon.type;
+  let message = '';
+  let state = '';
 
   if (wasDefenderHit && damageAmount) {
     message = `${attackerPart.hit[weaponType].random()}${defenderPart.hit[

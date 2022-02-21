@@ -1,15 +1,15 @@
 import { terrain } from '../../../constants/cells/sprites';
-import { cellTypes } from '../../../constants/cells/cell_types';
+import { CellTypes } from '../../../constants/cells/cell_types';
 import { cellsDescriptions } from '../../../helper/cells_description';
-import { Cell } from './cell_model';
+import { Cell, SerializedCell } from './cell_model';
 import { ICellModel } from '../../../interfaces/cell';
 
 export class ShallowWater extends Cell implements ICellModel {
-  constructor(x: number, y: number) {
-    super(x, y);
+  constructor(config: SerializedCell) {
+    super(config);
 
-    this.type = cellTypes.SHALLOW_WATER;
-    this.description = cellsDescriptions[cellTypes.SHALLOW_WATER];
+    this.type = CellTypes.ShallowWater;
+    this.description = cellsDescriptions[CellTypes.ShallowWater];
   }
 
   get display(): string {

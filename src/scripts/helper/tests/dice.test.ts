@@ -21,6 +21,6 @@ describe('Test dice class', () => {
   it('Serialized data should return proper string', () => {
     const dice = new Dice('3d7 + 5');
 
-    expect(dice.getSerializedData()).toEqual('3d7+5');
+    expect(dice.getDataToSerialization()).toEqual('3d7+5');
   });
 });

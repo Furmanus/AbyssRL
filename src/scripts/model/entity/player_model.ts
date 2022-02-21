@@ -1,24 +1,32 @@
-import { EntityModel } from './entity_model';
+import { EntityModel, SerializedEntityModel } from './entity_model';
 import { IAnyObject } from '../../interfaces/common';
 import { MonsterSizes, MonstersTypes } from '../../constants/entity/monsters';
-import { getMonsterNaturalWeapon } from '../../factory/natural_weapon_factory';
 import { PlayerEquipSlots } from '../../constants/entity/inventory';
 import { IPlayerEquipSlotsType } from '../../interfaces/entity/entity_interfaces';
+import { NaturalWeaponFactory } from '../../factory/natural_weapon_factory';
+import { ItemsCollection } from '../../collections/items_collection';
+import { WeaponModelFactory } from '../../factory/item/weapon_model_factory';
+import { ArmourModelFactory } from '../../factory/item/armour_model_factory';
 
 export class PlayerModel extends EntityModel {
-  constructor(config: IAnyObject = {}) {
+  public inventory = new ItemsCollection([
+    WeaponModelFactory.getRandomWeaponModel(),
+    WeaponModelFactory.getRandomWeaponModel(),
+    WeaponModelFactory.getRandomWeaponModel(),
+    ArmourModelFactory.getRandomArmourModel(),
+    ArmourModelFactory.getRandomArmourModel(),
+    ArmourModelFactory.getRandomArmourModel(),
+  ]); // TODO temporary, for testing
+
+  constructor(config: SerializedEntityModel) {
     super(config);
 
-    this.description = config.name || 'Anonymous brave hero';
+    this.description = config.description || 'Anonymous brave hero';
     this.type = MonstersTypes.Player;
-    this.strength = config.strength;
-    this.dexterity = config.dexterity;
-    this.intelligence = config.intelligence;
-    this.toughness = config.toughness;
-    this.hitPoints = config.hitPoints;
-    this.maxHitPoints = config.maxHitPoints;
     this.size = MonsterSizes.Medium;
-    this.naturalWeapon = getMonsterNaturalWeapon(MonstersTypes.Player);
+    this.naturalWeapon = NaturalWeaponFactory.getMonsterNaturalWeapon(
+      MonstersTypes.Player,
+    );
   }
 
   public get equipSlots(): IPlayerEquipSlotsType {

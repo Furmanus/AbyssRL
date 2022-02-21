@@ -39,7 +39,7 @@ export interface IActionAttempt {
 export interface ITemplate {
   [templateName: string]: string;
 }
-export type TemplateType = Record<ItemTypes, string>;
+export type TemplateType = Record<ItemTypes.Weapon | ItemTypes.Armour, string>;
 export interface ITemplateVariables {
   // tslint:disable-next-line:no-any
   [propName: string]: string | number;

@@ -69,9 +69,9 @@ export function getEntityInfoTemplate(
             </div>
         `,
   };
-
+  // TODO fix typing
   return {
     ...baseTemplate,
-    item: itemTemplate[itemType] || '',
+    item: itemTemplate[itemType as never] || '',
   };
 }

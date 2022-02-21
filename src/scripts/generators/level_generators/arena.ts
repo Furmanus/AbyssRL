@@ -1,6 +1,6 @@
 import { AbstractLevelGenerator } from './abstract_generator';
 import { config as globalConfig } from '../../global/config';
-import { cellTypes } from '../../constants/cells/cell_types';
+import { CellTypes } from '../../constants/cells/cell_types';
 import * as Utility from '../../helper/utility';
 import { Map } from 'rot-js';
 import { LevelModel } from '../../model/dungeon/level_model';
@@ -60,18 +60,18 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
     generator.create(debugCallback || generatorCallback);
 
     this.fillLevelWithVoronoiPoints(level, {
-      targetCellType: cellTypes.SHALLOW_WATER,
-      cellAllowedToChange: cellTypes.GRASS,
+      targetCellType: CellTypes.ShallowWater,
+      cellAllowedToChange: CellTypes.Grass,
     });
     this.smoothShallowWaterCoastline(level);
     this.generateDeepWater(level);
     this.changeEveryCellInLevel(level, {
-      cellsToChange: [cellTypes.GRASS],
+      cellsToChange: [CellTypes.Grass],
       cellsAfterChange: [
-        cellTypes.BUSH,
-        cellTypes.BUSH,
-        cellTypes.BUSH,
-        cellTypes.TREE,
+        CellTypes.Bush,
+        CellTypes.Bush,
+        CellTypes.Bush,
+        CellTypes.Tree,
       ],
       probability: 70,
     });
@@ -84,9 +84,9 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
 
     function generatorCallback(x: number, y: number, value: number): void {
       if (value === 1) {
-        level.changeCellType(x, y, cellTypes.HIGH_PEAKS);
+        level.changeCellType(x, y, CellTypes.HighPeaks);
       } else {
-        level.changeCellType(x, y, cellTypes.GRASS);
+        level.changeCellType(x, y, CellTypes.Grass);
       }
     }
   }
@@ -104,7 +104,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
     config: IFillLevelWithVoronoiPointConfig,
   ): void {
     const { targetCellType, cellAllowedToChange } = config;
-    const levelCells: MapWithObserver<string, Cell> = level.getCells();
+    const levelCells = level.getCells();
     let examinedCellsClosestVoronoiPointType: IExaminedCellsClosestVoronoiPointType;
     let examinedVoronoiPointDistance: number;
     /**

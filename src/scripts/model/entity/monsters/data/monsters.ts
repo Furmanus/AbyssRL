@@ -5,7 +5,7 @@ import {
 } from '../../../../constants/entity/monsters';
 import { entities } from '../../../../constants/cells/sprites';
 import { ItemsCollection } from '../../../../collections/items_collection';
-import { getMonsterNaturalWeapon } from '../../../../factory/natural_weapon_factory';
+import { NaturalWeaponFactory } from '../../../../factory/natural_weapon_factory';
 
 export type MonsterStats = Pick<
   IEntity,
@@ -46,6 +46,8 @@ export const monstersData: IMonsterDataObject = {
     maxHitPoints: 10,
     size: MonsterSizes.Small,
     inventory: new ItemsCollection(),
-    naturalWeapon: getMonsterNaturalWeapon(MonstersTypes.GiantRat),
+    naturalWeapon: NaturalWeaponFactory.getMonsterNaturalWeapon(
+      MonstersTypes.GiantRat,
+    ),
   },
 };

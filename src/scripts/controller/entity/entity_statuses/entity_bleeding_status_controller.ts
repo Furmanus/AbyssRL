@@ -1,7 +1,20 @@
-import { EntityStatusCommonController } from './entity_status_common_controller';
+import {
+  EntityStatusCommonController,
+  EntityStatusCommonSerializedData,
+} from './entity_status_common_controller';
 import { getRandomNumber } from '../../../helper/rng';
 import { EntityStatuses } from '../../../constants/entity/statuses';
 import { EntityStats } from '../../../constants/entity/monsters';
+import { EntityController } from '../entity_controller';
+
+export interface EntityBleedingStatusSerializedData
+  extends EntityStatusCommonSerializedData {
+  type?: EntityStatuses.Bleeding;
+  maxBleedingCount?: number;
+  bleedingCount?: number;
+  weaknessCount?: number;
+  weaknessTurnStart?: number;
+}
 
 export class EntityBleedingStatusController extends EntityStatusCommonController {
   public type = EntityStatuses.Bleeding;
@@ -9,6 +22,32 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
   private bleedingCount = 0;
   private weaknessCount = 0;
   private weaknessTurnStart = getRandomNumber(10, 15);
+
+  public constructor(
+    data: EntityBleedingStatusSerializedData,
+    entityController?: EntityController,
+  ) {
+    super(data, entityController);
+
+    const {
+      weaknessCount,
+      weaknessTurnStart,
+      maxBleedingCount,
+      bleedingCount,
+    } = data;
+
+    if (
+      weaknessCount ||
+      weaknessTurnStart ||
+      maxBleedingCount ||
+      bleedingCount
+    ) {
+      this.bleedingCount = bleedingCount;
+      this.maxBleedingCount = maxBleedingCount;
+      this.weaknessCount = weaknessCount;
+      this.weaknessTurnStart = weaknessTurnStart;
+    }
+  }
 
   public act() {
     super.act();
@@ -50,5 +89,16 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
       this.increaseMaxBleedingCount(status.getMaxBleedingCount());
       this.entityController.increaseBloodLoss();
     }
+  }
+
+  public getDataToSerialization(): EntityBleedingStatusSerializedData {
+    return {
+      ...super.getDataToSerialization(),
+      type: EntityStatuses.Bleeding,
+      bleedingCount: this.bleedingCount,
+      maxBleedingCount: this.maxBleedingCount,
+      weaknessCount: this.weaknessCount,
+      weaknessTurnStart: this.weaknessTurnStart,
+    };
   }
 }
