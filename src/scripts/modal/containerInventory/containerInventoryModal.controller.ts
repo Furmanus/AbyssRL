@@ -1,7 +1,7 @@
 import { ModalController } from '../modal.controller';
 import { ContainerInventoryModalView } from './containerInventoryModal.view';
 import { containerInventoryTemplate } from './containerInventoryModal.template';
-import { ContainerInventoryModalEvents } from '../../constants/events/containerInventoryModalEvents';
+import { ContainerInventoryModalConstants } from './containerInventoryModal.constants';
 import { ItemsCollection } from '../../items/items_collection';
 import { ModalActions } from '../../constants/game_actions';
 import { ItemModel } from '../../items/models/item.model';
@@ -78,22 +78,22 @@ export class ContainerInventoryModalController extends ModalController<Container
 
     this.view.on(
       this,
-      ContainerInventoryModalEvents.PutButtonClick,
+      ContainerInventoryModalConstants.PutButtonClick,
       this.onPutButtonClickInView,
     );
     this.view.on(
       this,
-      ContainerInventoryModalEvents.TakeButtonClick,
+      ContainerInventoryModalConstants.TakeButtonClick,
       this.onTakeButtonClickInView,
     );
     this.view.on(
       this,
-      ContainerInventoryModalEvents.OptionSelect,
+      ContainerInventoryModalConstants.OptionSelect,
       this.onOptionSelectInView,
     );
     this.view.on(
       this,
-      ContainerInventoryModalEvents.Confirm,
+      ContainerInventoryModalConstants.Confirm,
       this.onConfirmInView,
     );
   }
@@ -101,10 +101,10 @@ export class ContainerInventoryModalController extends ModalController<Container
   protected detachEvents(): void {
     super.detachEvents();
 
-    this.view.off(this, ContainerInventoryModalEvents.PutButtonClick);
-    this.view.off(this, ContainerInventoryModalEvents.TakeButtonClick);
-    this.view.off(this, ContainerInventoryModalEvents.OptionSelect);
-    this.view.off(this, ContainerInventoryModalEvents.Confirm);
+    this.view.off(this, ContainerInventoryModalConstants.PutButtonClick);
+    this.view.off(this, ContainerInventoryModalConstants.TakeButtonClick);
+    this.view.off(this, ContainerInventoryModalConstants.OptionSelect);
+    this.view.off(this, ContainerInventoryModalConstants.Confirm);
   }
 
   private onPutButtonClickInView(): void {
@@ -151,7 +151,7 @@ export class ContainerInventoryModalController extends ModalController<Container
     this.targetCollection.add(removedItems);
     this.closeModal();
 
-    this.notify(ContainerInventoryModalEvents.ItemsTransferred, {
+    this.notify(ContainerInventoryModalConstants.ItemsTransferred, {
       items: removedItems,
       mode: this.mode,
     });

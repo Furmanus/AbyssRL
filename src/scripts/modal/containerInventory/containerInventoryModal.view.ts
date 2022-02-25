@@ -1,5 +1,5 @@
 import { ModalView } from '../modal.view';
-import { ContainerInventoryModalEvents } from '../../constants/events/containerInventoryModalEvents';
+import { ContainerInventoryModalConstants } from './containerInventoryModal.constants';
 import { ContainerInventoryModes } from './containerInventoryModal.controller';
 import { ItemsCollection } from '../../items/items_collection';
 import { ItemModel } from '../../items/models/item.model';
@@ -26,17 +26,17 @@ export class ContainerInventoryModalView extends ModalView<ContainerInventoryMod
     if (e.shiftKey) {
       switch (e.key.toLowerCase()) {
         case 'p':
-          this.notify(ContainerInventoryModalEvents.PutButtonClick);
+          this.notify(ContainerInventoryModalConstants.PutButtonClick);
           break;
         case 't':
-          this.notify(ContainerInventoryModalEvents.TakeButtonClick);
+          this.notify(ContainerInventoryModalConstants.TakeButtonClick);
           break;
       }
     } else if (e.key.toLowerCase() === 'enter') {
-      this.notify(ContainerInventoryModalEvents.Confirm);
+      this.notify(ContainerInventoryModalConstants.Confirm);
     } else if (e.key.toLowerCase().match(/[a-z]/)) {
       this.notify(
-        ContainerInventoryModalEvents.OptionSelect,
+        ContainerInventoryModalConstants.OptionSelect,
         getNumericValueOfChar(e.key.toLowerCase()),
       );
     }
@@ -104,7 +104,7 @@ export class ContainerInventoryModalView extends ModalView<ContainerInventoryMod
       const { index } = target.dataset;
 
       this.notify(
-        ContainerInventoryModalEvents.OptionSelect,
+        ContainerInventoryModalConstants.OptionSelect,
         parseInt(index, 10),
       );
     }
@@ -165,10 +165,10 @@ export class ContainerInventoryModalView extends ModalView<ContainerInventoryMod
   }
 
   private onPutActionButtonClick = () => {
-    this.notify(ContainerInventoryModalEvents.PutButtonClick);
+    this.notify(ContainerInventoryModalConstants.PutButtonClick);
   };
 
   private onTakeActionButtonClick = () => {
-    this.notify(ContainerInventoryModalEvents.TakeButtonClick);
+    this.notify(ContainerInventoryModalConstants.TakeButtonClick);
   };
 }

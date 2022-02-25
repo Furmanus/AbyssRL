@@ -1,4 +1,4 @@
-import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEvents';
+import { DevFeaturesModalConstants } from './devFeaturesModal.constants';
 import { ModalView } from '../modal.view';
 import { Monsters } from '../../entity/constants/monsters';
 import { buildFormElements } from '../../core/form_elements/form_elements';
@@ -103,7 +103,7 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
       {} as DevFormValues,
     );
 
-    this.notify(DevDungeonModalEvents.FormSubmitInView, parsedFormData);
+    this.notify(DevFeaturesModalConstants.FormSubmitInView, parsedFormData);
   };
 
   private buildSpawnMonsterList(): void {
@@ -121,12 +121,12 @@ export class DevFeaturesModalView extends ModalView<DevFeaturesModalViewElements
     const { value } = e.target as HTMLSelectElement;
 
     if (value) {
-      this.notify(DevDungeonModalEvents.SpawnMonster, value);
+      this.notify(DevFeaturesModalConstants.SpawnMonster, value);
     }
   };
 
   private onHealButtonClick = (): void => {
-    this.notify(DevDungeonModalEvents.HealPlayer);
+    this.notify(DevFeaturesModalConstants.HealPlayer);
   };
 
   private setDataFromStorage(): void {

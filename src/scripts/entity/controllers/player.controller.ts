@@ -37,7 +37,7 @@ import {
   ContainerInventoryModalController,
   ContainerInventoryTransferData,
 } from '../../modal/containerInventory/containerInventoryModal.controller';
-import { ContainerInventoryModalEvents } from '../../constants/events/containerInventoryModalEvents';
+import { ContainerInventoryModalConstants } from '../../modal/containerInventory/containerInventoryModal.constants';
 import { ArmourModel } from '../../items/models/armours/armour_model';
 import { EntityStatusFactory } from '../factory/entityStatus.factory';
 import { EntityStatusesCollection } from '../entity_statuses/entityStatuses.collection';
@@ -119,7 +119,7 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     this.containerInventoryController.on(
       this,
-      ContainerInventoryModalEvents.ItemsTransferred,
+      ContainerInventoryModalConstants.ItemsTransferred,
       this.onContainerInventoryModalItemsTransferred,
     );
   }

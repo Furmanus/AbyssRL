@@ -7,7 +7,7 @@ import { DungeonEvents } from '../constants/dungeon_events';
 import { IActionAttempt } from '../interfaces/common';
 import { globalMessagesController } from '../messages/messages.controller';
 import { DevFeaturesModalController } from '../modal/developmentFeatures/devFeaturesModal.controller';
-import { DevDungeonModalEvents } from '../constants/events/devDungeonModalEvents';
+import { DevFeaturesModalConstants } from '../modal/developmentFeatures/devFeaturesModal.constants';
 import { Monsters } from '../entity/constants/monsters';
 import { PlayerController } from '../entity/controllers/player.controller';
 import { Cell } from './models/cells/cell_model';
@@ -43,13 +43,13 @@ export class DungeonController extends BaseController {
 
     devFeaturesModalController.on(
       this,
-      DevDungeonModalEvents.RecreateCurrentLevel,
+      DevFeaturesModalConstants.RecreateCurrentLevel,
       this.recreateCurrentLevel,
     );
 
     devFeaturesModalController.on(
       this,
-      DevDungeonModalEvents.SpawnMonster,
+      DevFeaturesModalConstants.SpawnMonster,
       this.onDevModalMonsterSpawn,
     );
   }

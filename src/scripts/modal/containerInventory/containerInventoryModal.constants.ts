@@ -1,4 +1,4 @@
-export const enum ContainerInventoryModalEvents {
+export const enum ContainerInventoryModalConstants {
   PutButtonClick = 'putButtonClick',
   TakeButtonClick = 'takeButtonClick',
   Confirm = 'confirm',

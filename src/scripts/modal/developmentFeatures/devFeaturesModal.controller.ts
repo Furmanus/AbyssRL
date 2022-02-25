@@ -2,7 +2,7 @@ import { ModalController } from '../modal.controller';
 import { DevFeaturesModalView, DevFormValues } from './devFeaturesModal.view';
 import { ModalActions } from '../../constants/game_actions';
 import { devFeatureModalTemplate } from './devFeaturesModal.template';
-import { DevDungeonModalEvents } from '../../constants/events/devDungeonModalEvents';
+import { DevFeaturesModalConstants } from './devFeaturesModal.constants';
 import { config } from '../../global/config';
 import { Monsters } from '../../entity/constants/monsters';
 import { PlayerController } from '../../entity/controllers/player.controller';
@@ -60,17 +60,17 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
 
     this.view.on(
       this,
-      DevDungeonModalEvents.FormSubmitInView,
+      DevFeaturesModalConstants.FormSubmitInView,
       this.onDevDungeonFormSubmitInView,
     );
     this.view.on(
       this,
-      DevDungeonModalEvents.SpawnMonster,
+      DevFeaturesModalConstants.SpawnMonster,
       this.onMonsterSpawnInView,
     );
     this.view.on(
       this,
-      DevDungeonModalEvents.HealPlayer,
+      DevFeaturesModalConstants.HealPlayer,
       this.onHealPlayerClickInView,
     );
   }
@@ -78,9 +78,9 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
   protected detachEvents(): void {
     super.detachEvents();
 
-    this.view.off(this, DevDungeonModalEvents.FormSubmitInView);
-    this.view.off(this, DevDungeonModalEvents.SpawnMonster);
-    this.view.off(this, DevDungeonModalEvents.HealPlayer);
+    this.view.off(this, DevFeaturesModalConstants.FormSubmitInView);
+    this.view.off(this, DevFeaturesModalConstants.SpawnMonster);
+    this.view.off(this, DevFeaturesModalConstants.HealPlayer);
   }
 
   private onDevDungeonFormSubmitInView(data: DevFormValues): void {
@@ -102,13 +102,13 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     config.debugOptions.noMonsters = noMonsters;
     config.defaultLevelType = devDungeonLevelType || null;
 
-    this.notify(DevDungeonModalEvents.RecreateCurrentLevel);
+    this.notify(DevFeaturesModalConstants.RecreateCurrentLevel);
 
     this.closeModal();
   }
 
   private onMonsterSpawnInView(monster: Monsters): void {
-    this.notify(DevDungeonModalEvents.SpawnMonster, monster);
+    this.notify(DevFeaturesModalConstants.SpawnMonster, monster);
 
     this.view.resetMonsterSpawnSelect();
     this.closeModal();
