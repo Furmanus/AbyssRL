@@ -1,4 +1,4 @@
-import { keyboardKeyToDirectionMap } from '../constants/keyboard_directions';
+import { keyboardKeyToDirectionMap } from '../main/constants/keyboardDirections.constants';
 
 export type Directions =
   | '-1x-1'

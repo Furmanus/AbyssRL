@@ -22,7 +22,7 @@
 one basic random room (empty room with bed and chest of drawers)
 * (Feature) Player character can use stairs
 * (Technical) Added mapWithObserver object - a ES6 like map object with Observer methods
-* (Fix) Camera screen should always has maximum size of level width/height
+* (Fix) CameraView screen should always has maximum size of level width/height
 * (Fix) On dungeon type of level stairs down shouldn't generate on place of stairs up
 ###0.0.1 (09.03.2019)
 * Rewrite existing code to TypeScript
