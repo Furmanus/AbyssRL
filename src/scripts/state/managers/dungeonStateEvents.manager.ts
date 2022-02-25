@@ -1,5 +1,5 @@
 import { DungeonState } from '../dungeon.state';
-import { DungeonEvent } from '../../model/dungeon_events/dungeon_event';
+import { DungeonEvent } from '../../dungeonEvents/dungeonEvent';
 
 const constructorToken = Symbol('DungeonStateEventManager');
 let instance: DungeonStateEventsManager;

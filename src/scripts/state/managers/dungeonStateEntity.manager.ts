@@ -1,10 +1,10 @@
 import { dungeonBranchToMaxLevel, DungeonState } from '../dungeon.state';
-import { DungeonBranches } from '../../constants/dungeon_types';
-import { EntityModel } from '../../model/entity/entity_model';
-import { EntityController } from '../../controller/entity/entity_controller';
-import { Cell } from '../../model/dungeon/cells/cell_model';
-import { DungeonEvent } from '../../model/dungeon_events/dungeon_event';
-import { TimeEngine } from '../../model/time/time_engine';
+import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
+import { EntityModel } from '../../entity/models/entity.model';
+import { EntityController } from '../../entity/controllers/entity.controller';
+import { Cell } from '../../dungeon/models/cells/cell_model';
+import { DungeonEvent } from '../../dungeonEvents/dungeonEvent';
+import { TimeEngine } from '../../timeEngine/timeEngine';
 
 const constructorSymbol = Symbol('EntityStateManager');
 const instance: DungeonStateEntityManager = null;

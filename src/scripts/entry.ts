@@ -1,8 +1,8 @@
 /* eslint-disable no-extend-native */
 import './state/application.state';
-import { MainController } from './controller/main_controller';
-import u5tiles from './assets/u5tiles.png';
-import '../styles/app.less';
+import { MainController } from './main/main.controller';
+import u5tiles from '../assets/u5tiles.png';
+import './styles/app.less';
 import { tilesetObject } from './global/tileset';
 import type { SerializedDungeonState } from './state/applicationState.interfaces';
 

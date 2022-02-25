@@ -1,5 +1,5 @@
-import { EntityModel } from '../model/entity/entity_model';
-import { EntityController } from '../controller/entity/entity_controller';
+import { EntityModel } from '../entity/models/entity.model';
+import { EntityController } from '../entity/controllers/entity.controller';
 
 class EntityRegistry {
   private registry: WeakMap<EntityModel, EntityController> = new WeakMap<

@@ -1,4 +1,4 @@
-import { IActor } from '../../interfaces/entity/entity_interfaces';
+import { IActor } from '../../entity/entity_interfaces';
 
 class FakeDungeonState {
   public actors: IActor[] = [];
