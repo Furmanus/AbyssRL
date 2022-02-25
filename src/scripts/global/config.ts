@@ -1,5 +1,5 @@
-import { getDataFromSessionStorage } from '../helper/storage_helper';
-import { DevFormValues } from '../view/dev_features_modal_view';
+import { getDataFromSessionStorage } from '../utils/storage_helper';
+import { DevFormValues } from '../modal/developmentFeatures/devFeaturesModal.view';
 import { SessionStorageKeys } from '../constants/storage';
 
 interface IConfig {

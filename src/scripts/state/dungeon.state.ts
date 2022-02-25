@@ -1,12 +1,12 @@
-import { DungeonBranches } from '../constants/dungeon_types';
+import { DungeonBranches } from '../dungeon/constants/dungeonTypes.constants';
 import { action, makeObservable, observable } from 'mobx';
 import { ASCEND, DESCEND } from '../constants/directions';
 import { IActionAttempt } from '../interfaces/common';
 import { BaseState } from './baseState';
-import { LevelModel } from '../model/dungeon/level_model';
+import { LevelModel } from '../dungeon/models/level_model';
 import { DungeonStateEntityManager } from './managers/dungeonStateEntity.manager';
-import type { LevelController } from '../controller/dungeon/level_controller';
-import { EntityController } from '../controller/entity/entity_controller';
+import type { LevelController } from '../dungeon/level.controller';
+import { EntityController } from '../entity/controllers/entity.controller';
 import { PartialDungeonState } from './application.state';
 import {
   DungeonBranchLevelEntryStructure,
@@ -16,21 +16,21 @@ import {
   SerializedDungeonBranchStructure,
   SerializedDungeonState,
 } from './applicationState.interfaces';
-import { LevelModelFactory } from '../factory/levelModel.factory';
-import { LevelControllerFactory } from '../factory/levelController.factory';
-import { SerializedEntityModel } from '../model/entity/entity_model';
-import { MonstersTypes } from '../constants/entity/monsters';
-import { EntityFactory } from '../factory/entity/entity_factory';
+import { LevelModelFactory } from '../dungeon/factory/levelModel.factory';
+import { LevelControllerFactory } from '../dungeon/factory/levelController.factory';
+import { SerializedEntityModel } from '../entity/models/entity.model';
+import { MonstersTypes } from '../entity/constants/monsters';
+import { EntityFactory } from '../entity/factory/entity.factory';
 import {
   AllSerializedEventTypes,
   DungeonEvent,
   DungeonEventTypes,
-} from '../model/dungeon_events/dungeon_event';
-import { DungeonEventsFactory } from '../factory/dungeon_event_factory';
-import { Cell, SerializedCell } from '../model/dungeon/cells/cell_model';
-import { TimeEngine } from '../model/time/time_engine';
+} from '../dungeonEvents/dungeonEvent';
+import { DungeonEventsFactory } from '../dungeonEvents/dungeonEvent.factory';
+import { Cell, SerializedCell } from '../dungeon/models/cells/cell_model';
+import { TimeEngine } from '../timeEngine/timeEngine';
 import { DungeonStateCellsManager } from './managers/dungeonStateCells.manager';
-import { CellModelFactory } from '../factory/cell_model_factory';
+import { CellModelFactory } from '../dungeon/factory/cellModel.factory';
 import { DungeonStateEventsManager } from './managers/dungeonStateEvents.manager';
 
 export const dungeonBranchToMaxLevel = {

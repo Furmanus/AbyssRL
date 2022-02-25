@@ -1,5 +1,5 @@
 import { DungeonState } from './dungeon.state';
-import { DungeonBranches } from '../constants/dungeon_types';
+import { DungeonBranches } from '../dungeon/constants/dungeonTypes.constants';
 import type { SerializedDungeonState } from './applicationState.interfaces';
 
 export type PartialDungeonState = Pick<

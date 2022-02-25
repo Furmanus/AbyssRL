@@ -1,14 +1,14 @@
-import type { DungeonBranches } from '../constants/dungeon_types';
-import type { SerializedLevel } from '../model/dungeon/level_model';
-import type { SerializedEntityModel } from '../model/entity/entity_model';
-import type { LevelController } from '../controller/dungeon/level_controller';
-import type { EntityController } from '../controller/entity/entity_controller';
+import type { DungeonBranches } from '../dungeon/constants/dungeonTypes.constants';
+import type { SerializedLevel } from '../dungeon/models/level_model';
+import type { SerializedEntityModel } from '../entity/models/entity.model';
+import type { LevelController } from '../dungeon/level.controller';
+import type { EntityController } from '../entity/controllers/entity.controller';
 import type {
   DungeonEvent,
   SerializedDungeonEvent,
-} from '../model/dungeon_events/dungeon_event';
-import { SerializedTimeEngine, TimeEngine } from '../model/time/time_engine';
-import { Cell, SerializedCell } from '../model/dungeon/cells/cell_model';
+} from '../dungeonEvents/dungeonEvent';
+import { SerializedTimeEngine, TimeEngine } from '../timeEngine/timeEngine';
+import { Cell, SerializedCell } from '../dungeon/models/cells/cell_model';
 
 export type DungeonStructure = {
   [branch in DungeonBranches]: DungeonBranchStructure;

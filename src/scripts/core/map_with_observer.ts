@@ -1,9 +1,9 @@
 import { Observer } from './observer';
 import { IAnyFunction, IAnyObject } from '../interfaces/common';
-import { Controller } from '../controller/controller';
+import { BaseController } from './base.controller';
 
 export interface IListener {
-  observer: Controller;
+  observer: BaseController;
   event: string;
   callback: IAnyFunction;
 }
@@ -34,7 +34,7 @@ export class MapWithObserver<K, V extends Observer> extends Observer {
    * @param callback      Callback function called after event was notified
    */
   public on(
-    controller: Controller,
+    controller: BaseController,
     event: string,
     callback: IAnyFunction,
   ): this {
@@ -130,7 +130,7 @@ export class MapWithObserver<K, V extends Observer> extends Observer {
    * @param controller    Controller which listening on events will be disabled
    * @param event         Event name
    */
-  public stopListening(controller: Controller, event?: string): void {
+  public stopListening(controller: BaseController, event?: string): void {
     this.mapListeners.forEach((listenerObject: IListener) => {
       if (
         listenerObject.observer === controller &&
@@ -152,7 +152,7 @@ export class MapWithObserver<K, V extends Observer> extends Observer {
    * @param callback      Callback function called after event was notified
    */
   private listenTo(
-    controller: Controller,
+    controller: BaseController,
     event: string,
     callback: IAnyFunction,
   ): this {

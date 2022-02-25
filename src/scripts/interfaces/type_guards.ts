@@ -1,6 +1,6 @@
-import { EntityController } from '../controller/entity/entity_controller';
-import { PlayerController } from '../controller/entity/player_controller';
-import { MonstersTypes } from '../constants/entity/monsters';
+import { EntityController } from '../entity/controllers/entity.controller';
+import { PlayerController } from '../entity/controllers/player.controller';
+import { MonstersTypes } from '../entity/constants/monsters';
 
 export function isPlayerController(
   entityController: EntityController,

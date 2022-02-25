@@ -1,9 +1,9 @@
-import { Cell } from '../../model/dungeon/cells/cell_model';
+import { Cell } from '../../dungeon/models/cells/cell_model';
 import { DungeonState } from '../dungeon.state';
-import { Position, SerializedPosition } from '../../model/position/position';
-import { DungeonBranches } from '../../constants/dungeon_types';
-import { convertCoordsToString } from '../../helper/utility';
-import { CellModelFactory } from '../../factory/cell_model_factory';
+import { Position, SerializedPosition } from '../../position/position';
+import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
+import { convertCoordsToString } from '../../utils/utility';
+import { CellModelFactory } from '../../dungeon/factory/cellModel.factory';
 
 const constructorSymbol = Symbol('DungeonStateCellsManager');
 
