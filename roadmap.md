@@ -29,7 +29,7 @@
 - [R.0.1.G4] Add "demo" for title screen (similiar to original Ultima 5)
 - [R.0.1.G5] Add minimap
 - [R.0.1.G6] ~~Rewrite game models to allow easier serialization to JSON~~
-- [R.0.1.G7] Create basic info modal with keybindings
+- [R.0.1.G7] ~~Create basic info modal with keybindings~~
 ###Misc
 - [R.0.1.M1] Electron desktop build
 - [R.0.1.M2] ~~Development server~~

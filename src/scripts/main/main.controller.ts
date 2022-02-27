@@ -51,8 +51,9 @@ import { DevFeaturesModalController } from '../modal/developmentFeatures/devFeat
 import { autorun } from 'mobx';
 import { dungeonState } from '../state/application.state';
 import type { SerializedDungeonState } from '../state/applicationState.interfaces';
-import { KeyboardKeys } from './constants/keyboardKeys.constants';
+import { KeyboardKeys, KeyCodes } from './constants/keyboardKeys.constants';
 import { PlayerController } from '../entity/controllers/player.controller';
+import { aboutGameModalController } from '../modal/aboutGame/aboutGameModal.controller';
 
 const keyCodeToActionMap: { [keycode: number]: string } = {
   188: PlayerActions.PickUp,
@@ -276,21 +277,26 @@ export class MainController extends BaseController {
     let choosenDirection: IDirection | false;
 
     if (this.altPressed && this.controlPressed && this.shiftPressed) {
-      if (keycode === 84) {
+      if (keycode === KeyCodes.OpenDevFeaturesModal) {
         // open test menu
         this.devFeaturesModalController.openModal();
       }
     } else if (this.shiftPressed) {
-      if (isKeyboardKeyDirection(keycode) && keycode !== 190) {
+      if (
+        isKeyboardKeyDirection(keycode) &&
+        keycode !== KeyCodes.DescendLevel
+      ) {
         this.moveCamera(keycode); // shift + numpad direction, move camera around
-      } else if (keycode === 188) {
+      } else if (keycode === KeyCodes.AscendLevel) {
         this.gameController.takePlayerAction(PLAYER_ACTION_GO_UP);
-      } else if (keycode === 190) {
+      } else if (keycode === KeyCodes.DescendLevel) {
         this.gameController.takePlayerAction(PLAYER_ACTION_GO_DOWN);
-      } else if (keycode === 83) {
+      } else if (keycode === KeyCodes.SaveGame) {
         this.saveGame();
-      } else if (keycode === 81) {
+      } else if (keycode === KeyCodes.QuitGame) {
         this.quitGame();
+      } else if (keycode === KeyCodes.OpenInfoModal) {
+        this.openAboutGameModal();
       }
     } else if (this.controlPressed) {
       // placeholder
@@ -302,7 +308,7 @@ export class MainController extends BaseController {
           PLAYER_ACTION_MOVE_PLAYER,
           keyboardKeyToDirectionMap[keycode],
         );
-      } else if (keycode === 65) {
+      } else if (keycode === KeyCodes.Activate) {
         // ACTIVATE COMMAND
         globalMessagesController.showMessageInView(
           'Activate object in which direction [1234567890]:',
@@ -318,7 +324,7 @@ export class MainController extends BaseController {
         } else {
           globalMessagesController.showMessageInView('You abort your attempt.');
         }
-      } else if (keycode === 88) {
+      } else if (keycode === KeyCodes.Examine) {
         // EXAMINE OR LOOK COMMAND
         this.enableExamineMode();
       } else if (keyCodeToInventoryMode[keycode]) {
@@ -542,6 +548,10 @@ export class MainController extends BaseController {
       'keydown',
       this.containerInventoryEventListenerCallback,
     );
+  };
+
+  private openAboutGameModal = (): void => {
+    aboutGameModalController.openModal();
   };
 
   /**
