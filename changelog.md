@@ -1,3 +1,6 @@
+###0.0.8 (27.02.2022)
+* (Refactor) Major code reorganization
+* (Feature) Add game info modal with keybindings
 ###0.0.7 (18.09.2021)
 * (Feature) Added armour item type and possibility to wear it
 ###0.0.6 (17.09.2021)
