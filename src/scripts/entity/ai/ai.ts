@@ -19,9 +19,7 @@ export interface IArtificialIntelligence {
  * Abstract class containing AI algorithms and methods for game entities. Class contains common methods for all types
  * of AI present in game.
  */
-export abstract class Ai<C extends EntityController = MonsterController>
-  implements IArtificialIntelligence
-{
+export abstract class Ai<C extends EntityController = MonsterController> implements IArtificialIntelligence {
   /**
    * Controller of entity, which behaviour needs to be calculated by this strategy.
    */

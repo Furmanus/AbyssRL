@@ -22,7 +22,6 @@ import { PlayerController } from '../entity/controllers/player.controller';
 import { DungeonController } from '../dungeon/dungeon.controller';
 import { Cell } from '../dungeon/models/cells/cell_model';
 import { IAnyObject, IDirection } from '../interfaces/common';
-import { LevelController } from '../dungeon/level.controller';
 import { BaseController } from '../core/base.controller';
 import { CellTypes } from '../dungeon/constants/cellTypes.constants';
 import { globalMessagesController } from '../messages/messages.controller';
