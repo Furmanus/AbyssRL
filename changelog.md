@@ -1,3 +1,5 @@
+###0.1.0 (04.10.2022)
+* (Feature) RNG can now start with fixed seed
 ###0.0.8 (27.02.2022)
 * (Refactor) Major code reorganization
 * (Feature) Add game info modal with keybindings
