@@ -1,7 +1,7 @@
 import { ArenaLevelGenerator } from '../generators/arena.generator';
 import { CavernLevelGenerator } from '../generators/cavern.generator';
 import { DungeonLevelGenerator } from '../generators/dungeon.generator';
-import * as Rng from '../../utils/rng';
+import { rngService } from '../../utils/rng.service';
 import { config } from '../../global/config';
 import { LevelModel } from '../models/level_model';
 import { IDungeonStrategyGenerateLevelConfig } from '../generators/generators.interfaces';
@@ -10,6 +10,7 @@ import { WeaponModelFactory } from '../../items/factory/item/weaponModel.factory
 import { WeaponModel } from '../../items/models/weapons/weapon.model';
 import { ArmourModelFactory } from '../../items/factory/item/armour_model_factory';
 import { LevelController } from '../level.controller';
+import { Coin } from '../../position/coin';
 
 type AllGeneratorsTypes =
   | ArenaLevelGenerator
@@ -67,7 +68,7 @@ export class MainDungeonLevelGenerationStrategy {
 
       switch (levelNumber) {
         default:
-          percentDieRoll = Rng.getPercentage();
+          percentDieRoll = rngService.getPercentage();
 
           if (percentDieRoll < 33) {
             arenaLevelGenerator.generateLevel(levelController, generateConfig);
@@ -92,7 +93,7 @@ export class MainDungeonLevelGenerationStrategy {
         WeaponModelFactory.getRandomWeaponModel();
       const armourModel = ArmourModelFactory.getRandomArmourModel();
 
-      randomCell.inventory.add(Math.random() < 0.5 ? weaponModel : armourModel);
+      randomCell.inventory.add(Coin.toss() ? weaponModel : armourModel);
     }
   }
 }

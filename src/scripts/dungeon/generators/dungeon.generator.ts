@@ -7,7 +7,7 @@ import {
   DIRECTION_HORIZONTAL,
   DIRECTION_VERTICAL,
 } from '../../constants/directions';
-import * as Rng from '../../utils/rng';
+import { rngService } from '../../utils/rng.service';
 import { DungeonAreaModel } from '../models/dungeon_area_model';
 import { RoomConnectionModel } from '../models/room_connection_model';
 import { LevelModel } from '../models/level_model';
@@ -76,7 +76,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
      * Transform rectangles into rooms on level model.
      */
     rooms.forEach((room: RoomModel) => {
-      const scalePercentage: number = Rng.getRandomNumber(50, 70) / 100;
+      const scalePercentage: number = rngService.getRandomNumber(50, 70) / 100;
       // TODO Think and implement moving each room by random vector
       room.scale(scalePercentage).transform(generatorCallback);
       roomsArray.push(room);
@@ -428,9 +428,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
       const room1X = firstRoomBeforeHorizontal ? room1.right : room1.left;
       const room2X = firstRoomBeforeHorizontal ? room2.left : room2.right;
       const room1DeltaY =
-        Rng.getRandomNumber(-1, 1) * Rng.getRandomNumber(0, Math.floor(h1 / 3));
+        rngService.getRandomNumber(-1, 1) * rngService.getRandomNumber(0, Math.floor(h1 / 3));
       const room2DeltaY =
-        Rng.getRandomNumber(-1, 1) * Rng.getRandomNumber(0, Math.floor(h2 / 3));
+        rngService.getRandomNumber(-1, 1) * rngService.getRandomNumber(0, Math.floor(h2 / 3));
       const room1Y = Math.floor(room1.top + room1.height / 2) + room1DeltaY;
       const room2Y = Math.floor(room2.top + room2.height / 2) + room2DeltaY;
 
@@ -440,9 +440,9 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
       const room1Y = firstRoomBeforeVertical ? room1.bottom : room1.top;
       const room2Y = firstRoomBeforeVertical ? room2.top : room2.bottom;
       const room1DeltaX =
-        Rng.getRandomNumber(-1, 1) * Rng.getRandomNumber(0, Math.floor(w1 / 3));
+        rngService.getRandomNumber(-1, 1) * rngService.getRandomNumber(0, Math.floor(w1 / 3));
       const room2DeltaX =
-        Rng.getRandomNumber(-1, 1) * Rng.getRandomNumber(0, Math.floor(w2 / 3));
+        rngService.getRandomNumber(-1, 1) * rngService.getRandomNumber(0, Math.floor(w2 / 3));
       const room1X = Math.floor(room1.left + room1.width / 2) + room1DeltaX;
       const room2X = Math.floor(room2.left + room2.width / 2) + room2DeltaX;
 

@@ -1,19 +1,16 @@
-import { INaturalWeapon } from '../../../combat/combat.interfaces';
-import { Dice } from '../../../position/dice';
+import { Dice, DiceDescription } from '../../../position/dice';
 import { DamageTypes } from '../../../combat/combat.constants';
 import { MonsterAttackTypes } from '../../../entity/constants/monsters';
-import { IAnyObject } from '../../../interfaces/common';
 import { WearableModel } from '../wearable.model';
 import { EntityModel } from '../../../entity/models/entity.model';
 import { ItemTypes } from '../../constants/itemTypes.constants';
 import { WeaponCriticalDamageType } from '../../constants/weapons.constants';
-import { SerializedWeapon } from './weapon.model';
 
 export interface SerializedNaturalWeapon {
   itemType: ItemTypes.NaturalWeapon;
   naturalType: MonsterAttackTypes;
-  damage: string;
-  toHit: string;
+  damage: DiceDescription;
+  toHit: DiceDescription;
   name: string;
   type: DamageTypes;
   criticalHitRate?: number;

@@ -4,7 +4,7 @@ import {
 } from './entityStatusCommon.controller';
 import { EntityStatuses } from '../constants/statuses';
 import { EntityStats } from '../constants/monsters';
-import { getRandomNumber } from '../../utils/rng';
+import { rngService } from '../../utils/rng.service';
 import { EntityController } from '../controllers/entity.controller';
 
 export interface EntityStunnedStatusSerializedData
@@ -15,7 +15,7 @@ export interface EntityStunnedStatusSerializedData
 
 export class EntityStunnedStatusController extends EntityStatusCommonController {
   public type = EntityStatuses.Stunned;
-  protected effectLength = getRandomNumber(3, 4);
+  protected effectLength = rngService.getRandomNumber(3, 4);
 
   public constructor(
     data: EntityStunnedStatusSerializedData,

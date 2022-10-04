@@ -16,7 +16,7 @@ import { LevelModelFactory } from './factory/levelModel.factory';
 import { LevelModel } from './models/level_model';
 import { Cell } from './models/cells/cell_model';
 import { TimeEngine } from '../timeEngine/timeEngine';
-import { getRandomNumber } from '../utils/rng';
+import { rngService } from '../utils/rng.service';
 import { DungeonEventTypes } from '../dungeonEvents/dungeonEvent';
 
 export interface ILevelControllerConstructorConfig {
@@ -254,7 +254,7 @@ export class LevelController extends BaseController {
 
       DungeonEventsFactory.createDryBloodEvent({
         type: DungeonEventTypes.DryBlood,
-        speed: getRandomNumber(12, 15),
+        speed: rngService.getRandomNumber(12, 15),
         branch,
         levelNumber,
         cell: entity.position,

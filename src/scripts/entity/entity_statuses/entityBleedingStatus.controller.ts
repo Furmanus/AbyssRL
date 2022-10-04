@@ -2,7 +2,7 @@ import {
   EntityStatusCommonController,
   EntityStatusCommonSerializedData,
 } from './entityStatusCommon.controller';
-import { getRandomNumber } from '../../utils/rng';
+import { rngService } from '../../utils/rng.service';
 import { EntityStatuses } from '../constants/statuses';
 import { EntityStats } from '../constants/monsters';
 import { EntityController } from '../controllers/entity.controller';
@@ -18,10 +18,10 @@ export interface EntityBleedingStatusSerializedData
 
 export class EntityBleedingStatusController extends EntityStatusCommonController {
   public type = EntityStatuses.Bleeding;
-  private maxBleedingCount = getRandomNumber(3, 12);
+  private maxBleedingCount = rngService.getRandomNumber(3, 12);
   private bleedingCount = 0;
   private weaknessCount = 0;
-  private weaknessTurnStart = getRandomNumber(10, 15);
+  private weaknessTurnStart = rngService.getRandomNumber(10, 15);
 
   public constructor(
     data: EntityBleedingStatusSerializedData,
@@ -65,7 +65,7 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
             source: this,
             modifier: {
               modifier: -1,
-              count: getRandomNumber(50, 80),
+              count: rngService.getRandomNumber(50, 80),
               currentCount: 0,
             },
           },

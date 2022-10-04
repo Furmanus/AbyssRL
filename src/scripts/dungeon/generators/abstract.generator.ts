@@ -1,6 +1,6 @@
 import { CellTypes } from '../constants/cellTypes.constants';
 import { config, config as globalConfig } from '../../global/config';
-import * as Rng from '../../utils/rng';
+import { rngService } from '../../utils/rng.service';
 import * as Utility from '../../utils/utility';
 import {
   directionShortToStringMap,
@@ -19,7 +19,6 @@ import {
 import { Cell } from '../models/cells/cell_model';
 import { Direction } from '../../position/direction';
 import { DirectionType } from '../../interfaces/common';
-import { MonsterFactory } from '../../entity/factory/monster.factory';
 import { Directions } from '../../interfaces/directions';
 import { LevelController } from '../level.controller';
 import { Monsters } from '../../entity/constants/monsters';
@@ -199,8 +198,8 @@ export abstract class AbstractLevelGenerator {
       generationAttempt < 1000
     ) {
       randomPoint = new Position(
-        Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
-        Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
+        rngService.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+        rngService.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
       );
 
       isGeneratedPointValid = generatedPoints.every((item: Position) => {
@@ -570,7 +569,7 @@ export abstract class AbstractLevelGenerator {
     let shouldChangeCell: boolean;
 
     levelCells.forEach((cell: Cell) => {
-      if (!cell.preventDisplayChange && Rng.getPercentage() <= probability) {
+      if (!cell.preventDisplayChange && rngService.getPercentage() <= probability) {
         shouldChangeCell = cellsToChange.some((item: string) => {
           return cell.type === item;
         });
@@ -590,15 +589,15 @@ export abstract class AbstractLevelGenerator {
    */
   protected generateRandomStairsUp(levelModel: LevelModel): void {
     let randomCell: Cell = levelModel.getCell(
-      Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
-      Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
+      rngService.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+      rngService.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
     );
     let attemptNumber: number = 0;
 
     while (!stairsReplaceCells[randomCell.type]) {
       randomCell = levelModel.getCell(
-        Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
-        Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
+        rngService.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+        rngService.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
       );
 
       attemptNumber++;
@@ -615,8 +614,8 @@ export abstract class AbstractLevelGenerator {
 
   protected generateRandomStairsDown(levelModel: LevelModel): void {
     let randomCell: Cell = levelModel.getCell(
-      Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
-      Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
+      rngService.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+      rngService.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
     );
     let attemptNumber: number = 0;
     const stairsUp = levelModel.getStairsUpLocation() || {
@@ -632,8 +631,8 @@ export abstract class AbstractLevelGenerator {
 
     while (!stairsReplaceCells[randomCell.type] && distanceFromStairsUp < 40) {
       randomCell = levelModel.getCell(
-        Rng.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
-        Rng.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
+        rngService.getRandomNumber(1, globalConfig.LEVEL_WIDTH - 1),
+        rngService.getRandomNumber(1, globalConfig.LEVEL_HEIGHT - 1),
       );
       distanceFromStairsUp = Utility.getDistance(
         stairsUp.x,

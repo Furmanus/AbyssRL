@@ -4,7 +4,7 @@ import {
   WeaponModel,
 } from '../../models/weapons/weapon.model';
 import { WeaponNames } from '../../constants/weapons.constants';
-import { getRandomNumber } from '../../../utils/rng';
+import { rngService } from '../../../utils/rng.service';
 
 export class WeaponModelFactory {
   public static getWeaponModel(type: SerializedWeapon): WeaponModel;
@@ -22,7 +22,7 @@ export class WeaponModelFactory {
   public static getRandomWeaponModel(): WeaponModel {
     const weaponsDataKeys: string[] = Object.keys(weaponsData);
     const { length } = weaponsDataKeys;
-    const randomKey: string = weaponsDataKeys[getRandomNumber(0, length - 1)];
+    const randomKey: string = weaponsDataKeys[rngService.getRandomNumber(0, length - 1)];
     const weaponConstructorConfig = weaponsData[randomKey];
 
     return new WeaponModel(weaponConstructorConfig);

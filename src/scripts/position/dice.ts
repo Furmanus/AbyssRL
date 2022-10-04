@@ -1,11 +1,18 @@
-import { getRandomNumber } from '../utils/rng';
+import { rngService } from '../utils/rng.service';
+
+type BasicDiceDescription = `${number}d${number}`
+export type DiceDescription = BasicDiceDescription | `${BasicDiceDescription}+${number}`;
 
 export class Dice {
   private multiplier: number;
   private sides: number;
   private additional: number;
 
-  public constructor(description: string) {
+  public static roll(): number {
+    return new Dice('1d6').roll();
+  }
+
+  public constructor(description: DiceDescription) {
     const splitDesc: string[] = description.trim().split('d');
     const multiplier: number = Number(splitDesc[0]);
     const rest: string[] = splitDesc[1].trim().split('+');
@@ -33,7 +40,7 @@ export class Dice {
   }
 
   public roll(): number {
-    return this.multiplier * getRandomNumber(1, this.sides) + this.additional;
+    return this.multiplier * rngService.getRandomNumber(1, this.sides) + this.additional;
   }
 
   public getMultiplier(): number {
@@ -48,13 +55,13 @@ export class Dice {
     return this.additional;
   }
 
-  public getDataToSerialization(): string {
-    let desc: string = `${this.multiplier}d${this.sides}`;
+  public getDataToSerialization(): DiceDescription {
+    let desc = `${this.multiplier}d${this.sides}`;
 
     if (this.additional) {
       desc += `+${this.additional}`;
     }
 
-    return desc;
+    return desc as DiceDescription;
   }
 }

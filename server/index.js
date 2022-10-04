@@ -14,9 +14,13 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.resolve(__dirname, '..', 'dist')));
 
 app.get('/save', (req, res) => {
-  const data = fs.readFileSync(SAVE_FILE_PATH, 'utf-8');
+  try {
+    const data = fs.readFileSync(SAVE_FILE_PATH, 'utf-8');
 
-  res.set('Content-Type', 'application/json').send(jsonpack.unpack(data));
+    res.set('Content-Type', 'application/json').send(jsonpack.unpack(data));
+  } catch (e) {
+    res.set(200).end();
+  }
 });
 app.post('/save', (req, res) => {
   const { body } = req;
