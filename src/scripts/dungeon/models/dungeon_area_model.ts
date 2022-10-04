@@ -1,9 +1,10 @@
 import { Rectangle } from '../../position/rectangle';
-import * as Utility from '../../utils/utility';
 import { Position } from '../../position/position';
 import { uid as generateUid } from '../../utils/uid_helper';
 import { RoomModel } from './room_model';
 import { LevelModel } from './level_model';
+import { rngService } from '../../utils/rng.service';
+import { Coin } from '../../position/coin';
 
 export class DungeonAreaModel extends Rectangle {
   /**
@@ -78,12 +79,12 @@ export class DungeonAreaModel extends Rectangle {
    */
   public splitHorizontal(iteration: number): DungeonAreaModel[] {
     const { x, y } = this.leftTop;
-    const splitFromCenterDirection = Math.random() < 0.5 ? -1 : 1;
+    const splitFromCenterDirection = Coin.toss() ? -1 : 1;
     const splitPoint =
       x +
       Math.floor(this.width / 2) +
       splitFromCenterDirection *
-        Utility.getRandomNumberFromRange(0, Math.floor(this.width / 4));
+        rngService.getRandomNumber(0, Math.floor(this.width / 4));
     const uid = generateUid();
     const firstRegion = new DungeonAreaModel(
       new Position(x, y),
@@ -113,12 +114,12 @@ export class DungeonAreaModel extends Rectangle {
    */
   public splitVertical(iteration: number): DungeonAreaModel[] {
     const { x, y } = this.leftTop;
-    const splitFromCenterDirection = Math.random() < 0.5 ? -1 : 1;
+    const splitFromCenterDirection = Coin.toss() ? -1 : 1;
     const splitPoint =
       y +
       Math.floor(this.height / 2) +
       splitFromCenterDirection *
-        Utility.getRandomNumberFromRange(0, Math.floor(this.height / 4));
+        rngService.getRandomNumber(0, Math.floor(this.height / 4));
     const uid = generateUid();
     const firstRegion = new DungeonAreaModel(
       new Position(x, y),

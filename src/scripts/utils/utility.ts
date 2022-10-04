@@ -211,9 +211,6 @@ export function doesArrayContainsArguments<M = IAnyObject>(
 
   return result;
 }
-export function getRandomNumberFromRange(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 export function getPositionFromString(
   str: string,
   separator: string,
@@ -231,9 +228,6 @@ export function getPositionFromString(
 }
 export function convertCoordsToString(x: number, y: number): string {
   return `${x}x${y}`;
-}
-export function getArrayRandomElement<P>(array: P[]): P {
-  return array[Math.floor(Math.random() * array.length)];
 }
 /**
  * Capitalizes first letter of given text.

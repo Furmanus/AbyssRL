@@ -84,4 +84,15 @@ if (storageData) {
   dungeonRoomTypes && (config.debugOptions.dungeonRooms = dungeonRoomTypes);
 }
 
-export { config };
+class ApplicationConfigService {
+  public get rngSeedValue(): number | null {
+    return null;
+  }
+}
+
+const applicationConfigService = new ApplicationConfigService();
+
+export {
+  applicationConfigService,
+  config,
+};

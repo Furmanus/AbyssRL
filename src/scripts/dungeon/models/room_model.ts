@@ -1,9 +1,8 @@
 import { Rectangle, SerializedRectangle } from '../../position/rectangle';
 import * as Utility from '../../utils/utility';
 import { Position, SerializedPosition } from '../../position/position';
-import * as Rng from '../../utils/rng';
+import { rngService } from '../../utils/rng.service';
 import { BaseModel } from '../../core/base.model';
-import { IAnyFunction } from '../../interfaces/common';
 import { LevelModel } from './level_model';
 import { Cell } from './cells/cell_model';
 
@@ -252,8 +251,8 @@ export class RoomModel extends BaseModel {
 
   public getRandomRoomCellPosition(): Position {
     return new Position(
-      Rng.getRandomNumber(this.left + 1, this.right - 1),
-      Rng.getRandomNumber(this.top + 1, this.bottom - 1),
+      rngService.getRandomNumber(this.left + 1, this.right - 1),
+      rngService.getRandomNumber(this.top + 1, this.bottom - 1),
     );
   }
 

@@ -1,5 +1,5 @@
 import { WearableModel } from '../wearable.model';
-import { Dice } from '../../../position/dice';
+import { Dice, DiceDescription } from '../../../position/dice';
 import { ItemSprites } from '../../../dungeon/constants/sprites.constants';
 import { ItemTypes } from '../../constants/itemTypes.constants';
 import { DamageTypes } from '../../../combat/combat.constants';
@@ -8,8 +8,8 @@ import { WeaponCriticalDamageType } from '../../constants/weapons.constants';
 export interface SerializedWeapon {
   id: string;
   itemType: ItemTypes.Weapon;
-  damage: string;
-  toHit: string;
+  damage: DiceDescription;
+  toHit: DiceDescription;
   name: string;
   type: DamageTypes;
   criticalHitRate?: number;
