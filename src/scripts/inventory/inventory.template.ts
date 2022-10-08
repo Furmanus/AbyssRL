@@ -67,7 +67,7 @@ export function getPreparedInventoryElement(
 function getInventoryWrapper(): HTMLTemplateElement {
   const wrapper: HTMLTemplateElement = document.createElement('template');
   wrapper.innerHTML = `
-        <div class="modal-inventory-wrapper">
+        <div class="modal-inventory-wrapper" data-test="inventory-modal-wrapper">
             <div class="modal-inventory-group-container"></div>
         </div>
     `;

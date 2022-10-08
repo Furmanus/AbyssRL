@@ -1,5 +1,5 @@
 import * as Utility from '../../utils/utility';
-import { config } from '../../global/config';
+import { applicationConfigService, config } from '../../global/config';
 import {
   END_PLAYER_TURN,
   PLAYER_WALK_CONFIRM_NEEDED,
@@ -82,6 +82,10 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     this.model = new PlayerModel(constructorConfig);
     this.attachEvents();
+
+    if (applicationConfigService.isTestMode || applicationConfigService.isDevMode) {
+      window.applicationPlayerModel = this.model;
+    }
 
     dungeonState.entityManager.addEntityToLevel(
       this,

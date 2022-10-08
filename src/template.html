@@ -5,9 +5,9 @@
     <title>Abyss Roguelike</title>
 </head>
 <body>
-    <div class="main-container-row">
+    <div class="main-container-row" data-test="main-container">
         <div id="game-container">
-            <canvas class="game-canvas" id="game"></canvas>
+            <canvas class="game-canvas" id="game" data-test="game-screen"></canvas>
         </div>
         <div class="info-container" id="info">
             <div class="info-player" id="player_info">
@@ -77,7 +77,7 @@
     </div>
     <div class="modal-wrapper hidden" id="modal-wrapper">
         <div class="modal-content" id="modal-content"></div>
-        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-overlay" id="modal-overlay" data-test="modal-overlay"></div>
     </div>
 </body>
 </html>

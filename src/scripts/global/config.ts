@@ -2,6 +2,17 @@ import { getDataFromSessionStorage } from '../utils/storage_helper';
 import { DevFormValues } from '../modal/developmentFeatures/devFeaturesModal.view';
 import { SessionStorageKeys } from '../constants/storage';
 
+interface IEnvs {
+  RNG_SEED?: number;
+  MODE?: 'development' | 'production' | 'test';
+}
+
+declare global {
+  interface Window {
+    env: IEnvs;
+  }
+}
+
 interface IConfig {
   LEVEL_WIDTH: number;
   LEVEL_HEIGHT: number;
@@ -86,6 +97,22 @@ if (storageData) {
 
 class ApplicationConfigService {
   public get rngSeedValue(): number | null {
+    return this.#getEnvs()?.RNG_SEED;
+  }
+
+  public get isTestMode(): boolean {
+    return this.#getEnvs()?.MODE === 'test';
+  }
+
+  public get isDevMode(): boolean {
+    return this.#getEnvs()?.MODE === 'development';
+  }
+
+  #getEnvs(): IEnvs {
+    if (typeof window.env !== 'undefined') {
+      return window.env;
+    }
+
     return null;
   }
 }
