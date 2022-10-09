@@ -14,8 +14,11 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import 'cypress-real-events/support';
 import './commands';
+
+export type LoadPageOptions = {
+  seed?: number;
+}
 
 declare global {
     namespace Cypress {
