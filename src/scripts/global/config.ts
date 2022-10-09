@@ -105,7 +105,7 @@ class ApplicationConfigService {
   }
 
   public get isDevMode(): boolean {
-    return this.#getEnvs()?.MODE === 'development';
+    return process.env.MODE === 'development';
   }
 
   #getEnvs(): IEnvs {

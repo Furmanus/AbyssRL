@@ -27,7 +27,7 @@ Cypress.Commands.add('loadPage', (opts: LoadPageOptions = {}) => {
     window.env = {
       ...window.env,
       MODE: 'test',
-    }
+    };
   });
 
   if (opts.seed) {

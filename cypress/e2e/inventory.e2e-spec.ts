@@ -27,4 +27,18 @@ describe('Inventory', () => {
       .getApplicationElement('inventory-modal-wrapper')
       .should('not.exist');
   });
+
+  it('should equip weapon', () => {
+    cy
+      .loadPage()
+      .pressKey('e')
+      .getApplicationElement('inventory-modal-wrapper')
+      .pressKey('a')
+      .getPlayerWeaponFromInventory(0)
+      .then(weaponToEquip => {
+        cy.getPlayerEquippedWeapon().then(equippedWeapon => {
+          expect(equippedWeapon.id).to.equal(weaponToEquip.id);
+        });
+      });
+  });
 });
