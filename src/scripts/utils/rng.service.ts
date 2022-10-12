@@ -1,4 +1,5 @@
 import { RNG } from 'rot-js';
+import { applicationConfigService } from '../global/config';
 
 class RngService {
   /**
@@ -26,6 +27,19 @@ class RngService {
   public setSeed(seedNumber: number): void {
     RNG.setSeed(seedNumber);
   }
+
+  public getSeed(): number {
+    return RNG.getSeed();
+  }
 }
 
-export const rngService = new RngService();
+const rngService = new RngService();
+
+if (applicationConfigService.isDevMode || applicationConfigService.isTestMode) {
+  window._application.rngService = rngService;
+}
+
+export { rngService };
+export type {
+  RngService,
+};

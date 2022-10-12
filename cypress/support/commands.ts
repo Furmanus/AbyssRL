@@ -16,8 +16,16 @@ Cypress.Commands.add('setRNGSeed', (value: number) => {
   });
 });
 
-Cypress.Commands.add('pressKey', (keyValue: string) => {
-  cy.window().trigger('keydown', { which: keyToKeyCodeMap[keyValue], key: keyValue });
+Cypress.Commands.add('pressKey', (keyValue: string | string[]) => {
+  let keys = keyValue;
+
+  if (!Array.isArray(keyValue)) {
+    keys = [keyValue];
+  }
+
+  for (const key of keys) {
+    cy.window().trigger('keydown', { which: keyToKeyCodeMap[key], key });
+  }
 });
 
 Cypress.Commands.add('loadPage', (opts: LoadPageOptions = {}) => {

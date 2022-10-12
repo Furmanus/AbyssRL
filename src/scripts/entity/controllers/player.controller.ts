@@ -84,7 +84,7 @@ export class PlayerController extends EntityController<PlayerModel> {
     this.attachEvents();
 
     if (applicationConfigService.isTestMode || applicationConfigService.isDevMode) {
-      window.applicationPlayerModel = this.model;
+      window._application.playerModel = this.model;
     }
 
     dungeonState.entityManager.addEntityToLevel(

@@ -1,4 +1,5 @@
 /* eslint-disable no-extend-native */
+import './init';
 import './state/application.state';
 import { MainController } from './main/main.controller';
 import u5tiles from '../assets/u5tiles.png';

@@ -1,9 +1,15 @@
 import type { PlayerModel } from './entity/models/player.model';
+import type { ApplicationConfigService } from './global/config';
+import type { RngService } from './utils/rng.service';
 
 declare global {
   interface Window {
-    dungeonState: DungeonState;
-    applicationPlayerModel: PlayerModel;
+    _application: {
+      dungeonState?: DungeonState;
+      playerModel?: PlayerModel;
+      configService?: ApplicationConfigService;
+      rngService?: RngService;
+    }
   }
 
   interface Set<T> {

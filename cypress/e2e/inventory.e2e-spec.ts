@@ -1,3 +1,5 @@
+import { Seeds } from '../constants/seeds';
+
 describe('Inventory', () => {
   it('should visit and detect main container', () => {
     cy.loadPage().getApplicationElement('main-container');
@@ -40,5 +42,75 @@ describe('Inventory', () => {
           expect(equippedWeapon.id).to.equal(weaponToEquip.id);
         });
       });
+  });
+
+  it('should equip armour', () => {
+    cy
+      .loadPage()
+      .pressKey('e')
+      .getApplicationElement('inventory-modal-wrapper')
+      .pressKey('d')
+      .getPlayerArmourFromInventory(0)
+      .then(armourToEquip => {
+        cy.getPlayerEquippedArmour().then(equippedArmour => {
+          expect(equippedArmour.id).to.equal(armourToEquip.id);
+        });
+      });
+  });
+
+  it('should pick up item from floor', () => {
+    let itemToPickUpId: string;
+
+    cy
+      .loadPage({ seed: Seeds.StartingRoomWithWeaponAndDoors })
+      .pressKey(['3', '2'])
+      .getCurrentPlayerPosition()
+      .getCurrentLevelCellInventory()
+      .then((inventory) => {
+        itemToPickUpId = inventory[0].id;
+      })
+      .pressKey(',')
+      .getPlayerInventory()
+      .then((inventory) => {
+        expect(inventory.find((item) => item.id === itemToPickUpId)).to.not.be.undefined;
+      })
+      .getCurrentPlayerPosition()
+      .getCurrentLevelCellInventory()
+      .then((inventory) => {
+        expect(inventory.length).to.equal(0);
+      });
+    ;
+  });
+
+  it('should multi drop items', () => {
+    const itemsToDropIds: string[] = [];
+
+    cy
+      .loadPage()
+      .getPlayerInventory()
+      .then((inv) => {
+        itemsToDropIds.push(inv[0].id);
+        itemsToDropIds.push(inv[1].id)
+      })
+      .pressKey('d')
+      .getApplicationElement('inventory-modal-wrapper')
+      .pressKey(['a', 'b', 'enter'])
+      .getCurrentPlayerPosition()
+      .getCurrentLevelCellInventory()
+      .then((inv) => {
+        const areItemsOnGround = itemsToDropIds.every((droppedItem) => {
+          return inv.find((item) => item.id === droppedItem);
+        });
+
+        expect(areItemsOnGround).to.equal(true);
+      })
+      .getPlayerInventory()
+      .then((inventory) => {
+        const areItemsInInventory = itemsToDropIds.every((droppedItem) => {
+          return inventory.find((item) => item.id === droppedItem);
+        });
+
+        expect(areItemsInInventory).to.equal(false);
+      })
   });
 });

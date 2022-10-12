@@ -51,6 +51,9 @@ const config: IConfig = {
   ROWS: undefined,
   COLUMNS: undefined,
 };
+
+const applicationConfigServiceToken = Symbol('Application config service');
+
 /**
  * Function which calculates and returns object with screen properties.
  */
@@ -95,7 +98,13 @@ if (storageData) {
   dungeonRoomTypes && (config.debugOptions.dungeonRooms = dungeonRoomTypes);
 }
 
-class ApplicationConfigService {
+export class ApplicationConfigService {
+  public constructor(token: Symbol) {
+    if (token !== applicationConfigServiceToken) {
+      throw new Error('Invalid constructor');
+    }
+  }
+
   public get rngSeedValue(): number | null {
     return this.#getEnvs()?.RNG_SEED;
   }
@@ -117,7 +126,11 @@ class ApplicationConfigService {
   }
 }
 
-const applicationConfigService = new ApplicationConfigService();
+const applicationConfigService = new ApplicationConfigService(applicationConfigServiceToken);
+
+if (applicationConfigService.isDevMode || applicationConfigService.isTestMode) {
+  window._application.configService = applicationConfigService;
+}
 
 export {
   applicationConfigService,

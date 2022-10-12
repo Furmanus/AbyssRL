@@ -15,7 +15,7 @@ const defaultDungeonState: PartialDungeonState = {
 const dungeonState = new DungeonState();
 
 if (applicationConfigService.isTestMode || applicationConfigService.isDevMode) {
-  window.dungeonState = dungeonState;
+  window._application.dungeonState = dungeonState;
 }
 
 export { dungeonState };
