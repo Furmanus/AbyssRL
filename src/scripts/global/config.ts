@@ -5,6 +5,7 @@ import { SessionStorageKeys } from '../constants/storage';
 interface IEnvs {
   RNG_SEED?: number;
   MODE?: 'development' | 'production' | 'test';
+  TEST_DUNGEON_DATA?: string;
 }
 
 declare global {
@@ -115,6 +116,14 @@ export class ApplicationConfigService {
 
   public get isDevMode(): boolean {
     return process.env.MODE === 'development';
+  }
+
+  public get testDungeonData(): string | null {
+    if (this.isDevMode || this.isTestMode) {
+      return this.#getEnvs()?.TEST_DUNGEON_DATA || null;
+    }
+
+    return null;
   }
 
   #getEnvs(): IEnvs {

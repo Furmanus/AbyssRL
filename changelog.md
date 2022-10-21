@@ -1,3 +1,5 @@
+###0.1.1 (to be added)
+* (Test) Added Cypress.js based e2e tests
 ###0.1.0 (04.10.2022)
 * (Feature) RNG can now start with fixed seed
 ###0.0.8 (27.02.2022)

@@ -1,17 +1,19 @@
 import { Seeds } from '../constants/seeds';
 
+const loadPageOptions = { dungeonDataFileName: 'roomWithWeapon.json' };
+
 describe('Inventory', () => {
   it('should visit and detect main container', () => {
-    cy.loadPage().getApplicationElement('main-container');
+    cy.loadPage(loadPageOptions).getApplicationElement('main-container');
   });
 
   it('should open inventory modal', () => {
-    cy.loadPage().pressKey('i').getApplicationElement('inventory-modal-wrapper');
+    cy.loadPage(loadPageOptions).pressKey('i').getApplicationElement('inventory-modal-wrapper');
   });
 
   it('should close modal on overlay click', () => {
     cy
-      .loadPage()
+      .loadPage(loadPageOptions)
       .pressKey('i')
       .getApplicationElement('inventory-modal-wrapper')
       .get('body')
@@ -22,7 +24,7 @@ describe('Inventory', () => {
 
   it('should close modal on escape key', () => {
     cy
-      .loadPage()
+      .loadPage(loadPageOptions)
       .pressKey('i')
       .getApplicationElement('inventory-modal-wrapper')
       .pressKey('esc')
@@ -32,7 +34,7 @@ describe('Inventory', () => {
 
   it('should equip weapon', () => {
     cy
-      .loadPage()
+      .loadPage(loadPageOptions)
       .pressKey('e')
       .getApplicationElement('inventory-modal-wrapper')
       .pressKey('a')
@@ -46,7 +48,7 @@ describe('Inventory', () => {
 
   it('should equip armour', () => {
     cy
-      .loadPage()
+      .loadPage(loadPageOptions)
       .pressKey('e')
       .getApplicationElement('inventory-modal-wrapper')
       .pressKey('d')
@@ -62,7 +64,7 @@ describe('Inventory', () => {
     let itemToPickUpId: string;
 
     cy
-      .loadPage({ seed: Seeds.StartingRoomWithWeaponAndDoors })
+      .loadPage(loadPageOptions)
       .pressKey(['3', '2'])
       .getCurrentPlayerPosition()
       .getCurrentLevelCellInventory()
@@ -86,7 +88,7 @@ describe('Inventory', () => {
     const itemsToDropIds: string[] = [];
 
     cy
-      .loadPage()
+      .loadPage(loadPageOptions)
       .getPlayerInventory()
       .then((inv) => {
         itemsToDropIds.push(inv[0].id);

@@ -6,6 +6,7 @@ import { getLetterFromNumber } from '../utils/utility';
 import { actionNameToModalHeaderMap } from '../entity/constants/inventory';
 import { EntityModel } from '../entity/models/entity.model';
 import { WeaponModel } from '../items/models/weapons/weapon.model';
+import { InventoryTemplateViewElements } from './inventory.constants';
 
 interface IGroups {
   [groupName: string]: DocumentFragment;
@@ -80,7 +81,7 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
   group.innerHTML = `
         <div class="modal-inventory-group">
             <h4 class="modal-inventory-group-header">${groupName}</h4>
-            <ul class="modal-inventory-group-list" id="modal-inventory-list"/>
+            <ul class="modal-inventory-group-list" data-element="${InventoryTemplateViewElements.ModalInventoryList}"/>
         </div>
     `;
 

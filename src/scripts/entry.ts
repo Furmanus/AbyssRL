@@ -8,6 +8,7 @@ import { tilesetObject } from './global/tileset';
 import type { SerializedDungeonState } from './state/applicationState.interfaces';
 import { rngService } from './utils/rng.service';
 import { applicationConfigService } from './global/config';
+import { DungeonJSONBuilder } from './dungeon/builder/dungeonJSONBuilder';
 
 Array.prototype.random = function <M>(): M {
   const arr: M[] = Array.from(this);
@@ -35,6 +36,10 @@ if (applicationConfigService.rngSeedValue) {
     } catch {
       console.error('failed to decode json data');
     }
+  }
+
+  if (applicationConfigService.testDungeonData) {
+    parsedGame = DungeonJSONBuilder.createFromJson(await fetch(`/public/dungeonData/${applicationConfigService.testDungeonData}`).then((res) => res.json()));
   }
 
   const tileSet = document.createElement('img');

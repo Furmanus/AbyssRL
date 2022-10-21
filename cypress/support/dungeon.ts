@@ -8,8 +8,6 @@ Cypress.Commands.add('getDungeonData', { prevSubject: false }, () => {
 Cypress.Commands.add('getCurrentLevelCell', { prevSubject: false }, (coords: Coordinates) => {
   return cy.getDungeonData().then((state) => {
     const { currentBranch, currentLevelNumber, dungeonsStructure } = state;
-    console.log(convertPositionToCoordinatesString(coords))
-    console.log(dungeonsStructure[currentBranch][currentLevelNumber].cells);
 
     return dungeonsStructure[currentBranch][currentLevelNumber].cells.get(convertPositionToCoordinatesString(coords));
   });

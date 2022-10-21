@@ -27,6 +27,7 @@ import type { Coordinates } from '../interfaces/interfaces';
 
 export type LoadPageOptions = {
   seed?: number;
+  dungeonDataFileName?: string;
 }
 
 declare global {

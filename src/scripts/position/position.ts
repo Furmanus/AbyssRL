@@ -2,6 +2,7 @@ import { ExcludeFunctionProperties } from '../interfaces/utility.interfaces';
 import { Cell } from '../dungeon/models/cells/cell_model';
 
 export type SerializedPosition = ExcludeFunctionProperties<Position>;
+export type PositionDescription = `${number}x${number}`;
 
 /**
  * Class which instances represents position on two dimensional grid.
@@ -23,15 +24,17 @@ export class Position {
     return new Position(cell.x, cell.y);
   }
 
-  public static fromString(pos: string): Position {
+  public static fromString(pos: PositionDescription): Position {
     const coords = pos.split('x');
+    const x = parseInt(coords[0]);
+    const y = parseInt(coords[1]);
 
     if (
       coords.length === 2 &&
-      typeof coords[0] === 'number' &&
-      typeof coords[1] === 'number'
+      Number.isInteger(x) &&
+      Number.isInteger(y)
     ) {
-      return new Position(coords[0], coords[1]);
+      return new Position(x, y);
     }
 
     throw new Error('Invalid constuctor parameter');

@@ -2,7 +2,6 @@ import { IActor } from '../entity/entity_interfaces';
 import { QueueMember, SerializedQueueMember } from './queueMember';
 import { IEngine } from './timeEngine.interfaces';
 import { TimeEngineTypes } from './timeEngine.constants';
-import { MonsterController } from '../entity/controllers/monster.controller';
 
 export interface SerializedSpeedTimeEngine {
   queue: SerializedQueueMember[];

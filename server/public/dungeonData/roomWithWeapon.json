@@ -1,0 +1,28 @@
+{
+    "main_dungeon": {
+        "1": {
+            "branch": "main_dungeon",
+            "levelNumber": "1",
+            "defaultWallType": "gray_wall",
+            "rooms": [
+                {
+                    "floorType": "red_floor",
+                    "wallType": "gray_wall",
+                    "doorType": "wooden_solid_doors",
+                    "rectangle": {
+                        "leftTop": {"x": 2, "y": 2},
+                        "width": 7,
+                        "height": 7
+                    },
+                    "doorSpots": [
+                        "6x2"
+                    ]
+                }
+            ],
+            "stairsUp": "3x2",
+            "stairsDown": "5x4",
+            "items": { "4x4": ["weapon"] },
+            "entities": {}
+        }
+    } 
+}

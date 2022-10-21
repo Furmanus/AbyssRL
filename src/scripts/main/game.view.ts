@@ -621,7 +621,7 @@ export class GameView extends Observer {
   ): void {
     this.context.fillStyle =
       'rgb(' + Math.floor(r) + ',' + Math.floor(g) + ',' + Math.floor(b) + ')';
-    this.context.globalCompositeOperation = type; // adds the fill color to existing pixels
+    this.context.globalCompositeOperation = type as never; // adds the fill color to existing pixels
     this.context.fillRect(
       x * this.TILE_SIZE,
       y * this.TILE_SIZE,

@@ -8,8 +8,10 @@ export class Dice {
   private sides: number;
   private additional: number;
 
-  public static roll(): number {
-    return new Dice('1d6').roll();
+  public static roll(sides: DiceDescription): number;
+  public static roll(): number;
+  public static roll(sides?: DiceDescription): number {
+    return new Dice(sides || '1d6').roll();
   }
 
   public constructor(description: DiceDescription) {

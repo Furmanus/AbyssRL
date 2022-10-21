@@ -12,6 +12,7 @@ app.use((req, res, next) => {
 });
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.resolve(__dirname, '..', 'dist')));
+app.use('/public', express.static(path.resolve(__dirname, 'public')));
 
 app.get('/save', (req, res) => {
   try {

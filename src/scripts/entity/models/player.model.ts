@@ -1,5 +1,4 @@
 import { EntityModel, SerializedEntityModel } from './entity.model';
-import { IAnyObject } from '../../interfaces/common';
 import { MonsterSizes, MonstersTypes } from '../constants/monsters';
 import { PlayerEquipSlots } from '../constants/inventory';
 import { IPlayerEquipSlotsType } from '../entity_interfaces';
