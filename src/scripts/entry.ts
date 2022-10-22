@@ -9,6 +9,7 @@ import type { SerializedDungeonState } from './state/applicationState.interfaces
 import { rngService } from './utils/rng.service';
 import { applicationConfigService } from './global/config';
 import { DungeonJSONBuilder } from './dungeon/builder/dungeonJSONBuilder';
+import { TestFeaturesService } from './utils/test_features.service';
 
 Array.prototype.random = function <M>(): M {
   const arr: M[] = Array.from(this);
@@ -45,9 +46,11 @@ if (applicationConfigService.rngSeedValue) {
   const tileSet = document.createElement('img');
   tileSet.setAttribute('src', u5tiles);
 
-  tileSet.addEventListener('load', () => {
+  tileSet.addEventListener('load', async () => {
     tilesetObject.tileset = tileSet;
-    // eslint-disable-next-line no-new
+
+    await TestFeaturesService.getInstance().fetchPlayerStartingData();
+
     new MainController(tileSet, parsedGame);
   });
 })();

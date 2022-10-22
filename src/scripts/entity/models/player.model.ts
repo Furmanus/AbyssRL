@@ -4,18 +4,9 @@ import { PlayerEquipSlots } from '../constants/inventory';
 import { IPlayerEquipSlotsType } from '../entity_interfaces';
 import { NaturalWeaponFactory } from '../../items/factory/naturalWeapon.factory';
 import { ItemsCollection } from '../../items/items_collection';
-import { WeaponModelFactory } from '../../items/factory/item/weaponModel.factory';
-import { ArmourModelFactory } from '../../items/factory/item/armour_model_factory';
 
 export class PlayerModel extends EntityModel {
-  public inventory = new ItemsCollection([
-    WeaponModelFactory.getRandomWeaponModel(),
-    WeaponModelFactory.getRandomWeaponModel(),
-    WeaponModelFactory.getRandomWeaponModel(),
-    ArmourModelFactory.getRandomArmourModel(),
-    ArmourModelFactory.getRandomArmourModel(),
-    ArmourModelFactory.getRandomArmourModel(),
-  ]); // TODO temporary, for testing
+  public inventory = new ItemsCollection([]);
 
   constructor(config: SerializedEntityModel) {
     super(config);

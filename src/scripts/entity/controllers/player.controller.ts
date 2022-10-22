@@ -11,12 +11,9 @@ import {
   globalMessagesController,
   MessagesController,
 } from '../../messages/messages.controller';
-import { IAnyFunction, IAnyObject } from '../../interfaces/common';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 import { UseAttemptResult } from '../../dungeon/models/cells/effects/use_attempt_result';
 import { UseEffectResult } from '../../dungeon/models/cells/effects/use_effect_result';
-import { LevelModel } from '../../dungeon/models/level_model';
-import { DungeonEvents } from '../../constants/dungeon_events';
 import { ICombatResult } from '../../combat/combatHelper';
 import { ItemsCollection } from '../../items/items_collection';
 
@@ -34,18 +31,17 @@ import {
 import { boundMethod } from 'autobind-decorator';
 import { WeaponModel } from '../../items/models/weapons/weapon.model';
 import {
-  ContainerInventoryModalController,
   ContainerInventoryTransferData,
 } from '../../modal/containerInventory/containerInventoryModal.controller';
 import { ContainerInventoryModalConstants } from '../../modal/containerInventory/containerInventoryModal.constants';
 import { ArmourModel } from '../../items/models/armours/armour_model';
-import { EntityStatusFactory } from '../factory/entityStatus.factory';
 import { EntityStatusesCollection } from '../entity_statuses/entityStatuses.collection';
 import { globalInfoController } from '../../info/info.controller';
 import { SerializedEntityModel } from '../models/entity.model';
 import { dungeonState } from '../../state/application.state';
 import { LevelController } from '../../dungeon/level.controller';
 import { EntityController } from './entity.controller';
+import { TestFeaturesService } from '../../utils/test_features.service';
 
 export interface IMoveResolve {
   canMove: boolean;
@@ -102,9 +98,15 @@ export class PlayerController extends EntityController<PlayerModel> {
 
     if (!instance) {
       instance = new PlayerController(constructorToken, constructorConfig);
+
+      instance.initialize();
     }
 
     return instance;
+  }
+
+  public initialize(): void {
+    TestFeaturesService.getInstance().initPlayerData(this);
   }
 
   protected attachEvents(): void {
@@ -319,6 +321,10 @@ export class PlayerController extends EntityController<PlayerModel> {
     items.forEach((item: ItemModel) => {
       this.model.pickUp(item);
     });
+  }
+
+  public addItemToInventory(item: ItemModel[]): void {
+    this.model.addItemToInventory(item);
   }
 
   public onEntityPickUp(item: ItemModel): void {

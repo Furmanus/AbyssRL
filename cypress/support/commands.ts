@@ -29,13 +29,14 @@ Cypress.Commands.add('pressKey', (keyValue: string | string[]) => {
 });
 
 Cypress.Commands.add('loadPage', (opts: LoadPageOptions = {}) => {
-  const { seed, dungeonDataFileName } = opts;
+  const { seed, dungeonDataFileName, playerDataFileName } = opts;
 
   cy.addListener('window:before:load', (window) => {
     window.env = {
       ...window.env,
       MODE: 'test',
       ...(dungeonDataFileName && { TEST_DUNGEON_DATA: dungeonDataFileName }),
+      ...(playerDataFileName && { TEST_PLAYER_DATA: playerDataFileName }),
     };
   });
 

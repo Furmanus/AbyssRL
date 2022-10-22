@@ -1,6 +1,9 @@
-import { Seeds } from '../constants/seeds';
+import type { LoadPageOptions } from '../support/e2e';
 
-const loadPageOptions = { dungeonDataFileName: 'roomWithWeapon.json' };
+const loadPageOptions: LoadPageOptions = {
+  dungeonDataFileName: 'roomWithWeapon.json',
+  playerDataFileName: 'startingInventoryWithWeaponAndArmour.json',
+};
 
 describe('Inventory', () => {
   it('should visit and detect main container', () => {
@@ -51,7 +54,7 @@ describe('Inventory', () => {
       .loadPage(loadPageOptions)
       .pressKey('e')
       .getApplicationElement('inventory-modal-wrapper')
-      .pressKey('d')
+      .pressKey('c')
       .getPlayerArmourFromInventory(0)
       .then(armourToEquip => {
         cy.getPlayerEquippedArmour().then(equippedArmour => {

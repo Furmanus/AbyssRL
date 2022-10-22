@@ -6,6 +6,7 @@ interface IEnvs {
   RNG_SEED?: number;
   MODE?: 'development' | 'production' | 'test';
   TEST_DUNGEON_DATA?: string;
+  TEST_PLAYER_DATA?: string;
 }
 
 declare global {
@@ -121,6 +122,14 @@ export class ApplicationConfigService {
   public get testDungeonData(): string | null {
     if (this.isDevMode || this.isTestMode) {
       return this.#getEnvs()?.TEST_DUNGEON_DATA || null;
+    }
+
+    return null;
+  }
+
+  public get testPlayerData(): string | null {
+    if (this.isDevMode || this.isTestMode) {
+      return this.#getEnvs()?.TEST_PLAYER_DATA || null;
     }
 
     return null;

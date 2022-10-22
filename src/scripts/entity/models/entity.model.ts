@@ -451,6 +451,10 @@ export class EntityModel extends BaseModel implements IEntity {
     }
   }
 
+  public addItemToInventory(items: ItemModel[]): void {
+    this.inventory.add(items);
+  }
+
   public equipWeapon(weapon: WeaponModel): void {
     const previousWeapon = this.weapon;
 
