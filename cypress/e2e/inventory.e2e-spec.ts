@@ -76,9 +76,7 @@ describe('Inventory', () => {
       })
       .pressKey(',')
       .getPlayerInventory()
-      .then((inventory) => {
-        expect(inventory.find((item) => item.id === itemToPickUpId)).to.not.be.undefined;
-      })
+      .then((inventory) => expect(inventory.find((item) => item.id === itemToPickUpId)).to.not.be.undefined)
       .getCurrentPlayerPosition()
       .getCurrentLevelCellInventory()
       .then((inventory) => {
