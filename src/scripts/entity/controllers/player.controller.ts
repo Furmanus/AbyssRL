@@ -202,7 +202,7 @@ export class PlayerController extends EntityController<PlayerModel> {
   }
 
   /**
-   * Method responsible for attempting to move player into target cell. A little bit magic happens here: function
+   * Method responsible for attempting to move player into target cell. Function
    * returns a promise. If movement is instantly possible or not possible, promise is resolved immediately. If
    * confirmation from player is needed, game controller is notified about that. Along with notification, two
    * functions are passed. First is callback function triggered when player confirms movement, second is triggered

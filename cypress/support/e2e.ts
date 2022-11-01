@@ -24,6 +24,7 @@ import type { ItemModel } from '../../src/scripts/items/models/item.model'
 import type { DungeonState } from '../../src/scripts/state/dungeon.state';
 import type { Cell } from '../../src/scripts/dungeon/models/cells/cell_model';
 import type { Coordinates } from '../interfaces/interfaces';
+import { EntityModel } from '../../src/scripts/entity/models/entity.model';
 
 export type LoadPageOptions = {
   seed?: number;
@@ -45,6 +46,7 @@ declare global {
           * Custom command used to get player data.
           */
           getPlayerData(): Chainable<PlayerModel>;
+          getPlayerHitPoints(): Chainable<number>;
           getPlayerInventory(): Chainable<ItemModel[]>;
           getPlayerEquippedWeapon(): Chainable<WeaponModel>;
           getPlayerEquippedArmour(): Chainable<ArmourModel>;
@@ -52,6 +54,7 @@ declare global {
           getPlayerArmourFromInventory(index: number): Chainable<ArmourModel>;
           getCurrentPlayerCell(): Chainable<Cell>;
           getCurrentPlayerPosition(): Chainable<Coordinates>;
+          getFirstEntityInPlayerFov(): Chainable<EntityModel>;
           /**
            * Dungeon
            */

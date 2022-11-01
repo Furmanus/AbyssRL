@@ -108,7 +108,7 @@ export class ApplicationConfigService {
   }
 
   public get rngSeedValue(): number | null {
-    return this.#getEnvs()?.RNG_SEED;
+    return this.#getEnvs()?.RNG_SEED || parseInt(process.env.RNG_SEED) || null;
   }
 
   public get isTestMode(): boolean {
@@ -121,7 +121,7 @@ export class ApplicationConfigService {
 
   public get testDungeonData(): string | null {
     if (this.isDevMode || this.isTestMode) {
-      return this.#getEnvs()?.TEST_DUNGEON_DATA || null;
+      return this.#getEnvs()?.TEST_DUNGEON_DATA || process.env.DUNGEON_JSON_PATH || null;
     }
 
     return null;
@@ -129,7 +129,7 @@ export class ApplicationConfigService {
 
   public get testPlayerData(): string | null {
     if (this.isDevMode || this.isTestMode) {
-      return this.#getEnvs()?.TEST_PLAYER_DATA || null;
+      return this.#getEnvs()?.TEST_PLAYER_DATA || process.env.PLAYER_JSON_PATH || null;
     }
 
     return null;

@@ -8,5 +8,7 @@ export const keyToKeyCodeMap = {
   Enter: 13,
   3: 99,
   2: 98,
+  6: 102,
   ',': 188,
+  '.': 190,
 };

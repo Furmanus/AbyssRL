@@ -114,10 +114,6 @@ export abstract class EntityController<
   @boundMethod
   private onEntityDeath(): void {
     this.notify(EntityEvents.EntityDeath, { entityController: this });
-
-    globalMessagesController.showMessageInView(
-      capitalizeString(`${this.model.getDescription()} drops dead.`),
-    );
   }
 
   /**

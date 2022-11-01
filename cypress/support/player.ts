@@ -1,9 +1,14 @@
+import { MonstersTypes } from '../../src/scripts/entity/constants/monsters';
 import { ItemTypes } from '../../src/scripts/items/constants/itemTypes.constants';
 import type { ArmourModel } from '../../src/scripts/items/models/armours/armour_model';
 import type { WeaponModel } from '../../src/scripts/items/models/weapons/weapon.model';
 
 Cypress.Commands.add('getPlayerData', () => {
   return cy.window().then((win) => win._application.playerModel);
+});
+
+Cypress.Commands.add('getPlayerHitPoints', () => {
+  return cy.getPlayerData().then(playerModel => playerModel.hitPoints);
 });
 
 Cypress.Commands.add('getPlayerInventory', () => {
@@ -32,4 +37,8 @@ Cypress.Commands.add('getCurrentPlayerCell', { prevSubject: false }, () => {
 
 Cypress.Commands.add('getCurrentPlayerPosition', { prevSubject: false }, () => {
   return cy.getPlayerData().then(model => ({ x: model.position.x, y: model.position.y }));
+});
+
+Cypress.Commands.add('getFirstEntityInPlayerFov', { prevSubject: false }, () => {
+  return cy.getPlayerData().then(model => model.fov.find((cell) => cell.entity && cell.entity.type !== MonstersTypes.Player)?.entity || null);
 });

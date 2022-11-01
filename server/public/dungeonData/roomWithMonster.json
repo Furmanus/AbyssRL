@@ -14,12 +14,11 @@
                         "width": 7,
                         "height": 7
                     },
-                    "doorSpots": [
-                        "6x2"
-                    ]
+                    "doorSpots": []
                 }
             ],
             "cells": {
+                "6x2": "red_floor",
                 "7x2": "red_floor",
                 "8x2": "red_floor",
                 "9x2": "red_floor",
@@ -27,8 +26,10 @@
             },
             "stairsUp": "3x2",
             "stairsDown": "5x4",
-            "items": { "4x4": ["weapon"] },
-            "entities": {}
+            "items": {},
+            "entities": {
+                "8x2": "giant_rat"
+            }
         }
     } 
 }

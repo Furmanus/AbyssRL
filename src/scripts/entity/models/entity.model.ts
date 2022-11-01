@@ -315,7 +315,7 @@ export class EntityModel extends BaseModel implements IEntity {
     window.setTimeout(() => {
       const recreatedStatusesCollection =
         EntityStatusFactory.getCollectionFromSerializedData(
-          config.entityStatuses,
+          config.entityStatuses || [],
           entityRegistry.getControllerByModel(this),
         );
 

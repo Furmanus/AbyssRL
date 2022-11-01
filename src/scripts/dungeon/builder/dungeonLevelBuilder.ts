@@ -11,6 +11,7 @@ import { ItemModel } from '../../items/models/item.model';
 import { Position, PositionDescription } from '../../position/position';
 import { SerializedDungeonLevelEntryStructure } from '../../state/applicationState.interfaces';
 import { TimeEngine } from '../../timeEngine/timeEngine';
+import { TimeEngineTypes } from '../../timeEngine/timeEngine.constants';
 import { CellTypes } from '../constants/cellTypes.constants';
 import { DungeonBranches } from '../constants/dungeonTypes.constants';
 import { CellModelFactory } from '../factory/cellModel.factory';
@@ -196,7 +197,20 @@ export class DungeonLevelBuilder {
         entities: this.#entities,
         level: this.#levelModel.getDataToSerialization(),
         scheduledDungeonEvents: [],
-        timeEngine: new TimeEngine().getDataToSerialization(),
+        timeEngine: {
+          engine: {
+            type: TimeEngineTypes.Speed,
+            queue: this.#entities.map((entity) => ({
+              actorId: entity.id,
+              isRepeatable: true,
+              lastSavedActorSpeed: entity.speed,
+              nextActionAt: 1 / entity.speed,
+            })),
+            wasEngineStarted: false,
+            currentTimestamp: 0,
+            isUnlocked: false,
+          },
+        },
       };
     }
 

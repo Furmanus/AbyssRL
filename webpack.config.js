@@ -30,6 +30,9 @@ module.exports = (env) => {
 
   plugins.push(new DefinePlugin({
     'process.env.MODE': JSON.stringify(mode),
+    'process.env.DUNGEON_JSON_PATH': JSON.stringify(process.env.DUNGEON_JSON_PATH),
+    'process.env.PLAYER_JSON_PATH': JSON.stringify(process.env.PLAYER_JSON_PATH),
+    'process.env.RNG_SEED': JSON.stringify(process.env.RNG_SEED),
   }));
 
   return {

@@ -182,9 +182,7 @@ export class GameController extends BaseController {
 
     this.playerController.calculateFov();
 
-    if (!currentLevel.engine.hasActor(this.playerController)) {
-      currentLevel.addActorToTimeEngine(this.playerController);
-    }
+    currentLevel.addActorToTimeEngine(this.playerController);
 
     this.view.camera.centerOnCoordinates(
       this.playerController.getModel().position.x,

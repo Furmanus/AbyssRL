@@ -43,9 +43,10 @@ describe('Inventory', () => {
       .pressKey('a')
       .getPlayerWeaponFromInventory(0)
       .then(weaponToEquip => {
-        cy.getPlayerEquippedWeapon().then(equippedWeapon => {
-          expect(equippedWeapon.id).to.equal(weaponToEquip.id);
-        });
+        cy
+          .getPlayerEquippedWeapon()
+          .its('id')
+          .should('be.equal', weaponToEquip.id);
       });
   });
 
@@ -57,9 +58,10 @@ describe('Inventory', () => {
       .pressKey('c')
       .getPlayerArmourFromInventory(0)
       .then(armourToEquip => {
-        cy.getPlayerEquippedArmour().then(equippedArmour => {
-          expect(equippedArmour.id).to.equal(armourToEquip.id);
-        });
+        cy
+          .getPlayerEquippedArmour()
+          .its('id')
+          .should('be.equal', armourToEquip.id)
       });
   });
 
@@ -79,9 +81,8 @@ describe('Inventory', () => {
       .then((inventory) => expect(inventory.find((item) => item.id === itemToPickUpId)).to.not.be.undefined)
       .getCurrentPlayerPosition()
       .getCurrentLevelCellInventory()
-      .then((inventory) => {
-        expect(inventory.length).to.equal(0);
-      });
+      .its('length')
+      .should('be.equal', 0);
     ;
   });
 

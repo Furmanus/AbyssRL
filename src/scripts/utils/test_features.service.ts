@@ -34,11 +34,13 @@ public static getInstance(options?: TestFeaturesServiceConstructorOptions): Test
 }
 
 public async fetchPlayerStartingData(): Promise<void> {
-  this.#testPlayerData = await fetch(`/public/playerData/${applicationConfigService.testPlayerData}`).then((res) => res.json());
+  if (applicationConfigService.testPlayerData) {
+    this.#testPlayerData = await fetch(`/public/playerData/${applicationConfigService.testPlayerData}`).then((res) => res.json());
+  }
 }
 
 public initPlayerData(playerController: PlayerController): void {
-  if (applicationConfigService.testPlayerData && this.#testPlayerData) {
+  if (this.#testPlayerData) {
     const { inventory } = this.#testPlayerData;
     const items: ItemModel[] = [];
 

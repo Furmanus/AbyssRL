@@ -302,6 +302,12 @@ export class DungeonState extends BaseState {
       const timeEngine = new TimeEngine(stateLevelStructure.timeEngine);
 
       dungeonBranchStructure[lvlNumber].timeEngine = timeEngine;
+
+      setTimeout(() => {
+        for (const entity of entities) {
+          this.entityManager.addEntityToLevel(entity);
+        }
+      }, 0); // TODO Refactor and remove this async call
     }
 
     return dungeonBranchStructure;
