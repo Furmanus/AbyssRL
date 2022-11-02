@@ -16,3 +16,7 @@ Cypress.Commands.add('getCurrentLevelCell', { prevSubject: false }, (coords: Coo
 Cypress.Commands.add('getCurrentLevelCellInventory', { prevSubject: 'optional' }, (coords: Coordinates) => {
   return cy.getCurrentLevelCell(coords).then((cell) => cell.inventory.get());
 });
+
+Cypress.Commands.add('getCurrentLevelCellContainerInventory', { prevSubject: 'optional' }, (coords: Coordinates) => {
+  return cy.getCurrentLevelCell(coords).then((cell) => cell.containerInventory.get());
+});

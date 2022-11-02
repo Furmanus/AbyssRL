@@ -61,6 +61,7 @@ declare global {
           getDungeonData(): Chainable<DungeonState>;
           getCurrentLevelCell(coords?: Coordinates): Chainable<Cell>;
           getCurrentLevelCellInventory(coords?: Coordinates): Chainable<ItemModel[]>;
+          getCurrentLevelCellContainerInventory(coords?: Coordinates): Chainable<ItemModel[]>;
       }
 
       export interface Window {

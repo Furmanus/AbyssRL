@@ -5,6 +5,7 @@ export const keyToKeyCodeMap = {
   e: 69,
   a: 65,
   b: 66,
+  c: 67,
   Enter: 13,
   3: 99,
   2: 98,
