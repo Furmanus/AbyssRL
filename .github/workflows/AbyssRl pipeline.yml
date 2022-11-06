@@ -18,10 +18,23 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-      - name: cypress run
+      - name: e2e tests
         uses: cypress-io/github-action@v4.0.0
         with: 
           build: npm run build:prod
           start: npm run start:server:prod
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: install dependencies
+        run: npm install
+      - name: type-check
+        run: npm run typecheck
 
       
