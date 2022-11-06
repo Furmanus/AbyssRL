@@ -26,7 +26,8 @@ describe('Combat', () => {
     cy
       .loadPage(loadPageOptions)
       .pressKey(new Array(20).fill('.'))
-      .getPlayerHitPoints()
+      .getPlayerData()
+      .its('hitPoints')
       .should('be.lte', 0);
   });
 });
