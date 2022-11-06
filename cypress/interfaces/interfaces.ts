@@ -4,3 +4,8 @@ export interface Coordinates {
 }
 
 export type CoordinatesString = `${number}x${number}`;
+
+export interface PressKeyOptions {
+    shiftKey?: boolean;
+    key?: string;
+  }

@@ -3,14 +3,15 @@ import { CellTypes } from '../../../constants/cellTypes.constants';
 import { cellsDescriptions } from '../../../constants/cellsDescriptions.constants';
 import { dungeonFeaturesEnum } from '../../../constants/sprites.constants';
 import { ICellModel } from '../../../interfaces/cell';
-import { ItemModel } from '../../../../items/models/item.model';
 import { EntityController } from '../../../../entity/controllers/entity.controller';
 import { UseEffectResult } from '../effects/use_effect_result';
-import { MonstersTypes } from '../../../../entity/constants/monsters';
 import { isPlayerController } from '../../../../interfaces/type_guards';
-import { ItemsCollection } from '../../../../items/items_collection';
 
 export class BarrelModel extends Cell implements ICellModel {
+  public get isContainer(): boolean {
+    return true;
+  }
+
   constructor(config: SerializedCell) {
     super(config);
 

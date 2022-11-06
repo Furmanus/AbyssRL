@@ -217,7 +217,11 @@ export class DungeonLevelBuilder {
     #prepareCells(): Record<PositionDescription, SerializedCell> {
       return Object.entries(this.#cells).reduce((result, [position, cell]: [PositionDescription, Cell]) => {
         if (this.#items[position]?.length) {
-          cell.inventory = ItemsCollection.getInstance(this.#items[position]);
+          if (cell.isContainer) {
+            cell.containerInventory = ItemsCollection.getInstance(this.#items[position]);
+          } else {
+            cell.inventory = ItemsCollection.getInstance(this.#items[position]);
+          }
         }
 
         result[position] = cell.getDataToSerialization();

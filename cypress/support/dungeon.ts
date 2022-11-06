@@ -20,3 +20,10 @@ Cypress.Commands.add('getCurrentLevelCellInventory', { prevSubject: 'optional' }
 Cypress.Commands.add('getCurrentLevelCellContainerInventory', { prevSubject: 'optional' }, (coords: Coordinates) => {
   return cy.getCurrentLevelCell(coords).then((cell) => cell.containerInventory.get());
 });
+
+Cypress.Commands.add('getCurrentLevelData', () => {
+  return cy.getDungeonData().then((data) => ({
+    levelNumber: data.currentLevelNumber,
+    branch: data.currentBranch,
+  }));
+});

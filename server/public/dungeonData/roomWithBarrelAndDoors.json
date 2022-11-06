@@ -23,14 +23,15 @@
                 "8x2": "red_floor",
                 "9x2": "red_floor",
                 "10x2": "red_floor",
-                "3x3": "barrel"
+                "3x3": "barrel",
+                "4x4": "barrel"
             },
             "stairsUp": "3x2",
             "stairsDown": "5x4",
-            "items": {},
-            "entities": {
-                "8x2": "giant_rat"
-            }
+            "items": {
+                "4x4": ["weapon", "weapon"]
+            },
+            "entities": {}
         }
     } 
 }

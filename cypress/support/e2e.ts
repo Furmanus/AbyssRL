@@ -23,13 +23,19 @@ import type { ArmourModel } from '../../src/scripts/items/models/armours/armour_
 import type { ItemModel } from '../../src/scripts/items/models/item.model'
 import type { DungeonState } from '../../src/scripts/state/dungeon.state';
 import type { Cell } from '../../src/scripts/dungeon/models/cells/cell_model';
-import type { Coordinates } from '../interfaces/interfaces';
+import type { Coordinates, PressKeyOptions } from '../interfaces/interfaces';
 import { EntityModel } from '../../src/scripts/entity/models/entity.model';
+import { DungeonBranches } from '../../src/scripts/dungeon/constants/dungeonTypes.constants';
 
 export type LoadPageOptions = {
   seed?: number;
   dungeonDataFileName?: string;
   playerDataFileName?: string;
+}
+
+interface CurrentLevelData {
+  levelNumber: number;
+  branch: DungeonBranches;
 }
 
 declare global {
@@ -39,8 +45,10 @@ declare global {
            * Custom command to select DOM element by data-test attribute.
            */
           getApplicationElement(name: string): Chainable<JQuery<Element>>;
-          setRNGSeed(value: number): Chainable<void>;
-          pressKey(keyChar: string | string[]): Chainable<void>;
+          setRNGSeed(value: number): Chainable<Subject>;
+          pressKey(keyChar: string | string[], options?: PressKeyOptions): Chainable<Subject>;
+          pressShift(): Chainable<Subject>;
+          releaseShift(): Chainable<Subject>;
           loadPage(opts?: LoadPageOptions): Chainable<JQuery<Element>>;
           /**
           * Custom command used to get player data.
@@ -62,6 +70,9 @@ declare global {
           getCurrentLevelCell(coords?: Coordinates): Chainable<Cell>;
           getCurrentLevelCellInventory(coords?: Coordinates): Chainable<ItemModel[]>;
           getCurrentLevelCellContainerInventory(coords?: Coordinates): Chainable<ItemModel[]>;
+          getCurrentLevelData(): Chainable<CurrentLevelData>;
+          assertIfCellIsVisibleByPlayer(x: number, y: number): Chainable<Subject>
+          assertIfCellIsNotVisibleByPlayer(x: number, y: number): Chainable<Subject>;
       }
 
       export interface Window {
