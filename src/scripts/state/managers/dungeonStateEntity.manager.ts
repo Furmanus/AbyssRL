@@ -1,4 +1,4 @@
-import { dungeonBranchToMaxLevel, DungeonState } from '../dungeon.state';
+import { DungeonState } from '../dungeon.state';
 import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { EntityModel } from '../../entity/models/entity.model';
 import { EntityController } from '../../entity/controllers/entity.controller';
@@ -103,7 +103,7 @@ export class DungeonStateEntityManager {
     for (const [branchName, dungeonBranchEntry] of Object.entries(
       this.dungeonState.dungeonsStructure,
     )) {
-      // TODO to jest chujowe rozwiązanie, przy każdym przerysowaniu ekranu sprawdzana jest ta wlasnosc, duzo zbednych iteracji
+      // TODO bad solution, during every screen redraw there are many unnecessary
       for (const dungeonLevelEntry of Object.values(dungeonBranchEntry)) {
         for (const entity of dungeonLevelEntry.entities) {
           const entityModel = entity.getModel();

@@ -1,5 +1,9 @@
 import { Dice } from '../dice';
 
+jest.mock('../../global/config', () => ({
+  applicationConfigService: {},
+}));
+
 describe('Test dice class', () => {
   it('Should construct dice correctly', () => {
     const dice = new Dice('2d1 + 5');

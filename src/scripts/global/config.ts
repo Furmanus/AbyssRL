@@ -2,6 +2,19 @@ import { getDataFromSessionStorage } from '../utils/storage_helper';
 import { DevFormValues } from '../modal/developmentFeatures/devFeaturesModal.view';
 import { SessionStorageKeys } from '../constants/storage';
 
+interface IEnvs {
+  RNG_SEED?: number;
+  MODE?: 'development' | 'production' | 'test';
+  TEST_DUNGEON_DATA?: string;
+  TEST_PLAYER_DATA?: string;
+}
+
+declare global {
+  interface Window {
+    env: IEnvs;
+  }
+}
+
 interface IConfig {
   LEVEL_WIDTH: number;
   LEVEL_HEIGHT: number;
@@ -40,6 +53,9 @@ const config: IConfig = {
   ROWS: undefined,
   COLUMNS: undefined,
 };
+
+const applicationConfigServiceToken = Symbol('Application config service');
+
 /**
  * Function which calculates and returns object with screen properties.
  */
@@ -84,13 +100,55 @@ if (storageData) {
   dungeonRoomTypes && (config.debugOptions.dungeonRooms = dungeonRoomTypes);
 }
 
-class ApplicationConfigService {
+export class ApplicationConfigService {
+  public constructor(token: Symbol) {
+    if (token !== applicationConfigServiceToken) {
+      throw new Error('Invalid constructor');
+    }
+  }
+
   public get rngSeedValue(): number | null {
+    return this.#getEnvs()?.RNG_SEED || parseInt(process.env.RNG_SEED) || null;
+  }
+
+  public get isTestMode(): boolean {
+    return this.#getEnvs()?.MODE === 'test';
+  }
+
+  public get isDevMode(): boolean {
+    return process.env.MODE === 'development';
+  }
+
+  public get testDungeonData(): string | null {
+    if (this.isDevMode || this.isTestMode) {
+      return this.#getEnvs()?.TEST_DUNGEON_DATA || process.env.DUNGEON_JSON_PATH || null;
+    }
+
+    return null;
+  }
+
+  public get testPlayerData(): string | null {
+    if (this.isDevMode || this.isTestMode) {
+      return this.#getEnvs()?.TEST_PLAYER_DATA || process.env.PLAYER_JSON_PATH || null;
+    }
+
+    return null;
+  }
+
+  #getEnvs(): IEnvs {
+    if (typeof window.env !== 'undefined') {
+      return window.env;
+    }
+
     return null;
   }
 }
 
-const applicationConfigService = new ApplicationConfigService();
+const applicationConfigService = new ApplicationConfigService(applicationConfigServiceToken);
+
+if (applicationConfigService.isDevMode || applicationConfigService.isTestMode) {
+  window._application.configService = applicationConfigService;
+}
 
 export {
   applicationConfigService,

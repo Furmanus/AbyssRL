@@ -1,19 +1,17 @@
 import { Cell, SerializedCell } from '../cell_model';
 import {
-  CellSpecialConditions,
   CellTypes,
 } from '../../../constants/cellTypes.constants';
 import { cellsDescriptions } from '../../../constants/cellsDescriptions.constants';
 import { terrain } from '../../../constants/sprites.constants';
 import { DOWN, UP } from '../../../constants/stairsDirections.constants';
 import * as Utility from '../../../../utils/utility';
-import { IAnyObject } from '../../../../interfaces/common';
 import { ICellModel } from '../../../interfaces/cell';
 
 export interface SerializedStairs extends SerializedCell {
   direction: typeof UP | typeof DOWN;
 }
-
+// TODO fix weird logic determining when stairs lead downwards
 export class StairsModel extends Cell implements ICellModel {
   private areStairsUp: string;
 
@@ -45,7 +43,7 @@ export class StairsModel extends Cell implements ICellModel {
   public getDataToSerialization(): SerializedStairs {
     return {
       ...super.getDataToSerialization(),
-      direction: this.areStairsUp ? UP : DOWN,
+      direction: this.areStairsUp === UP ? UP : DOWN,
     };
   }
 }

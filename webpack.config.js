@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const { DefinePlugin } = require('webpack');
 
 const plugins = [
   new CleanWebpackPlugin(),
@@ -26,6 +27,13 @@ const plugins = [
 
 module.exports = (env) => {
   const { mode, watch } = env;
+
+  plugins.push(new DefinePlugin({
+    'process.env.MODE': JSON.stringify(mode),
+    'process.env.DUNGEON_JSON_PATH': JSON.stringify(process.env.DUNGEON_JSON_PATH),
+    'process.env.PLAYER_JSON_PATH': JSON.stringify(process.env.PLAYER_JSON_PATH),
+    'process.env.RNG_SEED': JSON.stringify(process.env.RNG_SEED),
+  }));
 
   return {
     entry: {

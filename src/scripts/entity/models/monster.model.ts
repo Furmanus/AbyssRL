@@ -1,11 +1,6 @@
 import { EntityModel, SerializedEntityModel } from './entity.model';
 import { IEntity } from '../entity_interfaces';
-import { IAnyObject } from '../../interfaces/common';
 import { monstersData, MonsterStats } from '../monsters/data/monsters';
-import { MonsterSizes, MonstersTypes } from '../constants/monsters';
-import { entities } from '../../dungeon/constants/sprites.constants';
-import { ItemsCollection } from '../../items/items_collection';
-import { EntityController } from '../controllers/entity.controller';
 
 export class MonsterModel extends EntityModel implements IEntity {
   public isHostile: boolean = true;

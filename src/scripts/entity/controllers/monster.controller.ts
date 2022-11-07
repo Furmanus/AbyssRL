@@ -41,18 +41,11 @@ export class MonsterController extends EntityController<MonsterModel> {
   }
 
   public act(): void {
-    /** Below if is temporary hack. It is required because when recovering game state from saved data, there is no
-     *  serialized time engine there. At recreation of level each entity is put to new instance of scheduler, which result
-     *  of monsters taking free move after loading game. TODO find way to serialize time engine, restore it upon loading
-     *  game and remove below if
-     */
-    if (PlayerController.getInstance().hasMoved) {
-      super.act();
+    super.act();
 
-      if (!this.isDead) {
-        this.calculateFov();
-        this.ai.performNextMove();
-      }
+    if (!this.isDead) {
+      this.calculateFov();
+      this.ai.performNextMove();
     }
   }
 

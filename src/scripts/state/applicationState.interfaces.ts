@@ -14,9 +14,7 @@ export type DungeonStructure = {
   [branch in DungeonBranches]: DungeonBranchStructure;
 };
 
-export type SerializedDungeon = {
-  [branch in DungeonBranches]: SerializedDungeonBranchStructure;
-};
+export type SerializedDungeon = Record<DungeonBranches, SerializedDungeonBranchStructure>;
 
 export type SerializedDungeonBranchStructure = {
   [levelNumber: number]: SerializedDungeonLevelEntryStructure;

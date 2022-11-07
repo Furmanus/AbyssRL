@@ -1,4 +1,5 @@
 /* eslint-disable no-extend-native */
+import './init';
 import './state/application.state';
 import { MainController } from './main/main.controller';
 import u5tiles from '../assets/u5tiles.png';
@@ -7,6 +8,8 @@ import { tilesetObject } from './global/tileset';
 import type { SerializedDungeonState } from './state/applicationState.interfaces';
 import { rngService } from './utils/rng.service';
 import { applicationConfigService } from './global/config';
+import { DungeonJSONBuilder } from './dungeon/builder/dungeonJSONBuilder';
+import { TestFeaturesService } from './utils/test_features.service';
 
 Array.prototype.random = function <M>(): M {
   const arr: M[] = Array.from(this);
@@ -36,12 +39,18 @@ if (applicationConfigService.rngSeedValue) {
     }
   }
 
+  if (applicationConfigService.testDungeonData) {
+    parsedGame = DungeonJSONBuilder.createFromJson(await fetch(`/public/dungeonData/${applicationConfigService.testDungeonData}`).then((res) => res.json()));
+  }
+
   const tileSet = document.createElement('img');
   tileSet.setAttribute('src', u5tiles);
 
-  tileSet.addEventListener('load', () => {
+  tileSet.addEventListener('load', async () => {
     tilesetObject.tileset = tileSet;
-    // eslint-disable-next-line no-new
+
+    await TestFeaturesService.getInstance().fetchPlayerStartingData();
+
     new MainController(tileSet, parsedGame);
   });
 })();

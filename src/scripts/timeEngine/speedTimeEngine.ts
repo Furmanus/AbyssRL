@@ -2,7 +2,7 @@ import { IActor } from '../entity/entity_interfaces';
 import { QueueMember, SerializedQueueMember } from './queueMember';
 import { IEngine } from './timeEngine.interfaces';
 import { TimeEngineTypes } from './timeEngine.constants';
-import { MonsterController } from '../entity/controllers/monster.controller';
+import { loggerService } from '../utils/logger.service';
 
 export interface SerializedSpeedTimeEngine {
   queue: SerializedQueueMember[];
@@ -33,14 +33,18 @@ export class SpeedTimeEngine implements IEngine {
   }
 
   public addActor(actor: IActor, repeatable: boolean = true): void {
-    this.queue.push(
-      new QueueMember({
-        actorId: actor,
-        nextActionAt: this.currentTimestamp,
-        isRepeatable: repeatable,
-        lastSavedActorSpeed: actor.getSpeed(),
-      }),
-    );
+    if (this.hasActor(actor)) {
+      loggerService.error('Attempting to add duplicate actor to time engine', actor, this.queue);
+    } else {
+      this.queue.push(
+        new QueueMember({
+          actorId: actor,
+          nextActionAt: this.currentTimestamp,
+          isRepeatable: repeatable,
+          lastSavedActorSpeed: actor.getSpeed(),
+        }),
+      );
+    }
   }
 
   public hasActor(actor: IActor): boolean {

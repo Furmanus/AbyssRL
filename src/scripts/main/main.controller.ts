@@ -4,7 +4,7 @@
  */
 import { GameController } from './game.controller';
 import { keyboardKeyToDirectionMap } from './constants/keyboardDirections.constants';
-import { config } from '../global/config';
+import { applicationConfigService, config } from '../global/config';
 import {
   PLAYER_ACTION_ACTIVATE_OBJECT,
   PLAYER_ACTION_GO_DOWN,
@@ -214,6 +214,22 @@ export class MainController extends BaseController {
     autorun(() => {
       this.onChangeDungeonLevel(dungeonState.currentLevelNumber);
     });
+
+    if (applicationConfigService.isTestMode) {
+      const testElement = document.createElement('div');
+
+      testElement.dataset.test = 'test_element';
+      testElement.style.cssText = `
+        display: none;
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+      `;
+
+      document.body.appendChild(testElement);
+    }
   }
 
   /**

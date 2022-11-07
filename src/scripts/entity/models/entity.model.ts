@@ -315,7 +315,7 @@ export class EntityModel extends BaseModel implements IEntity {
     window.setTimeout(() => {
       const recreatedStatusesCollection =
         EntityStatusFactory.getCollectionFromSerializedData(
-          config.entityStatuses,
+          config.entityStatuses || [],
           entityRegistry.getControllerByModel(this),
         );
 
@@ -449,6 +449,10 @@ export class EntityModel extends BaseModel implements IEntity {
 
       this.notify(EntityEvents.EntityPickedItem, item);
     }
+  }
+
+  public addItemToInventory(items: ItemModel[]): void {
+    this.inventory.add(items);
   }
 
   public equipWeapon(weapon: WeaponModel): void {

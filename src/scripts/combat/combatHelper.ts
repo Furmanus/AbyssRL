@@ -1,4 +1,3 @@
-import { EntityModel } from '../entity/models/entity.model';
 import { MonsterSizes } from '../entity/constants/monsters';
 import { Dice } from '../position/dice';
 import { capitalizeString } from '../utils/utility';
@@ -119,6 +118,10 @@ export function doCombatAction(
         message += ` ${capitalizeString(
           criticalText.replace('{{description}}', defender.getDescription()),
         )}`;
+      }
+
+      if (!isAlive) {
+        message += ` ${capitalizeString(defender.getDescription())} dies.` // TODO refactor so dying text is a part of combat damage text
       }
 
       return {

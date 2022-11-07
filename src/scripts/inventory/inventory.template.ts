@@ -6,6 +6,7 @@ import { getLetterFromNumber } from '../utils/utility';
 import { actionNameToModalHeaderMap } from '../entity/constants/inventory';
 import { EntityModel } from '../entity/models/entity.model';
 import { WeaponModel } from '../items/models/weapons/weapon.model';
+import { InventoryTemplateViewElements } from './inventory.constants';
 
 interface IGroups {
   [groupName: string]: DocumentFragment;
@@ -67,7 +68,7 @@ export function getPreparedInventoryElement(
 function getInventoryWrapper(): HTMLTemplateElement {
   const wrapper: HTMLTemplateElement = document.createElement('template');
   wrapper.innerHTML = `
-        <div class="modal-inventory-wrapper">
+        <div class="modal-inventory-wrapper" data-test="inventory-modal-wrapper">
             <div class="modal-inventory-group-container"></div>
         </div>
     `;
@@ -80,7 +81,7 @@ function generateItemGroup(groupName: string): HTMLTemplateElement {
   group.innerHTML = `
         <div class="modal-inventory-group">
             <h4 class="modal-inventory-group-header">${groupName}</h4>
-            <ul class="modal-inventory-group-list" id="modal-inventory-list"/>
+            <ul class="modal-inventory-group-list" data-element="${InventoryTemplateViewElements.ModalInventoryList}"/>
         </div>
     `;
 

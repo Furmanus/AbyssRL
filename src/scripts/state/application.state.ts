@@ -1,6 +1,6 @@
 import { DungeonState } from './dungeon.state';
 import { DungeonBranches } from '../dungeon/constants/dungeonTypes.constants';
-import type { SerializedDungeonState } from './applicationState.interfaces';
+import { applicationConfigService } from '../global/config';
 
 export type PartialDungeonState = Pick<
   DungeonState,
@@ -14,7 +14,8 @@ const defaultDungeonState: PartialDungeonState = {
 
 const dungeonState = new DungeonState();
 
-// TODO check type
-(window as any).dungeonState = dungeonState;
+if (applicationConfigService.isTestMode || applicationConfigService.isDevMode) {
+  window._application.dungeonState = dungeonState;
+}
 
 export { dungeonState };

@@ -1,9 +1,9 @@
-import { config as globalConfig } from '../../global/config';
+import { applicationConfigService, config as globalConfig } from '../../global/config';
 import { CellTypes } from '../constants/cellTypes.constants';
 import { CellModelFactory } from '../factory/cellModel.factory';
 import { BaseModel } from '../../core/base.model';
 import { Position, SerializedPosition } from '../../position/position';
-import { Cell, SerializedCell } from './cells/cell_model';
+import { Cell } from './cells/cell_model';
 import { DungeonAreaModel } from './dungeon_area_model';
 import { RoomModel, SerializedRoom } from './room_model';
 import {
@@ -11,13 +11,8 @@ import {
   SerializedRoomConnection,
 } from './room_connection_model';
 import {
-  DungeonEvents,
   DungeonModelEvents,
 } from '../../constants/dungeon_events';
-import { MapWithObserver } from '../../core/map_with_observer';
-import { EntityModel } from '../../entity/models/entity.model';
-import { MonsterController } from '../../entity/controllers/monster.controller';
-import { EntityController } from '../../entity/controllers/entity.controller';
 import { DungeonBranches } from '../constants/dungeonTypes.constants';
 import { dungeonState } from '../../state/application.state';
 import { convertCoordsToString } from '../../utils/utility';
@@ -102,6 +97,21 @@ export class LevelModel extends BaseModel {
     this.stairsUp = new Position(stairsUp.x, stairsUp.y);
     this.stairsDown = new Position(stairsDown.x, stairsDown.y);
     this.id = id;
+  }
+
+  /**
+   * ONLY USED IN TEST CODE IN LEVEL BUILDER, DO NOT USE OTHERWISE
+   * @deprecated
+   * @param x
+   * @param y
+   * @param id
+   */
+  public setCell(x: number, y: number, id: string): void {
+    if (!applicationConfigService.isDevMode && !applicationConfigService.isTestMode) {
+      throw new Error('Invalid invocation');
+    }
+
+    this.cells[convertCoordsToString(x, y)] = id;
   }
 
   /**
