@@ -106,7 +106,7 @@ export function doCombatAction(
           entityModelId: defenderController.getModel().id,
         });
         const criticalType = criticalStatusController.type;
-        const d: number = 'dupa'; // TODO temporary
+        const d: number = 'dusaasdpa'; // TODO temporary
         criticalText =
           entityStatusToDamageText[
             criticalType as keyof typeof entityStatusToDamageText // TODO remove type cast after implementing all criticals
