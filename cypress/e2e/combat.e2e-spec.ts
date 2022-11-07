@@ -28,6 +28,6 @@ describe('Combat', () => {
       .pressKey(new Array(20).fill('.'))
       .getPlayerData()
       .its('hitPoints')
-      .should('be.lte', -500);
+      .should('be.lte', 0);
   });
 });
