@@ -24,7 +24,8 @@
         "no-use-before-define": "off",
         "no-prototype-builtins": "off",
         "no-new": "off",
-        "no-unused-vars": "off"
+        "no-unused-vars": "off",
+        "node/no-callback-literal": "off"
     },
     "ignorePatterns": ["*.d.ts"]
 }
