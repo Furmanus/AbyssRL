@@ -1,15 +1,13 @@
-import { AllEventBusEventDataTypes, AllEventBusEventNames, EventBusCallbackFunction } from './eventBus.interfaces';
+export abstract class EventBus<EventBusDataType extends Record<string, Array<any>>> {
+  #subscribers: Map<keyof EventBusDataType, Set<(...args: EventBusDataType[keyof EventBusDataType]) => void>>;
 
-export abstract class EventBus<EventNames extends AllEventBusEventNames> {
-  #subscribers: Map<EventNames, Set<(...args: AllEventBusEventDataTypes[EventNames]) => void>>;
-
-  public publish<EventName extends EventNames>(name: EventName, ...args: AllEventBusEventDataTypes[EventName]): void {
+  public publish<EventName extends keyof EventBusDataType>(name: EventName, ...args: EventBusDataType[EventName]): void {
     this.#subscribers.get(name)?.forEach((cb) => {
       cb(...args);
     });
   }
 
-  public subscribe<EventName extends EventNames>(name: EventName, callback: EventBusCallbackFunction<EventName>): void {
+  public subscribe<EventName extends keyof EventBusDataType>(name: EventName, callback: (...args: EventBusDataType[EventName]) => void): void {
     if (!this.#subscribers.has(name)) {
       this.#subscribers.set(name, new Set());
     }
@@ -17,7 +15,7 @@ export abstract class EventBus<EventNames extends AllEventBusEventNames> {
     this.#subscribers.get(name).add(callback);
   }
 
-  public unsubscribe<EventName extends EventNames>(name: EventName, callback: EventBusCallbackFunction<EventName>): void {
+  public unsubscribe<EventName extends keyof EventBusDataType>(name: EventName, callback: (...args: EventBusDataType[EventName]) => void): void {
     if (!this.#subscribers.has(name)) {
       this.#subscribers.set(name, new Set());
     }
