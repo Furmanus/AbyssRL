@@ -29,12 +29,4 @@ export abstract class ItemModel extends BaseModel {
   public abstract get fullDescription(): string;
 
   public abstract getDataToSerialization(): SerializedItem;
-
-  public drop(entity: EntityModel): void {
-    // placeholder
-  }
-
-  public pickup(entity: EntityModel): void {
-    // placeholder
-  }
 }

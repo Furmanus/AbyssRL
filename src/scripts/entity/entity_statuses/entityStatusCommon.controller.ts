@@ -1,5 +1,5 @@
 import { BaseController } from '../../core/base.controller';
-import { EntityController } from '../controllers/entity.controller';
+import { Entity } from '../controllers/entity';
 import { EntityStatuses } from '../constants/statuses';
 import {
   EntityStunnedStatusController,
@@ -35,21 +35,21 @@ export abstract class EntityStatusCommonController extends BaseController {
    * Entity controller which status own and can affect
    * @protected
    */
-  protected entityController: EntityController;
+  protected entityController: Entity;
 
-  public constructor(entity: string, entityController?: EntityController);
+  public constructor(entity: string, entityController?: Entity);
 
   public constructor(
     entity: AllEntityStatusesSerialized,
-    entityController?: EntityController,
+    entityController?: Entity,
   );
 
   public constructor(
     entity: string | AllEntityStatusesSerialized,
-    entityControllerInstance?: EntityController,
+    entityControllerInstance?: Entity,
   ) {
     super();
-    let entityController: EntityController;
+    let entityController: Entity;
 
     if (typeof entity === 'string') {
       entityController =

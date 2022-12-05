@@ -5,7 +5,7 @@ import {
 import { rngService } from '../../utils/rng.service';
 import { EntityStatuses } from '../constants/statuses';
 import { EntityStats } from '../constants/monsters';
-import { EntityController } from '../controllers/entity.controller';
+import { Entity } from '../controllers/entity';
 
 export interface EntityBleedingStatusSerializedData
   extends EntityStatusCommonSerializedData {
@@ -25,7 +25,7 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
 
   public constructor(
     data: EntityBleedingStatusSerializedData,
-    entityController?: EntityController,
+    entityController?: Entity,
   ) {
     super(data, entityController);
 

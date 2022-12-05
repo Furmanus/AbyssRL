@@ -1,10 +1,10 @@
-import { EntityController } from '../controllers/entity.controller';
-import { MonsterController } from '../controllers/monster.controller';
+import { Entity } from '../controllers/entity';
+import { MonsterEntity } from '../controllers/monster.entity';
 import { LevelModel } from '../../dungeon/models/level_model';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 
 export interface IInitialConfigAi<
-  C extends EntityController = MonsterController,
+  C extends Entity = MonsterEntity,
 > {
   controller: C;
 }
@@ -19,7 +19,7 @@ export interface IArtificialIntelligence {
  * Abstract class containing AI algorithms and methods for game entities. Class contains common methods for all types
  * of AI present in game.
  */
-export abstract class Ai<C extends EntityController = MonsterController> implements IArtificialIntelligence {
+export abstract class Ai<C extends Entity = MonsterEntity> implements IArtificialIntelligence {
   /**
    * Controller of entity, which behaviour needs to be calculated by this strategy.
    */
@@ -44,7 +44,7 @@ export abstract class Ai<C extends EntityController = MonsterController> impleme
     };
 
     fov.forEach((cell: Cell) => {
-      if (cell.entity && cell.entity !== this.controller.getModel()) {
+      if (cell.entity && cell.entity.getModel() !== this.controller.getModel()) {
         filteredFov.entities.push(cell);
       }
     });

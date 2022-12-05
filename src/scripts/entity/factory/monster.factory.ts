@@ -1,5 +1,5 @@
 import { Cell } from '../../dungeon/models/cells/cell_model';
-import { MonsterController } from '../controllers/monster.controller';
+import { MonsterEntity } from '../controllers/monster.entity';
 import { MonsterModel } from '../models/monster.model';
 import { Monsters, MonstersTypes } from '../constants/monsters';
 import { Position, SerializedPosition } from '../../position/position';
@@ -23,7 +23,7 @@ export class MonsterFactory {
     type: Monsters,
     startingPosition: SerializedPosition,
     serializedData?: SerializedEntityModel,
-  ): MonsterController {
+  ): MonsterEntity {
     if (type in monsterTypeToFactoryMethod) {
       return monsterTypeToFactoryMethod[type](startingPosition, serializedData);
     }
@@ -34,8 +34,8 @@ export class MonsterFactory {
   public static getGiantRatController(
     startingPosition: SerializedPosition,
     serializedData?: SerializedEntityModel,
-  ): MonsterController {
-    const controller = new MonsterController({
+  ): MonsterEntity {
+    const controller = new MonsterEntity({
       model: new MonsterModel({
         type: MonstersTypes.GiantRat,
         position: {

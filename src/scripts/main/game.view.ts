@@ -1,7 +1,7 @@
 import { tileset } from '../global/tiledata';
 import { CameraView } from './camera.view';
 import { Observer } from '../core/observer';
-import { CAMERA_MOVED, CANVAS_CELL_CLICK } from '../constants/game_actions';
+import { CAMERA_MOVED, CANVAS_CELL_CLICK } from './constants/gameActions.constants';
 import { config } from '../global/config';
 import { ICoordinates, IStringDictionary } from '../interfaces/common';
 import { Cell } from '../dungeon/models/cells/cell_model';
@@ -314,8 +314,8 @@ export class GameView extends Observer {
 
     if (this.currentPlayerFov && this.currentPlayerFov.includes(cell)) {
       if (cell.entity) {
-        tile = cell.entity.display;
-        hpBarPercent = cell.entity.hitPoints / cell.entity.maxHitPoints;
+        tile = cell.entity.getModel().display;
+        hpBarPercent = cell.entity.getModel().hitPoints / cell.entity.getModel().maxHitPoints;
         hpBarPercent = hpBarPercent > 0 ? hpBarPercent : 0;
 
         if (cell.entity.type === MonstersTypes.Player) {
@@ -324,7 +324,7 @@ export class GameView extends Observer {
           hpBarColor = 'red';
         }
 
-        cell.entity.entityStatuses.forEach(
+        cell.entity.getModel().entityStatuses.forEach(
           (status: EntityStatusCommonController) => {
             // TODO fill statuses array with icon to draw
           },

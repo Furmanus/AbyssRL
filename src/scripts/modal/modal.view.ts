@@ -1,7 +1,6 @@
 import { Constructor } from '../core/constructor';
-import { ModalActions } from '../constants/game_actions';
+import { ModalActions } from '../main/constants/gameActions.constants';
 import { clearElement } from '../utils/dom_helper';
-import autobind from 'autobind-decorator';
 import { PreparedViewTemplate, TemplateObject } from '../interfaces/templates';
 import { ViewElementsBuilder } from '../core/viewElementsBuilder';
 
@@ -67,6 +66,7 @@ export abstract class ModalView<
     this.modalWrapper.classList.add('hidden');
     this.detachEvents();
     this.clearContent();
+
     this.notify(ModalActions.CloseModal);
   }
 
@@ -84,6 +84,7 @@ export abstract class ModalView<
     this.modalContent.addEventListener('click', this.onContentClick);
 
     window.addEventListener('keydown', this.onWindowKeydownCallback);
+    window.addEventListener('keydown', this.windowKeydownCloseModalHandler);
   }
 
   public detachEvents(): void {
@@ -91,6 +92,7 @@ export abstract class ModalView<
     this.modalContent.removeEventListener('click', this.onContentClick);
 
     window.removeEventListener('keydown', this.onWindowKeydownCallback);
+    window.removeEventListener('keydown', this.windowKeydownCloseModalHandler);
   }
 
   private onOverlayClick = (e: MouseEvent): void => {
@@ -100,6 +102,12 @@ export abstract class ModalView<
   private onContentClick(e: MouseEvent): void {
     e.stopPropagation();
   }
+
+  private windowKeydownCloseModalHandler = (e: KeyboardEvent): void => {
+    if (e.key.toLowerCase() === 'escape') {
+      this.close();
+    }
+  };
 
   protected abstract onWindowKeydownCallback(e: KeyboardEvent): void;
 }

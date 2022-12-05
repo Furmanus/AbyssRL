@@ -1,9 +1,9 @@
-import { EntityController } from '../entity/controllers/entity.controller';
-import { PlayerController } from '../entity/controllers/player.controller';
+import { Entity } from '../entity/controllers/entity';
+import { PlayerEntity } from '../entity/controllers/player.entity';
 import { MonstersTypes } from '../entity/constants/monsters';
 
 export function isPlayerController(
-  entityController: EntityController,
-): entityController is PlayerController {
+  entityController: Entity,
+): entityController is PlayerEntity {
   return entityController.getModel().type === MonstersTypes.Player;
 }

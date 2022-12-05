@@ -305,7 +305,7 @@ export class InfoView {
     let canvas: HTMLCanvasElement;
 
     if (cell.entity) {
-      templateVariables = this.prepareEntityDisplayVariables(cell.entity);
+      templateVariables = this.prepareEntityDisplayVariables(cell.entity.getModel());
       template = getEntityInfoTemplate(templateVariables);
 
       this.examineDisplay.innerHTML = template.wrapper;
@@ -317,7 +317,7 @@ export class InfoView {
       }
 
       canvas = this.examineDisplay.querySelector('#image');
-      this.drawCellDisplayOnCanvas(canvas, cell.entity.display);
+      this.drawCellDisplayOnCanvas(canvas, cell.entity.getModel().display);
     } else if (cell.inventory.size) {
       const itemModel: ItemModel = cell.inventory.get(0);
       templateVariables = this.prepareItemDisplayVariables(itemModel);

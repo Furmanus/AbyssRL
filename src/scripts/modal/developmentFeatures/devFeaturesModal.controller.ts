@@ -1,13 +1,15 @@
 import { ModalController } from '../modal.controller';
 import { DevFeaturesModalView, DevFormValues } from './devFeaturesModal.view';
-import { ModalActions } from '../../constants/game_actions';
+import { ModalActions } from '../../main/constants/gameActions.constants';
 import { devFeatureModalTemplate } from './devFeaturesModal.template';
 import { DevFeaturesModalConstants } from './devFeaturesModal.constants';
 import { config } from '../../global/config';
 import { Monsters } from '../../entity/constants/monsters';
-import { PlayerController } from '../../entity/controllers/player.controller';
+import { PlayerEntity } from '../../entity/controllers/player.entity';
 import { storeDataInSessionStorage } from '../../utils/storage_helper';
 import { SessionStorageKeys } from '../../constants/storage';
+import { gameEventBus } from '../../eventBus/gameEventBus/gameEventBus';
+import { GameEventBusEventNames } from '../../eventBus/gameEventBus/gameEventBus.constants';
 
 const constructorToken = Symbol('Dev features modal controller');
 let instance: DevFeaturesModalController;
@@ -102,20 +104,20 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     config.debugOptions.noMonsters = noMonsters;
     config.defaultLevelType = devDungeonLevelType || null;
 
-    this.notify(DevFeaturesModalConstants.RecreateCurrentLevel);
+    gameEventBus.publish(GameEventBusEventNames.RecreateCurrentLevel);
 
     this.closeModal();
   }
 
   private onMonsterSpawnInView(monster: Monsters): void {
-    this.notify(DevFeaturesModalConstants.SpawnMonster, monster);
+    gameEventBus.publish(GameEventBusEventNames.SpawnMonster, monster);
 
     this.view.resetMonsterSpawnSelect();
     this.closeModal();
   }
 
   private onHealPlayerClickInView(): void {
-    const playerController = PlayerController.getInstance();
+    const playerController = PlayerEntity.getInstance();
 
     playerController.healPlayer();
 

@@ -1,28 +1,28 @@
-import { EntityController } from '../controllers/entity.controller';
+import { Entity } from '../controllers/entity';
 import { EntityControllerCollection } from '../entity.collection';
-import { PlayerController } from '../controllers/player.controller';
+import { PlayerEntity } from '../controllers/player.entity';
 import { SerializedEntityModel } from '../models/entity.model';
-import { MonsterController } from '../controllers/monster.controller';
+import { MonsterEntity } from '../controllers/monster.entity';
 import { MonsterModel } from '../models/monster.model';
 
 export class EntityFactory {
   public static getEntityControllerollection(
-    entities?: EntityController[],
+    entities?: Entity[],
   ): EntityControllerCollection {
     return new EntityControllerCollection(entities || []);
   }
 
   public static getPlayerController(
     serializedData?: SerializedEntityModel,
-  ): PlayerController {
-    return PlayerController.getInstance(serializedData);
+  ): PlayerEntity {
+    return PlayerEntity.getInstance(serializedData);
   }
 
   public static getMonsterController(
     serializedData?: SerializedEntityModel,
-  ): MonsterController {
+  ): MonsterEntity {
     const model = new MonsterModel(serializedData);
 
-    return new MonsterController({ model });
+    return new MonsterEntity({ model });
   }
 }

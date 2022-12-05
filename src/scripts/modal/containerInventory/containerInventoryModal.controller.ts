@@ -3,12 +3,12 @@ import { ContainerInventoryModalView } from './containerInventoryModal.view';
 import { containerInventoryTemplate } from './containerInventoryModal.template';
 import { ContainerInventoryModalConstants } from './containerInventoryModal.constants';
 import { ItemsCollection } from '../../items/items_collection';
-import { ModalActions } from '../../constants/game_actions';
+import { ModalActions } from '../../main/constants/gameActions.constants';
 import { ItemModel } from '../../items/models/item.model';
+import { ContainerInventoryModes, PlayerSelectionResult } from './containerInventoryModal.interfaces';
 
 let instance: ContainerInventoryModalController = null;
 
-export type ContainerInventoryModes = 'put' | 'withdraw';
 export type ContainerInventoryTransferData = {
   items: ItemModel[];
   mode: ContainerInventoryModes;
@@ -67,6 +67,16 @@ export class ContainerInventoryModalController extends ModalController<Container
     if (this.mode === 'withdraw' && this.currentList.size === 0) {
       this.view.showEmptyListText();
     }
+  }
+
+  public waitForPlayerSelection(): Promise<PlayerSelectionResult | null> {
+    return new Promise((resolve) => {
+      this.on(this, ContainerInventoryModalConstants.ItemsTransferred, onPlayerSelection);
+
+      function onPlayerSelection(data: PlayerSelectionResult): void {
+        resolve(data);
+      }
+    });
   }
 
   private createList(listToDisplay: ItemsCollection): void {
@@ -144,11 +154,10 @@ export class ContainerInventoryModalController extends ModalController<Container
   }
 
   private onConfirmInView(): void {
-    const removedItems = this.sourceCollection.removeByIndexes(
+    const removedItems = this.sourceCollection.getByIndexes(
       ...this.selectedOptionsInView,
     );
 
-    this.targetCollection.add(removedItems);
     this.closeModal();
 
     this.notify(ContainerInventoryModalConstants.ItemsTransferred, {

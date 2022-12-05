@@ -1,5 +1,5 @@
 export abstract class EventBus<EventBusDataType extends Record<string, Array<any>>> {
-  #subscribers: Map<keyof EventBusDataType, Set<(...args: EventBusDataType[keyof EventBusDataType]) => void>>;
+  #subscribers: Map<keyof EventBusDataType, Set<(...args: EventBusDataType[keyof EventBusDataType]) => void>> = new Map();
 
   public publish<EventName extends keyof EventBusDataType>(name: EventName, ...args: EventBusDataType[EventName]): void {
     this.#subscribers.get(name)?.forEach((cb) => {

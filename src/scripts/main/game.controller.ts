@@ -1,41 +1,27 @@
 import { GameView } from './game.view';
 import { config } from '../global/config';
-import {
-  CANVAS_CELL_CLICK,
-  EXAMINE_CELL,
-  STOP_EXAMINE_CELL,
-} from '../constants/game_actions';
+import { CANVAS_CELL_CLICK } from './constants/gameActions.constants';
 import { entities } from '../dungeon/constants/sprites.constants';
-import {
-  END_PLAYER_TURN,
-  PLAYER_ACTION_ACTIVATE_OBJECT,
-  PLAYER_ACTION_GO_DOWN,
-  PLAYER_ACTION_GO_UP,
-  PLAYER_ACTION_MOVE_PLAYER,
-  PLAYER_DEATH,
-  PLAYER_WALK_CONFIRM_NEEDED,
-  PlayerActions,
-  SHOW_MESSAGE_IN_VIEW,
-  START_PLAYER_TURN,
-} from '../entity/constants/player_actions';
-import { PlayerController } from '../entity/controllers/player.controller';
+import { PlayerActions } from './constants/playerActions.constants';
+import { PlayerEntity } from '../entity/controllers/player.entity';
 import { DungeonController } from '../dungeon/dungeon.controller';
 import { Cell } from '../dungeon/models/cells/cell_model';
 import { IAnyObject, IDirection } from '../interfaces/common';
 import { BaseController } from '../core/base.controller';
 import { CellTypes } from '../dungeon/constants/cellTypes.constants';
 import { globalMessagesController } from '../messages/messages.controller';
-import { DungeonEvents } from '../constants/dungeon_events';
 import { ASCEND, DESCEND } from '../constants/directions';
-import { EntityModel, IEntityStatsObject } from '../entity/models/entity.model';
-import { boundMethod } from 'autobind-decorator';
-import { EntityEvents } from '../constants/entity_events';
+import { EntityDungeonPosition, IEntityStatsObject } from '../entity/models/entity.model';
 import { ItemsCollection } from '../items/items_collection';
 import { PlayerModel } from '../entity/models/player.model';
 import { dungeonState } from '../state/application.state';
 import { reaction } from 'mobx';
 import { Position } from '../position/position';
 import { MonstersTypes } from '../entity/constants/monsters';
+import { entityEventBus } from '../eventBus/entityEventBus/entityEventBus';
+import { EntityEventBusEventNames } from '../eventBus/entityEventBus/entityEventBus.constants';
+import { Entity } from '../entity/controllers/entity';
+import { exhaustiveCheck } from '../utils/utility';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
@@ -43,7 +29,7 @@ import { MonstersTypes } from '../entity/constants/monsters';
  */
 export class GameController extends BaseController {
   private dungeonController: DungeonController;
-  private playerController: PlayerController;
+  private playerController: PlayerEntity;
   private view: GameView;
   private currentlyExaminedCell: Cell;
   /**
@@ -66,7 +52,6 @@ export class GameController extends BaseController {
 
     this.initialize();
     this.attachEvents();
-    this.attachEventsToCurrentLevel();
     this.startGame();
   }
 
@@ -76,16 +61,6 @@ export class GameController extends BaseController {
   protected initialize(): void {
     this.initializePlayer();
     this.drawLevelInView();
-    /**
-     * setTimeout because main controller at this point doesn't have events attached, think how to solve it better
-     * // TODO usunac w celu uproszczenia
-     */
-    window.setTimeout(() => {
-      this.notify(DungeonEvents.ChangeCurrentLevel, {
-        branch: dungeonState.currentBranch,
-        levelNumber: 1,
-      });
-    }, 1);
   }
 
   /**
@@ -93,33 +68,12 @@ export class GameController extends BaseController {
    */
   private attachEvents(): void {
     this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick);
-    this.playerController.on(
-      this,
-      PlayerActions.PickUp,
-      this.onPlayerControllerPickUp,
-    );
-    this.playerController.on(
-      this,
-      PLAYER_WALK_CONFIRM_NEEDED,
-      this.onPlayerMoveConfirmNeeded.bind(this),
-    );
-    this.playerController.on(
-      this,
-      START_PLAYER_TURN,
-      this.onPlayerStartTurn.bind(this),
-    );
-    this.playerController.on(
-      this,
-      END_PLAYER_TURN,
-      this.onPlayerEndTurn.bind(this),
-    );
-    this.playerController.on(
-      this,
-      DungeonEvents.ChangeCurrentLevel,
-      (data: IAnyObject) => {
-        this.notify(DungeonEvents.ChangeCurrentLevel, data);
-      },
-    );
+
+    entityEventBus.subscribe(EntityEventBusEventNames.PlayerTurnStart, this.onPlayerStartTurn);
+    entityEventBus.subscribe(EntityEventBusEventNames.PlayerEndTurn, this.onPlayerEndTurn);
+    entityEventBus.subscribe(EntityEventBusEventNames.EntityMove, this.onEntityMove);
+    entityEventBus.subscribe(EntityEventBusEventNames.EntityDeath, this.onEntityDeath);
+    entityEventBus.subscribe(EntityEventBusEventNames.EntityHit, this.onEntityHit);
 
     reaction(
       () => dungeonState.currentLevelNumber,
@@ -141,24 +95,13 @@ export class GameController extends BaseController {
   }
 
   /**
-   * Method responsible for attaching listening on events on current level.
-   */
-  private attachEventsToCurrentLevel(): void {
-    const currentLevel = dungeonState.getCurrentLevelController();
-
-    currentLevel.on(this, PLAYER_DEATH, this.onPlayerDeath);
-    currentLevel.on(this, EntityEvents.EntityHit, this.onEntityHit);
-    currentLevel.on(this, EntityEvents.EntityMove, this.onEntityMove);
-  }
-
-  /**
    * Creates player character and adds it to proper level controller time engine.
    */
   private initializePlayer(): void {
     const currentLevel = dungeonState.getCurrentLevelController();
     const initialPlayerCell: Cell = currentLevel.getStairsUpCell();
 
-    this.playerController = PlayerController.getInstance({
+    this.playerController = PlayerEntity.getInstance({
       id: null,
       display: entities.AVATAR,
       position: {
@@ -209,25 +152,25 @@ export class GameController extends BaseController {
    * @param   action  String describing type of action.
    * @param   data    Object containing additional data.
    */
-  public takePlayerAction(action: string, data?: IAnyObject): void {
+  public takePlayerAction(action: PlayerActions, data?: IAnyObject): void {
     switch (action) {
-      case PLAYER_ACTION_MOVE_PLAYER:
+      case PlayerActions.Move:
         this.movePlayer(data as IDirection);
         break;
-      case PLAYER_ACTION_ACTIVATE_OBJECT:
+      case PlayerActions.ActivateObject:
         this.activateObject(data as IDirection);
         break;
-      case PLAYER_ACTION_GO_UP:
+      case PlayerActions.GoUp:
         this.ascendUpLevel();
         break;
-      case PLAYER_ACTION_GO_DOWN:
+      case PlayerActions.GoDown:
         this.descentDownLevel();
         break;
       case PlayerActions.PickUp:
         this.playerPickUp();
         break;
       default:
-      // placeholder
+        exhaustiveCheck(action);
     }
   }
 
@@ -266,33 +209,30 @@ export class GameController extends BaseController {
     }
   }
 
-  /**
-   * Method triggered after current level notifies player death event.
-   */
-  @boundMethod
-  private onPlayerDeath(): void {
-    this.view.clearGameWindowAnimations();
-    this.notify(PLAYER_DEATH);
+  private onEntityDeath = (entity: Entity): void => {
+    if (entity.getModel().type === MonstersTypes.Player) {
+      this.view.clearGameWindowAnimations();
+    }
   }
 
-  /**
-   * Method triggered after notification from currently active level controller about entity taking damage.
-   *
-   * @param entity    Entity model
-   */
-  @boundMethod
-  private onEntityHit(entity: EntityModel): void {
-    this.view.showExplosionAtPosition(
-      {
-        x: entity.position.x,
-        y: entity.position.y,
-      },
-      entity,
-    );
+  private onEntityHit = (entity: Entity): void => {
+    const dungeonPosition = entity.getModel().entityPosition;
+
+    if (dungeonState.isPositionInCurrentLevel(dungeonPosition)) {
+      this.view.showExplosionAtPosition(
+        {
+          x: dungeonPosition.position.x,
+          y: dungeonPosition.position.y,
+        },
+        entity.getModel(),
+      );
+    }
   }
 
-  private onEntityMove(entity: EntityModel): void {
-    this.view.updateEntityPositionInTemporaryDrawnSprites(entity);
+  private onEntityMove = (entity: Entity, newPosition: EntityDungeonPosition, oldPosition: EntityDungeonPosition): void => {
+    if (dungeonState.isPositionInCurrentLevel(newPosition)) {
+      this.view.updateEntityPositionInTemporaryDrawnSprites(entity.getModel());
+    }
   }
 
   private onDungeonStateCurrentLevelChange(
@@ -315,7 +255,6 @@ export class GameController extends BaseController {
       previousLevelController.removeActorFromTimeEngine(this.playerController);
 
       newLevelController.addActorToTimeEngine(this.playerController);
-      this.attachEventsToCurrentLevel();
 
       if (newLevelController.wasTimeEngineStarted()) {
         newLevelController.unlockTimeEngine();
@@ -382,9 +321,7 @@ export class GameController extends BaseController {
     }
 
     if (movementResult.message && !(direction.x === 0 && direction.y === 0)) {
-      this.notify(SHOW_MESSAGE_IN_VIEW, {
-        message: movementResult.message,
-      });
+      globalMessagesController.showMessageInView(movementResult.message);
     }
 
     if (movementResult.shouldEndPlayerTurn) {
@@ -444,45 +381,24 @@ export class GameController extends BaseController {
   };
 
   /**
-   * Method triggered after player model notifies about needed movement confirm from player.
-   * @param   data    Object with additional data about confirmation.
-   */
-  private onPlayerMoveConfirmNeeded(data: IAnyObject): void {
-    this.notify(PLAYER_WALK_CONFIRM_NEEDED, data);
-  }
-
-  /**
-   * Method called when player controller notifies that player attempts to pick up items when there are multiple items
-   * on ground.
-   *
-   * @param cellItems    Collection of items from cell where player is
-   */
-  @boundMethod
-  private onPlayerControllerPickUp(cellItems: ItemsCollection): void {
-    this.notify(PlayerActions.PickUp, cellItems);
-  }
-
-  /**
    * Method triggered after player controller notifies about beginning of player turn.
    */
-  private onPlayerStartTurn(): void {
+  private onPlayerStartTurn = (): void => {
     const currentLevel = dungeonState.getCurrentLevelController();
 
     currentLevel.lockTimeEngine();
     this.playerController.calculateFov();
     this.refreshGameScreen();
-
-    this.notify(START_PLAYER_TURN);
-  }
+  };
 
   /**
    * Method triggered after player controller notifies about end of player turn.
    */
-  private onPlayerEndTurn(): void {
+  private onPlayerEndTurn = (): void => {
     const currentLevel = dungeonState.getCurrentLevelController();
 
     currentLevel.unlockTimeEngine();
-  }
+  };
 
   /**
    * Draws current level on canvas game view.
@@ -498,16 +414,16 @@ export class GameController extends BaseController {
    *
    * @param direction Direction object with x and y coordinates
    */
-  public examineCellInDirection(direction: IDirection): void {
+  public examineCellInDirection(direction: IDirection): Cell {
     const currentLevel = dungeonState.getCurrentLevelController();
-    const lastCell: Cell =
+    const lastCell =
       this.currentlyExaminedCell || this.playerController.getEntityPosition();
-    const nextCell: Cell = currentLevel.getCell(
+    const nextCell = currentLevel.getCell(
       lastCell.x + direction.x,
       lastCell.y + direction.y,
     );
     if (nextCell) {
-      const playerFov: Cell[] = this.playerController.getPlayerFov();
+      const playerFov = this.playerController.getPlayerFov();
       const { x, y } = nextCell;
 
       if (playerFov.includes(nextCell)) {
@@ -516,7 +432,7 @@ export class GameController extends BaseController {
         this.view.drawAnimatedBorder(x, y);
         this.currentlyExaminedCell = nextCell;
 
-        this.notify(EXAMINE_CELL, nextCell);
+        return nextCell;
       }
     }
   }
@@ -556,7 +472,7 @@ export class GameController extends BaseController {
   }
 
   public enableExamineMode(): void {
-    const playerCell: Cell = this.playerController.getEntityPosition();
+    const playerCell = this.playerController.getEntityPosition();
 
     this.view.enableExamineMode();
     this.view.drawAnimatedBorder(playerCell.x, playerCell.y);
@@ -564,14 +480,12 @@ export class GameController extends BaseController {
 
   public disableExamineMode(): void {
     const levelModel = dungeonState.getCurrentLevelController().getModel();
-    const playerCell: Cell = this.playerController.getEntityPosition();
+    const playerCell = this.playerController.getEntityPosition();
 
     this.view.disableExamineMode();
     this.currentlyExaminedCell = null;
     this.view.centerCameraOnCoordinates({ x: playerCell.x, y: playerCell.y });
     this.view.refreshScreen(levelModel, this.playerController.getFov());
-
-    this.notify(STOP_EXAMINE_CELL);
   }
 
   private onDevDungeonModalRefresh(): void {

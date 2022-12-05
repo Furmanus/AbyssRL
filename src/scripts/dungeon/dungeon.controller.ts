@@ -1,18 +1,15 @@
-import { LevelController } from './level.controller';
-import { DungeonBranches } from './constants/dungeonTypes.constants';
 import { getDungeonStrategyInstance } from './factory/dungeonStrategy.factory';
 import { MainDungeonLevelGenerationStrategy } from './strategy/mainDungeon.strategy';
 import { BaseController } from '../core/base.controller';
-import { DungeonEvents } from '../constants/dungeon_events';
 import { IActionAttempt } from '../interfaces/common';
 import { globalMessagesController } from '../messages/messages.controller';
-import { DevFeaturesModalController } from '../modal/developmentFeatures/devFeaturesModal.controller';
-import { DevFeaturesModalConstants } from '../modal/developmentFeatures/devFeaturesModal.constants';
 import { Monsters } from '../entity/constants/monsters';
-import { PlayerController } from '../entity/controllers/player.controller';
+import { PlayerEntity } from '../entity/controllers/player.entity';
 import { Cell } from './models/cells/cell_model';
 import { dungeonState } from '../state/application.state';
 import { LevelControllerFactory } from './factory/levelController.factory';
+import { gameEventBus } from '../eventBus/gameEventBus/gameEventBus';
+import { GameEventBusEventNames } from '../eventBus/gameEventBus/gameEventBus.constants';
 
 /**
  * Controller of single dungeon.
@@ -39,19 +36,8 @@ export class DungeonController extends BaseController {
   }
 
   protected attachEvents(): void {
-    const devFeaturesModalController = DevFeaturesModalController.getInstance();
-
-    devFeaturesModalController.on(
-      this,
-      DevFeaturesModalConstants.RecreateCurrentLevel,
-      this.recreateCurrentLevel,
-    );
-
-    devFeaturesModalController.on(
-      this,
-      DevFeaturesModalConstants.SpawnMonster,
-      this.onDevModalMonsterSpawn,
-    );
+    gameEventBus.subscribe(GameEventBusEventNames.RecreateCurrentLevel, this.recreateCurrentLevel);
+    gameEventBus.subscribe(GameEventBusEventNames.SpawnMonster, this.onDevModalMonsterSpawn);
   }
 
   public generateNewLevel(num?: number): void {
@@ -101,7 +87,7 @@ export class DungeonController extends BaseController {
    * Generates new level controller with model in place of current level. Current level number is model is changed in this process.
    * @private
    */
-  private recreateCurrentLevel(): void {
+  private recreateCurrentLevel = (): void => {
     const { currentLevelNumber } = dungeonState;
 
     this.generateNewLevelAtNumber(currentLevelNumber);
@@ -109,9 +95,9 @@ export class DungeonController extends BaseController {
     dungeonState.setCurrentLevelNumber(currentLevelNumber);
   }
 
-  private onDevModalMonsterSpawn(monster: Monsters): void {
+  private onDevModalMonsterSpawn = (monster: Monsters): void => {
     const currentLevel = dungeonState.getCurrentLevelController();
-    const playerController = PlayerController.getInstance();
+    const playerController = PlayerEntity.getInstance();
     const playerFov = playerController.getPlayerFov();
     const unOccupiedCell = playerFov.find(
       (cell: Cell) => !cell.blockMovement && !cell.entity,

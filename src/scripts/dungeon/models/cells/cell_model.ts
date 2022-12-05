@@ -4,8 +4,8 @@ import { UseEffectResult } from './effects/use_effect_result';
 import { IAnyObject } from '../../../interfaces/common';
 import { BaseModel } from '../../../core/base.model';
 import { EntityModel } from '../../../entity/models/entity.model';
-import type { EntityController } from '../../../entity/controllers/entity.controller';
-import type { PlayerController } from '../../../entity/controllers/player.controller';
+import type { Entity } from '../../../entity/controllers/entity';
+import type { PlayerEntity } from '../../../entity/controllers/player.entity';
 import { ICellModel } from '../../interfaces/cell';
 import { ItemsCollection } from '../../../items/items_collection';
 import { MiscTiles } from '../../constants/sprites.constants';
@@ -16,6 +16,7 @@ import {
 } from '../../constants/cellTypes.constants';
 import { dungeonState } from '../../../state/application.state';
 import { SerializedItem } from '../../../items/models/item.model';
+import { Position } from '../../../position/position';
 
 export type SerializedCell = {
   id: string;
@@ -82,11 +83,15 @@ export abstract class Cell extends BaseModel implements ICellModel {
     return Array.isArray(this.containerInventory);
   }
 
+  public get position(): Position {
+    return Position.fromCoords(this.x, this.y);
+  }
+
   /**
    * Entity (monster or player) occupying cell.
    */
-  public get entity(): EntityModel {
-    return dungeonState.entityManager.findEntityByCell(this)?.getModel();
+  public get entity(): Entity {
+    return dungeonState.entityManager.findEntityByCell(this);
   }
 
   /**
@@ -192,7 +197,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Effect from certain cell while entity walks over it. Default function is below empty function. Can be implemented
    * in child classes.
    */
-  public walkEffect(entity?: EntityController): void {
+  public walkEffect(entity?: Entity): void {
     // do nothing
   }
 
@@ -200,7 +205,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Method triggered when certain entity (usually player) tries to walk on cell. Default function is below empty
    * function. Can be implemented in child classes.
    */
-  public walkAttempt(entity: PlayerController): WalkAttemptResult {
+  public walkAttempt(entity: PlayerEntity): WalkAttemptResult {
     return new WalkAttemptResult();
   }
 
@@ -208,7 +213,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Method triggered when certain entity (player included) uses cell. Default function, can be overriden in child
    * classes.
    */
-  public useEffect(entity: EntityController): UseEffectResult {
+  public useEffect(entity: Entity): UseEffectResult {
     return new UseEffectResult(false, "You can't activate that.");
   }
 
@@ -216,7 +221,7 @@ export abstract class Cell extends BaseModel implements ICellModel {
    * Method triggered when certain entity (usually player) tries to use cell. Default function, can be overriden in
    * child classes.
    */
-  public useAttempt(entity: EntityController): UseAttemptResult {
+  public useAttempt(entity: Entity): UseAttemptResult {
     return new UseAttemptResult();
   }
 

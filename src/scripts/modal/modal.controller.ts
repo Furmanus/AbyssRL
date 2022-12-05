@@ -1,6 +1,8 @@
 import { BaseController } from '../core/base.controller';
 import { ModalView } from './modal.view';
-import { ModalActions } from '../constants/game_actions';
+import { ModalActions } from '../main/constants/gameActions.constants';
+import { gameEventBus } from '../eventBus/gameEventBus/gameEventBus';
+import { GameEventBusEventNames } from '../eventBus/gameEventBus/gameEventBus.constants';
 
 export class ModalController<
   M,
@@ -13,16 +15,14 @@ export class ModalController<
   public openModal(content?: M): void {
     this.currentContent = content;
     this.isModalOpen = true;
-    this.view.open();
 
     this.attachEvents();
+
+    this.view.open();
   }
 
   public closeModal(): void {
-    this.isModalOpen = false;
     this.view.close();
-
-    this.detachEvents();
   }
 
   public drawContentInView<E extends HTMLElement = HTMLElement>(
@@ -48,18 +48,22 @@ export class ModalController<
   protected detachEvents(): void {
     this.view.off(this, ModalActions.OverlayClick);
     this.view.off(this, ModalActions.OpenModal);
+    this.view.off(this, ModalActions.CloseModal);
   }
 
   private onOverlayClick(): void {
     this.closeModal();
-    this.notify(ModalActions.CloseModal);
   }
 
   private onModalOpen(): void {
-    this.notify(ModalActions.OpenModal);
+    gameEventBus.publish(GameEventBusEventNames.ModalOpen);
   }
 
   private onModalClose(): void {
-    this.notify(ModalActions.CloseModal);
+    this.isModalOpen = false;
+
+    this.detachEvents();
+
+    gameEventBus.publish(GameEventBusEventNames.ModalClose);
   }
 }

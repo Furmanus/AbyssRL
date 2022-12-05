@@ -3,7 +3,7 @@ import { ICellModel } from '../../../interfaces/cell';
 import { CellTypes } from '../../../constants/cellTypes.constants';
 import { cellsDescriptions } from '../../../constants/cellsDescriptions.constants';
 import { dungeonFeaturesEnum } from '../../../constants/sprites.constants';
-import { EntityController } from '../../../../entity/controllers/entity.controller';
+import { Entity } from '../../../../entity/controllers/entity';
 import { UseEffectResult } from '../effects/use_effect_result';
 import { isPlayerController } from '../../../../interfaces/type_guards';
 
@@ -27,9 +27,9 @@ export class ChestOfDrawersModel extends Cell implements ICellModel {
     return true;
   }
 
-  public useEffect(entity: EntityController): UseEffectResult {
+  public useEffect(entity: Entity): UseEffectResult {
     if (isPlayerController(entity)) {
-      entity.openContainer(this.containerInventory);
+      entity.openContainer(this);
     }
 
     return new UseEffectResult(false, '');

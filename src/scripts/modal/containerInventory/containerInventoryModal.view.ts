@@ -1,17 +1,15 @@
 import { ModalView } from '../modal.view';
 import { ContainerInventoryModalConstants } from './containerInventoryModal.constants';
-import { ContainerInventoryModes } from './containerInventoryModal.controller';
 import { ItemsCollection } from '../../items/items_collection';
 import { ItemModel } from '../../items/models/item.model';
-import It = jest.It;
 import { ViewElementsBuilder } from '../../core/viewElementsBuilder';
 import { containerInventoryTemplate } from './containerInventoryModal.template';
-import { PreparedViewTemplate } from '../../interfaces/templates';
 import { drawSpriteOnCanvas } from '../../utils/canvas_helper';
 import {
   getLetterFromNumber,
   getNumericValueOfChar,
 } from '../../utils/utility';
+import { ContainerInventoryModes } from './containerInventoryModal.interfaces';
 
 type ContainerInventoryModalViewElements = {
   heading: HTMLHeadingElement;

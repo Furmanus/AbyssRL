@@ -1,9 +1,7 @@
 import { Cell, SerializedCell } from './cell_model';
-import { DungeonEvents } from '../../../constants/dungeon_events';
 import { WalkAttemptResult } from './effects/walk_attempt_result';
 import { UseEffectResult } from './effects/use_effect_result';
-import { IAnyObject } from '../../../interfaces/common';
-import { EntityController } from '../../../entity/controllers/entity.controller';
+import { Entity } from '../../../entity/controllers/entity';
 import { ICellModel } from '../../interfaces/cell';
 import { UseAttemptResult } from './effects/use_attempt_result';
 import { MonstersTypes } from '../../../entity/constants/monsters';
@@ -44,7 +42,7 @@ export abstract class DoorModel extends Cell implements ICellModel {
     return this.areOpen ? 'You walk through open doorway.' : '';
   }
 
-  public useEffect(entityController: EntityController): UseEffectResult {
+  public useEffect(entityController: Entity): UseEffectResult {
     if (this.areOpen) {
       this.close();
 
@@ -64,7 +62,7 @@ export abstract class DoorModel extends Cell implements ICellModel {
     );
   }
 
-  public useAttempt(entity: EntityController): UseAttemptResult {
+  public useAttempt(entity: Entity): UseAttemptResult {
     if (entity.isStunned()) {
       const message = `${entity.getModel().description} ${
         this.areOpen
@@ -77,7 +75,7 @@ export abstract class DoorModel extends Cell implements ICellModel {
 
     if (this.areOpen && this.entity) {
       const entityDescription: string = entity.getModel().description;
-      const occupyingEntityDescription: string = this.entity.description;
+      const occupyingEntityDescription: string = this.entity.getModel().description;
       const cellDescription: string = this.description;
 
       return new UseAttemptResult(
@@ -94,7 +92,7 @@ export abstract class DoorModel extends Cell implements ICellModel {
   /**
    * Method triggered when entity attempts to walk on doors.
    */
-  public walkAttempt(entityController: EntityController): WalkAttemptResult {
+  public walkAttempt(entityController: Entity): WalkAttemptResult {
     if (!this.areOpen) {
       if (entityController.isStunned()) {
         const message = `${
@@ -126,10 +124,6 @@ export abstract class DoorModel extends Cell implements ICellModel {
   public open(): void {
     if (!this.areOpen) {
       this.areOpen = true;
-      this.notify(DungeonEvents.DoorsOpen, {
-        x: this.x,
-        y: this.y,
-      });
     }
   }
 
@@ -139,10 +133,6 @@ export abstract class DoorModel extends Cell implements ICellModel {
   public close(): void {
     if (this.areOpen) {
       this.areOpen = false;
-      this.notify(DungeonEvents.DoorsClosed, {
-        x: this.x,
-        y: this.y,
-      });
     }
   }
 

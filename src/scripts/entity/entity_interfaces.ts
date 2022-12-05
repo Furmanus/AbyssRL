@@ -1,6 +1,6 @@
 import { LevelModel } from '../dungeon/models/level_model';
 import { Cell } from '../dungeon/models/cells/cell_model';
-import { EntityController } from './controllers/entity.controller';
+import { Entity } from './controllers/entity';
 import { MonstersTypes, MonsterSizes } from './constants/monsters';
 import { ItemsCollection } from '../items/items_collection';
 import { INaturalWeapon, IWeapon } from '../combat/combat.interfaces';
@@ -35,7 +35,7 @@ export interface IEntity {
   naturalWeapon: NaturalWeaponModel;
 }
 export interface IEntityController {
-  model: EntityController;
+  model: Entity;
 }
 
 export interface IPlayerEquipSlotsType {

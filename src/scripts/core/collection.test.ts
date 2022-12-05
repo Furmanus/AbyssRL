@@ -1,6 +1,5 @@
 import { Collection } from './collection';
 import { BaseModel } from './base.model';
-import { CollectionEvents } from '../constants/collection_events';
 import { BaseController } from './base.controller';
 import { IAnyFunction } from '../interfaces/common';
 
@@ -33,19 +32,11 @@ describe('Test collection class', () => {
     collection.add(element1);
 
     expect(collection.has(element1)).toBe(true);
-    expect(collection.notify).toHaveBeenCalledWith(
-      CollectionEvents.Add,
-      element1,
-    );
   });
   it('Remove method should remove element and call notify', () => {
     collection.remove(element2);
 
     expect(collection.has(element2)).toBe(false);
-    expect(collection.notify).toHaveBeenCalledWith(
-      CollectionEvents.Remove,
-      element2,
-    );
   });
   it('forEach method should call callback proper number of times', () => {
     collection.add(element1);

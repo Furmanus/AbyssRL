@@ -14,15 +14,13 @@ let instance: InfoController = null;
 /**
  * Controller of info data visible to player (player character info like HP, stats...).
  */
-export class InfoController extends BaseController {
+export class InfoController {
   private view: InfoView;
 
   constructor(token: symbol) {
     if (token !== constructorToken) {
       throw new Error('Invalid constructor');
     }
-
-    super();
   }
 
   public static getInstance(): InfoController {

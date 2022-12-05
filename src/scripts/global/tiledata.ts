@@ -1,7 +1,5 @@
-/* tslint:disable:object-literal-key-quotes */
 /**
  * Contains information about position and number of frames of certain tiles/animated sprites from tilesheet.
- * Created by Docent Furman on 2017-04-28.
  */
 export interface ITileset {
   [prop: string]: {

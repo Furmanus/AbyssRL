@@ -1,17 +1,10 @@
 import { calculateFov } from '../../utils/fov_helper';
 import { BaseController } from '../../core/base.controller';
 import { LevelModel } from '../../dungeon/models/level_model';
-import { EntityEvents } from '../../constants/entity_events';
-import { boundMethod } from 'autobind-decorator';
 import { doCombatAction, ICombatResult } from '../../combat/combatHelper';
 import { globalMessagesController } from '../../messages/messages.controller';
 import { ItemModel } from '../../items/models/item.model';
 import { ItemsCollection } from '../../items/items_collection';
-import {
-  EntityArmourChangeData,
-  EntityWeaponChangeData,
-} from '../entity.interfaces';
-import { NaturalWeaponModel } from '../../items/models/weapons/naturalWeapon.model';
 import { WeaponModel } from '../../items/models/weapons/weapon.model';
 import { EntityStatusFactory } from '../factory/entityStatus.factory';
 import { EntityBleedingStatusController } from '../entity_statuses/entityBleedingStatus.controller';
@@ -19,11 +12,9 @@ import {
   EntityStatuses,
   entityStatusToDamageText,
 } from '../constants/statuses';
-import { EntityStatusCommonController } from '../entity_statuses/entityStatusCommon.controller';
+import { AllEntityStatusControllers, EntityStatusCommonController } from '../entity_statuses/entityStatusCommon.controller';
 import { statusModifierToMessage } from '../constants/stats';
-import { capitalizeString } from '../../utils/utility';
 import { EntityStunnedStatusController } from '../entity_statuses/entityStunnedStatus.controller';
-import { MonstersTypes } from '../constants/monsters';
 import { dungeonState } from '../../state/application.state';
 import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { IWeapon } from '../../combat/combat.interfaces';
@@ -33,13 +24,28 @@ import {
   EntityModel,
   IEntityStatsObject,
 } from '../models/entity.model';
+import { entityEventBus } from '../../eventBus/entityEventBus/entityEventBus';
+import { EntityEventBusEventNames } from '../../eventBus/entityEventBus/entityEventBus.constants';
+import { MonstersTypes } from '../constants/monsters';
+import { ArmourModel } from '../../items/models/armours/armour_model';
+import { loggerService } from '../../utils/logger.service';
+import { exhaustiveCheck } from '../../utils/utility';
+import { NaturalWeaponModel } from '../../items/models/weapons/naturalWeapon.model';
 
-export abstract class EntityController<
+export abstract class Entity<
   M extends EntityModel = EntityModel,
 > extends BaseController {
   protected model: M;
   protected get isDead(): boolean {
     return this.model.hitPoints <= 0;
+  }
+
+  public get isHostile(): boolean {
+    return this.model.isHostile;
+  }
+
+  public get type(): MonstersTypes {
+    return this.model.type;
   }
 
   public isStunned(): boolean {
@@ -51,79 +57,28 @@ export abstract class EntityController<
       );
   }
 
-  protected attachEvents(): void {
-    this.model.on(this, EntityEvents.EntityMove, this.onEntityPositionChange);
-    this.model.on(this, EntityEvents.EntityDeath, this.onEntityDeath);
-    this.model.on(this, EntityEvents.EntityHit, this.onEntityHit);
-    this.model.on(this, EntityEvents.EntityPickedItem, this.onEntityPickUp);
-    this.model.on(this, EntityEvents.EntityDroppedItem, this.onEntityDropItem);
-    this.model.on(
-      this,
-      EntityEvents.EntityEquippedWeaponChange,
-      this.onEntityEquippedWeaponChange,
-    );
-    this.model.on(
-      this,
-      EntityEvents.EntityEquippedArmourChange,
-      this.onEntityEquippedArmourChange,
-    );
-  }
-
   public move(
     newCell: Cell,
     levelNumber: number = dungeonState.currentLevelNumber,
     dungeonBranch: DungeonBranches = dungeonState.currentBranch,
   ): void {
-    if (newCell.entity && newCell.entity !== this.getModel()) {
+    if (newCell.entity && newCell.entity !== this) {
       const attackResult: ICombatResult = this.attack(newCell.entity);
 
       globalMessagesController.showMessageInView(attackResult.message);
     } else {
+      const oldPosition = { ...this.model.entityPosition };
       this.model.move(newCell, levelNumber, dungeonBranch);
+
+      newCell.walkEffect(this);
+      this.calculateFov();
+
+      entityEventBus.publish(EntityEventBusEventNames.EntityMove, this, this.model.entityPosition, oldPosition);
     }
   }
 
-  @boundMethod
-  public attack(defender: EntityModel): ICombatResult {
-    const defenderController =
-      dungeonState.entityManager.findEntityControllerByModel(defender);
-
-    if (defenderController) {
-      return doCombatAction(this, defenderController);
-    } else {
-      console.error('Defender controller not found');
-    }
-  }
-
-  /**
-   * Method triggered after position property has been changed in model.
-   *
-   * @param newCell   New entity position (cell)
-   */
-  @boundMethod
-  private onEntityPositionChange(newCell: Cell): void {
-    newCell.walkEffect(this);
-    this.calculateFov();
-
-    this.notify(EntityEvents.EntityMove, this);
-  }
-
-  /**
-   * Method triggered after entity hp in model goes to zero or below.
-   */
-  @boundMethod
-  private onEntityDeath(): void {
-    this.notify(EntityEvents.EntityDeath, { entityController: this });
-  }
-
-  /**
-   * Method triggered after entity takes hit.
-   *
-   * @param entity    Entity model
-   */
-  @boundMethod
-  private onEntityHit(entity: EntityModel): void {
-    this.notify(EntityEvents.EntityHit, entity);
+  public attack(defender: Entity): ICombatResult {
+    return doCombatAction(this, defender);
   }
 
   public activate(cell: Cell): void {
@@ -146,6 +101,8 @@ export abstract class EntityController<
    */
   public pickUp(item: ItemModel): void {
     this.model.pickUp(item);
+
+    entityEventBus.publish(EntityEventBusEventNames.EntityPickItem, this, item);
   }
 
   /**
@@ -157,61 +114,64 @@ export abstract class EntityController<
     const equippedWeapon = items.find(
       (item) =>
         item instanceof WeaponModel &&
-        this.model.isWeaponEquipped(item as IWeapon),
+        this.model.equippedWeapon === item as IWeapon,
     );
 
     if (equippedWeapon && equippedWeapon instanceof WeaponModel) {
-      this.model.removeWeapon(equippedWeapon as IWeapon);
+      this.removeWeapon(equippedWeapon);
     }
 
     this.model.dropItems(items);
+
+    entityEventBus.publish(EntityEventBusEventNames.EntityDropItem, this, items);
   }
 
-  protected onEntityPickUp(item: ItemModel): void {
-    globalMessagesController.showMessageInView(
-      `${this.model.getDescription()} picks up ${item.description}.`,
-    );
+  public equipItem(item: ItemModel): void {
+    if (item instanceof WeaponModel) {
+      this.equipWeapon(item);
+    } else if (item instanceof ArmourModel) {
+      this.equipArmour(item);
+    }
   }
 
-  protected onEntityDropItem(item: ItemModel): void {
-    globalMessagesController.showMessageInView(
-      `${this.model.getDescription()} drops ${item.description}.`,
-    );
-  }
-
-  protected onEntityEquippedWeaponChange(data: EntityWeaponChangeData): void {
-    const { currentWeapon, previousWeapon, reason } = data;
-
-    const removePart =
-      previousWeapon && !(previousWeapon instanceof NaturalWeaponModel)
-        ? `${this.model.getDescription()} removes ${
-            previousWeapon.description
-          }. `
-        : '';
-    const equipPart = currentWeapon
-      ? `${this.model.getDescription()} equips ${currentWeapon.description}.`
-      : '';
-
-    globalMessagesController.showMessageInView(`${removePart}${equipPart}`);
-  }
-
-  protected onEntityEquippedArmourChange(data: EntityArmourChangeData): void {
-    let message: string;
-
-    switch (data.reason) {
-      case 'equip':
-        message = `${this.model.getDescription()} puts on ${
-          data.currentArmour.description
-        }.`;
-        break;
-      case 'remove':
-        message = `${this.model.getDescription()} takes off ${
-          data.previousArmour.description
-        }.`;
-        break;
+  public equipArmour(armour: ArmourModel): void {
+    if (this.model.equippedArmour) {
+      this.unequipArmour();
     }
 
-    globalMessagesController.showMessageInView(message);
+    this.model.equippedArmour = armour;
+
+    entityEventBus.publish(EntityEventBusEventNames.EntityWearArmour, this, armour);
+  }
+
+  public unequipArmour(): void {
+    if (this.model.equippedArmour) {
+      const removedArmour = this.model.equippedArmour;
+
+      this.model.equippedArmour = null;
+
+      entityEventBus.publish(EntityEventBusEventNames.EntityTakeOffArmour, this, removedArmour);
+    }
+  }
+
+  public equipWeapon(weapon: WeaponModel): void {
+    const previousWeapon = this.model.weapon;
+
+    if (weapon !== previousWeapon && !(weapon instanceof NaturalWeaponModel)) {
+      this.model.equippedWeapon = weapon;
+
+      entityEventBus.publish(EntityEventBusEventNames.EntityWieldsWeapon, this, weapon);
+    }
+  }
+
+  public removeWeapon(weapon: WeaponModel): void {
+    if (!(weapon instanceof NaturalWeaponModel) && this.model.equippedWeapon) {
+      const removedWeapon = this.model.equippedWeapon;
+
+      this.model.equippedWeapon = null;
+
+      entityEventBus.publish(EntityEventBusEventNames.EntityRemoveWeapon, this, removedWeapon);
+    }
   }
 
   /**
@@ -288,6 +248,8 @@ export abstract class EntityController<
       newLevelNumber,
     );
     this.move(position);
+
+    entityEventBus.publish(EntityEventBusEventNames.EntityChangeLevel, this);
   }
 
   /**
@@ -301,16 +263,48 @@ export abstract class EntityController<
     return this.model.getAccumulatedAllTemporaryStats();
   }
 
-  public inflictStunnedStatus(message?: string): void {
+  public inflictStatus(statusType: EntityStatuses): void {
+    switch (statusType) {
+      case EntityStatuses.Bleeding:
+        return this.inflictBleeding();
+      case EntityStatuses.Stunned:
+        return this.inflictStunnedStatus();
+      case EntityStatuses.Paralyzed:
+      case EntityStatuses.Poisoned:
+      case EntityStatuses.Fallen:
+        loggerService.log(`Entity status: ${statusType} not implemented yet`);
+        break;
+      default:
+        exhaustiveCheck(statusType);
+    }
+  }
+
+  public removeStatus(status: AllEntityStatusControllers): void {
+    switch (status.type) {
+      case EntityStatuses.Bleeding:
+        return this.stopBleeding(status as EntityBleedingStatusController); // TODO sprawdzic i poprawic czemu tu nie dziala unia dyskryminacyjna
+      case EntityStatuses.Stunned:
+        return this.removeStunnedStatus(status as EntityStunnedStatusController);
+      case EntityStatuses.Paralyzed:
+      case EntityStatuses.Poisoned:
+      case EntityStatuses.Fallen:
+        loggerService.log(`Entity status: ${status.type} not implemented yet`);
+        break;
+      default:
+        exhaustiveCheck(status.type);
+    }
+  }
+
+  public inflictStunnedStatus(): void {
     const stunnedStatus = EntityStatusFactory.getEntityStunnedStatus({
       entityModelId: this.getModel().id,
     });
 
     this.model.addStatus(stunnedStatus);
 
-    if (message) {
-      globalMessagesController.showMessageInView(message);
-    }
+    globalMessagesController.showMessageInView(
+      `${this.model.description} is stunned!`,
+    );
   }
 
   public removeStunnedStatus(
@@ -329,6 +323,8 @@ export abstract class EntityController<
         entityModelId: this.getModel().id,
       }),
     );
+
+    entityEventBus.publish(EntityEventBusEventNames.EntityBloodLoss, this);
   }
 
   public stopBleeding(bleedingStatus: EntityBleedingStatusController): void {
@@ -346,8 +342,18 @@ export abstract class EntityController<
     this.model.takeHit(damage);
   }
 
+  public takeHit(damage: number, source?: keyof typeof entityStatusToDamageText): void {
+    this.model.takeHit(damage);
+
+    entityEventBus.publish(EntityEventBusEventNames.EntityHit, this, damage);
+
+    if (this.model.hitPoints < 1) {
+      entityEventBus.publish(EntityEventBusEventNames.EntityDeath, this);
+    }
+  }
+
   public dropBlood(): void {
-    this.notify(EntityEvents.EntityBloodLoss, this.model);
+    entityEventBus.publish(EntityEventBusEventNames.EntityBloodLoss, this);
   }
 
   public increaseBloodLoss(): void {
@@ -400,6 +406,14 @@ export abstract class EntityController<
         message.replaceAll('{{entity}}', this.model.getDescription()),
       );
     }
+  }
+
+  public addToInventory(items: ItemModel[]): void {
+    this.model.addItemToInventory(items);
+  }
+
+  public removeFromInventory(items: ItemModel[]): void {
+    this.model.removeItemsFromInventory(items);
   }
 
   public destroy(): void {

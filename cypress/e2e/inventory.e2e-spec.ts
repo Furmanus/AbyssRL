@@ -30,7 +30,7 @@ describe('Inventory', () => {
       .loadPage(loadPageOptions)
       .pressKey('i')
       .getApplicationElement('inventory-modal-wrapper')
-      .pressKey('esc')
+      .pressKey('escape')
       .getApplicationElement('inventory-modal-wrapper')
       .should('not.exist');
   });

@@ -1,9 +1,6 @@
 import { Constructor } from './constructor';
-import { BaseModel } from './base.model';
-import { CollectionEvents } from '../constants/collection_events';
 import { IAnyFunction } from '../interfaces/common';
 import { BaseController } from './base.controller';
-import { ItemModel } from '../items/models/item.model';
 
 /**
  * Collection of generic type models (they have to extend BaseModel).
@@ -49,8 +46,6 @@ export class Collection<
       this.collection.push(item);
     }
 
-    this.notify(CollectionEvents.Add, item);
-
     return this;
   }
 
@@ -73,21 +68,52 @@ export class Collection<
   }
 
   /**
-   * Removes element from collection. Action is notified with REMOVE event from collection events enum.
+   * Removes elements or single element from collection.
    *
-   * @param item  Element to remove from collection
+   * @param item  Elements or single element to remove from collection
+   * @returns     Returns removed elements or element
    */
-  public remove(item: M): M {
-    if (this.has(item)) {
-      this.collection.splice(this.collection.indexOf(item), 1);
-      this.notify(CollectionEvents.Remove, item);
+  public remove(item: M[]): M[];
+  public remove(item: M): M;
+  public remove(item: M | M[]): M | M[] {
+    if (Array.isArray(item)) {
+      const removedItems: M[] = [];
 
-      return item;
+      for (const examinedItem of item) {
+        if (this.has(examinedItem)) {
+          this.collection.splice(this.collection.indexOf(examinedItem), 1);
+          removedItems.push(examinedItem);
+        }
+      }
+
+      return removedItems;
+    } else {
+      if (this.has(item)) {
+        this.collection.splice(this.collection.indexOf(item), 1);
+
+        return item;
+      }
     }
   }
 
+  /**
+   * Removes items from collection by their indexes (order)
+   *
+   * @param indexes Numberic indexes of items to be removed from collection
+   * @returns Array of removed items from collection
+   */
   public removeByIndexes(...indexes: number[]): M[] {
-    return indexes.map((num) => this.get(num)).map((item) => this.remove(item));
+    return this.getByIndexes(...indexes).map((item) => this.remove(item));
+  }
+
+  /**
+   * Retrieves items from collection by their indexes (order)
+   *
+   * @param indexes Numberic indexes of items to be retrieved from collection
+   * @returns Array of retrieved items from collection
+   */
+  public getByIndexes(...indexes: number[]): M[] {
+    return indexes.map((num) => this.get(num));
   }
 
   /**

@@ -1,4 +1,4 @@
-import { EntityController } from '../controllers/entity.controller';
+import { Entity } from '../controllers/entity';
 import {
   EntityBleedingStatusController,
   EntityBleedingStatusSerializedData,
@@ -18,14 +18,14 @@ import { EntityStatuses } from '../constants/statuses';
 export class EntityStatusFactory {
   public static getEntityBleedingStatus(
     data: EntityBleedingStatusSerializedData,
-    entityController?: EntityController,
+    entityController?: Entity,
   ): EntityBleedingStatusController {
     return new EntityBleedingStatusController(data, entityController);
   }
 
   public static getEntityStunnedStatus(
     data: EntityStunnedStatusSerializedData,
-    entityController?: EntityController,
+    entityController?: Entity,
   ): EntityStunnedStatusController {
     return new EntityStunnedStatusController(data, entityController);
   }
@@ -38,7 +38,7 @@ export class EntityStatusFactory {
 
   public static getCollectionFromSerializedData(
     entityStatuses: AllEntityStatusesSerialized[],
-    entityController?: EntityController,
+    entityController?: Entity,
   ): EntityStatusesCollection {
     const entityStatusControllers = entityStatuses.map((serializedStatus) => {
       switch (serializedStatus.type) {

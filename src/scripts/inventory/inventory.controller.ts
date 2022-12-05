@@ -1,9 +1,5 @@
 import { ModalController } from '../modal/modal.controller';
 import { ItemsCollection } from '../items/items_collection';
-import {
-  EntityInventoryActions,
-  InventoryModalEvents,
-} from '../constants/entity_events';
 import { getPreparedInventoryElement } from './inventory.template';
 import { InventoryView } from './inventory.view';
 import { boundMethod } from 'autobind-decorator';
@@ -11,6 +7,7 @@ import { SetWithObserver } from '../core/set_with_observer';
 import { ENTITY_MAX_INVENTORY_LENGTH } from '../entity/constants/monsters';
 import { ItemModel } from '../items/models/item.model';
 import { EntityModel } from '../entity/models/entity.model';
+import { EntityInventoryActions, InventoryModalEvents } from './inventory.constants';
 
 export class InventoryController extends ModalController<
   ItemsCollection,
@@ -29,7 +26,7 @@ export class InventoryController extends ModalController<
     content: ItemsCollection,
     mode: EntityInventoryActions = EntityInventoryActions.Look,
     inventoryOwner?: EntityModel,
-  ): void {
+  ): this {
     this.selectedItems = new SetWithObserver<number>();
     this.inventoryContent = content;
 
@@ -41,6 +38,25 @@ export class InventoryController extends ModalController<
     super.openModal(content);
 
     this.setMode(mode);
+
+    return this;
+  }
+
+  public waitForPlayerSelection(): Promise<{action: EntityInventoryActions; selectedItems: ItemsCollection}> {
+    const self = this;
+
+    return new Promise((resolve) => {
+      this.on(this, InventoryModalEvents.InventoryActionConfirmed, handleSelection);
+
+      function handleSelection(selectionResult: {action: EntityInventoryActions; selectedItems: ItemModel[]}) {
+        self.off(self, InventoryModalEvents.InventoryActionConfirmed);
+
+        resolve({
+          action: selectionResult.action,
+          selectedItems: ItemsCollection.getInstance(selectionResult.selectedItems),
+        });
+      }
+    });
   }
 
   public closeModal(): void {

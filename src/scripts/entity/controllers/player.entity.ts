@@ -1,15 +1,8 @@
 import * as Utility from '../../utils/utility';
 import { applicationConfigService, config } from '../../global/config';
-import {
-  END_PLAYER_TURN,
-  PLAYER_WALK_CONFIRM_NEEDED,
-  PlayerActions,
-  START_PLAYER_TURN,
-} from '../constants/player_actions';
 import { PlayerModel } from '../models/player.model';
 import {
   globalMessagesController,
-  MessagesController,
 } from '../../messages/messages.controller';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 import { UseAttemptResult } from '../../dungeon/models/cells/effects/use_attempt_result';
@@ -18,52 +11,32 @@ import { ICombatResult } from '../../combat/combatHelper';
 import { ItemsCollection } from '../../items/items_collection';
 
 import { ItemModel } from '../../items/models/item.model';
-import { InventoryController } from '../../inventory/inventory.controller';
 import {
-  globalContainerInventoryController,
-  globalInventoryController,
+  globalContainerInventoryController, globalInventoryController,
 } from '../../global/modal';
-import {
-  EntityEvents,
-  EntityInventoryActions,
-  InventoryModalEvents,
-} from '../../constants/entity_events';
-import { boundMethod } from 'autobind-decorator';
-import { WeaponModel } from '../../items/models/weapons/weapon.model';
-import {
-  ContainerInventoryTransferData,
-} from '../../modal/containerInventory/containerInventoryModal.controller';
-import { ContainerInventoryModalConstants } from '../../modal/containerInventory/containerInventoryModal.constants';
-import { ArmourModel } from '../../items/models/armours/armour_model';
-import { EntityStatusesCollection } from '../entity_statuses/entityStatuses.collection';
-import { globalInfoController } from '../../info/info.controller';
 import { SerializedEntityModel } from '../models/entity.model';
 import { dungeonState } from '../../state/application.state';
 import { LevelController } from '../../dungeon/level.controller';
-import { EntityController } from './entity.controller';
+import { Entity } from './entity';
 import { TestFeaturesService } from '../../utils/test_features.service';
+import { entityEventBus } from '../../eventBus/entityEventBus/entityEventBus';
+import { EntityEventBusEventNames } from '../../eventBus/entityEventBus/entityEventBus.constants';
+import { exhaustiveCheck } from '../../utils/utility';
+import { EntityInventoryActions } from '../../inventory/inventory.constants';
+import { gameEventBus } from '../../eventBus/gameEventBus/gameEventBus';
+import { GameEventBusEventNames } from '../../eventBus/gameEventBus/gameEventBus.constants';
 
 export interface IMoveResolve {
   canMove: boolean;
   message: string;
   shouldEndPlayerTurn?: boolean;
 }
-interface IInventoryActionConfirmData {
-  action: EntityInventoryActions;
-  selectedItems: ItemModel[];
-}
 
 const constructorToken = Symbol('Player controller');
-let instance: PlayerController;
+let instance: PlayerEntity;
 
-export class PlayerController extends EntityController<PlayerModel> {
+export class PlayerEntity extends Entity<PlayerModel> {
   public hasMoved = false;
-  private globalMessageController: MessagesController =
-    globalMessagesController;
-
-  private globalInventoryController: InventoryController =
-    globalInventoryController;
-
   private containerInventoryController = globalContainerInventoryController;
   private get currentLevelController(): LevelController {
     return dungeonState.getCurrentLevelController();
@@ -77,7 +50,6 @@ export class PlayerController extends EntityController<PlayerModel> {
     }
 
     this.model = new PlayerModel(constructorConfig);
-    this.attachEvents();
 
     if (applicationConfigService.isTestMode || applicationConfigService.isDevMode) {
       window._application.playerModel = this.model;
@@ -91,13 +63,13 @@ export class PlayerController extends EntityController<PlayerModel> {
 
   public static getInstance(
     constructorConfig?: SerializedEntityModel,
-  ): PlayerController {
+  ): PlayerEntity {
     if (!constructorConfig && !instance) {
       throw new Error('Controller not initialized yet');
     }
 
     if (!instance) {
-      instance = new PlayerController(constructorToken, constructorConfig);
+      instance = new PlayerEntity(constructorToken, constructorConfig);
 
       instance.initialize();
     }
@@ -109,86 +81,10 @@ export class PlayerController extends EntityController<PlayerModel> {
     TestFeaturesService.getInstance().initPlayerData(this);
   }
 
-  protected attachEvents(): void {
-    super.attachEvents();
-
-    this.model.on(
-      this,
-      EntityEvents.EntityModelStatusChange,
-      this.onEntityStatusChange,
-    );
-    this.globalInventoryController.on(
-      this,
-      InventoryModalEvents.InventoryActionConfirmed,
-      this.onInventoryActionConfirmed,
-    );
-
-    this.containerInventoryController.on(
-      this,
-      ContainerInventoryModalConstants.ItemsTransferred,
-      this.onContainerInventoryModalItemsTransferred,
-    );
-  }
-
-  @boundMethod
-  private onInventoryActionConfirmed(data: IInventoryActionConfirmData): void {
-    const { action, selectedItems } = data;
-
-    if (!selectedItems.length) {
-      this.globalInventoryController.closeModal();
-      return;
-    }
-
-    if (action === EntityInventoryActions.Drop) {
-      this.dropItems(selectedItems);
-    } else if (action === EntityInventoryActions.PickUp) {
-      this.pickUpItems(selectedItems);
-    } else if (action === EntityInventoryActions.Equip) {
-      this.equipItem(selectedItems[0]);
-    }
-
-    this.globalInventoryController.closeModal();
-  }
-
-  private onContainerInventoryModalItemsTransferred(
-    data: ContainerInventoryTransferData,
-  ): void {
-    const { mode, items } = data;
-
-    switch (mode) {
-      case 'put':
-        if (items.length === 1) {
-          this.globalMessageController.showMessageInView(
-            `You put ${items[0].fullDescription} into container.`,
-          );
-        } else if (items.length > 1) {
-          this.globalMessageController.showMessageInView(
-            `You put ${items.length} items into container.`,
-          );
-        }
-        break;
-      case 'withdraw':
-        if (items.length === 1) {
-          this.globalMessageController.showMessageInView(
-            `You take ${items[0].fullDescription} from container.`,
-          );
-        } else if (items.length > 1) {
-          this.globalMessageController.showMessageInView(
-            `You take ${items.length} items from container.`,
-          );
-        }
-        break;
-    }
-
-    if (items.length > 0) {
-      this.endTurn();
-    }
-  }
-
   public dropItems(items: ItemModel[]): void {
     super.dropItems(items);
 
-    this.notify(PlayerActions.EndPlayerTurn);
+    this.endTurn();
   }
 
   /**
@@ -197,7 +93,7 @@ export class PlayerController extends EntityController<PlayerModel> {
   public act(): void {
     super.act();
 
-    this.notify(START_PLAYER_TURN);
+    entityEventBus.publish(EntityEventBusEventNames.PlayerTurnStart);
     this.hasMoved = true;
   }
 
@@ -235,25 +131,20 @@ export class PlayerController extends EntityController<PlayerModel> {
         if (newCell.type === playerModel.position.type) {
           playerController.moveAttempt(newCell, resolve);
         } else {
-          /**
-           * Magic part: promise is not resolved here, instead game controller is notified about needed
-           * movement confirmation from player. Along with notification object two functions are passed. One
-           * function is called after player confirms movement, other when player rejects. Both function
-           * calls promise resolve.
-           */
-          playerController.notify(PLAYER_WALK_CONFIRM_NEEDED, {
-            message: `Do you really want to walk into ${newCell.description}? (y/n)`,
-            confirm: () => {
+          gameEventBus.publish(
+            GameEventBusEventNames.PlayerMovementConfirmNeeded,
+            `Do you really want to walk into ${newCell.description}? (y/n)`,
+            () => {
               playerController.moveAttempt(newCell, resolve);
             },
-            decline: () => {
+            () => {
               resolve({
                 canMove: false,
                 message: 'You abort your attempt.',
                 shouldEndPlayerTurn: false,
               });
             },
-          });
+          );
         }
       } else {
         playerController.moveAttempt(newCell, resolve);
@@ -284,11 +175,11 @@ export class PlayerController extends EntityController<PlayerModel> {
 
       globalMessagesController.showMessageInView(useEffect.message);
       if (useEffect.endTurn) {
-        this.notify(END_PLAYER_TURN);
+        this.endTurn();
       }
     } else {
       if (useAttemptResult.endTurn) {
-        this.notify(END_PLAYER_TURN);
+        this.endTurn();
       }
     }
   }
@@ -296,7 +187,7 @@ export class PlayerController extends EntityController<PlayerModel> {
   /**
    * Attempts to pick up item from ground (ie. removing it from Cell inventory and moving to entity inventory).
    */
-  public pickUp(): void {
+  public async pickUp(): Promise<void> {
     const currentCellInventory: ItemsCollection =
       this.model.getCurrentCellInventory();
 
@@ -305,10 +196,15 @@ export class PlayerController extends EntityController<PlayerModel> {
         'What do you want to pick up?',
       );
     } else if (currentCellInventory.size === 1) {
-      this.model.pickUp(currentCellInventory.getFirstItem());
+      this.pickUpItems([currentCellInventory.getFirstItem()]);
     } else {
-      /* Notify to open inventory modal */
-      this.notify(PlayerActions.PickUp, currentCellInventory);
+      const itemsSelectedToPickUp = await globalInventoryController.openModal(currentCellInventory, EntityInventoryActions.PickUp).waitForPlayerSelection();
+
+      if (itemsSelectedToPickUp?.selectedItems.size) {
+        this.pickUpItems(itemsSelectedToPickUp.selectedItems.get());
+      }
+
+      globalInventoryController.closeModal();
     }
   }
 
@@ -321,24 +217,14 @@ export class PlayerController extends EntityController<PlayerModel> {
     items.forEach((item: ItemModel) => {
       this.model.pickUp(item);
     });
+
+    entityEventBus.publish(EntityEventBusEventNames.EntityPickItem, this, items);
+
+    this.endTurn();
   }
 
   public addItemToInventory(item: ItemModel[]): void {
     this.model.addItemToInventory(item);
-  }
-
-  public onEntityPickUp(item: ItemModel): void {
-    super.onEntityPickUp(item);
-
-    this.notify(PlayerActions.EndPlayerTurn);
-  }
-
-  public equipItem(item: ItemModel): void {
-    if (item instanceof WeaponModel) {
-      this.model.equipWeapon(item);
-    } else if (item instanceof ArmourModel) {
-      item.wear(this.model);
-    }
   }
 
   /**
@@ -368,7 +254,7 @@ export class PlayerController extends EntityController<PlayerModel> {
       return;
     }
     if (cellModel.entity && cellModel.entity.type !== 'player') {
-      if (cellModel.entity.isHostile) {
+      if (cellModel.entity.getModel().isHostile) {
         const attackResult: ICombatResult = this.attack(cellModel.entity);
 
         promiseResolveFunction({
@@ -380,7 +266,7 @@ export class PlayerController extends EntityController<PlayerModel> {
         promiseResolveFunction({
           canMove: false,
           message: `${Utility.capitalizeString(
-            cellModel.entity.description,
+            cellModel.entity.getModel().description,
           )} is in your way.`,
           shouldEndPlayerTurn: false,
         });
@@ -426,7 +312,7 @@ export class PlayerController extends EntityController<PlayerModel> {
   }
 
   public endTurn(): void {
-    this.notify(END_PLAYER_TURN);
+    entityEventBus.publish(EntityEventBusEventNames.PlayerEndTurn);
   }
 
   public healPlayer(): void {
@@ -435,16 +321,35 @@ export class PlayerController extends EntityController<PlayerModel> {
     this.endTurn();
   }
 
-  public openContainer(containerInventory: ItemsCollection): void {
+  public async openContainer(cell: Cell): Promise<void> {
+    const { containerInventory } = cell;
     this.containerInventoryController.openModal();
     this.containerInventoryController.init(
       containerInventory,
       this.getPlayerInventory(),
     );
-  }
+    const selectionResult = await this.containerInventoryController.waitForPlayerSelection();
 
-  private onEntityStatusChange(statuses: EntityStatusesCollection): void {
-    globalInfoController.setEntityStatusesInView(statuses);
+    if (selectionResult?.items.length > 0) {
+      const { items, mode } = selectionResult;
+
+      switch (mode) {
+        case 'put':
+          this.removeFromInventory(items);
+          cell.containerInventory.add(items);
+          break;
+        case 'withdraw':
+          cell.containerInventory.remove(items);
+          this.addItemToInventory(items);
+          break;
+        default:
+          exhaustiveCheck(mode);
+      }
+
+      entityEventBus.publish(EntityEventBusEventNames.EntityTransferItemsContainer, this, cell, items, mode);
+    }
+
+    this.containerInventoryController.closeModal();
   }
 
   public makeRandomMovement(

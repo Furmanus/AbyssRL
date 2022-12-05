@@ -4,3 +4,9 @@ export enum DamageTypes {
   Bludgeoning = 'bludgeoning',
   Magic = 'magic',
 }
+
+export enum EntityDamageReasons {
+  CombatMelee = 'combat:melee',
+  CombatRanged = 'combat:ranged',
+  BloodLoss = 'blood_loss',
+}

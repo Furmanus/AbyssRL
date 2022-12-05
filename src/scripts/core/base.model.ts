@@ -1,5 +1,4 @@
 import { Constructor } from './constructor';
-import { IAnyObject } from '../interfaces/common';
 import { v4 as uuid } from 'uuid';
 
 export interface SerializedBaseModel {

@@ -1,7 +1,7 @@
 import { config } from '../global/config';
 import { Position } from '../position/position';
 import { Observer } from '../core/observer';
-import { CAMERA_MOVED } from '../constants/game_actions';
+import { CAMERA_MOVED } from './constants/gameActions.constants';
 import { Vector } from '../position/vector';
 
 export class CameraView extends Observer {

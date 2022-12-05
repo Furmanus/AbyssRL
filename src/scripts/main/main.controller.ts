@@ -1,46 +1,17 @@
-/**
- * Main controller. Responsible for taking user keyboard input, processing it, and triggering appropriate methods from
- * other sub controllers. Also responsible for managing all sub controllers.
- */
 import { GameController } from './game.controller';
 import { keyboardKeyToDirectionMap } from './constants/keyboardDirections.constants';
 import { applicationConfigService, config } from '../global/config';
-import {
-  PLAYER_ACTION_ACTIVATE_OBJECT,
-  PLAYER_ACTION_GO_DOWN,
-  PLAYER_ACTION_GO_UP,
-  PLAYER_ACTION_MOVE_PLAYER,
-  PLAYER_DEATH,
-  PLAYER_WALK_CONFIRM_NEEDED,
-  PlayerActions,
-  SHOW_MESSAGE_IN_VIEW,
-  START_PLAYER_TURN,
-} from '../entity/constants/player_actions';
+import { PlayerActions } from './constants/playerActions.constants';
 import {
   IAnyFunction,
   IDirection,
   IMessageData,
-  IPlayerConfirmationObject,
 } from '../interfaces/common';
 import { BaseController } from '../core/base.controller';
-import { DungeonEvents } from '../constants/dungeon_events';
-import { boundMethod } from 'autobind-decorator';
-import {
-  EXAMINE_CELL,
-  ModalActions,
-  STOP_EXAMINE_CELL,
-} from '../constants/game_actions';
-import { Cell } from '../dungeon/models/cells/cell_model';
 import { globalMessagesController } from '../messages/messages.controller';
-import { ItemsCollection } from '../items/items_collection';
 import {
-  globalContainerInventoryController,
   globalInventoryController,
 } from '../global/modal';
-import {
-  EntityInventoryActions,
-  InventoryModalEvents,
-} from '../constants/entity_events';
 import {
   isKeyboardKeyDirection,
   KeyboardWhichDirections,
@@ -48,14 +19,20 @@ import {
 import { globalInfoController } from '../info/info.controller';
 import { globalMiniMapController } from '../minimap/minimap.controller';
 import { DevFeaturesModalController } from '../modal/developmentFeatures/devFeaturesModal.controller';
-import { autorun } from 'mobx';
 import { dungeonState } from '../state/application.state';
 import type { SerializedDungeonState } from '../state/applicationState.interfaces';
 import { KeyboardKeys, KeyCodes } from './constants/keyboardKeys.constants';
-import { PlayerController } from '../entity/controllers/player.controller';
+import { PlayerEntity } from '../entity/controllers/player.entity';
 import { aboutGameModalController } from '../modal/aboutGame/aboutGameModal.controller';
+import { gameEventBus } from '../eventBus/gameEventBus/gameEventBus';
+import { GameEventBusEventNames } from '../eventBus/gameEventBus/gameEventBus.constants';
+import { entityEventBus } from '../eventBus/entityEventBus/entityEventBus';
+import { EntityEventBusEventNames } from '../eventBus/entityEventBus/entityEventBus.constants';
+import { Entity } from '../entity/controllers/entity';
+import { MonstersTypes } from '../entity/constants/monsters';
+import { EntityInventoryActions } from '../inventory/inventory.constants';
 
-const keyCodeToActionMap: { [keycode: number]: string } = {
+const keyCodeToActionMap: Record<number, PlayerActions> = {
   188: PlayerActions.PickUp,
 };
 const keyCodeToInventoryMode: { [keycode: number]: EntityInventoryActions } = {
@@ -110,17 +87,6 @@ export class MainController extends BaseController {
     this.bindMethods();
     this.attachEvents();
     this.attachModalEvents();
-    /**
-     * This two events are attached in initialize, because they has to be active when other events are detached during
-     * examine mode.
-     */
-    this.gameController.on(this, EXAMINE_CELL, this.onExamineCell);
-    this.gameController.on(this, STOP_EXAMINE_CELL, this.onStopExamineCell);
-    this.gameController.on(
-      this,
-      PlayerActions.PickUp,
-      this.onGameControllerPlayerPickUp,
-    );
 
     globalInfoController.changePlayerNameMessageInView(
       this.gameController.getPlayerName(),
@@ -133,54 +99,20 @@ export class MainController extends BaseController {
     this.controllerInitialized = true;
   }
 
-  /**
-   * Method responsible for binding methods to main controller object. Methods has to be bound here, because in
-   * certain circumstances event listeners to which those function are callbacks are removed from appropriate objects.
-   * TODO refactor to use boundMethod decorator and remove this method
-   */
   private bindMethods(): void {
     this.registerKeyPressed = this.registerKeyPressed.bind(this);
     this.registerKeyReleased = this.registerKeyReleased.bind(this);
     this.onResizeWindow = this.onResizeWindow.bind(this);
 
     this.onShowMessageInView = this.onShowMessageInView.bind(this);
-    this.onPlayerConfirmNeeded = this.onPlayerConfirmNeeded.bind(this);
   }
 
   /**
    * Enables listening on events notified by modal controller.
    */
   private attachModalEvents(): void {
-    globalInventoryController.on(
-      this,
-      ModalActions.OpenModal,
-      this.onModalOpen,
-    );
-    globalInventoryController.on(
-      this,
-      InventoryModalEvents.InventoryModalClosed,
-      this.onInventoryModalClose,
-    );
-    globalContainerInventoryController.on(
-      this,
-      ModalActions.OpenModal,
-      this.onContainerInventoryModalOpen,
-    );
-    globalContainerInventoryController.on(
-      this,
-      ModalActions.CloseModal,
-      this.onContainerInventoryModalClose,
-    );
-    this.devFeaturesModalController.on(
-      this,
-      ModalActions.CloseModal,
-      this.onDevFeaturesModalClose,
-    );
-    this.devFeaturesModalController.on(
-      this,
-      ModalActions.OpenModal,
-      this.onDevFeaturesModalOpen,
-    );
+    gameEventBus.subscribe(GameEventBusEventNames.ModalOpen, this.onModalOpen);
+    gameEventBus.subscribe(GameEventBusEventNames.ModalClose, this.onModalClose);
   }
 
   /**
@@ -198,22 +130,9 @@ export class MainController extends BaseController {
       window.addEventListener('resize', this.onResizeWindow);
     }
 
-    this.gameController.on(
-      this,
-      SHOW_MESSAGE_IN_VIEW,
-      this.onShowMessageInView,
-    );
-    this.gameController.on(
-      this,
-      PLAYER_WALK_CONFIRM_NEEDED,
-      this.onPlayerConfirmNeeded,
-    );
-    this.gameController.on(this, START_PLAYER_TURN, this.onPlayerTurnStarted);
-    this.gameController.on(this, PLAYER_DEATH, this.onPlayerDeath);
-
-    autorun(() => {
-      this.onChangeDungeonLevel(dungeonState.currentLevelNumber);
-    });
+    entityEventBus.subscribe(EntityEventBusEventNames.EntityDeath, this.onEntityDeath);
+    entityEventBus.subscribe(EntityEventBusEventNames.PlayerTurnStart, this.onPlayerTurnStarted);
+    gameEventBus.subscribe(GameEventBusEventNames.PlayerMovementConfirmNeeded, this.onPlayerConfirmNeeded);
 
     if (applicationConfigService.isTestMode) {
       const testElement = document.createElement('div');
@@ -239,10 +158,8 @@ export class MainController extends BaseController {
     window.removeEventListener('keydown', this.registerKeyPressed);
     window.removeEventListener('keyup', this.registerKeyReleased);
 
-    this.gameController.off(this, SHOW_MESSAGE_IN_VIEW);
-    this.gameController.off(this, PLAYER_WALK_CONFIRM_NEEDED);
-    this.gameController.off(this, DungeonEvents.ChangeCurrentLevel);
-    this.gameController.off(this, START_PLAYER_TURN);
+    entityEventBus.unsubscribe(EntityEventBusEventNames.PlayerTurnStart, this.onPlayerTurnStarted);
+    gameEventBus.unsubscribe(GameEventBusEventNames.PlayerMovementConfirmNeeded, this.onPlayerConfirmNeeded);
   }
 
   /**
@@ -304,9 +221,9 @@ export class MainController extends BaseController {
       ) {
         this.moveCamera(keycode); // shift + numpad direction, move camera around
       } else if (keycode === KeyCodes.AscendLevel) {
-        this.gameController.takePlayerAction(PLAYER_ACTION_GO_UP);
+        this.gameController.takePlayerAction(PlayerActions.GoUp);
       } else if (keycode === KeyCodes.DescendLevel) {
-        this.gameController.takePlayerAction(PLAYER_ACTION_GO_DOWN);
+        this.gameController.takePlayerAction(PlayerActions.GoDown);
       } else if (keycode === KeyCodes.SaveGame) {
         this.saveGame();
       } else if (keycode === KeyCodes.QuitGame) {
@@ -321,7 +238,7 @@ export class MainController extends BaseController {
     } else {
       if (isKeyboardKeyDirection(keycode)) {
         this.gameController.takePlayerAction(
-          PLAYER_ACTION_MOVE_PLAYER,
+          PlayerActions.Move,
           keyboardKeyToDirectionMap[keycode],
         );
       } else if (keycode === KeyCodes.Activate) {
@@ -334,7 +251,7 @@ export class MainController extends BaseController {
 
         if (choosenDirection) {
           this.gameController.takePlayerAction(
-            PLAYER_ACTION_ACTIVATE_OBJECT,
+            PlayerActions.ActivateObject,
             choosenDirection,
           );
         } else {
@@ -345,7 +262,7 @@ export class MainController extends BaseController {
         this.enableExamineMode();
       } else if (keyCodeToInventoryMode[keycode]) {
         this.openPlayerInventory(keyCodeToInventoryMode[keycode]);
-      } else {
+      } else if (keyCodeToActionMap[keycode]) {
         this.gameController.takePlayerAction(keyCodeToActionMap[keycode]);
       }
     }
@@ -364,71 +281,22 @@ export class MainController extends BaseController {
     this.gameController.moveCameraInView(deltaX, deltaY);
   }
 
-  @boundMethod
-  private onModalOpen(): void {
+  private onModalOpen = (): void => {
     this.detachEvents();
-  }
+  };
 
-  @boundMethod
-  private onModalClose(): void {
+  private onModalClose = (): void => {
     this.attachEvents();
+  };
+
+  private onEntityDeath = (entity: Entity): void => {
+    if (entity.getModel().type === MonstersTypes.Player) {
+      this.setPlayerStats();
+      this.detachEvents();
+    }
   }
 
-  /**
-   * Method triggered after game controller notifies about player death.
-   */
-  @boundMethod
-  private onPlayerDeath(): void {
-    this.setPlayerStats();
-    this.detachEvents();
-  }
-
-  private onChangeDungeonLevel(levelNumber: number): void {
-    globalInfoController.changeLevelInfoMessage({
-      branch: dungeonState.currentBranch,
-      levelNumber,
-    });
-  }
-
-  /**
-   * Method called when game controller notifies that player attempts to pick up items when there are multiple items
-   * on ground.
-   *
-   * @param cellItems    Collection of items from cell where player is
-   */
-  @boundMethod
-  private onGameControllerPlayerPickUp(cellItems: ItemsCollection): void {
-    this.openCellInventory(EntityInventoryActions.PickUp, cellItems);
-  }
-
-  /**
-   * Method triggered after notification from game controller about examination of certain cell.
-   *
-   * @param cell  Cell which is examined by player
-   */
-  @boundMethod
-  private onExamineCell(cell: Cell): void {
-    /**
-     * Clear drawn information about previous cell
-     */
-    globalInfoController.hideCellInformation();
-    globalInfoController.displayCellInformation(cell);
-  }
-
-  /**
-   * Method triggered after players stops examining dungeon cells.
-   */
-  @boundMethod
-  private onStopExamineCell(): void {
-    globalInfoController.hideCellInformation();
-    globalMessagesController.removeLastMessage();
-  }
-
-  /**
-   * Method triggered after game controller emits event about start of player turn.
-   */
-  @boundMethod
-  private onPlayerTurnStarted(): void {
+  private onPlayerTurnStarted = (): void => {
     this.setPlayerStats();
   }
 
@@ -445,7 +313,6 @@ export class MainController extends BaseController {
   /**
    * Method triggered after pressing 'x' key. Prepares game controller to examine visible cells.
    */
-  @boundMethod
   private enableExamineMode(): void {
     globalMessagesController.showMessageInView('Look at...(pick direction):');
     this.gameController.enableExamineMode();
@@ -455,28 +322,39 @@ export class MainController extends BaseController {
   }
 
   /**
-   * Opens player directory
+   * Opens player directory. Method opens globalInventoryController and waits for result of user selection of inventory items. Then based on mode
+   * triggers appriopriate action from player.
+   *
+   * @param {EntityInventoryActions} mode - Mode in which inventory is opened (pick up, drop, equip)
    */
-  private openPlayerInventory(mode: EntityInventoryActions): void {
+  private async openPlayerInventory(mode: EntityInventoryActions): Promise<void> {
     const playerModel = this.gameController.getPlayerModel();
     const { inventory } = playerModel;
-    // nie działa otwieranie, inventory jest undefined
-    globalInventoryController.openModal(inventory, mode, playerModel);
-    this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
-  }
 
-  /**
-   * Opens specific cell inventory
-   * @param mode  Inventory mode, whether items are picked up, etc.
-   * @param items Items collection
-   * @private
-   */
-  private openCellInventory(
-    mode: EntityInventoryActions,
-    items: ItemsCollection,
-  ): void {
-    globalInventoryController.openModal(items, mode);
-    this.attachTemporaryEventListener(this.inventoryModeEventListenerCallback);
+    const chosenItems = await globalInventoryController.openModal(inventory, mode, playerModel).waitForPlayerSelection();
+
+    if (chosenItems) {
+      const { action, selectedItems } = chosenItems;
+
+      if (selectedItems.size) {
+        switch (action) {
+          case EntityInventoryActions.PickUp:
+            PlayerEntity.getInstance().pickUpItems(selectedItems.get());
+            globalInventoryController.closeModal();
+            break;
+          case EntityInventoryActions.Drop:
+            PlayerEntity.getInstance().dropItems(selectedItems.get());
+            globalInventoryController.closeModal();
+            break;
+          case EntityInventoryActions.Equip:
+            PlayerEntity.getInstance().equipItem(selectedItems.getFirstItem());
+            globalInventoryController.closeModal();
+            break;
+        }
+      }
+    } else {
+      globalInventoryController.closeModal();
+    }
   }
 
   /**
@@ -484,8 +362,7 @@ export class MainController extends BaseController {
    *
    * @param e Keyboard event object
    */
-  @boundMethod
-  private examinedModeEventListenerCallback(e: KeyboardEvent): void {
+  private examinedModeEventListenerCallback = (e: KeyboardEvent): void => {
     if (e.which === 27) {
       this.examineMode = false;
       this.gameController.disableExamineMode();
@@ -494,77 +371,18 @@ export class MainController extends BaseController {
         'keydown',
         this.examinedModeEventListenerCallback,
       );
+
+      globalInfoController.hideCellInformation();
+      globalMessagesController.removeLastMessage();
     } else if (isKeyboardKeyDirection(e.which)) {
-      this.gameController.examineCellInDirection(
+      const nextExaminedCell = this.gameController.examineCellInDirection(
         keyboardKeyToDirectionMap[e.which],
       );
+
+      globalInfoController.hideCellInformation();
+      globalInfoController.displayCellInformation(nextExaminedCell);
     }
   }
-
-  /**
-   * Callback for keydown event in inventory mode.
-   *
-   * @param e  Native keyboard event
-   */
-  @boundMethod
-  private inventoryModeEventListenerCallback(e: KeyboardEvent): void {
-    if (e.which === 27) {
-      globalInventoryController.closeModal();
-    }
-  }
-
-  private devFeaturesModeEventListenerCallback = (e: KeyboardEvent): void => {
-    if (e.which === 27) {
-      this.devFeaturesModalController.closeModal();
-    }
-  };
-
-  private containerInventoryEventListenerCallback = (
-    e: KeyboardEvent,
-  ): void => {
-    if (e.which === 27) {
-      globalContainerInventoryController.closeModal();
-    }
-  };
-
-  /**
-   * Callback method triggered after inventory modal is being closed. Attaches back main event listeners.
-   */
-  private onInventoryModalClose = (): void => {
-    this.attachEvents();
-    window.removeEventListener(
-      'keydown',
-      this.inventoryModeEventListenerCallback,
-    );
-  };
-
-  private onDevFeaturesModalClose = (): void => {
-    this.attachEvents();
-    window.removeEventListener(
-      'keydown',
-      this.devFeaturesModeEventListenerCallback,
-    );
-  };
-
-  private onDevFeaturesModalOpen = (): void => {
-    this.attachTemporaryEventListener(
-      this.devFeaturesModeEventListenerCallback,
-    );
-  };
-
-  private onContainerInventoryModalOpen = (): void => {
-    this.attachTemporaryEventListener(
-      this.containerInventoryEventListenerCallback,
-    );
-  };
-
-  private onContainerInventoryModalClose = (): void => {
-    this.attachEvents();
-    window.removeEventListener(
-      'keydown',
-      this.containerInventoryEventListenerCallback,
-    );
-  };
 
   private openAboutGameModal = (): void => {
     aboutGameModalController.openModal();
@@ -608,29 +426,29 @@ export class MainController extends BaseController {
 
   /**
    * Method triggered after game controller notifies about needed certain action confirmation from player.
-   * @param   data            Object with data about confirmation.
-   * @param   data.message    Confirmation message to display.
-   * @param   data.confirm    Function triggered after player confirms move.
-   * @param   data.decline    Function triggered after player declines move.
+   *
+   * @param   message    Confirmation message to display.
+   * @param   confirm    Function triggered after player confirms move.
+   * @param   decline    Function triggered after player declines move.
    */
-  private onPlayerConfirmNeeded(data: IPlayerConfirmationObject): void {
+  private onPlayerConfirmNeeded = (message: string, confirm: () => void, decline: () => void): void => {
     const attachEventsFunction = this.attachEvents.bind(this);
 
     this.detachEvents();
 
-    globalMessagesController.showMessageInView(data.message);
+    globalMessagesController.showMessageInView(message);
     window.addEventListener('keydown', userActionConfirmEventListener);
 
     function userActionConfirmEventListener(e: KeyboardEvent): void {
       e.preventDefault();
 
       if (e.which === 89) {
-        data.confirm();
+        confirm();
 
         window.removeEventListener('keydown', userActionConfirmEventListener);
         attachEventsFunction();
       } else if (e.which === 78 || e.which === 32 || e.which === 27) {
-        data.decline();
+        decline();
 
         window.removeEventListener('keydown', userActionConfirmEventListener);
         attachEventsFunction();
@@ -732,7 +550,7 @@ export class MainController extends BaseController {
 
         globalMessagesController.showMessageInView(
           `${
-            PlayerController.getInstance().getModel().description
+            PlayerEntity.getInstance().getModel().description
           } committed suicide...`,
         );
 

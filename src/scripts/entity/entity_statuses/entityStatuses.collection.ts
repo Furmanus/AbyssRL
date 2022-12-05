@@ -5,8 +5,6 @@ import {
   EntityStatusCommonController,
 } from './entityStatusCommon.controller';
 import { EntityStatuses } from '../constants/statuses';
-import { EntityStunnedStatusController } from './entityStunnedStatus.controller';
-import { EntityBleedingStatusController } from './entityBleedingStatus.controller';
 
 export class EntityStatusesCollection extends Collection<EntityStatusCommonController> {
   public addStatus(status: EntityStatusCommonController): this {

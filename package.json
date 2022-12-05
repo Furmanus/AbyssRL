@@ -22,7 +22,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint:ts"
+      "pre-push": "npm run lint"
     }
   },
   "author": "Łukasz Lach",

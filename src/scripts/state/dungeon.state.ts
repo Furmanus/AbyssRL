@@ -6,7 +6,7 @@ import { BaseState } from './baseState';
 import { LevelModel } from '../dungeon/models/level_model';
 import { DungeonStateEntityManager } from './managers/dungeonStateEntity.manager';
 import type { LevelController } from '../dungeon/level.controller';
-import { EntityController } from '../entity/controllers/entity.controller';
+import { Entity } from '../entity/controllers/entity';
 import { PartialDungeonState } from './application.state';
 import {
   DungeonBranchLevelEntryStructure,
@@ -18,7 +18,7 @@ import {
 } from './applicationState.interfaces';
 import { LevelModelFactory } from '../dungeon/factory/levelModel.factory';
 import { LevelControllerFactory } from '../dungeon/factory/levelController.factory';
-import { SerializedEntityModel } from '../entity/models/entity.model';
+import { EntityDungeonPosition, SerializedEntityModel } from '../entity/models/entity.model';
 import { MonstersTypes } from '../entity/constants/monsters';
 import { EntityFactory } from '../entity/factory/entity.factory';
 import {
@@ -166,7 +166,7 @@ export class DungeonState extends BaseState {
     if (!this.dungeonsStructure[this.currentBranch][levelNumber]) {
       this.dungeonsStructure[this.currentBranch][levelNumber] = {
         level: null,
-        entities: new Set<EntityController>(),
+        entities: new Set<Entity>(),
         scheduledDungeonEvents: new Set<DungeonEvent>(),
         timeEngine: new TimeEngine(),
         cells: new Map<string, Cell>(),
@@ -182,6 +182,16 @@ export class DungeonState extends BaseState {
     branch: DungeonBranches = DungeonBranches.Main,
   ): boolean {
     return !!this.dungeonsStructure[branch]?.[levelNumber]?.level;
+  }
+
+  /**
+   * Checks if entity dungeon position is in current level where playe currently is.
+   *
+   * @param entityPosition Entity dungeon position
+   * @returns Boolean value indicating whether condition is true
+   */
+  public isPositionInCurrentLevel(entityPosition: EntityDungeonPosition): boolean {
+    return entityPosition.branch === this.currentBranch && entityPosition.level === this.currentLevelNumber;
   }
 
   public serialize(): SerializedDungeonState {
@@ -284,7 +294,7 @@ export class DungeonState extends BaseState {
 
       dungeonBranchStructure[lvlNumber].cells = cells;
 
-      const entities = new Set<EntityController>(
+      const entities = new Set<Entity>(
         stateLevelStructure.entities.map(this.createEntityFromSerializedData),
       );
 
@@ -315,7 +325,7 @@ export class DungeonState extends BaseState {
 
   private createEntityFromSerializedData(
     serializedEntity: SerializedEntityModel,
-  ): EntityController {
+  ): Entity {
     if (serializedEntity.type === MonstersTypes.Player) {
       return EntityFactory.getPlayerController(serializedEntity);
     } else {
