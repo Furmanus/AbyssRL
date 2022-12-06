@@ -44,17 +44,4 @@ describe('Test collection class', () => {
 
     expect(callback).toHaveBeenCalledTimes(2);
   });
-  it('listenOn method should correctly make controllers listen on collection elements', () => {
-    collection.add(element1);
-    collection.listenOn(controller, TEST_EVENT, callback);
-
-    expect(element1.on).toHaveBeenCalledWith(controller, TEST_EVENT, callback);
-    expect(element2.on).toHaveBeenCalledWith(controller, TEST_EVENT, callback);
-  });
-  it('stopListening method should correctly detach events', () => {
-    collection.listenOn(controller, TEST_EVENT, callback);
-    collection.stopListening(controller, TEST_EVENT);
-
-    expect(element2.off).toHaveBeenCalledWith(controller, TEST_EVENT);
-  });
 });

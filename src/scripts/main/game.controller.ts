@@ -67,7 +67,7 @@ export class GameController extends BaseController {
    * Attaches events to view and models.
    */
   private attachEvents(): void {
-    this.view.on(this, CANVAS_CELL_CLICK, this.onCanvasCellClick);
+    this.view.on(CANVAS_CELL_CLICK, this.onCanvasCellClick);
 
     entityEventBus.subscribe(EntityEventBusEventNames.PlayerTurnStart, this.onPlayerStartTurn);
     entityEventBus.subscribe(EntityEventBusEventNames.PlayerEndTurn, this.onPlayerEndTurn);

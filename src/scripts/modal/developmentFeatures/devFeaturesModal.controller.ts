@@ -61,17 +61,14 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     super.attachEvents();
 
     this.view.on(
-      this,
       DevFeaturesModalConstants.FormSubmitInView,
       this.onDevDungeonFormSubmitInView,
     );
     this.view.on(
-      this,
       DevFeaturesModalConstants.SpawnMonster,
       this.onMonsterSpawnInView,
     );
     this.view.on(
-      this,
       DevFeaturesModalConstants.HealPlayer,
       this.onHealPlayerClickInView,
     );
@@ -80,12 +77,12 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
   protected detachEvents(): void {
     super.detachEvents();
 
-    this.view.off(this, DevFeaturesModalConstants.FormSubmitInView);
-    this.view.off(this, DevFeaturesModalConstants.SpawnMonster);
-    this.view.off(this, DevFeaturesModalConstants.HealPlayer);
+    this.view.off(DevFeaturesModalConstants.FormSubmitInView);
+    this.view.off(DevFeaturesModalConstants.SpawnMonster);
+    this.view.off(DevFeaturesModalConstants.HealPlayer);
   }
 
-  private onDevDungeonFormSubmitInView(data: DevFormValues): void {
+  private onDevDungeonFormSubmitInView = (data: DevFormValues): void => {
     const {
       devDungeonHeight,
       devDungeonWidth,
@@ -109,14 +106,14 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     this.closeModal();
   }
 
-  private onMonsterSpawnInView(monster: Monsters): void {
+  private onMonsterSpawnInView = (monster: Monsters): void => {
     gameEventBus.publish(GameEventBusEventNames.SpawnMonster, monster);
 
     this.view.resetMonsterSpawnSelect();
     this.closeModal();
   }
 
-  private onHealPlayerClickInView(): void {
+  private onHealPlayerClickInView = (): void => {
     const playerController = PlayerEntity.getInstance();
 
     playerController.healPlayer();

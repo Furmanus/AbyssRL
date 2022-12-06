@@ -1,10 +1,8 @@
 import { Observer } from './observer';
-import { IListener } from './map_with_observer';
 import { IAnyObject } from '../interfaces/common';
 
 export class SetWithObserver<E> extends Observer {
   private set: Set<E>;
-  private setListeners: Set<IListener> = new Set<IListener>();
 
   public get size(): number {
     return this.set.size;

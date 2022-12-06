@@ -6,7 +6,6 @@ import { config } from '../global/config';
 import { ICoordinates, IStringDictionary } from '../interfaces/common';
 import { Cell } from '../dungeon/models/cells/cell_model';
 import { LevelModel } from '../dungeon/models/level_model';
-import { boundMethod } from 'autobind-decorator';
 import { MonstersTypes } from '../entity/constants/monsters';
 import { MiscTiles } from '../dungeon/constants/sprites.constants';
 import { CanvasFonts } from '../constants/canvas_enum';
@@ -186,7 +185,7 @@ export class GameView extends Observer {
   }
 
   private attachEventsToCamera(): void {
-    this.camera.on(this, CAMERA_MOVED, this.onCameraMove);
+    this.camera.on(CAMERA_MOVED, this.onCameraMove);
   }
 
   /**
@@ -197,8 +196,7 @@ export class GameView extends Observer {
    *
    * @param vector    Vector
    */
-  @boundMethod
-  private onCameraMove(vector: Vector): void {
+  private onCameraMove = (vector: Vector): void => {
     this.moveTemporaryImagesCoords(vector);
   }
 
@@ -655,8 +653,7 @@ export class GameView extends Observer {
     }
   }
 
-  @boundMethod
-  private animateAlternativeBorder(): void {
+  private animateAlternativeBorder = (): void => {
     const { alternativeBorderPosition } = this;
 
     if (this.isAlternativeBorderDrawn) {
@@ -1204,8 +1201,7 @@ export class GameView extends Observer {
    *
    * @param message   HTMLSpanElement with message
    */
-  @boundMethod
-  private removeTemporaryMessage(message: HTMLSpanElement): void {
+  private removeTemporaryMessage = (message: HTMLSpanElement): void => {
     if (this.screenContainer.contains(message)) {
       this.screenContainer.removeChild<HTMLSpanElement>(message);
     }

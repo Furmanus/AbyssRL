@@ -134,49 +134,4 @@ export class Collection<
   public forEach(callback: IAnyFunction): void {
     this.collection.forEach(callback);
   }
-
-  /**
-   * Enables listening by specified Controller instance on collection objects emitting specific event. Enables
-   * listening on event on already existing in collection objects and makes that passed controller will be
-   * automatically listening on all newly added elements.
-   *
-   * @param controller    Instance of controller which will be listening on event
-   * @param event         Event name
-   * @param callback      Callback function triggered after one or more collection's member notifies event
-   */
-  public listenOn(
-    controller: BaseController,
-    event: string,
-    callback: IAnyFunction,
-  ): this {
-    this.forEach((element: M) => {
-      element.on(controller, event, callback);
-    });
-
-    if (this.listeners.has(controller)) {
-      this.listeners.get(controller)[event] = callback;
-    } else {
-      this.listeners.set(controller, {
-        [event]: callback,
-      });
-    }
-    return this;
-  }
-
-  /**
-   * Disabled listening on specified event notified by collection elements.
-   *
-   * @param controller    Instance of controller which is listening on event
-   * @param event         Event name
-   */
-  public stopListening(controller: BaseController, event: string): this {
-    this.forEach((element: M) => {
-      element.off(controller, event);
-    });
-
-    if (this.listeners.has(controller)) {
-      this.listeners.delete(controller);
-    }
-    return this;
-  }
 }

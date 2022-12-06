@@ -1,4 +1,3 @@
-import { ITemplate } from '../../../interfaces/common';
 import { PreparedViewTemplate } from '../../../interfaces/templates';
 import { ViewElementsBuilder } from '../../viewElementsBuilder';
 import {
@@ -104,9 +103,9 @@ export class MultiSelect extends Observer {
   private attachEvents(): void {
     const { selectWrapper, selectList } = this.#template.elements;
 
-    this.#selectedOptions.on(this, 'add', this.onSelectedItemAdded);
-    this.#selectedOptions.on(this, 'delete', this.onSelectedItemRemoved);
-    this.#selectedOptions.on(this, 'change', this.onSelectedItemsChange);
+    this.#selectedOptions.on('add', this.onSelectedItemAdded);
+    this.#selectedOptions.on('delete', this.onSelectedItemRemoved);
+    this.#selectedOptions.on('change', this.onSelectedItemsChange);
 
     this.#selectElement.addEventListener('click', this.onNativeSelectClick);
     this.#selectElement.addEventListener('change', this.onNativeSelectChange);
@@ -167,7 +166,7 @@ export class MultiSelect extends Observer {
     }
   };
 
-  private onSelectedItemAdded(item: string): void {
+  private onSelectedItemAdded = (item: string): void => {
     const { selectList } = this.#template.elements;
     const { children } = selectList;
     const selectedItem = Array.from(children).find(
@@ -200,7 +199,7 @@ export class MultiSelect extends Observer {
     dispatchChangeEvent(this.#selectElement);
   };
 
-  private onSelectedItemRemoved(item: string): void {
+  private onSelectedItemRemoved = (item: string): void => {
     const { selectList } = this.#template.elements;
     const { children } = selectList;
     const selectedItem = Array.from(children).find(

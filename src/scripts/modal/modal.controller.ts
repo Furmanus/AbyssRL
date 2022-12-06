@@ -40,26 +40,26 @@ export class ModalController<
   }
 
   protected attachEvents(): void {
-    this.view.on(this, ModalActions.OverlayClick, this.onOverlayClick);
-    this.view.on(this, ModalActions.OpenModal, this.onModalOpen);
-    this.view.on(this, ModalActions.CloseModal, this.onModalClose);
+    this.view.on(ModalActions.OverlayClick, this.onOverlayClick);
+    this.view.on(ModalActions.OpenModal, this.onModalOpen);
+    this.view.on(ModalActions.CloseModal, this.onModalClose);
   }
 
   protected detachEvents(): void {
-    this.view.off(this, ModalActions.OverlayClick);
-    this.view.off(this, ModalActions.OpenModal);
-    this.view.off(this, ModalActions.CloseModal);
+    this.view.off(ModalActions.OverlayClick);
+    this.view.off(ModalActions.OpenModal);
+    this.view.off(ModalActions.CloseModal);
   }
 
-  private onOverlayClick(): void {
+  private onOverlayClick = (): void => {
     this.closeModal();
   }
 
-  private onModalOpen(): void {
+  private onModalOpen = (): void => {
     gameEventBus.publish(GameEventBusEventNames.ModalOpen);
   }
 
-  private onModalClose(): void {
+  private onModalClose = (): void => {
     this.isModalOpen = false;
 
     this.detachEvents();

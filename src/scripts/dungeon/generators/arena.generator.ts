@@ -13,7 +13,6 @@ import {
 } from './generators.interfaces';
 import { Cell } from '../models/cells/cell_model';
 import { Position } from '../../position/position';
-import { MapWithObserver } from '../../core/map_with_observer';
 import { LevelController } from '../level.controller';
 
 const singletonToken: symbol = Symbol('ArenaLevelGenerator singleton token');

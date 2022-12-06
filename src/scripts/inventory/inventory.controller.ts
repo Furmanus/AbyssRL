@@ -2,7 +2,6 @@ import { ModalController } from '../modal/modal.controller';
 import { ItemsCollection } from '../items/items_collection';
 import { getPreparedInventoryElement } from './inventory.template';
 import { InventoryView } from './inventory.view';
-import { boundMethod } from 'autobind-decorator';
 import { SetWithObserver } from '../core/set_with_observer';
 import { ENTITY_MAX_INVENTORY_LENGTH } from '../entity/constants/monsters';
 import { ItemModel } from '../items/models/item.model';
@@ -46,10 +45,10 @@ export class InventoryController extends ModalController<
     const self = this;
 
     return new Promise((resolve) => {
-      this.on(this, InventoryModalEvents.InventoryActionConfirmed, handleSelection);
+      this.on(InventoryModalEvents.InventoryActionConfirmed, handleSelection);
 
       function handleSelection(selectionResult: {action: EntityInventoryActions; selectedItems: ItemModel[]}) {
-        self.off(self, InventoryModalEvents.InventoryActionConfirmed);
+        self.off(InventoryModalEvents.InventoryActionConfirmed);
 
         resolve({
           action: selectionResult.action,
@@ -71,34 +70,31 @@ export class InventoryController extends ModalController<
     super.attachEvents();
 
     this.view.on(
-      this,
       InventoryModalEvents.ChangeInventoryAction,
       this.onInventoryActionChangeInView,
     );
     this.view.on(
-      this,
       InventoryModalEvents.InventoryItemSelected,
       this.onInventoryItemSelectedInView,
     );
     this.view.on(
-      this,
       InventoryModalEvents.InventoryActionConfirmed,
       this.onInventoryActionConfirmed,
     );
 
-    this.selectedItems.on(this, 'add', this.onInventorySelectedItemsChange);
-    this.selectedItems.on(this, 'delete', this.onInventorySelectedItemsChange);
+    this.selectedItems.on('add', this.onInventorySelectedItemsChange);
+    this.selectedItems.on('delete', this.onInventorySelectedItemsChange);
   }
 
   protected detachEvents(): void {
     super.detachEvents();
 
-    this.view.off(this, InventoryModalEvents.ChangeInventoryAction);
-    this.view.off(this, InventoryModalEvents.InventoryItemSelected);
-    this.view.off(this, InventoryModalEvents.InventoryActionConfirmed);
+    this.view.off(InventoryModalEvents.ChangeInventoryAction);
+    this.view.off(InventoryModalEvents.InventoryItemSelected);
+    this.view.off(InventoryModalEvents.InventoryActionConfirmed);
 
-    this.selectedItems.off(this, 'add');
-    this.selectedItems.off(this, 'delete');
+    this.selectedItems.off('add');
+    this.selectedItems.off('delete');
   }
 
   private setMode(mode: EntityInventoryActions): void {
@@ -123,8 +119,7 @@ export class InventoryController extends ModalController<
     this.view.attachEvents();
   }
 
-  @boundMethod
-  private onInventorySelectedItemsChange(): void {
+  private onInventorySelectedItemsChange = (): void => {
     if (this.inventoryMode === EntityInventoryActions.Equip) {
       this.onInventoryActionConfirmed();
     } else {
@@ -132,8 +127,7 @@ export class InventoryController extends ModalController<
     }
   }
 
-  @boundMethod
-  private onInventoryActionChangeInView(action: EntityInventoryActions): void {
+  private onInventoryActionChangeInView = (action: EntityInventoryActions): void => {
     if (action && this.inventoryMode !== EntityInventoryActions.PickUp) {
       if (action === this.inventoryMode) {
         this.onInventoryActionConfirmed();
@@ -145,8 +139,7 @@ export class InventoryController extends ModalController<
     }
   }
 
-  @boundMethod
-  private onInventoryItemSelectedInView(index: number): void {
+  private onInventoryItemSelectedInView = (index: number): void => {
     if (
       index >= ENTITY_MAX_INVENTORY_LENGTH ||
       index >= this.inventoryContent.size
@@ -160,8 +153,7 @@ export class InventoryController extends ModalController<
     }
   }
 
-  @boundMethod
-  private onInventoryActionConfirmed(): void {
+  private onInventoryActionConfirmed = (): void => {
     const selectedItems: ItemModel[] = this.inventoryContent
       .get()
       .filter((item: ItemModel, index: number) => {

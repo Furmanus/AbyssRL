@@ -1,4 +1,3 @@
-import { BaseController } from '../../core/base.controller';
 import { ModalController } from '../modal.controller';
 import { aboutGameModalView, AboutGameModalView } from './aboutGameModal.view';
 
