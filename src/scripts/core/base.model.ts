@@ -1,16 +1,13 @@
-import { Constructor } from './constructor';
 import { v4 as uuid } from 'uuid';
 
 export interface SerializedBaseModel {
   id?: string;
 }
 
-export class BaseModel extends Constructor {
+export class BaseModel {
   public id = uuid();
 
   public constructor(config?: SerializedBaseModel) {
-    super();
-
     if (config?.id) {
       this.id = config.id;
     }

@@ -1,4 +1,4 @@
-import type { PlayerEntity } from '../entity/controllers/player.entity';
+import type { PlayerEntity } from '../entity/entities/player.entity';
 import { applicationConfigService } from '../global/config';
 import { ArmourNames } from '../items/constants/armourNames.constants';
 import { WeaponNames } from '../items/constants/weapons.constants';

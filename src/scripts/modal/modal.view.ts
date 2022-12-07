@@ -1,15 +1,15 @@
-import { Constructor } from '../core/constructor';
 import { ModalActions } from '../main/constants/gameActions.constants';
 import { clearElement } from '../utils/dom_helper';
 import { PreparedViewTemplate, TemplateObject } from '../interfaces/templates';
 import { ViewElementsBuilder } from '../core/viewElementsBuilder';
+import { Observer } from '../core/observer';
 
 /**
  * Class describing view of global application modal.
  */
 export abstract class ModalView<
   TemplateElements extends Record<string, HTMLElement> = {},
-> extends Constructor {
+> extends Observer {
   protected modalWrapper: HTMLDivElement;
   protected modalContent: HTMLDivElement;
   protected modalOverlay: HTMLDivElement;

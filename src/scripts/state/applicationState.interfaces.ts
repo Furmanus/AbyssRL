@@ -1,8 +1,8 @@
 import type { DungeonBranches } from '../dungeon/constants/dungeonTypes.constants';
 import type { SerializedLevel } from '../dungeon/models/level_model';
 import type { SerializedEntityModel } from '../entity/models/entity.model';
-import type { LevelController } from '../dungeon/level.controller';
-import type { Entity } from '../entity/controllers/entity';
+import type { Level } from '../dungeon/level';
+import type { Entity } from '../entity/entities/entity';
 import type {
   DungeonEvent,
   SerializedDungeonEvent,
@@ -33,7 +33,7 @@ export type DungeonBranchStructure = {
 };
 
 export type DungeonBranchLevelEntryStructure = {
-  level: LevelController;
+  level: Level;
   entities: Set<Entity>;
   cells: Map<string, Cell>;
   scheduledDungeonEvents: Set<DungeonEvent>;

@@ -1,7 +1,7 @@
 /* eslint-disable no-extend-native */
 import './init';
 import './state/application.state';
-import { MainController } from './main/main.controller';
+import { Main } from './main/main';
 import u5tiles from '../assets/u5tiles.png';
 import './styles/app.less';
 import { tilesetObject } from './global/tileset';
@@ -51,6 +51,6 @@ if (applicationConfigService.rngSeedValue) {
 
     await TestFeaturesService.getInstance().fetchPlayerStartingData();
 
-    new MainController(tileSet, parsedGame);
+    new Main(tileSet, parsedGame);
   });
 })();

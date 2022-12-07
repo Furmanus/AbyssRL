@@ -1,20 +1,18 @@
 import { InfoView } from './info.view';
 import { config } from '../global/config';
-import { BaseController } from '../core/base.controller';
 import { dungeonTypeToName } from '../dungeon/constants/dungeonTypes.constants';
 import { ILevelInfo } from '../dungeon/interfaces/level';
 import { IEntityStatsObject } from '../entity/models/entity.model';
 import { Cell } from '../dungeon/models/cells/cell_model';
-import { EntityStatuses } from '../entity/constants/statuses';
 import { EntityStatusesCollection } from '../entity/entity_statuses/entityStatuses.collection';
 
 const constructorToken = Symbol('Info controller');
-let instance: InfoController = null;
+let instance: InfoService = null;
 
 /**
  * Controller of info data visible to player (player character info like HP, stats...).
  */
-export class InfoController {
+export class InfoService {
   private view: InfoView;
 
   constructor(token: symbol) {
@@ -23,9 +21,9 @@ export class InfoController {
     }
   }
 
-  public static getInstance(): InfoController {
+  public static getInstance(): InfoService {
     if (!instance) {
-      instance = new InfoController(constructorToken);
+      instance = new InfoService(constructorToken);
     }
 
     return instance;
@@ -105,4 +103,4 @@ export class InfoController {
   }
 }
 
-export const globalInfoController = InfoController.getInstance();
+export const globalInfoController = InfoService.getInstance();

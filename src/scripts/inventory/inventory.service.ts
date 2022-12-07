@@ -1,4 +1,4 @@
-import { ModalController } from '../modal/modal.controller';
+import { Modal } from '../modal/modal';
 import { ItemsCollection } from '../items/items_collection';
 import { getPreparedInventoryElement } from './inventory.template';
 import { InventoryView } from './inventory.view';
@@ -8,7 +8,7 @@ import { ItemModel } from '../items/models/item.model';
 import { EntityModel } from '../entity/models/entity.model';
 import { EntityInventoryActions, InventoryModalEvents } from './inventory.constants';
 
-export class InventoryController extends ModalController<
+export class InventoryService extends Modal<
   ItemsCollection,
   InventoryView
 > {

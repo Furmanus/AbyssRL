@@ -1,4 +1,4 @@
-import { ModalController } from '../modal.controller';
+import { Modal } from '../modal';
 import { ContainerInventoryModalView } from './containerInventoryModal.view';
 import { containerInventoryTemplate } from './containerInventoryModal.template';
 import { ContainerInventoryModalConstants } from './containerInventoryModal.constants';
@@ -7,14 +7,14 @@ import { ModalActions } from '../../main/constants/gameActions.constants';
 import { ItemModel } from '../../items/models/item.model';
 import { ContainerInventoryModes, PlayerSelectionResult } from './containerInventoryModal.interfaces';
 
-let instance: ContainerInventoryModalController = null;
+let instance: ContainerInventoryModal = null;
 
 export type ContainerInventoryTransferData = {
   items: ItemModel[];
   mode: ContainerInventoryModes;
 };
 
-export class ContainerInventoryModalController extends ModalController<ContainerInventoryModalView> {
+export class ContainerInventoryModal extends Modal<ContainerInventoryModalView> {
   private mode: ContainerInventoryModes = 'put';
   private containerInventory: ItemsCollection = null;
   private playerInventory: ItemsCollection = null;
@@ -32,9 +32,9 @@ export class ContainerInventoryModalController extends ModalController<Container
     return this.mode === 'put' ? this.containerInventory : this.playerInventory;
   }
 
-  public static getInstance(): ContainerInventoryModalController {
+  public static getInstance(): ContainerInventoryModal {
     if (!instance) {
-      instance = new ContainerInventoryModalController();
+      instance = new ContainerInventoryModal();
     }
 
     return instance;

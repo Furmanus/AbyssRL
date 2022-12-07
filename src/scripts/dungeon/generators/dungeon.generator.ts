@@ -14,7 +14,7 @@ import { LevelModel } from '../models/level_model';
 import { IAnyFunction } from '../../interfaces/common';
 import { IDungeonStrategyGenerateLevelConfig } from './generators.interfaces';
 import { DungeonVaultsGenerator } from './vaults_generators/dungeonVaultsAbstract.generator';
-import { LevelController } from '../level.controller';
+import { Level } from '../level';
 
 interface IBspSplitRegions {
   roomsToReturn: DungeonAreaModel[];
@@ -58,7 +58,7 @@ export class DungeonLevelGenerator extends AbstractLevelGenerator {
    * @param   debugCallback      Optional callback function serving as debug for map generation
    */
   public generateLevel(
-    levelController: LevelController,
+    levelController: Level,
     config?: IDungeonStrategyGenerateLevelConfig,
     debugCallback?: IAnyFunction,
   ): void {

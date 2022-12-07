@@ -20,7 +20,7 @@ import { Cell } from '../models/cells/cell_model';
 import { Direction } from '../../position/direction';
 import { DirectionType } from '../../interfaces/common';
 import { Directions } from '../../interfaces/directions';
-import { LevelController } from '../level.controller';
+import { Level } from '../level';
 import { Monsters } from '../../entity/constants/monsters';
 
 const { NE, N, NW, W, SW, S, SE, E } = directionShortToStringMap;
@@ -803,7 +803,7 @@ export abstract class AbstractLevelGenerator {
    *
    * @param levelModel Model of dungeon level
    */
-  public generateMonsters(levelController: LevelController): void {
+  public generateMonsters(levelController: Level): void {
     if (!config.debugOptions.noMonsters) {
       for (let i = 0; i < MONSTERS_LIMIT_PER_LEVEL; i++) {
         const { model: levelModel } = levelController;

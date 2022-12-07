@@ -5,12 +5,11 @@ import { ITemplate, ITemplateVariables } from '../interfaces/common';
 import { getEntityInfoTemplate } from './info.template';
 import { config } from '../global/config';
 import { tileset } from '../global/tiledata';
-import Timeout = NodeJS.Timeout;
 import { ItemModel } from '../items/models/item.model';
 import { WeaponModel } from '../items/models/weapons/weapon.model';
 import { ArmourModel } from '../items/models/armours/armour_model';
 import { EntityStatusesCollection } from '../entity/entity_statuses/entityStatuses.collection';
-import { EntityStatusCommonController } from '../entity/entity_statuses/entityStatusCommon.controller';
+import { EntityStatusCommon } from '../entity/entity_statuses/entityStatusCommon';
 
 interface IStatsObject {
   [EntityStats.Strength]: ISingleStatObject;
@@ -49,7 +48,7 @@ export class InfoView {
   );
 
   private examineDisplay: HTMLElement = document.getElementById('object_info');
-  private currentImageAnimationIntervalId: Timeout;
+  private currentImageAnimationIntervalId: number;
   private tileset: CanvasImageSource;
   private TILE_SIZE: number = config.TILE_SIZE;
   private stats: IStatsObject = {
@@ -288,7 +287,7 @@ export class InfoView {
     if (this.statusContainer) {
       this.statusContainer.innerHTML = '';
 
-      statuses.forEach((status: EntityStatusCommonController) => {
+      statuses.forEach((status: EntityStatusCommon) => {
         const span = document.createElement('span');
         span.classList.add('info-statuses-item');
 
@@ -374,7 +373,7 @@ export class InfoView {
       this.currentImageAnimationIntervalId = setInterval(
         this.drawAnimatedCellDisplay.bind(this, x, y, currentFrameObj, canvas),
         250,
-      );
+      ) as never;
     }
   }
 

@@ -1,33 +1,32 @@
-import { Entity } from '../controllers/entity';
+import { Entity } from '../entities/entity';
 import {
-  EntityBleedingStatusController,
+  EntityBleedingStatus,
   EntityBleedingStatusSerializedData,
-} from '../entity_statuses/entityBleedingStatus.controller';
+} from '../entity_statuses/entityBleedingStatus';
 import {
   AllEntityStatusControllers,
   AllEntityStatusesSerialized,
-  EntityStatusCommonController,
-} from '../entity_statuses/entityStatusCommon.controller';
+} from '../entity_statuses/entityStatusCommon';
 import { EntityStatusesCollection } from '../entity_statuses/entityStatuses.collection';
 import {
-  EntityStunnedStatusController,
+  EntityStunnedStatus,
   EntityStunnedStatusSerializedData,
-} from '../entity_statuses/entityStunnedStatus.controller';
+} from '../entity_statuses/entityStunnedStatus';
 import { EntityStatuses } from '../constants/statuses';
 
 export class EntityStatusFactory {
   public static getEntityBleedingStatus(
     data: EntityBleedingStatusSerializedData,
     entityController?: Entity,
-  ): EntityBleedingStatusController {
-    return new EntityBleedingStatusController(data, entityController);
+  ): EntityBleedingStatus {
+    return new EntityBleedingStatus(data, entityController);
   }
 
   public static getEntityStunnedStatus(
     data: EntityStunnedStatusSerializedData,
     entityController?: Entity,
-  ): EntityStunnedStatusController {
-    return new EntityStunnedStatusController(data, entityController);
+  ): EntityStunnedStatus {
+    return new EntityStunnedStatus(data, entityController);
   }
 
   public static getCollection(

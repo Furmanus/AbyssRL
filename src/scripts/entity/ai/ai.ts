@@ -1,5 +1,5 @@
-import { Entity } from '../controllers/entity';
-import { MonsterEntity } from '../controllers/monster.entity';
+import { Entity } from '../entities/entity';
+import { MonsterEntity } from '../entities/monster.entity';
 import { LevelModel } from '../../dungeon/models/level_model';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 

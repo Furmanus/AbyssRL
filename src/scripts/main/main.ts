@@ -1,4 +1,4 @@
-import { GameController } from './game.controller';
+import { Game } from './game';
 import { keyboardKeyToDirectionMap } from './constants/keyboardDirections.constants';
 import { applicationConfigService, config } from '../global/config';
 import { PlayerActions } from './constants/playerActions.constants';
@@ -7,8 +7,7 @@ import {
   IDirection,
   IMessageData,
 } from '../interfaces/common';
-import { BaseController } from '../core/base.controller';
-import { globalMessagesController } from '../messages/messages.controller';
+import { globalMessagesController } from '../messages/messages.service';
 import {
   globalInventoryController,
 } from '../global/modal';
@@ -16,19 +15,19 @@ import {
   isKeyboardKeyDirection,
   KeyboardWhichDirections,
 } from '../interfaces/directions';
-import { globalInfoController } from '../info/info.controller';
-import { globalMiniMapController } from '../minimap/minimap.controller';
-import { DevFeaturesModalController } from '../modal/developmentFeatures/devFeaturesModal.controller';
+import { globalInfoController } from '../info/info.service';
+import { globalMiniMapController } from '../minimap/minimap.service';
+import { DevFeaturesModal } from '../modal/developmentFeatures/devFeaturesModal';
 import { dungeonState } from '../state/application.state';
 import type { SerializedDungeonState } from '../state/applicationState.interfaces';
 import { KeyboardKeys, KeyCodes } from './constants/keyboardKeys.constants';
-import { PlayerEntity } from '../entity/controllers/player.entity';
-import { aboutGameModalController } from '../modal/aboutGame/aboutGameModal.controller';
+import { PlayerEntity } from '../entity/entities/player.entity';
+import { aboutGameModalController } from '../modal/aboutGame/aboutGameModal';
 import { gameEventBus } from '../eventBus/gameEventBus/gameEventBus';
 import { GameEventBusEventNames } from '../eventBus/gameEventBus/gameEventBus.constants';
 import { entityEventBus } from '../eventBus/entityEventBus/entityEventBus';
 import { EntityEventBusEventNames } from '../eventBus/entityEventBus/entityEventBus.constants';
-import { Entity } from '../entity/controllers/entity';
+import { Entity } from '../entity/entities/entity';
 import { MonstersTypes } from '../entity/constants/monsters';
 import { EntityInventoryActions } from '../inventory/inventory.constants';
 
@@ -42,9 +41,9 @@ const keyCodeToInventoryMode: { [keycode: number]: EntityInventoryActions } = {
   85: EntityInventoryActions.Use,
 };
 
-export class MainController extends BaseController {
-  private readonly gameController: GameController;
-  private readonly devFeaturesModalController: DevFeaturesModalController;
+export class Main {
+  private readonly gameController: Game;
+  private readonly devFeaturesModalController: DevFeaturesModal;
   private shiftPressed: boolean;
   private controlPressed: boolean;
   private altPressed: boolean;
@@ -61,15 +60,13 @@ export class MainController extends BaseController {
     tileset: HTMLImageElement,
     serializedGameState?: SerializedDungeonState,
   ) {
-    super();
-
     if (serializedGameState) {
       dungeonState.loadDungeonStateFromData(serializedGameState);
     }
 
     globalInfoController.initialize(tileset);
-    this.gameController = new GameController(tileset);
-    this.devFeaturesModalController = DevFeaturesModalController.getInstance();
+    this.gameController = new Game(tileset);
+    this.devFeaturesModalController = DevFeaturesModal.getInstance();
 
     this.shiftPressed = false;
     this.controlPressed = false;

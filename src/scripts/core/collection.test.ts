@@ -1,16 +1,13 @@
 import { Collection } from './collection';
 import { BaseModel } from './base.model';
-import { BaseController } from './base.controller';
 import { IAnyFunction } from '../interfaces/common';
 
 jest.mock('./base.model');
-jest.mock('./base.controller');
 
 const TEST_EVENT = 'test_event';
 
 describe('Test collection class', () => {
   let collection: Collection<BaseModel>;
-  let controller: BaseController;
   let element1: BaseModel;
   let element2: BaseModel;
   let callback: IAnyFunction;
@@ -19,10 +16,7 @@ describe('Test collection class', () => {
     element1 = new BaseModel();
     element2 = new BaseModel();
     collection = new Collection(element2);
-    controller = new BaseController();
     callback = jest.fn();
-
-    collection.notify = jest.fn();
   });
 
   it('Constructor should create collection with element', () => {

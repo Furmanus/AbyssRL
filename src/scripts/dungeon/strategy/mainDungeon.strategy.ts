@@ -9,7 +9,7 @@ import { Cell } from '../models/cells/cell_model';
 import { WeaponModelFactory } from '../../items/factory/item/weaponModel.factory';
 import { WeaponModel } from '../../items/models/weapons/weapon.model';
 import { ArmourModelFactory } from '../../items/factory/item/armour_model_factory';
-import { LevelController } from '../level.controller';
+import { Level } from '../level';
 import { Coin } from '../../position/coin';
 
 type AllGeneratorsTypes =
@@ -53,7 +53,7 @@ export class MainDungeonLevelGenerationStrategy {
   }
 
   public generateRandomLevel(
-    levelController: LevelController,
+    levelController: Level,
     generateConfig: IDungeonStrategyGenerateLevelConfig,
   ): void {
     const { model: levelModel } = levelController;

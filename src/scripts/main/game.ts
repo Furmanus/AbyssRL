@@ -3,13 +3,12 @@ import { config } from '../global/config';
 import { CANVAS_CELL_CLICK } from './constants/gameActions.constants';
 import { entities } from '../dungeon/constants/sprites.constants';
 import { PlayerActions } from './constants/playerActions.constants';
-import { PlayerEntity } from '../entity/controllers/player.entity';
-import { DungeonController } from '../dungeon/dungeon.controller';
+import { PlayerEntity } from '../entity/entities/player.entity';
+import { Dungeon } from '../dungeon/dungeon';
 import { Cell } from '../dungeon/models/cells/cell_model';
 import { IAnyObject, IDirection } from '../interfaces/common';
-import { BaseController } from '../core/base.controller';
 import { CellTypes } from '../dungeon/constants/cellTypes.constants';
-import { globalMessagesController } from '../messages/messages.controller';
+import { globalMessagesController } from '../messages/messages.service';
 import { ASCEND, DESCEND } from '../constants/directions';
 import { EntityDungeonPosition, IEntityStatsObject } from '../entity/models/entity.model';
 import { ItemsCollection } from '../items/items_collection';
@@ -20,15 +19,15 @@ import { Position } from '../position/position';
 import { MonstersTypes } from '../entity/constants/monsters';
 import { entityEventBus } from '../eventBus/entityEventBus/entityEventBus';
 import { EntityEventBusEventNames } from '../eventBus/entityEventBus/entityEventBus.constants';
-import { Entity } from '../entity/controllers/entity';
+import { Entity } from '../entity/entities/entity';
 import { exhaustiveCheck } from '../utils/utility';
 
 /**
  * Class representing main game controller. GameController is responsible for taking input from user and manipulating
  * game model and view in appriopiate way.
  */
-export class GameController extends BaseController {
-  private dungeonController: DungeonController;
+export class Game {
+  private dungeonController: Dungeon;
   private playerController: PlayerEntity;
   private view: GameView;
   private currentlyExaminedCell: Cell;
@@ -37,9 +36,7 @@ export class GameController extends BaseController {
    * @param   tileset    HTML Img element with tiles to draw.
    */
   constructor(tileset: HTMLImageElement) {
-    super();
-
-    this.dungeonController = new DungeonController();
+    this.dungeonController = new Dungeon();
     this.playerController = null;
     this.currentlyExaminedCell = null;
 

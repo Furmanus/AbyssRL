@@ -1,10 +1,8 @@
-import { Cell } from '../../dungeon/models/cells/cell_model';
-import { MonsterEntity } from '../controllers/monster.entity';
+import { MonsterEntity } from '../entities/monster.entity';
 import { MonsterModel } from '../models/monster.model';
 import { Monsters, MonstersTypes } from '../constants/monsters';
 import { Position, SerializedPosition } from '../../position/position';
 import { dungeonState } from '../../state/application.state';
-import { NaturalWeaponFactory } from '../../items/factory/naturalWeapon.factory';
 import { SerializedEntityModel } from '../models/entity.model';
 import { entityRegistry } from '../../global/entityRegistry';
 
@@ -19,7 +17,7 @@ const partialDefaultMonsterConfig = {
 };
 
 export class MonsterFactory {
-  public static getMonsterControllerByType(
+  public static getMonsterEntityByType(
     type: Monsters,
     startingPosition: SerializedPosition,
     serializedData?: SerializedEntityModel,
@@ -31,7 +29,7 @@ export class MonsterFactory {
     throw new Error('Invalid monster type');
   }
 
-  public static getGiantRatController(
+  public static getGiantRatEntity(
     startingPosition: SerializedPosition,
     serializedData?: SerializedEntityModel,
   ): MonsterEntity {
@@ -56,5 +54,5 @@ export class MonsterFactory {
 }
 
 const monsterTypeToFactoryMethod = {
-  [Monsters.GiantRat]: MonsterFactory.getGiantRatController,
+  [Monsters.GiantRat]: MonsterFactory.getGiantRatEntity,
 };

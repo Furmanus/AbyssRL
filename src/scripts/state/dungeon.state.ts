@@ -5,8 +5,8 @@ import { IActionAttempt } from '../interfaces/common';
 import { BaseState } from './baseState';
 import { LevelModel } from '../dungeon/models/level_model';
 import { DungeonStateEntityManager } from './managers/dungeonStateEntity.manager';
-import type { LevelController } from '../dungeon/level.controller';
-import { Entity } from '../entity/controllers/entity';
+import type { Level } from '../dungeon/level';
+import { Entity } from '../entity/entities/entity';
 import { PartialDungeonState } from './application.state';
 import {
   DungeonBranchLevelEntryStructure,
@@ -17,7 +17,7 @@ import {
   SerializedDungeonState,
 } from './applicationState.interfaces';
 import { LevelModelFactory } from '../dungeon/factory/levelModel.factory';
-import { LevelControllerFactory } from '../dungeon/factory/levelController.factory';
+import { LevelFactory } from '../dungeon/factory/level.factory';
 import { EntityDungeonPosition, SerializedEntityModel } from '../entity/models/entity.model';
 import { MonstersTypes } from '../entity/constants/monsters';
 import { EntityFactory } from '../entity/factory/entity.factory';
@@ -123,7 +123,7 @@ export class DungeonState extends BaseState {
     return this.dungeonsStructure[dungeonBranch][levelNumber]?.level?.model;
   }
 
-  public getCurrentLevelController(): LevelController {
+  public getCurrentLevelController(): Level {
     return this.dungeonsStructure[this.currentBranch][this.currentLevelNumber]
       .level;
   }
@@ -131,7 +131,7 @@ export class DungeonState extends BaseState {
   public getLevelController(
     dungeonBranch: DungeonBranches,
     levelNumber: number,
-  ): LevelController {
+  ): Level {
     return this.dungeonsStructure[dungeonBranch][levelNumber]?.level;
   }
 
@@ -160,7 +160,7 @@ export class DungeonState extends BaseState {
   }
 
   public addNewLevelControllerToCurrentBranch(
-    levelController: LevelController,
+    levelController: Level,
     levelNumber: number,
   ): void {
     if (!this.dungeonsStructure[this.currentBranch][levelNumber]) {
@@ -268,7 +268,7 @@ export class DungeonState extends BaseState {
       dungeonBranchStructure[lvlNumber] =
         {} as DungeonBranchLevelEntryStructure;
 
-      const level = LevelControllerFactory.getInstance({
+      const level = LevelFactory.getInstance({
         branch: branchName,
         levelNumber: lvlNumber,
         model: LevelModelFactory.getLevelModelFromSerializedData(
@@ -327,9 +327,9 @@ export class DungeonState extends BaseState {
     serializedEntity: SerializedEntityModel,
   ): Entity {
     if (serializedEntity.type === MonstersTypes.Player) {
-      return EntityFactory.getPlayerController(serializedEntity);
+      return EntityFactory.getPlayerEntity(serializedEntity);
     } else {
-      return EntityFactory.getMonsterController(serializedEntity);
+      return EntityFactory.getMonsterEntity(serializedEntity);
     }
   }
 

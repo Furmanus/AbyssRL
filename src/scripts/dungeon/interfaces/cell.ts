@@ -1,6 +1,6 @@
 import { IAnyObject } from '../../interfaces/common';
-import { Entity } from '../../entity/controllers/entity';
-import { PlayerEntity } from '../../entity/controllers/player.entity';
+import { Entity } from '../../entity/entities/entity';
+import { PlayerEntity } from '../../entity/entities/player.entity';
 import { WalkAttemptResult } from '../models/cells/effects/walk_attempt_result';
 import { UseAttemptResult } from '../models/cells/effects/use_attempt_result';
 import { ItemsCollection } from '../../items/items_collection';

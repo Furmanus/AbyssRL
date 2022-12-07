@@ -3,7 +3,7 @@ import { CellTypes } from '../../../constants/cellTypes.constants';
 import { cellsDescriptions } from '../../../constants/cellsDescriptions.constants';
 import { dungeonFeaturesEnum } from '../../../constants/sprites.constants';
 import { ICellModel } from '../../../interfaces/cell';
-import { Entity } from '../../../../entity/controllers/entity';
+import { Entity } from '../../../../entity/entities/entity';
 import { UseEffectResult } from '../effects/use_effect_result';
 import { isPlayerController } from '../../../../interfaces/type_guards';
 

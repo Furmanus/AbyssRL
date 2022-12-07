@@ -19,8 +19,8 @@ import { ArmourModel } from '../../items/models/armours/armour_model';
 import { EntityStatusFactory } from '../factory/entityStatus.factory';
 import {
   AllEntityStatusesSerialized,
-  EntityStatusCommonController,
-} from '../entity_statuses/entityStatusCommon.controller';
+  EntityStatusCommon,
+} from '../entity_statuses/entityStatusCommon';
 import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { dungeonState } from '../../state/application.state';
 import { Position, SerializedPosition } from '../../position/position';
@@ -57,7 +57,7 @@ type EntityTemporaryStatsModifiersType = {
   [K in keyof EntityStatsModifiers]: Set<IStatsSingleModifier>;
 };
 
-type EntityStatModifierSource = EntityStatusCommonController;
+type EntityStatModifierSource = EntityStatusCommon;
 
 export type AddTemporaryStatModifierData = Array<{
   stat: Omit<EntityStats, 'HitPoints' | 'MaxHitPoints'>;
@@ -322,7 +322,7 @@ export class EntityModel extends BaseModel implements IEntity {
       const recreatedStatusesCollection =
         EntityStatusFactory.getCollectionFromSerializedData(
           config.entityStatuses || [],
-          entityRegistry.getControllerByModel(this),
+          entityRegistry.getEntityByModel(this),
         );
 
       recreatedStatusesCollection.forEach((status) => {
@@ -347,11 +347,11 @@ export class EntityModel extends BaseModel implements IEntity {
     this.fov = fovArray;
   }
 
-  public addStatus(entityStatus: EntityStatusCommonController): void {
+  public addStatus(entityStatus: EntityStatusCommon): void {
     this.entityStatuses.addStatus(entityStatus);
   }
 
-  public removeStatus(entityStatus: EntityStatusCommonController): void {
+  public removeStatus(entityStatus: EntityStatusCommon): void {
     this.entityStatuses.removeStatus(entityStatus);
   }
 
@@ -562,7 +562,7 @@ export class EntityModel extends BaseModel implements IEntity {
       }
 
       this.entityStatuses.forEach(
-        (entityStatus: EntityStatusCommonController) => {
+        (entityStatus: EntityStatusCommon) => {
           status += `${status !== '' ? ', ' : ''}${entityStatus.type}`;
         },
       );

@@ -1,6 +1,4 @@
-import { Entity } from '../entity/controllers/entity';
-import { BaseController } from '../core/base.controller';
-import { IAnyObject } from '../interfaces/common';
+import { Entity } from '../entity/entities/entity';
 import { EntityModel } from '../entity/models/entity.model';
 import { Monsters, MonstersTypes } from '../entity/constants/monsters';
 import { MonsterFactory } from '../entity/factory/monster.factory';
@@ -18,7 +16,7 @@ import { DungeonEventTypes } from '../dungeonEvents/dungeonEvent';
 import { entityEventBus } from '../eventBus/entityEventBus/entityEventBus';
 import { EntityEventBusEventNames } from '../eventBus/entityEventBus/entityEventBus.constants';
 
-export interface ILevelControllerConstructorConfig {
+export interface ILevelConstructorConfig {
   readonly branch: DungeonBranches;
   readonly levelNumber: number;
   readonly model?: LevelModel;
@@ -27,7 +25,7 @@ export interface ILevelControllerConstructorConfig {
 /**
  * Controller of single dungeon level.
  */
-export class LevelController extends BaseController {
+export class Level {
   public model: LevelModel;
   public get engine(): TimeEngine {
     return dungeonState.getTimeEngine(
@@ -37,11 +35,9 @@ export class LevelController extends BaseController {
   }
 
   private levelEntitiesControllers =
-    EntityFactory.getEntityControllerollection();
+    EntityFactory.getEntityCollection();
 
-  constructor(config: ILevelControllerConstructorConfig) {
-    super();
-
+  constructor(config: ILevelConstructorConfig) {
     if (config.model) {
       this.model = config.model;
     } else {
@@ -56,12 +52,8 @@ export class LevelController extends BaseController {
 
   /**
    * Initializes level controller.
-   *
-   * @param config    Optional configuration object
    */
-  protected initialize(config?: IAnyObject): void {
-    super.initialize(config);
-
+  protected initialize(): void {
     this.attachEvents();
   }
 
@@ -117,7 +109,7 @@ export class LevelController extends BaseController {
   }
 
   public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
-    const monsterController = MonsterFactory.getMonsterControllerByType(
+    const monsterController = MonsterFactory.getMonsterEntityByType(
       monster,
       cell,
     );

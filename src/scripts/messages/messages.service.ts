@@ -1,9 +1,8 @@
 import { MessagesView } from './messages.view';
 import { config } from '../global/config';
-import { BaseController } from '../core/base.controller';
 import { entityEventBus } from '../eventBus/entityEventBus/entityEventBus';
 import { EntityEventBusEventNames } from '../eventBus/entityEventBus/entityEventBus.constants';
-import { Entity } from '../entity/controllers/entity';
+import { Entity } from '../entity/entities/entity';
 import { ItemModel } from '../items/models/item.model';
 import { Position } from '../position/position';
 import { MonstersTypes } from '../entity/constants/monsters';
@@ -12,9 +11,9 @@ import { ContainerInventoryModes } from '../modal/containerInventory/containerIn
 import { CellTypes } from '../dungeon/constants/cellTypes.constants';
 
 const constructorToken = Symbol('MessagesController');
-let instance: MessagesController;
+let instance: MessagesService;
 
-export class MessagesController {
+export class MessagesService {
   private view: MessagesView;
 
   constructor(token: symbol) {
@@ -30,11 +29,11 @@ export class MessagesController {
     instance = this;
   }
 
-  public static getInstance(): MessagesController {
+  public static getInstance(): MessagesService {
     if (instance) {
       return instance;
     }
-    instance = new MessagesController(constructorToken);
+    instance = new MessagesService(constructorToken);
     instance.initialize();
 
     return instance;
@@ -177,4 +176,4 @@ export class MessagesController {
   }
 }
 
-export const globalMessagesController = MessagesController.getInstance();
+export const globalMessagesController = MessagesService.getInstance();

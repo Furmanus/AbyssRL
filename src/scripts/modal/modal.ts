@@ -1,13 +1,10 @@
-import { BaseController } from '../core/base.controller';
 import { ModalView } from './modal.view';
 import { ModalActions } from '../main/constants/gameActions.constants';
 import { gameEventBus } from '../eventBus/gameEventBus/gameEventBus';
 import { GameEventBusEventNames } from '../eventBus/gameEventBus/gameEventBus.constants';
+import { Observer } from '../core/observer';
 
-export class ModalController<
-  M,
-  V extends ModalView = ModalView,
-> extends BaseController {
+export class Modal<M, V extends ModalView = ModalView> extends Observer {
   protected currentContent: M;
   protected view: V;
   protected isModalOpen: boolean = false;

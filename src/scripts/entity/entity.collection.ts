@@ -1,8 +1,8 @@
 import { Collection } from '../core/collection';
-import { Entity } from './controllers/entity';
+import { Entity } from './entities/entity';
 import { EntityModel } from './models/entity.model';
 
-export class EntityControllerCollection extends Collection<Entity> {
+export class EntityCollection extends Collection<Entity> {
   public getControllerByEntityModel(
     entityModel: EntityModel,
   ): Entity {

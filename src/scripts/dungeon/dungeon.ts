@@ -1,27 +1,24 @@
 import { getDungeonStrategyInstance } from './factory/dungeonStrategy.factory';
 import { MainDungeonLevelGenerationStrategy } from './strategy/mainDungeon.strategy';
-import { BaseController } from '../core/base.controller';
 import { IActionAttempt } from '../interfaces/common';
-import { globalMessagesController } from '../messages/messages.controller';
+import { globalMessagesController } from '../messages/messages.service';
 import { Monsters } from '../entity/constants/monsters';
-import { PlayerEntity } from '../entity/controllers/player.entity';
+import { PlayerEntity } from '../entity/entities/player.entity';
 import { Cell } from './models/cells/cell_model';
 import { dungeonState } from '../state/application.state';
-import { LevelControllerFactory } from './factory/levelController.factory';
+import { LevelFactory } from './factory/level.factory';
 import { gameEventBus } from '../eventBus/gameEventBus/gameEventBus';
 import { GameEventBusEventNames } from '../eventBus/gameEventBus/gameEventBus.constants';
 
 /**
  * Controller of single dungeon.
  */
-export class DungeonController extends BaseController {
+export class Dungeon {
   private get strategy(): MainDungeonLevelGenerationStrategy {
     return getDungeonStrategyInstance(dungeonState.currentBranch);
   }
 
   constructor() {
-    super();
-
     this.initialize();
     this.attachEvents();
   }
@@ -46,7 +43,7 @@ export class DungeonController extends BaseController {
       num ?? dungeonState.getCurrentBranchNextLevelNumber();
 
     if (nextLevelNumberToGenerateInCurrentBranch) {
-      const newLevelController = LevelControllerFactory.getInstance({
+      const newLevelController = LevelFactory.getInstance({
         branch: currentBranch,
         levelNumber: nextLevelNumberToGenerateInCurrentBranch,
       });

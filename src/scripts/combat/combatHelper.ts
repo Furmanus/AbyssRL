@@ -3,7 +3,7 @@ import { Dice } from '../position/dice';
 import { capitalizeString } from '../utils/utility';
 import { generateCombatMessage } from './combatMessages';
 import { criticalDamageTypeToStatusConstructor } from '../items/constants/weapons.constants';
-import { Entity } from '../entity/controllers/entity';
+import { Entity } from '../entity/entities/entity';
 import { entityStatusToDamageText } from '../entity/constants/statuses';
 
 const sizeToDodgeModifierMap: { [prop: string]: Dice } = {

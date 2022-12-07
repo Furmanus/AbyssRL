@@ -1,20 +1,19 @@
 import { calculateFov } from '../../utils/fov_helper';
-import { BaseController } from '../../core/base.controller';
 import { LevelModel } from '../../dungeon/models/level_model';
 import { doCombatAction, ICombatResult } from '../../combat/combatHelper';
-import { globalMessagesController } from '../../messages/messages.controller';
+import { globalMessagesController } from '../../messages/messages.service';
 import { ItemModel } from '../../items/models/item.model';
 import { ItemsCollection } from '../../items/items_collection';
 import { WeaponModel } from '../../items/models/weapons/weapon.model';
 import { EntityStatusFactory } from '../factory/entityStatus.factory';
-import { EntityBleedingStatusController } from '../entity_statuses/entityBleedingStatus.controller';
+import { EntityBleedingStatus } from '../entity_statuses/entityBleedingStatus';
 import {
   EntityStatuses,
   entityStatusToDamageText,
 } from '../constants/statuses';
-import { AllEntityStatusControllers, EntityStatusCommonController } from '../entity_statuses/entityStatusCommon.controller';
+import { AllEntityStatusControllers, EntityStatusCommon } from '../entity_statuses/entityStatusCommon';
 import { statusModifierToMessage } from '../constants/stats';
-import { EntityStunnedStatusController } from '../entity_statuses/entityStunnedStatus.controller';
+import { EntityStunnedStatus } from '../entity_statuses/entityStunnedStatus';
 import { dungeonState } from '../../state/application.state';
 import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { IWeapon } from '../../combat/combat.interfaces';
@@ -34,7 +33,7 @@ import { NaturalWeaponModel } from '../../items/models/weapons/naturalWeapon.mod
 
 export abstract class Entity<
   M extends EntityModel = EntityModel,
-> extends BaseController {
+> {
   protected model: M;
   protected get isDead(): boolean {
     return this.model.hitPoints <= 0;
@@ -52,7 +51,7 @@ export abstract class Entity<
     return !!this.model.entityStatuses
       .get()
       .find(
-        (status: EntityStatusCommonController) =>
+        (status: EntityStatusCommon) =>
           status.type === EntityStatuses.Stunned,
       );
   }
@@ -209,7 +208,7 @@ export abstract class Entity<
 
   public activateStatuses(): void {
     this.model.entityStatuses.forEach(
-      (status: EntityStatusCommonController) => {
+      (status: EntityStatusCommon) => {
         status.act();
       },
     );
@@ -282,9 +281,9 @@ export abstract class Entity<
   public removeStatus(status: AllEntityStatusControllers): void {
     switch (status.type) {
       case EntityStatuses.Bleeding:
-        return this.stopBleeding(status as EntityBleedingStatusController); // TODO sprawdzic i poprawic czemu tu nie dziala unia dyskryminacyjna
+        return this.stopBleeding(status as EntityBleedingStatus); // TODO sprawdzic i poprawic czemu tu nie dziala unia dyskryminacyjna
       case EntityStatuses.Stunned:
-        return this.removeStunnedStatus(status as EntityStunnedStatusController);
+        return this.removeStunnedStatus(status as EntityStunnedStatus);
       case EntityStatuses.Paralyzed:
       case EntityStatuses.Poisoned:
       case EntityStatuses.Fallen:
@@ -308,7 +307,7 @@ export abstract class Entity<
   }
 
   public removeStunnedStatus(
-    stunnedStatus: EntityStunnedStatusController,
+    stunnedStatus: EntityStunnedStatus,
   ): void {
     this.model.removeStatus(stunnedStatus);
 
@@ -327,7 +326,7 @@ export abstract class Entity<
     entityEventBus.publish(EntityEventBusEventNames.EntityBloodLoss, this);
   }
 
-  public stopBleeding(bleedingStatus: EntityBleedingStatusController): void {
+  public stopBleeding(bleedingStatus: EntityBleedingStatus): void {
     this.model.removeStatus(bleedingStatus);
 
     globalMessagesController.showMessageInView(
@@ -340,6 +339,21 @@ export abstract class Entity<
     source?: keyof typeof entityStatusToDamageText,
   ): void {
     this.model.takeHit(damage);
+
+    if (this.isDead) {
+      globalMessagesController.showMessageInView(
+        this.model.type === MonstersTypes.Player
+          ? 'You died from blood loss...'
+          : `${this.model.description} died from blood loss.`,
+      );
+      entityEventBus.publish(EntityEventBusEventNames.EntityDeath, this);
+    } else {
+      globalMessagesController.showMessageInView(
+        this.model.type === MonstersTypes.Player
+          ? 'You lose blood!'
+          : `${this.model.description} loses blood.`,
+      );
+    }
   }
 
   public takeHit(damage: number, source?: keyof typeof entityStatusToDamageText): void {

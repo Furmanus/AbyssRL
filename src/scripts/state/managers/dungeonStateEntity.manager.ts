@@ -1,7 +1,7 @@
 import { DungeonState } from '../dungeon.state';
 import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { EntityModel } from '../../entity/models/entity.model';
-import { Entity } from '../../entity/controllers/entity';
+import { Entity } from '../../entity/entities/entity';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 import { DungeonEvent } from '../../dungeonEvents/dungeonEvent';
 import { TimeEngine } from '../../timeEngine/timeEngine';

@@ -6,7 +6,7 @@ import { LevelModel } from '../models/level_model';
 import { IAnyFunction } from '../../interfaces/common';
 import { ICavernGenerateLevelConfig } from './generators.interfaces';
 import Cellular from 'rot-js/lib/map/cellular';
-import { LevelController } from '../level.controller';
+import { Level } from '../level';
 
 const singletonToken: symbol = Symbol('Cavern level generator singleton token');
 let instance: CavernLevelGenerator;
@@ -39,7 +39,7 @@ export class CavernLevelGenerator extends AbstractLevelGenerator {
    * @param   debugCallback   Optional: callback for rot.js generator for debugging purpose.
    */
   public generateLevel(
-    levelController: LevelController,
+    levelController: Level,
     config?: ICavernGenerateLevelConfig,
     debugCallback?: IAnyFunction,
   ): void {

@@ -1,20 +1,20 @@
-import { ModalController } from '../modal.controller';
+import { Modal } from '../modal';
 import { DevFeaturesModalView, DevFormValues } from './devFeaturesModal.view';
 import { ModalActions } from '../../main/constants/gameActions.constants';
 import { devFeatureModalTemplate } from './devFeaturesModal.template';
 import { DevFeaturesModalConstants } from './devFeaturesModal.constants';
 import { config } from '../../global/config';
 import { Monsters } from '../../entity/constants/monsters';
-import { PlayerEntity } from '../../entity/controllers/player.entity';
+import { PlayerEntity } from '../../entity/entities/player.entity';
 import { storeDataInSessionStorage } from '../../utils/storage_helper';
 import { SessionStorageKeys } from '../../constants/storage';
 import { gameEventBus } from '../../eventBus/gameEventBus/gameEventBus';
 import { GameEventBusEventNames } from '../../eventBus/gameEventBus/gameEventBus.constants';
 
 const constructorToken = Symbol('Dev features modal controller');
-let instance: DevFeaturesModalController;
+let instance: DevFeaturesModal;
 
-export class DevFeaturesModalController extends ModalController<DevFeaturesModalView> {
+export class DevFeaturesModal extends Modal<DevFeaturesModalView> {
   protected view = new DevFeaturesModalView(devFeatureModalTemplate);
 
   public constructor(token: symbol) {
@@ -25,9 +25,9 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     }
   }
 
-  public static getInstance(): DevFeaturesModalController {
+  public static getInstance(): DevFeaturesModal {
     if (!instance) {
-      instance = new DevFeaturesModalController(constructorToken);
+      instance = new DevFeaturesModal(constructorToken);
     }
 
     return instance;

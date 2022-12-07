@@ -1,16 +1,15 @@
-import { Constructor } from './constructor';
 import { IAnyFunction } from '../interfaces/common';
-import { BaseController } from './base.controller';
+
+type CollectionMember = unknown;
 
 /**
- * Collection of generic type models (they have to extend BaseModel).
+ * Layer on array with additional methods.
  */
 export class Collection<
-  M extends Constructor = Constructor,
-> extends Constructor {
+  M = CollectionMember,
+> {
   private collection: M[];
-  private listeners: Map<
-    BaseController,
+  private listeners: Map<M,
     {
       [eventName: string]: IAnyFunction;
     }
@@ -21,8 +20,6 @@ export class Collection<
   }
 
   constructor(list?: M[] | M) {
-    super();
-
     if (list instanceof Array) {
       this.collection = list;
     } else if (list !== undefined) {

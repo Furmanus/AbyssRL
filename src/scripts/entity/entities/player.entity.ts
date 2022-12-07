@@ -3,7 +3,7 @@ import { applicationConfigService, config } from '../../global/config';
 import { PlayerModel } from '../models/player.model';
 import {
   globalMessagesController,
-} from '../../messages/messages.controller';
+} from '../../messages/messages.service';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 import { UseAttemptResult } from '../../dungeon/models/cells/effects/use_attempt_result';
 import { UseEffectResult } from '../../dungeon/models/cells/effects/use_effect_result';
@@ -16,7 +16,7 @@ import {
 } from '../../global/modal';
 import { SerializedEntityModel } from '../models/entity.model';
 import { dungeonState } from '../../state/application.state';
-import { LevelController } from '../../dungeon/level.controller';
+import { Level } from '../../dungeon/level';
 import { Entity } from './entity';
 import { TestFeaturesService } from '../../utils/test_features.service';
 import { entityEventBus } from '../../eventBus/entityEventBus/entityEventBus';
@@ -38,7 +38,7 @@ let instance: PlayerEntity;
 export class PlayerEntity extends Entity<PlayerModel> {
   public hasMoved = false;
   private containerInventoryController = globalContainerInventoryController;
-  private get currentLevelController(): LevelController {
+  private get currentLevelController(): Level {
     return dungeonState.getCurrentLevelController();
   }
 

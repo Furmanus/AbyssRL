@@ -1,14 +1,13 @@
-import { BaseController } from '../../core/base.controller';
-import { Entity } from '../controllers/entity';
+import { Entity } from '../entities/entity';
 import { EntityStatuses } from '../constants/statuses';
 import {
-  EntityStunnedStatusController,
+  EntityStunnedStatus,
   EntityStunnedStatusSerializedData,
-} from './entityStunnedStatus.controller';
+} from './entityStunnedStatus';
 import {
-  EntityBleedingStatusController,
+  EntityBleedingStatus,
   EntityBleedingStatusSerializedData,
-} from './entityBleedingStatus.controller';
+} from './entityBleedingStatus';
 import { dungeonState } from '../../state/application.state';
 
 export type EntityStatusCommonSerializedData = {
@@ -21,10 +20,10 @@ export type AllEntityStatusesSerialized =
   | EntityBleedingStatusSerializedData;
 
 export type AllEntityStatusControllers =
-  | EntityBleedingStatusController
-  | EntityStunnedStatusController;
+  | EntityBleedingStatus
+  | EntityStunnedStatus;
 
-export abstract class EntityStatusCommonController extends BaseController {
+export abstract class EntityStatusCommon {
   public abstract type: EntityStatuses;
   /**
    * Inner turn count, used to calculations by status when to trigger some special effects
@@ -35,25 +34,24 @@ export abstract class EntityStatusCommonController extends BaseController {
    * Entity controller which status own and can affect
    * @protected
    */
-  protected entityController: Entity;
+  protected entityInstance: Entity;
 
-  public constructor(entity: string, entityController?: Entity);
+  public constructor(entity: string, entityInstance?: Entity);
 
   public constructor(
     entity: AllEntityStatusesSerialized,
-    entityController?: Entity,
+    entityInstance?: Entity,
   );
 
   public constructor(
     entity: string | AllEntityStatusesSerialized,
-    entityControllerInstance?: Entity,
+    entityInstance?: Entity,
   ) {
-    super();
-    let entityController: Entity;
+    let instance: Entity;
 
     if (typeof entity === 'string') {
-      entityController =
-        entityControllerInstance ||
+      instance =
+      entityInstance ||
         dungeonState.entityManager.getEntityControllerById(entity);
     } else {
       const { entityModelId, turnCount } = entity;
@@ -61,13 +59,13 @@ export abstract class EntityStatusCommonController extends BaseController {
       if (turnCount) {
         this.turnCount = turnCount;
       }
-      entityController =
-        entityControllerInstance ||
+      instance =
+      entityInstance ||
         dungeonState.entityManager.getEntityControllerById(entityModelId);
     }
 
-    if (entityController) {
-      this.entityController = entityController;
+    if (instance) {
+      this.entityInstance = instance;
     } else {
       throw new Error(`Entity controller ${String(entity)} not found`);
     }
@@ -77,12 +75,12 @@ export abstract class EntityStatusCommonController extends BaseController {
     this.turnCount++;
   }
 
-  public abstract add(status: EntityStatusCommonController): void;
+  public abstract add(status: EntityStatusCommon): void;
 
   public getDataToSerialization(): EntityStatusCommonSerializedData {
     return {
       turnCount: this.turnCount,
-      entityModelId: this.entityController.getModel().id,
+      entityModelId: this.entityInstance.getModel().id,
     };
   }
 }

@@ -1,5 +1,5 @@
 import { EntityModel } from '../entity/models/entity.model';
-import { Entity } from '../entity/controllers/entity';
+import { Entity } from '../entity/entities/entity';
 
 class EntityRegistry {
   private registry: WeakMap<EntityModel, Entity> = new WeakMap<
@@ -11,7 +11,7 @@ class EntityRegistry {
     this.registry.set(model, controller);
   }
 
-  public getControllerByModel(model: EntityModel): Entity {
+  public getEntityByModel(model: EntityModel): Entity {
     return this.registry.get(model);
   }
 }

@@ -13,8 +13,7 @@ import Timeout = NodeJS.Timeout;
 import { Vector } from '../position/vector';
 import { getPositionFromString } from '../utils/utility';
 import { TileDecorator } from './game_view_decorators/tile_decorator';
-import { EntityStatuses } from '../entity/constants/statuses';
-import { EntityStatusCommonController } from '../entity/entity_statuses/entityStatusCommon.controller';
+import { EntityStatusCommon } from '../entity/entity_statuses/entityStatusCommon';
 import { EntityModel } from '../entity/models/entity.model';
 
 interface IMousePosition {
@@ -323,7 +322,7 @@ export class GameView extends Observer {
         }
 
         cell.entity.getModel().entityStatuses.forEach(
-          (status: EntityStatusCommonController) => {
+          (status: EntityStatusCommon) => {
             // TODO fill statuses array with icon to draw
           },
         );

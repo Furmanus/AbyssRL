@@ -1,7 +1,7 @@
 import { Cell, SerializedCell } from './cell_model';
 import { WalkAttemptResult } from './effects/walk_attempt_result';
 import { UseEffectResult } from './effects/use_effect_result';
-import { Entity } from '../../../entity/controllers/entity';
+import { Entity } from '../../../entity/entities/entity';
 import { ICellModel } from '../../interfaces/cell';
 import { UseAttemptResult } from './effects/use_attempt_result';
 import { MonstersTypes } from '../../../entity/constants/monsters';

@@ -1,7 +1,7 @@
 import { Dice } from '../position/dice';
 import { MonsterAttackTypes } from '../entity/constants/monsters';
 import { DamageTypes, EntityDamageReasons } from './combat.constants';
-import { Entity } from '../entity/controllers/entity';
+import { Entity } from '../entity/entities/entity';
 
 export interface IWeapon {
   toHit: Dice;

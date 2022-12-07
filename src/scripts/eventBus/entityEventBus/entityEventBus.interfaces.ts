@@ -1,6 +1,6 @@
 import { EntityDamageSource } from '../../combat/combat.interfaces';
 import { Cell } from '../../dungeon/models/cells/cell_model';
-import { Entity } from '../../entity/controllers/entity';
+import { Entity } from '../../entity/entities/entity';
 import { EntityDungeonPosition } from '../../entity/models/entity.model';
 import { ItemModel } from '../../items/models/item.model';
 import { ContainerInventoryModes } from '../../modal/containerInventory/containerInventoryModal.interfaces';
