@@ -87,6 +87,10 @@ export abstract class Cell extends BaseModel implements ICellModel {
     return Position.fromCoords(this.x, this.y);
   }
 
+  public get drawLightened(): boolean {
+    return false;
+  }
+
   /**
    * Entity (monster or player) occupying cell.
    */

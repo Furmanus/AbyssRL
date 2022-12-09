@@ -94,6 +94,10 @@ export class GameView extends Observer {
    * discovered previously
    */
   private foggedTiles: IDrawnTiles = {};
+  /**
+   * Object with currently drawn, not animated sprites which are visible by player but opaque
+   */
+  private opaqueTiles: IDrawnTiles = {};
   /*
    * Object literal containing string values used for setting canvas globalCompositeOperation.
    */
@@ -282,6 +286,27 @@ export class GameView extends Observer {
   }
 
   /**
+   * Draws 32x32 pixels tile on game view at given coordinates. Tile is chosen from game tileset from x row
+   * and y column. Tile is not animated and is drawn with specific opacity. If tile has more than one frame (is animated normally), only
+   * first frame is drawn.
+   *
+   * @param   x        Row position where tile on game view will be drawn
+   * @param   y        Column position where tile on game view will be drawn
+   * @param   tile     String parameter equal to String key object in tiledata.js file which contains information
+   *                   about drawn sprite.
+   */
+  private drawLightenedImage(x: number, y: number, tile: string): void {
+    const i = tileset[tile].x;
+    const j = tileset[tile].y;
+
+    this.context.globalAlpha = 0.3;
+
+    this.drawImage(x, y, i, j);
+
+    this.context.globalAlpha = 1.0;
+  }
+
+  /**
    * Draws 32x32 pixels animated sprite. Spritesheet is selected from GameView tileset field.
    * Spritesheet starts at x row and y column of tileset and contains next framesNumber 32x32 images.
    *
@@ -302,7 +327,8 @@ export class GameView extends Observer {
     if (!cell) {
       return;
     }
-    const isCellNotVisible: boolean = !!this.foggedTiles[`${x}x${y}`];
+    const isCellNotVisible = !!this.foggedTiles[`${x}x${y}`];
+    const isCellOpaque = !!this.opaqueTiles[`${x}x${y}`];
     const entityStatuses: string[] = [];
     let tile: string;
     let interval;
@@ -341,20 +367,24 @@ export class GameView extends Observer {
     light = isCellNotVisible ? 'DARKEN' : light;
     // if there is only one frame to animate, it is simply drawn
     if (framesNumber === 1) {
-      this.drawImage(x, y, i, j); // if image isn't animated, we just draw it and end function
+      if (isCellOpaque) {
+        this.drawLightenedImage(x, i, this.opaqueTiles[`${x}x${y}`].display);
+      } else {
+        this.drawImage(x, y, i, j); // if image isn't animated, we just draw it and end function
 
-      if (light && this.globalCompositeOperation[light]) {
+        if (light && this.globalCompositeOperation[light]) {
         /**
          * If optional parameter "light" was passed, cell background color is changed
          */
-        this.changeCellBackground(
-          x,
-          y,
-          50,
-          50,
-          50,
-          this.globalCompositeOperation[light],
-        );
+          this.changeCellBackground(
+            x,
+            y,
+            50,
+            50,
+            50,
+            this.globalCompositeOperation[light],
+          );
+        }
       }
 
       return null;
@@ -416,6 +446,7 @@ export class GameView extends Observer {
     this.sprites = {};
     this.drawnTiles = {};
     this.foggedTiles = {};
+    this.opaqueTiles = {};
 
     this.context.clearRect(
       0,
@@ -896,10 +927,9 @@ export class GameView extends Observer {
     const { x, y } = position;
     const spriteAnimationId = this.sprites[`${x}x${y}`];
     const currentCell = this.drawnTiles[`${x}x${y}`];
-    const currentFoggedCell = this.foggedTiles[`${x}x${y}`];
 
     if (!spriteAnimationId) {
-      this.drawAnimatedImage(x, y, currentCell || currentFoggedCell);
+      this.drawAnimatedImage(x, y, currentCell);
     }
   }
 
@@ -937,7 +967,12 @@ export class GameView extends Observer {
         }
 
         if (playerFov.includes(examinedCell) || config.debugMode) {
-          this.drawAnimatedImage(i, j, examinedCell, null);
+          if (!examinedCell.entity && examinedCell.inventory.size === 0 && examinedCell.drawLightened) {
+            this.drawLightenedImage(i, j, examinedCell.display);
+            this.opaqueTiles[`${i}x${j}`] = examinedCell;
+          } else {
+            this.drawAnimatedImage(i, j, examinedCell, null);
+          }
           /**
            * We store information about Cell object of certain square in additional object, so we can later
            * redraw it in same place

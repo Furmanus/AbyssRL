@@ -8,13 +8,10 @@ import { MonstersTypes } from '../../../entity/constants/monsters';
 
 export type SerializedDoor = SerializedCell & {
   areOpen: boolean;
-  openDisplay: string;
 };
 
 export abstract class DoorModel extends Cell implements ICellModel {
   public areOpen: boolean;
-  public closedDisplay: string;
-  public openDisplay: string;
 
   constructor(config: SerializedDoor) {
     super(config);
@@ -24,10 +21,6 @@ export abstract class DoorModel extends Cell implements ICellModel {
     } else {
       this.areOpen = false;
     }
-  }
-
-  get display(): string {
-    return this.areOpen ? this.openDisplay : this.closedDisplay;
   }
 
   get blockMovement(): boolean {
@@ -40,6 +33,10 @@ export abstract class DoorModel extends Cell implements ICellModel {
 
   get walkMessage(): string {
     return this.areOpen ? 'You walk through open doorway.' : '';
+  }
+
+  public get drawLightened(): boolean {
+    return this.areOpen;
   }
 
   public useEffect(entityController: Entity): UseEffectResult {
@@ -140,7 +137,6 @@ export abstract class DoorModel extends Cell implements ICellModel {
     return {
       ...super.getDataToSerialization(),
       areOpen: this.areOpen,
-      openDisplay: this.openDisplay,
     };
   }
 }
