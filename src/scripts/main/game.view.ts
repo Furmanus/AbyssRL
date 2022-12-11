@@ -1,12 +1,11 @@
 import { tileset } from '../global/tiledata';
 import { CameraView } from './camera.view';
 import { Observer } from '../core/observer';
-import { CAMERA_MOVED, CANVAS_CELL_CLICK } from '../constants/game_actions';
+import { CAMERA_MOVED, CANVAS_CELL_CLICK } from './constants/gameActions.constants';
 import { config } from '../global/config';
 import { ICoordinates, IStringDictionary } from '../interfaces/common';
 import { Cell } from '../dungeon/models/cells/cell_model';
 import { LevelModel } from '../dungeon/models/level_model';
-import { boundMethod } from 'autobind-decorator';
 import { MonstersTypes } from '../entity/constants/monsters';
 import { MiscTiles } from '../dungeon/constants/sprites.constants';
 import { CanvasFonts } from '../constants/canvas_enum';
@@ -14,8 +13,7 @@ import Timeout = NodeJS.Timeout;
 import { Vector } from '../position/vector';
 import { getPositionFromString } from '../utils/utility';
 import { TileDecorator } from './game_view_decorators/tile_decorator';
-import { EntityStatuses } from '../entity/constants/statuses';
-import { EntityStatusCommonController } from '../entity/entity_statuses/entityStatusCommon.controller';
+import { EntityStatusCommon } from '../entity/entity_statuses/entityStatusCommon';
 import { EntityModel } from '../entity/models/entity.model';
 
 interface IMousePosition {
@@ -96,6 +94,10 @@ export class GameView extends Observer {
    * discovered previously
    */
   private foggedTiles: IDrawnTiles = {};
+  /**
+   * Object with currently drawn, not animated sprites which are visible by player but opaque
+   */
+  private opaqueTiles: IDrawnTiles = {};
   /*
    * Object literal containing string values used for setting canvas globalCompositeOperation.
    */
@@ -186,7 +188,7 @@ export class GameView extends Observer {
   }
 
   private attachEventsToCamera(): void {
-    this.camera.on(this, CAMERA_MOVED, this.onCameraMove);
+    this.camera.on(CAMERA_MOVED, this.onCameraMove);
   }
 
   /**
@@ -197,8 +199,7 @@ export class GameView extends Observer {
    *
    * @param vector    Vector
    */
-  @boundMethod
-  private onCameraMove(vector: Vector): void {
+  private onCameraMove = (vector: Vector): void => {
     this.moveTemporaryImagesCoords(vector);
   }
 
@@ -285,6 +286,27 @@ export class GameView extends Observer {
   }
 
   /**
+   * Draws 32x32 pixels tile on game view at given coordinates. Tile is chosen from game tileset from x row
+   * and y column. Tile is not animated and is drawn with specific opacity. If tile has more than one frame (is animated normally), only
+   * first frame is drawn.
+   *
+   * @param   x        Row position where tile on game view will be drawn
+   * @param   y        Column position where tile on game view will be drawn
+   * @param   tile     String parameter equal to String key object in tiledata.js file which contains information
+   *                   about drawn sprite.
+   */
+  private drawLightenedImage(x: number, y: number, tile: string): void {
+    const i = tileset[tile].x;
+    const j = tileset[tile].y;
+
+    this.context.globalAlpha = 0.3;
+
+    this.drawImage(x, y, i, j);
+
+    this.context.globalAlpha = 1.0;
+  }
+
+  /**
    * Draws 32x32 pixels animated sprite. Spritesheet is selected from GameView tileset field.
    * Spritesheet starts at x row and y column of tileset and contains next framesNumber 32x32 images.
    *
@@ -305,7 +327,8 @@ export class GameView extends Observer {
     if (!cell) {
       return;
     }
-    const isCellNotVisible: boolean = !!this.foggedTiles[`${x}x${y}`];
+    const isCellNotVisible = !!this.foggedTiles[`${x}x${y}`];
+    const isCellOpaque = !!this.opaqueTiles[`${x}x${y}`];
     const entityStatuses: string[] = [];
     let tile: string;
     let interval;
@@ -314,8 +337,8 @@ export class GameView extends Observer {
 
     if (this.currentPlayerFov && this.currentPlayerFov.includes(cell)) {
       if (cell.entity) {
-        tile = cell.entity.display;
-        hpBarPercent = cell.entity.hitPoints / cell.entity.maxHitPoints;
+        tile = cell.entity.getModel().display;
+        hpBarPercent = cell.entity.getModel().hitPoints / cell.entity.getModel().maxHitPoints;
         hpBarPercent = hpBarPercent > 0 ? hpBarPercent : 0;
 
         if (cell.entity.type === MonstersTypes.Player) {
@@ -324,8 +347,8 @@ export class GameView extends Observer {
           hpBarColor = 'red';
         }
 
-        cell.entity.entityStatuses.forEach(
-          (status: EntityStatusCommonController) => {
+        cell.entity.getModel().entityStatuses.forEach(
+          (status: EntityStatusCommon) => {
             // TODO fill statuses array with icon to draw
           },
         );
@@ -344,20 +367,24 @@ export class GameView extends Observer {
     light = isCellNotVisible ? 'DARKEN' : light;
     // if there is only one frame to animate, it is simply drawn
     if (framesNumber === 1) {
-      this.drawImage(x, y, i, j); // if image isn't animated, we just draw it and end function
+      if (isCellOpaque) {
+        this.drawLightenedImage(x, i, this.opaqueTiles[`${x}x${y}`].display);
+      } else {
+        this.drawImage(x, y, i, j); // if image isn't animated, we just draw it and end function
 
-      if (light && this.globalCompositeOperation[light]) {
+        if (light && this.globalCompositeOperation[light]) {
         /**
          * If optional parameter "light" was passed, cell background color is changed
          */
-        this.changeCellBackground(
-          x,
-          y,
-          50,
-          50,
-          50,
-          this.globalCompositeOperation[light],
-        );
+          this.changeCellBackground(
+            x,
+            y,
+            50,
+            50,
+            50,
+            this.globalCompositeOperation[light],
+          );
+        }
       }
 
       return null;
@@ -419,6 +446,7 @@ export class GameView extends Observer {
     this.sprites = {};
     this.drawnTiles = {};
     this.foggedTiles = {};
+    this.opaqueTiles = {};
 
     this.context.clearRect(
       0,
@@ -655,8 +683,7 @@ export class GameView extends Observer {
     }
   }
 
-  @boundMethod
-  private animateAlternativeBorder(): void {
+  private animateAlternativeBorder = (): void => {
     const { alternativeBorderPosition } = this;
 
     if (this.isAlternativeBorderDrawn) {
@@ -900,10 +927,9 @@ export class GameView extends Observer {
     const { x, y } = position;
     const spriteAnimationId = this.sprites[`${x}x${y}`];
     const currentCell = this.drawnTiles[`${x}x${y}`];
-    const currentFoggedCell = this.foggedTiles[`${x}x${y}`];
 
     if (!spriteAnimationId) {
-      this.drawAnimatedImage(x, y, currentCell || currentFoggedCell);
+      this.drawAnimatedImage(x, y, currentCell);
     }
   }
 
@@ -941,7 +967,12 @@ export class GameView extends Observer {
         }
 
         if (playerFov.includes(examinedCell) || config.debugMode) {
-          this.drawAnimatedImage(i, j, examinedCell, null);
+          if (!examinedCell.entity && examinedCell.inventory.size === 0 && examinedCell.drawLightened) {
+            this.drawLightenedImage(i, j, examinedCell.display);
+            this.opaqueTiles[`${i}x${j}`] = examinedCell;
+          } else {
+            this.drawAnimatedImage(i, j, examinedCell, null);
+          }
           /**
            * We store information about Cell object of certain square in additional object, so we can later
            * redraw it in same place
@@ -1204,8 +1235,7 @@ export class GameView extends Observer {
    *
    * @param message   HTMLSpanElement with message
    */
-  @boundMethod
-  private removeTemporaryMessage(message: HTMLSpanElement): void {
+  private removeTemporaryMessage = (message: HTMLSpanElement): void => {
     if (this.screenContainer.contains(message)) {
       this.screenContainer.removeChild<HTMLSpanElement>(message);
     }

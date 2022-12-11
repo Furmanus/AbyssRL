@@ -26,7 +26,9 @@ Cypress.Commands.add('pressKey', (keyValue: string | string[], options: PressKey
   }
 
   for (const key of keys) {
-    cy.window().trigger('keydown', { which: keyToKeyCodeMap[key], key: keyString || key, shiftKey });
+    // TODO wait for failing cypress combat e2e test in headless mode
+    // it seems all keypress events happens before event keydown is again attached to window after modal closing
+    cy.wait(0).window().trigger('keydown', { which: keyToKeyCodeMap[key], key: keyString || key, shiftKey }).wait(0);
   }
 });
 

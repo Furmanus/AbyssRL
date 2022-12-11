@@ -10,9 +10,6 @@ import {
   RoomConnectionModel,
   SerializedRoomConnection,
 } from './room_connection_model';
-import {
-  DungeonModelEvents,
-} from '../../constants/dungeon_events';
 import { DungeonBranches } from '../constants/dungeonTypes.constants';
 import { dungeonState } from '../../state/application.state';
 import { convertCoordsToString } from '../../utils/utility';
@@ -143,8 +140,6 @@ export class LevelModel extends BaseModel {
       y,
       newCell,
     );
-
-    this.notify(DungeonModelEvents.CellTypeChanged, { x, y });
   }
 
   /**

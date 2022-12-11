@@ -1,19 +1,15 @@
-import { Constructor } from './constructor';
-import { BaseModel } from './base.model';
-import { CollectionEvents } from '../constants/collection_events';
 import { IAnyFunction } from '../interfaces/common';
-import { BaseController } from './base.controller';
-import { ItemModel } from '../items/models/item.model';
+
+type CollectionMember = unknown;
 
 /**
- * Collection of generic type models (they have to extend BaseModel).
+ * Layer on array with additional methods.
  */
 export class Collection<
-  M extends Constructor = Constructor,
-> extends Constructor {
+  M = CollectionMember,
+> {
   private collection: M[];
-  private listeners: Map<
-    BaseController,
+  private listeners: Map<M,
     {
       [eventName: string]: IAnyFunction;
     }
@@ -24,8 +20,6 @@ export class Collection<
   }
 
   constructor(list?: M[] | M) {
-    super();
-
     if (list instanceof Array) {
       this.collection = list;
     } else if (list !== undefined) {
@@ -49,8 +43,6 @@ export class Collection<
       this.collection.push(item);
     }
 
-    this.notify(CollectionEvents.Add, item);
-
     return this;
   }
 
@@ -73,21 +65,52 @@ export class Collection<
   }
 
   /**
-   * Removes element from collection. Action is notified with REMOVE event from collection events enum.
+   * Removes elements or single element from collection.
    *
-   * @param item  Element to remove from collection
+   * @param item  Elements or single element to remove from collection
+   * @returns     Returns removed elements or element
    */
-  public remove(item: M): M {
-    if (this.has(item)) {
-      this.collection.splice(this.collection.indexOf(item), 1);
-      this.notify(CollectionEvents.Remove, item);
+  public remove(item: M[]): M[];
+  public remove(item: M): M;
+  public remove(item: M | M[]): M | M[] {
+    if (Array.isArray(item)) {
+      const removedItems: M[] = [];
 
-      return item;
+      for (const examinedItem of item) {
+        if (this.has(examinedItem)) {
+          this.collection.splice(this.collection.indexOf(examinedItem), 1);
+          removedItems.push(examinedItem);
+        }
+      }
+
+      return removedItems;
+    } else {
+      if (this.has(item)) {
+        this.collection.splice(this.collection.indexOf(item), 1);
+
+        return item;
+      }
     }
   }
 
+  /**
+   * Removes items from collection by their indexes (order)
+   *
+   * @param indexes Numberic indexes of items to be removed from collection
+   * @returns Array of removed items from collection
+   */
   public removeByIndexes(...indexes: number[]): M[] {
-    return indexes.map((num) => this.get(num)).map((item) => this.remove(item));
+    return this.getByIndexes(...indexes).map((item) => this.remove(item));
+  }
+
+  /**
+   * Retrieves items from collection by their indexes (order)
+   *
+   * @param indexes Numberic indexes of items to be retrieved from collection
+   * @returns Array of retrieved items from collection
+   */
+  public getByIndexes(...indexes: number[]): M[] {
+    return indexes.map((num) => this.get(num));
   }
 
   /**
@@ -107,50 +130,5 @@ export class Collection<
    */
   public forEach(callback: IAnyFunction): void {
     this.collection.forEach(callback);
-  }
-
-  /**
-   * Enables listening by specified Controller instance on collection objects emitting specific event. Enables
-   * listening on event on already existing in collection objects and makes that passed controller will be
-   * automatically listening on all newly added elements.
-   *
-   * @param controller    Instance of controller which will be listening on event
-   * @param event         Event name
-   * @param callback      Callback function triggered after one or more collection's member notifies event
-   */
-  public listenOn(
-    controller: BaseController,
-    event: string,
-    callback: IAnyFunction,
-  ): this {
-    this.forEach((element: M) => {
-      element.on(controller, event, callback);
-    });
-
-    if (this.listeners.has(controller)) {
-      this.listeners.get(controller)[event] = callback;
-    } else {
-      this.listeners.set(controller, {
-        [event]: callback,
-      });
-    }
-    return this;
-  }
-
-  /**
-   * Disabled listening on specified event notified by collection elements.
-   *
-   * @param controller    Instance of controller which is listening on event
-   * @param event         Event name
-   */
-  public stopListening(controller: BaseController, event: string): this {
-    this.forEach((element: M) => {
-      element.off(controller, event);
-    });
-
-    if (this.listeners.has(controller)) {
-      this.listeners.delete(controller);
-    }
-    return this;
   }
 }

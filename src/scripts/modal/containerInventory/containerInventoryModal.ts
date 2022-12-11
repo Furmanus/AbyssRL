@@ -1,20 +1,20 @@
-import { ModalController } from '../modal.controller';
+import { Modal } from '../modal';
 import { ContainerInventoryModalView } from './containerInventoryModal.view';
 import { containerInventoryTemplate } from './containerInventoryModal.template';
 import { ContainerInventoryModalConstants } from './containerInventoryModal.constants';
 import { ItemsCollection } from '../../items/items_collection';
-import { ModalActions } from '../../constants/game_actions';
+import { ModalActions } from '../../main/constants/gameActions.constants';
 import { ItemModel } from '../../items/models/item.model';
+import { ContainerInventoryModes, PlayerSelectionResult } from './containerInventoryModal.interfaces';
 
-let instance: ContainerInventoryModalController = null;
+let instance: ContainerInventoryModal = null;
 
-export type ContainerInventoryModes = 'put' | 'withdraw';
 export type ContainerInventoryTransferData = {
   items: ItemModel[];
   mode: ContainerInventoryModes;
 };
 
-export class ContainerInventoryModalController extends ModalController<ContainerInventoryModalView> {
+export class ContainerInventoryModal extends Modal<ContainerInventoryModalView> {
   private mode: ContainerInventoryModes = 'put';
   private containerInventory: ItemsCollection = null;
   private playerInventory: ItemsCollection = null;
@@ -32,9 +32,9 @@ export class ContainerInventoryModalController extends ModalController<Container
     return this.mode === 'put' ? this.containerInventory : this.playerInventory;
   }
 
-  public static getInstance(): ContainerInventoryModalController {
+  public static getInstance(): ContainerInventoryModal {
     if (!instance) {
-      instance = new ContainerInventoryModalController();
+      instance = new ContainerInventoryModal();
     }
 
     return instance;
@@ -69,6 +69,16 @@ export class ContainerInventoryModalController extends ModalController<Container
     }
   }
 
+  public waitForPlayerSelection(): Promise<PlayerSelectionResult | null> {
+    return new Promise((resolve) => {
+      this.on(ContainerInventoryModalConstants.ItemsTransferred, onPlayerSelection);
+
+      function onPlayerSelection(data: PlayerSelectionResult): void {
+        resolve(data);
+      }
+    });
+  }
+
   private createList(listToDisplay: ItemsCollection): void {
     this.view.createList(listToDisplay);
   }
@@ -77,22 +87,18 @@ export class ContainerInventoryModalController extends ModalController<Container
     super.attachEvents();
 
     this.view.on(
-      this,
       ContainerInventoryModalConstants.PutButtonClick,
       this.onPutButtonClickInView,
     );
     this.view.on(
-      this,
       ContainerInventoryModalConstants.TakeButtonClick,
       this.onTakeButtonClickInView,
     );
     this.view.on(
-      this,
       ContainerInventoryModalConstants.OptionSelect,
       this.onOptionSelectInView,
     );
     this.view.on(
-      this,
       ContainerInventoryModalConstants.Confirm,
       this.onConfirmInView,
     );
@@ -101,13 +107,13 @@ export class ContainerInventoryModalController extends ModalController<Container
   protected detachEvents(): void {
     super.detachEvents();
 
-    this.view.off(this, ContainerInventoryModalConstants.PutButtonClick);
-    this.view.off(this, ContainerInventoryModalConstants.TakeButtonClick);
-    this.view.off(this, ContainerInventoryModalConstants.OptionSelect);
-    this.view.off(this, ContainerInventoryModalConstants.Confirm);
+    this.view.off(ContainerInventoryModalConstants.PutButtonClick);
+    this.view.off(ContainerInventoryModalConstants.TakeButtonClick);
+    this.view.off(ContainerInventoryModalConstants.OptionSelect);
+    this.view.off(ContainerInventoryModalConstants.Confirm);
   }
 
-  private onPutButtonClickInView(): void {
+  private onPutButtonClickInView = (): void => {
     this.mode = 'put';
 
     this.view.changeHeadingText(this.mode);
@@ -118,7 +124,7 @@ export class ContainerInventoryModalController extends ModalController<Container
     this.view.hideEmptyListText();
   }
 
-  private onTakeButtonClickInView(): void {
+  private onTakeButtonClickInView = (): void => {
     this.mode = 'withdraw';
 
     this.view.changeHeadingText(this.mode);
@@ -131,7 +137,7 @@ export class ContainerInventoryModalController extends ModalController<Container
     }
   }
 
-  private onOptionSelectInView(index: number): void {
+  private onOptionSelectInView = (index: number): void => {
     if (index < this.currentList.size) {
       if (this.selectedOptionsInView.has(index)) {
         this.selectedOptionsInView.delete(index);
@@ -143,12 +149,11 @@ export class ContainerInventoryModalController extends ModalController<Container
     }
   }
 
-  private onConfirmInView(): void {
-    const removedItems = this.sourceCollection.removeByIndexes(
+  private onConfirmInView = (): void => {
+    const removedItems = this.sourceCollection.getByIndexes(
       ...this.selectedOptionsInView,
     );
 
-    this.targetCollection.add(removedItems);
     this.closeModal();
 
     this.notify(ContainerInventoryModalConstants.ItemsTransferred, {

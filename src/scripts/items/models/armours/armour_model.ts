@@ -38,14 +38,6 @@ export class ArmourModel extends WearableModel {
     this.dodgeModifier = dodgeModifier;
   }
 
-  public wear(entity: EntityModel) {
-    entity.equipArmour(this);
-  }
-
-  public takeoff(entity: EntityModel) {
-    entity.unequipArmour();
-  }
-
   /**
    * Returns serialized model data.
    * @returns  Serialized natural weapon model data

@@ -1,19 +1,16 @@
 import { MinimapView } from './minimap.view';
 import { config } from '../global/config';
-import { BaseController } from '../core/base.controller';
 
 const constructorToken = Symbol('MiniMap Controller');
-let instance: MiniMapController;
+let instance: MiniMapService;
 
 /**
  * Controller of game mini map.
  */
-export class MiniMapController extends BaseController {
+export class MiniMapService {
   private view: MinimapView;
 
   constructor(token: symbol) {
-    super();
-
     if (token !== constructorToken) {
       throw new Error('Invalid constructor call');
     }
@@ -24,9 +21,9 @@ export class MiniMapController extends BaseController {
     );
   }
 
-  public static getInstance(): MiniMapController {
+  public static getInstance(): MiniMapService {
     if (!instance) {
-      instance = new MiniMapController(constructorToken);
+      instance = new MiniMapService(constructorToken);
     }
 
     return instance;
@@ -42,4 +39,4 @@ export class MiniMapController extends BaseController {
   }
 }
 
-export const globalMiniMapController = MiniMapController.getInstance();
+export const globalMiniMapController = MiniMapService.getInstance();

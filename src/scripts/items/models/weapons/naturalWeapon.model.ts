@@ -83,20 +83,4 @@ export class NaturalWeaponModel extends WearableModel {
       criticalDamageType: this.criticalDamageType,
     };
   }
-
-  public wear(entity: EntityModel): never {
-    throw new Error("Can't wear natural weapon");
-  }
-
-  public takeoff(entity: EntityModel): never {
-    throw new Error("Can't take off natural weapon");
-  }
-
-  public drop(entity: EntityModel): never {
-    throw new Error("Can't drop natural weapon");
-  }
-
-  public pickup(entity: EntityModel): never {
-    throw new Error("Can't pick up natural weapon");
-  }
 }

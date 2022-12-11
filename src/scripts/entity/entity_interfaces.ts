@@ -1,12 +1,10 @@
 import { LevelModel } from '../dungeon/models/level_model';
 import { Cell } from '../dungeon/models/cells/cell_model';
-import { EntityController } from './controllers/entity.controller';
+import { Entity } from './entities/entity';
 import { MonstersTypes, MonsterSizes } from './constants/monsters';
 import { ItemsCollection } from '../items/items_collection';
-import { INaturalWeapon, IWeapon } from '../combat/combat.interfaces';
 import { WeaponModel } from '../items/models/weapons/weapon.model';
 import { PlayerEquipSlots } from './constants/inventory';
-import { ItemModel } from '../items/models/item.model';
 import { ArmourModel } from '../items/models/armours/armour_model';
 import { NaturalWeaponModel } from '../items/models/weapons/naturalWeapon.model';
 import { EntityDungeonPosition } from './models/entity.model';
@@ -35,7 +33,7 @@ export interface IEntity {
   naturalWeapon: NaturalWeaponModel;
 }
 export interface IEntityController {
-  model: EntityController;
+  model: Entity;
 }
 
 export interface IPlayerEquipSlotsType {

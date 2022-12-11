@@ -1,11 +1,11 @@
 import {
-  EntityStatusCommonController,
+  EntityStatusCommon,
   EntityStatusCommonSerializedData,
-} from './entityStatusCommon.controller';
+} from './entityStatusCommon';
 import { EntityStatuses } from '../constants/statuses';
 import { EntityStats } from '../constants/monsters';
 import { rngService } from '../../utils/rng.service';
-import { EntityController } from '../controllers/entity.controller';
+import { Entity } from '../entities/entity';
 
 export interface EntityStunnedStatusSerializedData
   extends EntityStatusCommonSerializedData {
@@ -13,15 +13,15 @@ export interface EntityStunnedStatusSerializedData
   effectLength?: number;
 }
 
-export class EntityStunnedStatusController extends EntityStatusCommonController {
+export class EntityStunnedStatus extends EntityStatusCommon {
   public type = EntityStatuses.Stunned;
   protected effectLength = rngService.getRandomNumber(3, 4);
 
   public constructor(
     data: EntityStunnedStatusSerializedData,
-    entityController?: EntityController,
+    entityInstance?: Entity,
   ) {
-    super(data, entityController);
+    super(data, entityInstance);
 
     const { effectLength } = data;
 
@@ -36,19 +36,19 @@ export class EntityStunnedStatusController extends EntityStatusCommonController 
     super.act();
 
     if (this.turnCount > this.effectLength) {
-      this.entityController.removeStunnedStatus(this);
+      this.entityInstance.removeStunnedStatus(this);
     }
   }
 
   protected init(): void {
-    this.entityController.addTemporaryStatsModifiers(
+    this.entityInstance.addTemporaryStatsModifiers(
       [
         {
           stat: EntityStats.Strength,
           source: this,
           modifier: {
             modifier: -Math.round(
-              this.entityController.getStatsObject()[EntityStats.Strength] / 4,
+              this.entityInstance.getStatsObject()[EntityStats.Strength] / 4,
             ),
             currentCount: 0,
             count: this.effectLength,
@@ -59,7 +59,7 @@ export class EntityStunnedStatusController extends EntityStatusCommonController 
           source: this,
           modifier: {
             modifier: -Math.round(
-              this.entityController.getStatsObject()[EntityStats.Dexterity] / 2,
+              this.entityInstance.getStatsObject()[EntityStats.Dexterity] / 2,
             ),
             currentCount: 0,
             count: this.effectLength,
@@ -70,7 +70,7 @@ export class EntityStunnedStatusController extends EntityStatusCommonController 
           source: this,
           modifier: {
             modifier: -Math.round(
-              this.entityController.getStatsObject()[EntityStats.Speed] / 5,
+              this.entityInstance.getStatsObject()[EntityStats.Speed] / 5,
             ),
             currentCount: 0,
             count: this.effectLength,
@@ -87,8 +87,8 @@ export class EntityStunnedStatusController extends EntityStatusCommonController 
     }
   }
 
-  public add(status: EntityStatusCommonController): void {
-    if (status instanceof EntityStunnedStatusController) {
+  public add(status: EntityStatusCommon): void {
+    if (status instanceof EntityStunnedStatus) {
       this.increaseStunTurnCount(status.effectLength);
     }
   }

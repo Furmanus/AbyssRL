@@ -1,4 +1,3 @@
-import { Position } from '../../position/position';
 import { ICoordinates } from '../../interfaces/common';
 import { CameraView } from '../camera.view';
 

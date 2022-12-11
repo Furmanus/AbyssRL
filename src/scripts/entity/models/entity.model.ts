@@ -1,9 +1,7 @@
 import { BaseModel } from '../../core/base.model';
-import { IAnyObject } from '../../interfaces/common';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 import { LevelModel } from '../../dungeon/models/level_model';
-import { EntityEvents } from '../../constants/entity_events';
-import { IEntity, isEntityPosition } from '../entity_interfaces';
+import { IEntity } from '../entity_interfaces';
 import {
   EntityStats,
   MonsterSizes,
@@ -12,27 +10,22 @@ import {
 import { ItemsCollection } from '../../items/items_collection';
 import { IWeapon } from '../../combat/combat.interfaces';
 import { ItemModel, SerializedItem } from '../../items/models/item.model';
-import { WeaponModelFactory } from '../../items/factory/item/weaponModel.factory';
 import { WeaponModel } from '../../items/models/weapons/weapon.model';
 import {
   NaturalWeaponModel,
   SerializedNaturalWeapon,
 } from '../../items/models/weapons/naturalWeapon.model';
 import { ArmourModel } from '../../items/models/armours/armour_model';
-import { ArmourModelFactory } from '../../items/factory/item/armour_model_factory';
 import { EntityStatusFactory } from '../factory/entityStatus.factory';
 import {
   AllEntityStatusesSerialized,
-  EntityStatusCommonController,
-} from '../entity_statuses/entityStatusCommon.controller';
-import { CollectionEvents } from '../../constants/collection_events';
+  EntityStatusCommon,
+} from '../entity_statuses/entityStatusCommon';
 import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { dungeonState } from '../../state/application.state';
 import { Position, SerializedPosition } from '../../position/position';
 import { NaturalWeaponFactory } from '../../items/factory/naturalWeapon.factory';
-import { EntityStatusesCollection } from '../entity_statuses/entityStatuses.collection';
 import { entityRegistry } from '../../global/entityRegistry';
-import { EntityController } from '../controllers/entity.controller';
 
 export interface IEntityStatsObject {
   [EntityStats.Strength]: number;
@@ -64,7 +57,7 @@ type EntityTemporaryStatsModifiersType = {
   [K in keyof EntityStatsModifiers]: Set<IStatsSingleModifier>;
 };
 
-type EntityStatModifierSource = EntityStatusCommonController;
+type EntityStatModifierSource = EntityStatusCommon;
 
 export type AddTemporaryStatModifierData = Array<{
   stat: Omit<EntityStats, 'HitPoints' | 'MaxHitPoints'>;
@@ -213,22 +206,35 @@ export class EntityModel extends BaseModel implements IEntity {
   public description: string = 'unknown entity';
   /**
    * Type of entity.
+   * @type {MonstersTypes}
    */
   public type: MonstersTypes = MonstersTypes.Unknown;
   /**
    * Is entity hostile to player.
+   * @type {boolean}
    */
-  public isHostile: boolean = false;
+  public isHostile = false;
+  /**
+   * Current amount of player hit points.
+   * @type {number}
+   */
   public hitPoints: number = null;
+  /**
+   * Maximum current amount of player hit points
+   * @type {number}
+   */
   public maxHitPoints: number = null;
+  /**
+   * Gets current health to current maximum health percentage.
+   * @returns {number}
+   */
   public get hpToMaxHpRatio(): number {
     return this.hitPoints / this.maxHitPoints;
   }
 
   public size: MonsterSizes = null;
   /**
-   * Temporary entity stats modifiers, for example bleeding might cause temporary lose of strength. Not used anywhere
-   * yet!
+   * Temporary entity stats modifiers, for example bleeding might cause temporary lose of strength.
    */
   public temporaryStatsModifiers: EntityTemporaryStatsModifiersType = {
     [EntityStats.Strength]: new Set<IStatsSingleModifier>(),
@@ -316,28 +322,13 @@ export class EntityModel extends BaseModel implements IEntity {
       const recreatedStatusesCollection =
         EntityStatusFactory.getCollectionFromSerializedData(
           config.entityStatuses || [],
-          entityRegistry.getControllerByModel(this),
+          entityRegistry.getEntityByModel(this),
         );
 
       recreatedStatusesCollection.forEach((status) => {
         this.entityStatuses.addStatus(status);
       });
     }, 0);
-
-    this.attachEventsToCollections();
-  }
-
-  private attachEventsToCollections(): void {
-    this.entityStatuses.on(
-      this,
-      CollectionEvents.Add,
-      this.onStatusesCollectionChange,
-    );
-    this.entityStatuses.on(
-      this,
-      CollectionEvents.Remove,
-      this.onStatusesCollectionChange,
-    );
   }
 
   /**
@@ -356,16 +347,12 @@ export class EntityModel extends BaseModel implements IEntity {
     this.fov = fovArray;
   }
 
-  public addStatus(entityStatus: EntityStatusCommonController): void {
+  public addStatus(entityStatus: EntityStatusCommon): void {
     this.entityStatuses.addStatus(entityStatus);
   }
 
-  public removeStatus(entityStatus: EntityStatusCommonController): void {
+  public removeStatus(entityStatus: EntityStatusCommon): void {
     this.entityStatuses.removeStatus(entityStatus);
-  }
-
-  private onStatusesCollectionChange(): void {
-    this.notify(EntityEvents.EntityModelStatusChange, this.entityStatuses);
   }
 
   private accumulateTemporaryStat(stat: EntityStats): number {
@@ -400,18 +387,8 @@ export class EntityModel extends BaseModel implements IEntity {
    * @param damage    Number of hit points to substract
    * @returns         Boolean variable indicating if entity is still alive (its hit points are above 0)
    */
-  public takeHit(damage: number): boolean {
+  public takeHit(damage: number): void {
     this.hitPoints -= damage;
-
-    this.notify(EntityEvents.EntityHit, this);
-
-    if (this.hitPoints < 1) {
-      this.notify(EntityEvents.EntityDeath, {
-        entity: this,
-      });
-    }
-
-    return this.hitPoints > 0;
   }
 
   /**
@@ -430,8 +407,6 @@ export class EntityModel extends BaseModel implements IEntity {
 
     this.entityPosition.level = levelNumber;
     this.entityPosition.branch = dungeonBranch;
-
-    this.notify(EntityEvents.EntityMove, newCell);
   }
 
   /**
@@ -446,8 +421,6 @@ export class EntityModel extends BaseModel implements IEntity {
     if (currentCellInventory.has(item)) {
       currentCellInventory.remove(item);
       this.inventory.add(item);
-
-      this.notify(EntityEvents.EntityPickedItem, item);
     }
   }
 
@@ -455,59 +428,23 @@ export class EntityModel extends BaseModel implements IEntity {
     this.inventory.add(items);
   }
 
-  public equipWeapon(weapon: WeaponModel): void {
-    const previousWeapon = this.weapon;
+  /**
+   * Removes select items from player inventory.
+   *
+   * @param items Array of items to be removed
+   */
+  public removeItemsFromInventory(items: ItemModel[]): ItemModel[] {
+    const successfullyRemovedItems: ItemModel[] = [];
 
-    if (weapon !== previousWeapon && !(weapon instanceof NaturalWeaponModel)) {
-      this.equippedWeapon = weapon;
-      this.notify(EntityEvents.EntityEquippedWeaponChange, {
-        reason: 'equip',
-        currentWeapon: weapon,
-        previousWeapon,
-      });
+    for (const item of items) {
+      const removedItem = this.inventory.remove(item);
+
+      if (removedItem) {
+        successfullyRemovedItems.push(removedItem);
+      }
     }
-  }
 
-  public removeWeapon(weapon: IWeapon): void {
-    if (
-      !(weapon instanceof NaturalWeaponModel) &&
-      this.isWeaponEquipped(weapon)
-    ) {
-      this.equippedWeapon = null;
-      this.notify(EntityEvents.EntityEquippedWeaponChange, {
-        reason: 'remove',
-        currentWeapon: null,
-        previousWeapon: weapon,
-      });
-    }
-  }
-
-  public equipArmour(armour: ArmourModel): void {
-    if (this.equippedArmour) {
-      this.unequipArmour();
-
-      this.equippedArmour = armour;
-      this.notify(EntityEvents.EntityEquippedArmourChange, {
-        reason: 'equip',
-        currentArmour: armour,
-      });
-    } else {
-      this.equippedArmour = armour;
-      this.notify(EntityEvents.EntityEquippedArmourChange, {
-        reason: 'equip',
-        currentArmour: armour,
-      });
-    }
-  }
-
-  public unequipArmour(): void {
-    const removedArmour = this.equippedArmour;
-
-    this.equippedArmour = null;
-    this.notify(EntityEvents.EntityEquippedArmourChange, {
-      reason: 'remove',
-      previousArmour: removedArmour,
-    });
+    return successfullyRemovedItems;
   }
 
   /**
@@ -524,8 +461,6 @@ export class EntityModel extends BaseModel implements IEntity {
       if (this.inventory.has(item)) {
         this.inventory.remove(item);
         currentCellInventory.add(item);
-
-        this.notify(EntityEvents.EntityDroppedItem, item);
       }
     });
   }
@@ -627,7 +562,7 @@ export class EntityModel extends BaseModel implements IEntity {
       }
 
       this.entityStatuses.forEach(
-        (entityStatus: EntityStatusCommonController) => {
+        (entityStatus: EntityStatusCommon) => {
           status += `${status !== '' ? ', ' : ''}${entityStatus.type}`;
         },
       );

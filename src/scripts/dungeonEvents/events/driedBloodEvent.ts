@@ -3,7 +3,6 @@ import {
   DungeonEventTypes,
   SerializedDungeonEvent,
 } from '../dungeonEvent';
-import type { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { Position, SerializedPosition } from '../../position/position';
 import { dungeonState } from '../../state/application.state';
 

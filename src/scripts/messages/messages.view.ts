@@ -1,6 +1,3 @@
-/**
- * Created by Lukasz Lach on 2017-04-24.
- */
 export class MessagesView {
   private screenElement: HTMLDivElement = document.getElementById(
     'messages',

@@ -1,4 +1,4 @@
-import { EntityInventoryActions } from '../../constants/entity_events';
+import { EntityInventoryActions } from '../../inventory/inventory.constants';
 
 type ActionNameToModalMapType = Record<EntityInventoryActions, string>;
 

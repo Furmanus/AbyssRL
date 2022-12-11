@@ -1,11 +1,6 @@
-import { EntityController } from '../entity/controllers/entity.controller';
-import { BaseController } from '../core/base.controller';
-import { IAnyObject } from '../interfaces/common';
-import { EntityEvents } from '../constants/entity_events';
-import { boundMethod } from 'autobind-decorator';
+import { Entity } from '../entity/entities/entity';
 import { EntityModel } from '../entity/models/entity.model';
 import { Monsters, MonstersTypes } from '../entity/constants/monsters';
-import { PLAYER_DEATH } from '../entity/constants/player_actions';
 import { MonsterFactory } from '../entity/factory/monster.factory';
 import { IActor } from '../entity/entity_interfaces';
 import { DungeonEventsFactory } from '../dungeonEvents/dungeonEvent.factory';
@@ -18,8 +13,10 @@ import { Cell } from './models/cells/cell_model';
 import { TimeEngine } from '../timeEngine/timeEngine';
 import { rngService } from '../utils/rng.service';
 import { DungeonEventTypes } from '../dungeonEvents/dungeonEvent';
+import { entityEventBus } from '../eventBus/entityEventBus/entityEventBus';
+import { EntityEventBusEventNames } from '../eventBus/entityEventBus/entityEventBus.constants';
 
-export interface ILevelControllerConstructorConfig {
+export interface ILevelConstructorConfig {
   readonly branch: DungeonBranches;
   readonly levelNumber: number;
   readonly model?: LevelModel;
@@ -28,7 +25,7 @@ export interface ILevelControllerConstructorConfig {
 /**
  * Controller of single dungeon level.
  */
-export class LevelController extends BaseController {
+export class Level {
   public model: LevelModel;
   public get engine(): TimeEngine {
     return dungeonState.getTimeEngine(
@@ -38,11 +35,9 @@ export class LevelController extends BaseController {
   }
 
   private levelEntitiesControllers =
-    EntityFactory.getEntityControllerollection();
+    EntityFactory.getEntityCollection();
 
-  constructor(config: ILevelControllerConstructorConfig) {
-    super();
-
+  constructor(config: ILevelConstructorConfig) {
     if (config.model) {
       this.model = config.model;
     } else {
@@ -57,49 +52,14 @@ export class LevelController extends BaseController {
 
   /**
    * Initializes level controller.
-   *
-   * @param config    Optional configuration object
    */
-  protected initialize(config?: IAnyObject): void {
-    super.initialize(config);
-
+  protected initialize(): void {
     this.attachEvents();
   }
 
-  /**
-   * Enables listening on various events.
-   */
-  protected attachEvents(): void {
-    this.levelEntitiesControllers.on(
-      this,
-      EntityEvents.EntityMove,
-      this.onEntityCollectionEntityMove,
-    );
-  }
-
-  /**
-   * Method responsible for attaching events to newly created monster controller.
-   *
-   * @param controller    Newly created monster controller.
-   */
-  private attachEventsToMonsterController(controller: EntityController): void {
-    controller.on(this, EntityEvents.EntityDeath, this.onMonsterDeath);
-    controller.on(this, EntityEvents.EntityHit, this.onEntityHit);
-    controller.on(this, EntityEvents.EntityBloodLoss, this.onEntityBloodLoss);
-  }
-
-  /**
-   * Method responsible for detaching events from monster controller. Used for example in situation when entity
-   * changes level - old level should not react on entity events.
-   *
-   * @param controller    Entity controller
-   */
-  private detachEventsFromMonsterController(
-    controller: EntityController,
-  ): void {
-    controller.off(this, EntityEvents.EntityDeath);
-    controller.off(this, EntityEvents.EntityHit);
-    controller.off(this, EntityEvents.EntityBloodLoss);
+  public attachEvents(): void {
+    entityEventBus.subscribe(EntityEventBusEventNames.EntityDeath, this.onEntityDeath);
+    entityEventBus.subscribe(EntityEventBusEventNames.EntityBloodLoss, this.onEntityBloodLoss);
   }
 
   /**
@@ -143,14 +103,13 @@ export class LevelController extends BaseController {
   public addActorToTimeEngine(actor: IActor, repeat: boolean = true): void {
     this.engine.addActor(actor, repeat);
 
-    if (actor instanceof EntityController) {
-      this.attachEventsToMonsterController(actor);
+    if (actor instanceof Entity) {
       this.levelEntitiesControllers.add(actor);
     }
   }
 
   public spawnMonsterInSpecificCell(cell: Cell, monster: Monsters): void {
-    const monsterController = MonsterFactory.getMonsterControllerByType(
+    const monsterController = MonsterFactory.getMonsterEntityByType(
       monster,
       cell,
     );
@@ -163,11 +122,10 @@ export class LevelController extends BaseController {
    *
    * @param  actor   Actor, instance of entity controller (or subclass).
    */
-  public removeActorFromTimeEngine(actor: IActor | EntityController): void {
+  public removeActorFromTimeEngine(actor: IActor | Entity): void {
     this.engine.removeActor(actor);
 
-    if (actor instanceof EntityController) {
-      this.detachEventsFromMonsterController(actor);
+    if (actor instanceof Entity) {
       this.levelEntitiesControllers.remove(actor);
     }
   }
@@ -215,37 +173,24 @@ export class LevelController extends BaseController {
    *
    * @param data    Data object passed along with event
    */
-  @boundMethod
-  private onMonsterDeath(data: { entityController: EntityController }): void {
-    const { entityController } = data;
-    const entityModel = entityController.getModel();
+  private onEntityDeath = (entity: Entity): void => {
+    const entityModel = entity.getModel();
     const { branch, level } = entityModel.entityPosition;
 
-    if (entityController.getModel().type === MonstersTypes.Player) {
+    if (entityModel.type === MonstersTypes.Player) {
       this.lockTimeEngine();
-      this.notify(PLAYER_DEATH);
     } else {
       dungeonState.entityManager.removeEntityFromLevel(
-        entityController,
+        entity,
         level,
         branch,
       );
-      entityController.off(this, EntityEvents.EntityDeath);
     }
   }
 
-  /**
-   * Method triggered after notification from Entity Controller about entity taking damage.
-   *
-   * @param entity    EntityModel
-   */
-  @boundMethod
-  private onEntityHit(entity: EntityModel): void {
-    this.notify(EntityEvents.EntityHit, entity);
-  }
-
-  private onEntityBloodLoss(entity: EntityModel): void {
-    const cell = this.getCell(entity.position.x, entity.position.y);
+  private onEntityBloodLoss = (entity: Entity): void => {
+    const entityModel = entity.getModel();
+    const cell = this.getCell(entityModel.position.x, entityModel.position.y);
 
     if (cell) {
       const { branch, levelNumber } = this.model;
@@ -257,24 +202,16 @@ export class LevelController extends BaseController {
         speed: rngService.getRandomNumber(12, 15),
         branch,
         levelNumber,
-        cell: entity.position,
+        cell: entityModel.position,
       });
     }
   }
 
   public getEntityControllerByModel(
     entityModel: EntityModel,
-  ): EntityController {
+  ): Entity {
     return this.levelEntitiesControllers.getControllerByEntityModel(
       entityModel,
     );
-  }
-
-  private onEntityCollectionEntityMove(entity: EntityController): void {
-    const entityModel = entity.getModel();
-
-    if (entityModel.type !== MonstersTypes.Player) {
-      this.notify(EntityEvents.EntityMove, entity.getModel());
-    }
   }
 }

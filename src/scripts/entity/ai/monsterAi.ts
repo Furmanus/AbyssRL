@@ -1,7 +1,7 @@
 import { Ai } from './ai';
-import { MonsterController } from '../controllers/monster.controller';
+import { MonsterEntity } from '../entities/monster.entity';
 
-export class MonsterAi extends Ai<MonsterController> {
+export class MonsterAi extends Ai<MonsterEntity> {
   public performNextMove(): void {
     super.performNextMove();
   }

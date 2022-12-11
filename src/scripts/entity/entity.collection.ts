@@ -1,44 +1,13 @@
 import { Collection } from '../core/collection';
-import { EntityController } from './controllers/entity.controller';
+import { Entity } from './entities/entity';
 import { EntityModel } from './models/entity.model';
-import { EntityEvents } from '../constants/entity_events';
 
-export class EntityControllerCollection extends Collection<EntityController> {
-  public add(entityController: EntityController[]): this;
-  public add(entityController: EntityController): this;
-  public add(entityController: EntityController | EntityController[]): this {
-    const entity = Array.isArray(entityController)
-      ? entityController[0]
-      : entityController;
-
-    if (entity) {
-      super.add(entity);
-
-      entity.on(this, EntityEvents.EntityMove, this.onEntityMove);
-    }
-
-    return this;
-  }
-
-  public remove(entityController: EntityController): EntityController {
-    const removedEntity = super.remove(entityController);
-
-    if (removedEntity) {
-      removedEntity.off(this, EntityEvents.EntityMove);
-
-      return removedEntity;
-    }
-  }
-
+export class EntityCollection extends Collection<Entity> {
   public getControllerByEntityModel(
     entityModel: EntityModel,
-  ): EntityController {
+  ): Entity {
     return this.get().find(
-      (entity: EntityController) => entity.getModel() === entityModel,
+      (entity: Entity) => entity.getModel() === entityModel,
     );
-  }
-
-  private onEntityMove(entityController: EntityController): void {
-    this.notify(EntityEvents.EntityMove, entityController);
   }
 }

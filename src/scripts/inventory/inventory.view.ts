@@ -1,13 +1,9 @@
 import { ModalView } from '../modal/modal.view';
-import {
-  EntityInventoryActions,
-  InventoryModalEvents,
-} from '../constants/entity_events';
 import autobind, { boundMethod } from 'autobind-decorator';
 import { SetWithObserver } from '../core/set_with_observer';
 import { getNumericValueOfChar } from '../utils/utility';
 import { IStringDictionary } from '../interfaces/common';
-import { InventoryTemplateViewElements } from './inventory.constants';
+import { EntityInventoryActions, InventoryModalEvents, InventoryTemplateViewElements } from './inventory.constants';
 
 const keyToInventoryActionMap: IStringDictionary = {
   d: EntityInventoryActions.Drop,

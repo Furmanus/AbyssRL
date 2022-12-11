@@ -3,7 +3,7 @@ import { Dice } from '../position/dice';
 import { capitalizeString } from '../utils/utility';
 import { generateCombatMessage } from './combatMessages';
 import { criticalDamageTypeToStatusConstructor } from '../items/constants/weapons.constants';
-import { EntityController } from '../entity/controllers/entity.controller';
+import { Entity } from '../entity/entities/entity';
 import { entityStatusToDamageText } from '../entity/constants/statuses';
 
 const sizeToDodgeModifierMap: { [prop: string]: Dice } = {
@@ -19,19 +19,19 @@ export interface ICombatResult {
 }
 
 export function doCombatAction(
-  attackerController: EntityController,
-  defenderController: EntityController,
+  attackerController: Entity,
+  defenderController: Entity,
 ): ICombatResult {
-  const attacker = attackerController.getModel();
-  const defender = defenderController.getModel();
+  const defenderModel = defenderController.getModel();
+  const attackerModel = attackerController.getModel();
   const {
     dexterity: defenderDexterity,
     speed: defenderSpeed,
     protection: defenderProtection,
     size: defenderSize,
     evasion,
-  } = defender;
-  const { dexterity: attackerDexterity, weapon: attackerWeapon } = attacker;
+  } = defenderModel;
+  const { dexterity: attackerDexterity, weapon: attackerWeapon } = attackerModel;
   const { toHit: attackerToHit } = attackerWeapon;
   let defenderDefenseRate: number =
     defenderDexterity +
@@ -84,13 +84,14 @@ export function doCombatAction(
     damageDealt = attackerWeapon.damage.roll() - defenderProtection;
 
     if (damageDealt > 0) {
-      const isAlive: boolean = defender.takeHit(damageDealt);
-      let message: string = generateCombatMessage({
+      defenderController.takeHit(damageDealt);
+      const isAlive = defenderController.getModel().hitPoints > 0;
+      let message = generateCombatMessage({
         damageAmount: damageDealt,
         wasDefenderHit: isDefenderHit,
         isCriticalHit,
-        attacker,
-        defender,
+        attacker: attackerModel,
+        defender: defenderModel,
       });
       let criticalText: string;
 
@@ -99,7 +100,7 @@ export function doCombatAction(
         isCriticalHit &&
         Array.isArray(attackerWeapon.criticalDamageType)
       ) {
-        const criticalHitEffect = attacker.weapon.criticalDamageType.random();
+        const criticalHitEffect = attackerModel.weapon.criticalDamageType.random();
         const criticalStatusConstructor =
           criticalDamageTypeToStatusConstructor[criticalHitEffect];
         const criticalStatusController = criticalStatusConstructor({
@@ -111,17 +112,17 @@ export function doCombatAction(
           entityStatusToDamageText[
             criticalType as keyof typeof entityStatusToDamageText // TODO remove type cast after implementing all criticals
           ];
-        defender.addStatus(criticalStatusController);
+        defenderModel.addStatus(criticalStatusController);
       }
 
       if (criticalText) {
         message += ` ${capitalizeString(
-          criticalText.replace('{{description}}', defender.getDescription()),
+          criticalText.replace('{{description}}', defenderModel.getDescription()),
         )}`;
       }
 
       if (!isAlive) {
-        message += ` ${capitalizeString(defender.getDescription())} dies.` // TODO refactor so dying text is a part of combat damage text
+        message += ` ${capitalizeString(defenderModel.getDescription())} dies.` // TODO refactor so dying text is a part of combat damage text
       }
 
       return {
@@ -133,8 +134,8 @@ export function doCombatAction(
         damageAmount: damageDealt,
         wasDefenderHit: isDefenderHit,
         isCriticalHit,
-        attacker,
-        defender,
+        attacker: attackerModel,
+        defender: defenderModel,
       });
 
       return {
@@ -147,8 +148,8 @@ export function doCombatAction(
       damageAmount: 0,
       wasDefenderHit: isDefenderHit,
       isCriticalHit: false,
-      attacker,
-      defender,
+      attacker: attackerModel,
+      defender: defenderModel,
     });
 
     return {

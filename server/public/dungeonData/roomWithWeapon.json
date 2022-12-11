@@ -27,7 +27,7 @@
             },
             "stairsUp": "3x2",
             "stairsDown": "5x4",
-            "items": { "4x4": ["weapon"] },
+            "items": { "4x4": ["weapon"], "4x5": ["weapon", "weapon", "armour", "armour"] },
             "entities": {}
         }
     } 

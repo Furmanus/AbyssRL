@@ -1,4 +1,4 @@
-import type { PlayerController } from '../entity/controllers/player.controller';
+import type { PlayerEntity } from '../entity/entities/player.entity';
 import { applicationConfigService } from '../global/config';
 import { ArmourNames } from '../items/constants/armourNames.constants';
 import { WeaponNames } from '../items/constants/weapons.constants';
@@ -39,7 +39,7 @@ public async fetchPlayerStartingData(): Promise<void> {
   }
 }
 
-public initPlayerData(playerController: PlayerController): void {
+public initPlayerData(playerController: PlayerEntity): void {
   if (this.#testPlayerData) {
     const { inventory } = this.#testPlayerData;
     const items: ItemModel[] = [];

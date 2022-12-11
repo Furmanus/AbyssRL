@@ -2,14 +2,12 @@ import { Collection } from '../../core/collection';
 import {
   AllEntityStatusControllers,
   AllEntityStatusesSerialized,
-  EntityStatusCommonController,
-} from './entityStatusCommon.controller';
+  EntityStatusCommon,
+} from './entityStatusCommon';
 import { EntityStatuses } from '../constants/statuses';
-import { EntityStunnedStatusController } from './entityStunnedStatus.controller';
-import { EntityBleedingStatusController } from './entityBleedingStatus.controller';
 
-export class EntityStatusesCollection extends Collection<EntityStatusCommonController> {
-  public addStatus(status: EntityStatusCommonController): this {
+export class EntityStatusesCollection extends Collection<EntityStatusCommon> {
+  public addStatus(status: EntityStatusCommon): this {
     const currentStatusOfSameType = this.getStatus(status);
 
     if (currentStatusOfSameType) {
@@ -22,15 +20,15 @@ export class EntityStatusesCollection extends Collection<EntityStatusCommonContr
   }
 
   public removeStatus(
-    status: EntityStatusCommonController,
-  ): EntityStatusCommonController;
+    status: EntityStatusCommon,
+  ): EntityStatusCommon;
 
-  public removeStatus(status: EntityStatuses): EntityStatusCommonController;
+  public removeStatus(status: EntityStatuses): EntityStatusCommon;
   public removeStatus(
-    status: EntityStatuses | EntityStatusCommonController,
-  ): EntityStatusCommonController {
+    status: EntityStatuses | EntityStatusCommon,
+  ): EntityStatusCommon {
     const entityStatus: EntityStatuses =
-      status instanceof EntityStatusCommonController ? status.type : status;
+      status instanceof EntityStatusCommon ? status.type : status;
     const statusToRemove = this.getStatus(entityStatus);
 
     if (statusToRemove) {
@@ -39,15 +37,15 @@ export class EntityStatusesCollection extends Collection<EntityStatusCommonContr
   }
 
   public getStatus(
-    status: EntityStatusCommonController,
-  ): EntityStatusCommonController;
+    status: EntityStatusCommon,
+  ): EntityStatusCommon;
 
-  public getStatus(status: EntityStatuses): EntityStatusCommonController;
+  public getStatus(status: EntityStatuses): EntityStatusCommon;
   public getStatus(
-    status: EntityStatuses | EntityStatusCommonController,
-  ): EntityStatusCommonController {
+    status: EntityStatuses | EntityStatusCommon,
+  ): EntityStatusCommon {
     const entityStatus: EntityStatuses =
-      status instanceof EntityStatusCommonController ? status.type : status;
+      status instanceof EntityStatusCommon ? status.type : status;
 
     return this.get().find(
       (statusController) => statusController.type === entityStatus,

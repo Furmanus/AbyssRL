@@ -269,3 +269,7 @@ export function sleep(ms: number): Promise<void> {
     window.setTimeout(resolve, ms);
   });
 }
+
+export function exhaustiveCheck(param: never): never {
+  throw new TypeError(`Param ${param} not implemented!`);
+}

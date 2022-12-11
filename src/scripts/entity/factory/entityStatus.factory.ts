@@ -1,33 +1,32 @@
-import { EntityController } from '../controllers/entity.controller';
+import { Entity } from '../entities/entity';
 import {
-  EntityBleedingStatusController,
+  EntityBleedingStatus,
   EntityBleedingStatusSerializedData,
-} from '../entity_statuses/entityBleedingStatus.controller';
+} from '../entity_statuses/entityBleedingStatus';
 import {
   AllEntityStatusControllers,
   AllEntityStatusesSerialized,
-  EntityStatusCommonController,
-} from '../entity_statuses/entityStatusCommon.controller';
+} from '../entity_statuses/entityStatusCommon';
 import { EntityStatusesCollection } from '../entity_statuses/entityStatuses.collection';
 import {
-  EntityStunnedStatusController,
+  EntityStunnedStatus,
   EntityStunnedStatusSerializedData,
-} from '../entity_statuses/entityStunnedStatus.controller';
+} from '../entity_statuses/entityStunnedStatus';
 import { EntityStatuses } from '../constants/statuses';
 
 export class EntityStatusFactory {
   public static getEntityBleedingStatus(
     data: EntityBleedingStatusSerializedData,
-    entityController?: EntityController,
-  ): EntityBleedingStatusController {
-    return new EntityBleedingStatusController(data, entityController);
+    entityController?: Entity,
+  ): EntityBleedingStatus {
+    return new EntityBleedingStatus(data, entityController);
   }
 
   public static getEntityStunnedStatus(
     data: EntityStunnedStatusSerializedData,
-    entityController?: EntityController,
-  ): EntityStunnedStatusController {
-    return new EntityStunnedStatusController(data, entityController);
+    entityController?: Entity,
+  ): EntityStunnedStatus {
+    return new EntityStunnedStatus(data, entityController);
   }
 
   public static getCollection(
@@ -38,7 +37,7 @@ export class EntityStatusFactory {
 
   public static getCollectionFromSerializedData(
     entityStatuses: AllEntityStatusesSerialized[],
-    entityController?: EntityController,
+    entityController?: Entity,
   ): EntityStatusesCollection {
     const entityStatusControllers = entityStatuses.map((serializedStatus) => {
       switch (serializedStatus.type) {

@@ -1,12 +1,10 @@
 import { ItemsCollection } from '../items/items_collection';
 import { ItemModel } from '../items/models/item.model';
 import { drawSpriteOnCanvas } from '../utils/canvas_helper';
-import { EntityInventoryActions } from '../constants/entity_events';
 import { getLetterFromNumber } from '../utils/utility';
 import { actionNameToModalHeaderMap } from '../entity/constants/inventory';
 import { EntityModel } from '../entity/models/entity.model';
-import { WeaponModel } from '../items/models/weapons/weapon.model';
-import { InventoryTemplateViewElements } from './inventory.constants';
+import { EntityInventoryActions, InventoryTemplateViewElements } from './inventory.constants';
 
 interface IGroups {
   [groupName: string]: DocumentFragment;

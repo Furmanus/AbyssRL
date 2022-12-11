@@ -13,8 +13,7 @@ import {
 } from './generators.interfaces';
 import { Cell } from '../models/cells/cell_model';
 import { Position } from '../../position/position';
-import { MapWithObserver } from '../../core/map_with_observer';
-import { LevelController } from '../level.controller';
+import { Level } from '../level';
 
 const singletonToken: symbol = Symbol('ArenaLevelGenerator singleton token');
 let instance: ArenaLevelGenerator;
@@ -46,7 +45,7 @@ export class ArenaLevelGenerator extends AbstractLevelGenerator {
    * @param   debugCallback      Optional callback function serving as debug for map generation
    */
   public generateLevel(
-    levelController: LevelController,
+    levelController: Level,
     config?: IDungeonStrategyGenerateLevelConfig,
     debugCallback?: IAnyFunction,
   ): void {

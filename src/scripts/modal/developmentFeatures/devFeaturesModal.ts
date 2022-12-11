@@ -1,18 +1,20 @@
-import { ModalController } from '../modal.controller';
+import { Modal } from '../modal';
 import { DevFeaturesModalView, DevFormValues } from './devFeaturesModal.view';
-import { ModalActions } from '../../constants/game_actions';
+import { ModalActions } from '../../main/constants/gameActions.constants';
 import { devFeatureModalTemplate } from './devFeaturesModal.template';
 import { DevFeaturesModalConstants } from './devFeaturesModal.constants';
 import { config } from '../../global/config';
 import { Monsters } from '../../entity/constants/monsters';
-import { PlayerController } from '../../entity/controllers/player.controller';
+import { PlayerEntity } from '../../entity/entities/player.entity';
 import { storeDataInSessionStorage } from '../../utils/storage_helper';
 import { SessionStorageKeys } from '../../constants/storage';
+import { gameEventBus } from '../../eventBus/gameEventBus/gameEventBus';
+import { GameEventBusEventNames } from '../../eventBus/gameEventBus/gameEventBus.constants';
 
 const constructorToken = Symbol('Dev features modal controller');
-let instance: DevFeaturesModalController;
+let instance: DevFeaturesModal;
 
-export class DevFeaturesModalController extends ModalController<DevFeaturesModalView> {
+export class DevFeaturesModal extends Modal<DevFeaturesModalView> {
   protected view = new DevFeaturesModalView(devFeatureModalTemplate);
 
   public constructor(token: symbol) {
@@ -23,9 +25,9 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     }
   }
 
-  public static getInstance(): DevFeaturesModalController {
+  public static getInstance(): DevFeaturesModal {
     if (!instance) {
-      instance = new DevFeaturesModalController(constructorToken);
+      instance = new DevFeaturesModal(constructorToken);
     }
 
     return instance;
@@ -59,17 +61,14 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     super.attachEvents();
 
     this.view.on(
-      this,
       DevFeaturesModalConstants.FormSubmitInView,
       this.onDevDungeonFormSubmitInView,
     );
     this.view.on(
-      this,
       DevFeaturesModalConstants.SpawnMonster,
       this.onMonsterSpawnInView,
     );
     this.view.on(
-      this,
       DevFeaturesModalConstants.HealPlayer,
       this.onHealPlayerClickInView,
     );
@@ -78,12 +77,12 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
   protected detachEvents(): void {
     super.detachEvents();
 
-    this.view.off(this, DevFeaturesModalConstants.FormSubmitInView);
-    this.view.off(this, DevFeaturesModalConstants.SpawnMonster);
-    this.view.off(this, DevFeaturesModalConstants.HealPlayer);
+    this.view.off(DevFeaturesModalConstants.FormSubmitInView);
+    this.view.off(DevFeaturesModalConstants.SpawnMonster);
+    this.view.off(DevFeaturesModalConstants.HealPlayer);
   }
 
-  private onDevDungeonFormSubmitInView(data: DevFormValues): void {
+  private onDevDungeonFormSubmitInView = (data: DevFormValues): void => {
     const {
       devDungeonHeight,
       devDungeonWidth,
@@ -102,20 +101,20 @@ export class DevFeaturesModalController extends ModalController<DevFeaturesModal
     config.debugOptions.noMonsters = noMonsters;
     config.defaultLevelType = devDungeonLevelType || null;
 
-    this.notify(DevFeaturesModalConstants.RecreateCurrentLevel);
+    gameEventBus.publish(GameEventBusEventNames.RecreateCurrentLevel);
 
     this.closeModal();
   }
 
-  private onMonsterSpawnInView(monster: Monsters): void {
-    this.notify(DevFeaturesModalConstants.SpawnMonster, monster);
+  private onMonsterSpawnInView = (monster: Monsters): void => {
+    gameEventBus.publish(GameEventBusEventNames.SpawnMonster, monster);
 
     this.view.resetMonsterSpawnSelect();
     this.closeModal();
   }
 
-  private onHealPlayerClickInView(): void {
-    const playerController = PlayerController.getInstance();
+  private onHealPlayerClickInView = (): void => {
+    const playerController = PlayerEntity.getInstance();
 
     playerController.healPlayer();
 

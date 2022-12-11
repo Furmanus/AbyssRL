@@ -1,7 +1,7 @@
 import { WeaponModel } from '../items/models/weapons/weapon.model';
 import { ArmourModel } from '../items/models/armours/armour_model';
 
-export type EntityWeaponChangeReasons = 'equip';
+export type EntityWeaponChangeReasons = 'equip' | 'remove';
 
 export type EntityWeaponChangeData = {
   currentWeapon: WeaponModel;

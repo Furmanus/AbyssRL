@@ -1,19 +1,17 @@
-import { EntityController } from './entity.controller';
+import { Entity } from './entity';
 import { MonsterModel } from '../models/monster.model';
 import { MonsterAi } from '../ai/monsterAi';
 import { MonstersTypes } from '../constants/monsters';
 import { AnimalAi } from '../ai/animalAi';
-import { LevelController } from '../../dungeon/level.controller';
 import { LevelModel } from '../../dungeon/models/level_model';
 import { Cell } from '../../dungeon/models/cells/cell_model';
-import { PlayerController } from './player.controller';
 
 interface IMonsterControllerConfig {
   model: MonsterModel;
 }
-type monstersAi = typeof MonsterAi | typeof AnimalAi;
+type MonstersAi = typeof MonsterAi | typeof AnimalAi;
 
-function getEntityAiStrategy(type: MonstersTypes): monstersAi {
+function getEntityAiStrategy(type: MonstersTypes): MonstersAi {
   switch (type) {
     case MonstersTypes.GiantRat:
       return AnimalAi;
@@ -22,7 +20,7 @@ function getEntityAiStrategy(type: MonstersTypes): monstersAi {
   }
 }
 
-export class MonsterController extends EntityController<MonsterModel> {
+export class MonsterEntity extends Entity<MonsterModel> {
   private ai: MonsterAi;
 
   public constructor(config: IMonsterControllerConfig) {
@@ -32,12 +30,6 @@ export class MonsterController extends EntityController<MonsterModel> {
     this.ai = new (getEntityAiStrategy(this.model.type))({
       controller: this,
     });
-
-    this.attachEvents();
-  }
-
-  protected attachEvents(): void {
-    super.attachEvents();
   }
 
   public act(): void {

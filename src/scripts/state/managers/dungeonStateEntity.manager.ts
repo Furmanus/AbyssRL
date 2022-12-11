@@ -1,7 +1,7 @@
 import { DungeonState } from '../dungeon.state';
 import { DungeonBranches } from '../../dungeon/constants/dungeonTypes.constants';
 import { EntityModel } from '../../entity/models/entity.model';
-import { EntityController } from '../../entity/controllers/entity.controller';
+import { Entity } from '../../entity/entities/entity';
 import { Cell } from '../../dungeon/models/cells/cell_model';
 import { DungeonEvent } from '../../dungeonEvents/dungeonEvent';
 import { TimeEngine } from '../../timeEngine/timeEngine';
@@ -32,13 +32,13 @@ export class DungeonStateEntityManager {
   public getLevelEntities(
     dungeonBranch: DungeonBranches,
     levelNumber: number,
-  ): Set<EntityController> {
+  ): Set<Entity> {
     return this.dungeonState.dungeonsStructure[dungeonBranch][levelNumber]
       .entities;
   }
 
   public addEntityToLevel(
-    entity: EntityController,
+    entity: Entity,
     levelNumber: number = this.dungeonState.currentLevelNumber,
     dungeonBranch: DungeonBranches = this.dungeonState.currentBranch,
   ): this {
@@ -49,7 +49,7 @@ export class DungeonStateEntityManager {
       this.dungeonState.dungeonsStructure[dungeonBranch] = {
         [levelNumber]: {
           level: null,
-          entities: new Set<EntityController>(),
+          entities: new Set<Entity>(),
           scheduledDungeonEvents: new Set<DungeonEvent>(),
           timeEngine: new TimeEngine(),
           cells: new Map<string, Cell>(),
@@ -70,7 +70,7 @@ export class DungeonStateEntityManager {
   }
 
   public removeEntityFromLevel(
-    entity: EntityController,
+    entity: Entity,
     levelNumber: number,
     dungeonBranch: DungeonBranches = this.dungeonState.currentBranch,
   ): this {
@@ -84,7 +84,7 @@ export class DungeonStateEntityManager {
   }
 
   public moveEntityFromLevelToLevel(
-    entity: EntityController,
+    entity: Entity,
     oldLevelNumber: number,
     newLevelNumber: number,
     oldDungeonBranch = this.dungeonState.currentBranch,
@@ -99,7 +99,7 @@ export class DungeonStateEntityManager {
     }
   }
 
-  public findEntityByCell(cell: Cell): EntityController {
+  public findEntityByCell(cell: Cell): Entity {
     for (const [branchName, dungeonBranchEntry] of Object.entries(
       this.dungeonState.dungeonsStructure,
     )) {
@@ -122,7 +122,7 @@ export class DungeonStateEntityManager {
     entityModel: EntityModel,
     branch: DungeonBranches = this.dungeonState.currentBranch,
     levelNumber: number = this.dungeonState.currentLevelNumber,
-  ): EntityController {
+  ): Entity {
     const entities = this.getEntitiesFromLevel(branch, levelNumber);
 
     if (entities) {
@@ -132,7 +132,7 @@ export class DungeonStateEntityManager {
     }
   }
 
-  public getEntityControllerById(entityId: string): EntityController {
+  public getEntityControllerById(entityId: string): Entity {
     const { dungeonsStructure } = this.dungeonState;
 
     for (const branchStructure of Object.values(dungeonsStructure)) {
@@ -148,7 +148,7 @@ export class DungeonStateEntityManager {
     }
   }
 
-  public getActorById(id: string): EntityController | DungeonEvent {
+  public getActorById(id: string): Entity | DungeonEvent {
     const entityController = this.getEntityControllerById(id);
     const { dungeonsStructure } = this.dungeonState;
 
@@ -172,12 +172,12 @@ export class DungeonStateEntityManager {
   private getEntitiesFromLevel(
     branch: DungeonBranches,
     levelNumber: number,
-  ): Set<EntityController> {
+  ): Set<Entity> {
     return this.dungeonState.dungeonsStructure[branch]?.[levelNumber]?.entities;
   }
 
   private isEntityOnLevel(
-    entityController: EntityController,
+    entityController: Entity,
     levelNumber: number,
     dungeonBranch = this.dungeonState.currentBranch,
   ): boolean {

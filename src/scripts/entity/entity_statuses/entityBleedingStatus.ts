@@ -1,11 +1,11 @@
 import {
-  EntityStatusCommonController,
+  EntityStatusCommon,
   EntityStatusCommonSerializedData,
-} from './entityStatusCommon.controller';
+} from './entityStatusCommon';
 import { rngService } from '../../utils/rng.service';
 import { EntityStatuses } from '../constants/statuses';
 import { EntityStats } from '../constants/monsters';
-import { EntityController } from '../controllers/entity.controller';
+import { Entity } from '../entities/entity';
 
 export interface EntityBleedingStatusSerializedData
   extends EntityStatusCommonSerializedData {
@@ -16,7 +16,7 @@ export interface EntityBleedingStatusSerializedData
   weaknessTurnStart?: number;
 }
 
-export class EntityBleedingStatusController extends EntityStatusCommonController {
+export class EntityBleedingStatus extends EntityStatusCommon {
   public type = EntityStatuses.Bleeding;
   private maxBleedingCount = rngService.getRandomNumber(3, 12);
   private bleedingCount = 0;
@@ -25,7 +25,7 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
 
   public constructor(
     data: EntityBleedingStatusSerializedData,
-    entityController?: EntityController,
+    entityController?: Entity,
   ) {
     super(data, entityController);
 
@@ -53,13 +53,13 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
     super.act();
 
     if (++this.bleedingCount > this.maxBleedingCount) {
-      this.entityController.stopBleeding(this);
+      this.entityInstance.stopBleeding(this);
     } else {
-      this.entityController.inflictNonCombatHit(1, EntityStatuses.Bleeding);
-      this.entityController.dropBlood();
+      this.entityInstance.inflictNonCombatHit(1, EntityStatuses.Bleeding);
+      this.entityInstance.dropBlood();
 
       if (this.bleedingCount > this.weaknessTurnStart) {
-        this.entityController.addTemporaryStatsModifiers([
+        this.entityInstance.addTemporaryStatsModifiers([
           {
             stat: EntityStats.Strength,
             source: this,
@@ -84,10 +84,10 @@ export class EntityBleedingStatusController extends EntityStatusCommonController
     this.maxBleedingCount += val;
   }
 
-  public add(status: EntityStatusCommonController): void {
-    if (status instanceof EntityBleedingStatusController) {
+  public add(status: EntityStatusCommon): void {
+    if (status instanceof EntityBleedingStatus) {
       this.increaseMaxBleedingCount(status.getMaxBleedingCount());
-      this.entityController.increaseBloodLoss();
+      this.entityInstance.increaseBloodLoss();
     }
   }
 

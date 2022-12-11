@@ -1,8 +1,8 @@
-import { InventoryController } from '../inventory/inventory.controller';
-import { ContainerInventoryModalController } from '../modal/containerInventory/containerInventoryModal.controller';
+import { InventoryService } from '../inventory/inventory.service';
+import { ContainerInventoryModal } from '../modal/containerInventory/containerInventoryModal';
 
-export const globalInventoryController: InventoryController =
-  new InventoryController();
+export const globalInventoryController: InventoryService =
+  new InventoryService();
 
-export const globalContainerInventoryController: ContainerInventoryModalController =
-  ContainerInventoryModalController.getInstance();
+export const globalContainerInventoryController: ContainerInventoryModal =
+  ContainerInventoryModal.getInstance();
